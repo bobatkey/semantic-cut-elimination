@@ -140,6 +140,7 @@ module Construction {a b} {A : Set a}
   ⊗-isMonoid .IsMonoid.lunit {X} = ⊗-lunit {X}
   ⊗-isMonoid .IsMonoid.runit {X} = ⊗-runit {X}
 
+  ------------------------------------------------------------------------------
   -- We have a *-autonomous preorder:
 
   *-aut : ∀ {X Y Z} → (X ⊗ Y) ==> ¬ Z → X ==> ¬ (Y ⊗ Z)
@@ -148,45 +149,21 @@ module Construction {a b} {A : Set a}
 
   *-aut⁻¹ : ∀ {X Y Z} → X ==> ¬ (Y ⊗ Z) → (X ⊗ Y) ==> ¬ Z
   *-aut⁻¹ m .fpos = mono (m .fpos >> π₂) refl >> eval
-  *-aut⁻¹ m .fneg = ⟨ lambda (•-sym >> m .fneg) , lambda (•-sym >> (mono (m .fpos >> π₁) refl >> eval)) ⟩
+  *-aut⁻¹ m .fneg =
+    ⟨ lambda (•-sym >> m .fneg) , lambda (•-sym >> (mono (m .fpos >> π₁) refl >> eval)) ⟩
 
-  ------------------------------------------------------------------------------
-  _⅋_ : Chu → Chu → Chu
-  X ⅋ Y = ¬ (¬ X ⊗ ¬ Y)
+  ⊗-isStarAutonomous : IsStarAuto ==>-isPreorder ⊗-isMonoid ⊗-sym ¬
+  ⊗-isStarAutonomous .IsStarAuto.¬-mono = ¬-mono
+  ⊗-isStarAutonomous .IsStarAuto.involution = involution
+  ⊗-isStarAutonomous .IsStarAuto.*-aut = *-aut
+  ⊗-isStarAutonomous .IsStarAuto.*-aut⁻¹ = *-aut⁻¹
 
-  ⅋-mono : ∀ {X₁ Y₁ X₂ Y₂} → X₁ ==> X₂ → Y₁ ==> Y₂ → (X₁ ⅋ Y₁) ==> (X₂ ⅋ Y₂)
-  ⅋-mono m₁ m₂ = ¬-mono (⊗-mono (¬-mono m₁) (¬-mono m₂))
-
-  ⅋-sym : ∀ {X Y} → (X ⅋ Y) ==> (Y ⅋ X)
-  ⅋-sym = ¬-mono ⊗-sym
-
-  -- FIXME: ⅋-isMonoid
-
-  -- FIXME: linear distributivity
-
-  identity : ∀ {X} → I ==> (¬ X ⅋ X)
-  identity = *-aut (⊗-lunit .proj₁)
-
-  _⊸_ : Chu → Chu → Chu
-  X ⊸ Y = ¬ X ⅋ Y
-
-  apply : ∀ {X Y} → ((X ⊸ Y) ⊗ X) ==> Y
-  apply = ==>-trans (*-aut⁻¹ (¬-mono (⊗-mono (involution .proj₁) id))) (involution .proj₂)
-
-  -- linear distributivity law, to interpret “switch” in BV/MAV
-  lin-distrib : ∀ {X Y Z} → (X ⊗ (Y ⅋ Z)) ==> ((X ⊗ Y) ⅋ Z)
-  lin-distrib =
-    ==>-trans (*-aut (
-    ==>-trans (
-    ==>-trans (⊗-assoc .proj₁)
-              (⊗-mono id (==>-trans (⊗-mono (==>-trans (⅋-mono id (involution .proj₁)) ⅋-sym) id) apply)))
-              (involution .proj₁)))
-    ⅋-sym
+  open IsStarAuto ⊗-isStarAutonomous hiding (¬-mono; involution; *-aut; *-aut⁻¹) public
 
   ------------------------------------------------------------------------------
   -- Additive structure
 
-  -- deduce distributivity from closure-
+  -- deduce distributivity from closure; FIXME: move this to basics
   •-∨-distrib : ∀ {x y z} → (x • (y ∨ z)) ≤ ((x • y) ∨ (x • z))
   •-∨-distrib =
     •-sym >> lambda⁻¹ [ lambda (•-sym >> inl) , lambda (•-sym >> inr) ]
@@ -216,6 +193,9 @@ module Construction {a b} {A : Set a}
   _⊕_ : Chu → Chu → Chu
   X ⊕ Y = ¬ (¬ X & ¬ Y)
 
+  -- FIXME: ⊕-isJoin
+
+  ------------------------------------------------------------------------------
   -- Self-dual operators on Chu, arising from duoidal structures on
   -- the underlying order.
   module SelfDual {_▷_ : A → A → A} {ι : A}

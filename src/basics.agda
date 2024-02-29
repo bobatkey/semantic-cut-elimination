@@ -2,8 +2,8 @@
 
 module basics where
 
-open import Level
-open import Data.Product
+open import Level using (_⊔_)
+open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Relation.Binary using (Setoid; IsEquivalence)
 
 module _ {a} {A : Set a} where
@@ -17,6 +17,9 @@ module _ {a} {A : Set a} where
   SymmetricClosure R x y = R x y × R y x
 
   module _ {b} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreorder _≤_) where
+
+    _≃_ = SymmetricClosure _≤_
+    infix 4 _≃_
 
     module _ where
       open IsPreorder ≤-isPreorder
@@ -34,9 +37,6 @@ module _ {a} {A : Set a} where
 
     -- Order monoids
     record IsMonoid (_∙_ : A → A → A) (ε : A) : Set (a ⊔ b) where
-      _≃_ = SymmetricClosure _≤_
-
-      infix 4 _≃_
 
       field
         mono  : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ∙ y₁) ≤ (x₂ ∙ y₂)
@@ -86,3 +86,80 @@ module _ {a} {A : Set a} where
 
       mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ∨ y₁) ≤ (x₂ ∨ y₂)
       mono x₁≤x₂ y₁≤y₂ = [ trans x₁≤x₂ inl , trans y₁≤y₂ inr ]
+
+    -- FIXME: closure + join = distributivity
+
+    -- *-autonomous categories and all their structure
+    record IsStarAuto {_⊗_ : A → A → A} {ε : A}
+                      (⊗-isMonoid : IsMonoid _⊗_ ε)
+                      (⊗-sym : ∀ {x y} → (x ⊗ y) ≤ (y ⊗ x))
+                      (¬ : A → A) : Set (a ⊔ b) where
+      field
+        ¬-mono     : ∀ {x y} → x ≤ y → ¬ y ≤ ¬ x
+        involution : ∀ {x} → x ≃ ¬ (¬ x)
+
+        *-aut   : ∀ {x y z} → (x ⊗ y) ≤ ¬ z → x ≤ ¬ (y ⊗ z)
+        *-aut⁻¹ : ∀ {x y z} → x ≤ ¬ (y ⊗ z) → (x ⊗ y) ≤ ¬ z
+
+      open IsPreorder ≤-isPreorder
+      open IsMonoid ⊗-isMonoid
+
+      ¬-cong : ∀ {x y} → x ≃ y → ¬ x ≃ ¬ y
+      ¬-cong (ϕ , ψ) .proj₁ = ¬-mono ψ
+      ¬-cong (ϕ , ψ) .proj₂ = ¬-mono ϕ
+
+      ⊥ : A
+      ⊥ = ¬ ε
+
+      _⅋_ : A → A → A
+      x ⅋ y = ¬ (¬ x ⊗ ¬ y)
+
+      ⅋-mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ⅋ y₁) ≤ (x₂ ⅋ y₂)
+      ⅋-mono m₁ m₂ = ¬-mono (mono (¬-mono m₁) (¬-mono m₂))
+
+      ⅋-sym : ∀ {x y} → (x ⅋ y) ≤ (y ⅋ x)
+      ⅋-sym = ¬-mono ⊗-sym
+
+      ⅋-isMonoid : IsMonoid _⅋_ ⊥
+      ⅋-isMonoid .IsMonoid.mono = ⅋-mono
+      ⅋-isMonoid .IsMonoid.assoc {x}{y}{z} =
+        begin
+          (x ⅋ y) ⅋ z            ≡⟨⟩
+          ¬ (¬ (x ⅋ y) ⊗ ¬ z)     ≈˘⟨ ¬-cong (cong involution (refl , refl)) ⟩
+          ¬ ((¬ x ⊗ ¬ y) ⊗ ¬ z)   ≈⟨ ¬-cong assoc ⟩
+          ¬ (¬ x ⊗ (¬ y ⊗ ¬ z))   ≈⟨ ¬-cong (cong (refl , refl) involution) ⟩
+          ¬ (¬ x ⊗ ¬ (y ⅋ z))     ≡⟨⟩
+          x ⅋ (y ⅋ z)            ∎
+        where open import Relation.Binary.Reasoning.Setoid setoidOf
+      ⅋-isMonoid .IsMonoid.lunit {x} =
+        begin
+          ⊥ ⅋ x             ≡⟨⟩
+          ¬ (¬ (¬ ε) ⊗ ¬ x)  ≈˘⟨ ¬-cong (cong involution (refl , refl)) ⟩
+          ¬ (ε ⊗ ¬ x)        ≈⟨ ¬-cong lunit ⟩
+          ¬ (¬ x)            ≈˘⟨ involution ⟩
+          x                  ∎
+        where open import Relation.Binary.Reasoning.Setoid setoidOf
+      ⅋-isMonoid .IsMonoid.runit {x} =
+        begin
+          x ⅋ ⊥             ≡⟨⟩
+          ¬ (¬ x ⊗ ¬ (¬ ε))  ≈˘⟨ ¬-cong (cong (refl , refl) involution) ⟩
+          ¬ (¬ x ⊗ ε)        ≈⟨ ¬-cong runit ⟩
+          ¬ (¬ x)            ≈˘⟨ involution ⟩
+          x                  ∎
+        where open import Relation.Binary.Reasoning.Setoid setoidOf
+
+      _⊸_ : A → A → A
+      x ⊸ y = ¬ x ⅋ y
+
+      ⊸-isClosure : IsClosure ⊗-isMonoid _⊸_
+      ⊸-isClosure .IsClosure.lambda m =
+        *-aut (trans (mono refl (involution .proj₂)) (trans m (involution .proj₁)))
+      ⊸-isClosure .IsClosure.eval =
+        trans (*-aut⁻¹ (¬-mono (mono (involution .proj₁) refl))) (involution .proj₂)
+
+      linear-distrib : ∀ {x y z} → (x ⊗ (y ⅋ z)) ≤ ((x ⊗ y) ⅋ z)
+      linear-distrib =
+        trans (*-aut (trans (assoc .proj₁)
+                     (trans (mono refl (trans (mono (trans (⅋-mono refl (involution .proj₁)) ⅋-sym) refl) (⊸-isClosure .IsClosure.eval)))
+                            (involution .proj₁))))
+              ⅋-sym
