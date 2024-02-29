@@ -1,0 +1,3 @@
+name: semantic-cut-elimination
+include: src
+depend: standard-library
