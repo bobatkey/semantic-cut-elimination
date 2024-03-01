@@ -3,6 +3,7 @@
 open import Level renaming (suc to lsuc) hiding (zero)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ-syntax)
 open import Data.Sum using (_⊎_; inj₁; inj₂) renaming ([_,_] to [_⊎_])
+open import Data.Unit using (⊤; tt)
 open import Relation.Binary using (Setoid)
 open import basics
 
@@ -22,7 +23,7 @@ record _≤P_ (F G : PreSheaf) : Set (a ⊔ b) where
   no-eta-equality
   field
     *≤P* : ∀ x → F .Carrier x → G .Carrier x
-open _≤P_
+open _≤P_ public
 
 ≤P-isPreorder : IsPreorder _≤P_
 ≤P-isPreorder .IsPreorder.refl .*≤P* x Fx = Fx
@@ -40,6 +41,7 @@ infix 4 _≃P_
 η x .Carrier y = Lift a (y ≤ x)
 η x .≤-closed z≤y y≤x = lift (trans z≤y (y≤x .lower))
 
+------------------------------------------------------------------------------
 -- Meets
 _∧_ : PreSheaf → PreSheaf → PreSheaf
 (F ∧ G) .Carrier x = F .Carrier x × G .Carrier x
@@ -50,6 +52,28 @@ _∧_ : PreSheaf → PreSheaf → PreSheaf
 ∧-isMeet .IsMeet.π₂ .*≤P* _ = proj₂
 ∧-isMeet .IsMeet.⟨_,_⟩ m₁ m₂ .*≤P* x Fx = m₁ .*≤P* x Fx , m₂ .*≤P* x Fx
 
+⊤P : PreSheaf
+⊤P .Carrier x = Lift (a ⊔ b) ⊤
+⊤P .≤-closed _ x = x
+
+⊤P-isTop : IsTop ≤P-isPreorder ⊤P
+⊤P-isTop .IsTop.≤-top .*≤P* x _ = lift tt
+
+∧-isMonoid : IsMonoid ≤P-isPreorder _∧_ ⊤P
+∧-isMonoid = monoidOfMeet ≤P-isPreorder ∧-isMeet ⊤P-isTop
+
+------------------------------------------------------------------------------
+-- Exponentials
+_⇒_ : PreSheaf → PreSheaf → PreSheaf
+(F ⇒ G) .Carrier x = ∀ y → y ≤ x → F .Carrier y → G .Carrier y
+(F ⇒ G) .≤-closed x≤y f y' y'≤x Fy' = f y' (trans y'≤x x≤y) Fy'
+
+⇒-isClosure : IsClosure ≤P-isPreorder ∧-isMonoid _⇒_
+⇒-isClosure .IsClosure.lambda {F}{G}{H} m .*≤P* x Fx y y≤x Gy =
+  m .*≤P* y (F .≤-closed y≤x Fx , Gy)
+⇒-isClosure .IsClosure.eval {F} {G} .*≤P* x (f , Fx) = f x refl Fx
+
+------------------------------------------------------------------------------
 -- Joins
 _∨_ : PreSheaf → PreSheaf → PreSheaf
 (F ∨ G) .Carrier x = F .Carrier x ⊎ G .Carrier x
@@ -121,15 +145,11 @@ module Monoid {_∙_ : A → A → A} {ε : A} (∙-isMonoid : IsMonoid ≤-isPr
   (F -• G) .Carrier x = ∀ y → F .Carrier y → G .Carrier (x ∙ y)
   (F -• G) .≤-closed x≤x' f y Fy = G .≤-closed (mono x≤x' refl) (f y Fy)
 
-  closed : ∀ {F G H} → F • G ≤P H → F ≤P G -• H
-  closed m .*≤P* x Fx y Gy = m .*≤P* (x ∙ y) (x , y , refl , Fx , Gy)
-
-  eval : ∀ {F G} → (F -• G) • F ≤P G
-  eval {F}{G} .*≤P* x (y , z , x≤yz , F-•Gy , Fz) = G .≤-closed x≤yz (F-•Gy z Fz)
-
   -•-isClosure : IsClosure ≤P-isPreorder •-isMonoid _-•_
-  -•-isClosure .IsClosure.lambda = closed
-  -•-isClosure .IsClosure.eval = eval
+  -•-isClosure .IsClosure.lambda m .*≤P* x Fx y Gy =
+    m .*≤P* (x ∙ y) (x , y , refl , Fx , Gy)
+  -•-isClosure .IsClosure.eval {F}{G} .*≤P* x (y , z , x≤yz , F-•Gy , Fz) =
+    G .≤-closed x≤yz (F-•Gy z Fz)
 
   -- and left-closed, but every monoid we care about is symmetric so
   -- I'll not bother.
@@ -159,6 +179,16 @@ module Duoidal {_∙_ : A → A → A} {_▷_ : A → A → A} {ι : A}
 
 
 -- A particular kind of Grothendieck preorder sheaf
+--
+-- FIXME: not sheaves! we do not necessarily know that α : PreSheaf →
+-- Sheaf defined below preserves finite limits. This is an extra
+-- property that would turn it into a Grothendieck topos. I guess that
+-- this would need _&_ to distribute over meets in A (if we assume
+-- that A has meets)?
+--
+-- Alternatively, the closure of the closure operation
+--     C X x = Σ[ t ∈ tree (Σ[ x ∈ A ] X .Carrier x) ] x ≤ join t
+
 module sheaf (_&_ : A → A → A)
              (&-mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ & y₁) ≤ (x₂ & y₂))
           where -- we have some binary operator that we want to name the joins
@@ -268,7 +298,7 @@ module sheaf (_&_ : A → A → A)
     ηS x .Sclosed t .lower = joinJ _ t
 
   ------------------------------------------------------------------------------
-  -- Meets'n'joins
+  -- Meets
   _∧S_ : Sheaf → Sheaf → Sheaf
   (F ∧S G) .SCarrier x = F .SCarrier x × G .SCarrier x
   (F ∧S G) .S≤-closed x≤y (Fy , Gy) = (F .S≤-closed x≤y Fy) , (G .S≤-closed x≤y Gy)
@@ -281,6 +311,20 @@ module sheaf (_&_ : A → A → A)
   ∧S-isMeet .IsMeet.π₂ .*≤S* _ = proj₂
   ∧S-isMeet .IsMeet.⟨_,_⟩ m₁ m₂ .*≤S* x Fx = m₁ .*≤S* x Fx , m₂ .*≤S* x Fx
 
+{-
+  module _ where
+    open IsMeet ∧S-isMeet using (⟨_,_⟩)
+    open IsMeet ∧-isMeet using (π₁; π₂)
+
+    -- FIXME: work out what is needed here; probably going to have to
+    -- work out how to state stability of _&_ under pullbacks.
+    preserveMeets : ∀ {F G} → α (F ∧ G) ≃S (α F ∧S α G)
+    preserveMeets .proj₁ = ⟨ (α-mono π₁) , (α-mono π₂) ⟩
+    preserveMeets .proj₂ .*≤S* = {!!} -- this would be true if _&_ distributed across meets, which we are not assuming here
+-}
+
+  ------------------------------------------------------------------------------
+  -- Joins
   _∨S_ : Sheaf → Sheaf → Sheaf
   F ∨S G = α (U F ∨ U G)
 
@@ -302,7 +346,7 @@ module sheaf (_&_ : A → A → A)
 
   ------------------------------------------------------------------------------
   -- Monoids 1 : if we have a 'medial'-type monoid, then the
-  -- presheaf monoid definition is already a sheaf
+  -- presheaf monoid definition is already a sheaf. I.e., U (α (F • G)) ≃ U (α F) • U (α G)
   module SMonoid1 {_∙_ : A → A → A} {ε : A}
                   (∙-isMonoid : IsMonoid ≤-isPreorder _∙_ ε)
                   -- this is how it interacts with the 'join'
@@ -423,7 +467,7 @@ module sheaf (_&_ : A → A → A)
        α-monoidal .proj₂ = α-mono (•-mono (unit F) (unit G))
 
     module _ where
-      open IsMonoid •-isMonoid renaming (cong to •-cong) -- ; assoc to •-assoc)
+      open IsMonoid •-isMonoid renaming (cong to •-cong)
       open Setoid (setoidOf ≤P-isPreorder) renaming (refl to P-refl)
 
       ⊗-assoc : ∀ {F G H} → ((F ⊗ G) ⊗ H) ≃S (F ⊗ (G ⊗ H))
@@ -476,7 +520,6 @@ module sheaf (_&_ : A → A → A)
           ∎
           where open import Relation.Binary.Reasoning.Setoid (setoidOf ≤S-isPreorder)
 
-
     ⊗-isMonoid : IsMonoid ≤S-isPreorder _⊗_ I
     ⊗-isMonoid .IsMonoid.mono m₁ m₂ = α-mono (•-mono (U-mono m₁) (U-mono m₂))
     ⊗-isMonoid .IsMonoid.assoc = ⊗-assoc
@@ -515,7 +558,7 @@ module sheaf (_&_ : A → A → A)
       m .*≤S* (x ∙ y) ((lf (x ∙ y , x , y , refl , Fx , Gy)) , refl)
     ⊸-isClosure .IsClosure.eval =
        ≤S-trans (α-mono (•-mono U⊸ (≤P-isPreorder .IsPreorder.refl)))
-       (≤S-trans (α-mono eval) counit)
+       (≤S-trans (α-mono (-•-isClosure .IsClosure.eval)) counit)
 
 -- FIXME: now prove that if we have two duoidal monoids on A, with
 -- the appropriate interactions with _&_, then we get a pair of
