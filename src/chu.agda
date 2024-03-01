@@ -53,8 +53,8 @@ module Construction {a b} {A : Set a}
 
   open IsPreorder ≤-isPreorder
   open IsMonoid •-isMonoid
-  open IsMeet ∧-isMeet renaming (mono to ∧-mono)
-  open IsJoin ∨-isJoin renaming (mono to ∨-mono)
+  open IsMeet ∧-isMeet renaming (mono to ∧-mono) hiding (assoc)
+  open IsJoin ∨-isJoin renaming (mono to ∨-mono) hiding (assoc)
   open IsClosure -•-isClosure renaming (-∙-mono to -•-mono)
 
   _>>_ : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
@@ -163,10 +163,8 @@ module Construction {a b} {A : Set a}
   ------------------------------------------------------------------------------
   -- Additive structure
 
-  -- deduce distributivity from closure; FIXME: move this to basics
   •-∨-distrib : ∀ {x y z} → (x • (y ∨ z)) ≤ ((x • y) ∨ (x • z))
-  •-∨-distrib =
-    •-sym >> lambda⁻¹ [ lambda (•-sym >> inl) , lambda (•-sym >> inr) ]
+  •-∨-distrib = ∙-∨-distrib ≤-isPreorder •-isMonoid •-sym -•-isClosure ∨-isJoin
 
   _&_ : Chu → Chu → Chu
   (X & Y) .pos = X .pos ∧ Y .pos

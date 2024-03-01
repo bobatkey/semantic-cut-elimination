@@ -35,9 +35,7 @@ module _ {a} {A : Set a} where
       setoidOf .Setoid._≈_ = SymmetricClosure _≤_
       setoidOf .Setoid.isEquivalence = isEquivalenceOf
 
-    -- Order monoids
     record IsMonoid (_∙_ : A → A → A) (ε : A) : Set (a ⊔ b) where
-
       field
         mono  : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ∙ y₁) ≤ (x₂ ∙ y₂)
         assoc : ∀ {x y z} → (x ∙ y) ∙ z ≃ x ∙ (y ∙ z)
@@ -76,6 +74,31 @@ module _ {a} {A : Set a} where
       mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ∧ y₁) ≤ (x₂ ∧ y₂)
       mono x₁≤x₂ y₁≤y₂ = ⟨ trans π₁ x₁≤x₂ , trans π₂ y₁≤y₂ ⟩
 
+      assoc : ∀ {x y z} → (x ∧ y) ∧ z ≃ x ∧ (y ∧ z)
+      assoc .proj₁ = ⟨ trans π₁ π₁ , ⟨ trans π₁ π₂ , π₂ ⟩ ⟩
+      assoc .proj₂ = ⟨ ⟨ π₁ , trans π₂ π₁ ⟩ , trans π₂ π₂ ⟩
+
+      idem : ∀ {x} → x ∧ x ≃ x
+      idem .proj₁ = π₁
+      idem .proj₂ = ⟨ refl , refl ⟩
+
+    record IsTop (⊤ : A) : Set (a ⊔ b) where
+      field
+        ≤-top : ∀ {x} → x ≤ ⊤
+
+    module _ {_∧_ : A → A → A} {⊤ : A} (isMeet : IsMeet _∧_) (isTop : IsTop ⊤) where
+      open IsPreorder ≤-isPreorder
+      open IsMeet isMeet
+      open IsTop isTop
+
+      monoidOfMeet : IsMonoid _∧_ ⊤
+      monoidOfMeet .IsMonoid.mono = mono
+      monoidOfMeet .IsMonoid.assoc = assoc
+      monoidOfMeet .IsMonoid.lunit .proj₁ = π₂
+      monoidOfMeet .IsMonoid.lunit .proj₂ = ⟨ ≤-top , refl ⟩
+      monoidOfMeet .IsMonoid.runit .proj₁ = π₁
+      monoidOfMeet .IsMonoid.runit .proj₂ = ⟨ refl , ≤-top ⟩
+
     record IsJoin (_∨_ : A → A → A) : Set (a ⊔ b) where
       field
         inl : ∀ {x y} → x ≤ (x ∨ y)
@@ -87,8 +110,35 @@ module _ {a} {A : Set a} where
       mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ∨ y₁) ≤ (x₂ ∨ y₂)
       mono x₁≤x₂ y₁≤y₂ = [ trans x₁≤x₂ inl , trans y₁≤y₂ inr ]
 
-    -- FIXME: closure + join = distributivity
+      assoc : ∀ {x y z} → (x ∨ y) ∨ z ≃ x ∨ (y ∨ z)
+      assoc .proj₁ = [ [ inl , trans inl inr ] , trans inr inr ]
+      assoc .proj₂ = [ trans inl inl , [ trans inr inl , inr ] ]
 
+      idem : ∀ {x} → x ∨ x ≃ x
+      idem .proj₁ = [ refl , refl ]
+      idem .proj₂ = inl
+
+      sym : ∀ {x y} → (x ∨ y) ≤ (y ∨ x)
+      sym = [ inr , inl ]
+
+    ------------------------------------------------------------------------------
+    -- closure implies distributivity of joins and the monoid
+    -- FIXME: don't assume symmetry and do the left and right ones separately
+    module _ {_∙_ ε _-∙_ _∨_}
+             (isMonoid : IsMonoid _∙_ ε)
+             (∙-sym : ∀ {x y} → (x ∙ y) ≤ (y ∙ x))
+             (isClosure : IsClosure isMonoid _-∙_)
+             (isJoin : IsJoin _∨_) where
+      open IsPreorder ≤-isPreorder
+      open IsMonoid isMonoid
+      open IsClosure isClosure
+      open IsJoin isJoin
+
+      ∙-∨-distrib : ∀ {x y z} → (x ∙ (y ∨ z)) ≤ ((x ∙ y) ∨ (x ∙ z))
+      ∙-∨-distrib =
+        trans ∙-sym (lambda⁻¹ [ lambda (trans ∙-sym inl) , lambda (trans ∙-sym inr) ])
+
+    ------------------------------------------------------------------------------
     -- *-autonomous categories and all their structure
     record IsStarAuto {_⊗_ : A → A → A} {ε : A}
                       (⊗-isMonoid : IsMonoid _⊗_ ε)
