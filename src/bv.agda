@@ -2,15 +2,15 @@
 
 module bv (At : Set) where
 
-open import Level using (0ℓ; lift; lower; Lift)
-open import basics
 open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ-syntax)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Level using (0ℓ; lift; lower; Lift)
+open import basics
 
 data fmla : Set where
   I : fmla
   +at -at : At → fmla
-  _⅋_ _⊗_ _&_ _⊕_ : fmla → fmla → fmla
+  _⅋_ _⊗_ _&_ _⊕_ _▷_ : fmla → fmla → fmla
 
 ¬ : fmla → fmla
 ¬ I = I
@@ -20,6 +20,7 @@ data fmla : Set where
 ¬ (p ⊗ q) = ¬ p ⅋ ¬ q
 ¬ (p & q) = ¬ p ⊕ ¬ q
 ¬ (p ⊕ q) = ¬ p & ¬ q
+¬ (p ▷ q) = ¬ p ▷ ¬ q
 
 _⊸_ : fmla → fmla → fmla
 p ⊸ q = ¬ p ⅋ q
@@ -30,17 +31,19 @@ data _⟶_ : fmla → fmla → Set where
 
   tidy     : (I & I) ⟶ I
   switch   : ∀ {p q r} → ((p ⊗ q) ⅋ r) ⟶ (p ⊗ (q ⅋ r))
+  sequence : ∀ {p q r s} → ((p ▷ q) ⅋ (r ▷ s)) ⟶ ((p ⅋ r) ▷ (q ⅋ s))
   left     : ∀ {p q} → (p ⊕ q) ⟶ p
   right    : ∀ {p q} → (p ⊕ q) ⟶ q
   external : ∀ {p q r} → ((p & q) ⅋ r) ⟶ ((p ⅋ r) & (q ⅋ r))
+  medial   : ∀ {p q r s} → ((p ▷ q) & (r ▷ s)) ⟶ ((p & r) ▷ (q & s))
 
-  _⟨⊗_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p ⊗ q) ⟶ (p' ⊗ q)
+  --  _⟨⊗_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p ⊗ q) ⟶ (p' ⊗ q)
   _⊗⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p ⊗ q) ⟶ (p ⊗ q')
-  ⊗-assoc   : ∀ {p q r} → (p ⊗ (q ⊗ r)) ⟶ ((p ⊗ q) ⊗ r)
-  ⊗-assoc⁻¹ : ∀ {p q r} → ((p ⊗ q) ⊗ r) ⟶ (p ⊗ (q ⊗ r))
-  ⊗-comm    : ∀ {p q} → (p ⊗ q) ⟶ (q ⊗ p)
+  -- ⊗-assoc   : ∀ {p q r} → (p ⊗ (q ⊗ r)) ⟶ ((p ⊗ q) ⊗ r)
+  -- ⊗-assoc⁻¹ : ∀ {p q r} → ((p ⊗ q) ⊗ r) ⟶ (p ⊗ (q ⊗ r))
+  ⊗-comm    : ∀ {p q} → (p ⊗ q) ⟶ (q ⊗ p)    -- could replace this with "switch-right"
   ⊗-unit    : ∀ {p}   → (p ⊗ I) ⟶ p
-  ⊗-unit⁻¹  : ∀ {p}   → p ⟶ (p ⊗ I)
+  --  ⊗-unit⁻¹  : ∀ {p}   → p ⟶ (p ⊗ I)
 
   _⟨⅋_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p ⅋ q) ⟶ (p' ⅋ q)
   _⅋⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p ⅋ q) ⟶ (p ⅋ q')
@@ -49,6 +52,15 @@ data _⟶_ : fmla → fmla → Set where
   ⅋-comm    : ∀ {p q} → (p ⅋ q) ⟶ (q ⅋ p)
   ⅋-unit    : ∀ {p}   → (p ⅋ I) ⟶ p
   ⅋-unit⁻¹  : ∀ {p}   → p ⟶ (p ⅋ I)
+
+  _⟨▷_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p ▷ q) ⟶ (p' ▷ q)
+  _▷⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p ▷ q) ⟶ (p ▷ q')
+  ▷-assoc   : ∀ {p q r} → (p ▷ (q ▷ r)) ⟶ ((p ▷ q) ▷ r)
+  ▷-assoc⁻¹ : ∀ {p q r} → ((p ▷ q) ▷ r) ⟶ (p ▷ (q ▷ r))
+  ▷-runit   : ∀ {p}   → (p ▷ I) ⟶ p
+  ▷-runit⁻¹ : ∀ {p}   → p ⟶ (p ▷ I)
+  ▷-lunit   : ∀ {p}   → (I ▷ p) ⟶ p
+  ▷-lunit⁻¹ : ∀ {p}   → p ⟶ (I ▷ p)
 
   _⟨&_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p & q) ⟶ (p' & q)
   _&⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p & q) ⟶ (p & q')
@@ -61,8 +73,7 @@ data _⟶_ : fmla → fmla → Set where
 data _⟶*_ : fmla → fmla → Set where
   ε : ∀ {p} → p ⟶* p
   _∷_ : ∀ {p q r} → p ⟶ q → q ⟶* r → p ⟶* r
-
-infixr 4 _∷_
+infixr 6 _∷_
 
 test1 : ((I & I) ⊸ I) ⟶* I
 test1 = left ⟨⅋ I ∷ ⅋-unit ∷ ε
@@ -83,44 +94,74 @@ test2 = external ∷ (⅋-unit ⟨& (I ⅋ I)) ∷ I &⟩ ⅋-unit ∷ tidy ∷ 
 ⟶*-isPreorder .IsPreorder.refl = ⟶*-refl
 ⟶*-isPreorder .IsPreorder.trans = ⟶*-trans
 
+-- ⅋ is a monoid in the proof system
 _⅋⟩*_ : ∀ p {q₁ q₂} → q₁ ⟶* q₂ → (p ⅋ q₁) ⟶* (p ⅋ q₂)
 p ⅋⟩* ε = ε
 p ⅋⟩* (x ∷ ϕ) = (p ⅋⟩ x) ∷ (p ⅋⟩* ϕ)
-
-_&⟩*_ : ∀ p {q₁ q₂} → q₁ ⟶* q₂ → (p & q₁) ⟶* (p & q₂)
-p &⟩* ε = ε
-p &⟩* (x ∷ ϕ) = (p &⟩ x) ∷ (p &⟩* ϕ)
-
-_⊗⟩*_ : ∀ p {q₁ q₂} → q₁ ⟶* q₂ → (p ⊗ q₁) ⟶* (p ⊗ q₂)
-p ⊗⟩* ε = ε
-p ⊗⟩* (x ∷ ϕ) = (p ⊗⟩ x) ∷ (p ⊗⟩* ϕ)
 
 _⟨⅋*_ : ∀ {p₁ p₂} → p₁ ⟶* p₂ → ∀ q → (p₁ ⅋ q) ⟶* (p₂ ⅋ q)
 ε ⟨⅋* q = ε
 (x ∷ ϕ) ⟨⅋* q = (x ⟨⅋ q) ∷ (ϕ ⟨⅋* q)
 
+⅋-mono : ∀ {p₁ q₁ p₂ q₂} → (p₁ ⟶* p₂) → (q₁ ⟶* q₂) → (p₁ ⅋ q₁) ⟶* (p₂ ⅋ q₂)
+⅋-mono {p₁}{q₁}{p₂}{q₂} f g = ⟶*-trans (p₁ ⅋⟩* g) (f ⟨⅋* q₂)
+
+⅋-isMonoid : IsMonoid ⟶*-isPreorder _⅋_ I
+⅋-isMonoid .IsMonoid.mono = ⅋-mono
+⅋-isMonoid .IsMonoid.assoc = ⅋-assoc⁻¹ ∷ ε , ⅋-assoc ∷ ε
+⅋-isMonoid .IsMonoid.lunit = ⅋-comm ∷ ⅋-unit ∷ ε , ⅋-unit⁻¹ ∷ ⅋-comm ∷ ε
+⅋-isMonoid .IsMonoid.runit = ⅋-unit ∷ ε , ⅋-unit⁻¹ ∷ ε
+
+⅋-sym : ∀ {p q} → (p ⅋ q) ⟶* (q ⅋ p)
+⅋-sym = ⅋-comm ∷ ε
+
+-- ▷ is a monoid in the proof system
+_▷⟩*_ : ∀ p {q₁ q₂} → q₁ ⟶* q₂ → (p ▷ q₁) ⟶* (p ▷ q₂)
+p ▷⟩* ε = ε
+p ▷⟩* (x ∷ ϕ) = (p ▷⟩ x) ∷ (p ▷⟩* ϕ)
+
+_⟨▷*_ : ∀ {p₁ p₂} → p₁ ⟶* p₂ → ∀ q → (p₁ ▷ q) ⟶* (p₂ ▷ q)
+ε ⟨▷* q = ε
+(x ∷ ϕ) ⟨▷* q = (x ⟨▷ q) ∷ (ϕ ⟨▷* q)
+
+▷-mono : ∀ {p₁ q₁ p₂ q₂} → (p₁ ⟶* p₂) → (q₁ ⟶* q₂) → (p₁ ▷ q₁) ⟶* (p₂ ▷ q₂)
+▷-mono {p₁}{q₁}{p₂}{q₂} f g = ⟶*-trans (p₁ ▷⟩* g) (f ⟨▷* q₂)
+
+▷-isMonoid : IsMonoid ⟶*-isPreorder _▷_ I
+▷-isMonoid .IsMonoid.mono = ▷-mono
+▷-isMonoid .IsMonoid.assoc = ▷-assoc⁻¹ ∷ ε , ▷-assoc ∷ ε
+▷-isMonoid .IsMonoid.lunit = ▷-lunit ∷ ε , ▷-lunit⁻¹ ∷ ε
+▷-isMonoid .IsMonoid.runit = ▷-runit ∷ ε , ▷-runit⁻¹ ∷ ε
+
+⅋-▷-isDuoidal : IsDuoidal ⟶*-isPreorder ⅋-isMonoid ▷-isMonoid
+⅋-▷-isDuoidal .IsDuoidal.sequence = sequence ∷ ε
+⅋-▷-isDuoidal .IsDuoidal.mu = ⅋-unit ∷ ε
+
+-- & is a monotone operator
+_&⟩*_ : ∀ p {q₁ q₂} → q₁ ⟶* q₂ → (p & q₁) ⟶* (p & q₂)
+p &⟩* ε = ε
+p &⟩* (x ∷ ϕ) = (p &⟩ x) ∷ (p &⟩* ϕ)
+
 _⟨&*_ : ∀ {p₁ p₂} → p₁ ⟶* p₂ → ∀ q → (p₁ & q) ⟶* (p₂ & q)
 ε ⟨&* q = ε
 (x ∷ ϕ) ⟨&* q = (x ⟨& q) ∷ (ϕ ⟨&* q)
 
-_⟨⊗*_ : ∀ {p₁ p₂} → p₁ ⟶* p₂ → ∀ q → (p₁ ⊗ q) ⟶* (p₂ ⊗ q)
-ε ⟨⊗* q = ε
-(x ∷ ϕ) ⟨⊗* q = (x ⟨⊗ q) ∷ (ϕ ⟨⊗* q)
-
-⅋-mono : ∀ {p₁ q₁ p₂ q₂} → (p₁ ⟶* p₂) → (q₁ ⟶* q₂) → (p₁ ⅋ q₁) ⟶* (p₂ ⅋ q₂)
-⅋-mono {p₁}{q₁}{p₂}{q₂} f g = ⟶*-trans (p₁ ⅋⟩* g) (f ⟨⅋* q₂)
-
 &-mono : ∀ {p₁ q₁ p₂ q₂} → (p₁ ⟶* p₂) → (q₁ ⟶* q₂) → (p₁ & q₁) ⟶* (p₂ & q₂)
 &-mono {p₁}{q₁}{p₂}{q₂} f g = ⟶*-trans (p₁ &⟩* g) (f ⟨&* q₂)
 
-⅋-isMonoid : IsMonoid ⟶*-isPreorder _⅋_ I
-⅋-isMonoid .IsMonoid.mono = ⅋-mono
-⅋-isMonoid .IsMonoid.assoc = (⅋-assoc⁻¹ ∷ ε) , (⅋-assoc ∷ ε)
-⅋-isMonoid .IsMonoid.lunit = (⅋-comm ∷ ⅋-unit ∷ ε) , ⅋-unit⁻¹ ∷ ⅋-comm ∷ ε
-⅋-isMonoid .IsMonoid.runit = (⅋-unit ∷ ε) , (⅋-unit⁻¹ ∷ ε)
+-- _⊗_ is a monotone operator
+_⊗⟩*_ : ∀ p {q₁ q₂} → q₁ ⟶* q₂ → (p ⊗ q₁) ⟶* (p ⊗ q₂)
+p ⊗⟩* ε = ε
+p ⊗⟩* (x ∷ ϕ) = (p ⊗⟩ x) ∷ (p ⊗⟩* ϕ)
 
-⅋-sym : ∀ {p q} → (p ⅋ q) ⟶* (q ⅋ p)
-⅋-sym = ⅋-comm ∷ ε
+-- _⟨⊗*_ : ∀ {p₁ p₂} → p₁ ⟶* p₂ → ∀ q → (p₁ ⊗ q) ⟶* (p₂ ⊗ q)
+-- ε ⟨⊗* q = ε
+-- (x ∷ ϕ) ⟨⊗* q = (x ⟨⊗ q) ∷ (ϕ ⟨⊗* q)
+
+
+
+
+
 
 ------------------------------------------------------------------------------
 -- Construct the syntactic model from presheaves and chu. We can turn
@@ -134,8 +175,19 @@ module P = presheaf ⟶*-isPreorder
 module M = P.Monoid ⅋-isMonoid
 module S = P.sheaf _&_ &-mono
 module MS = S.SMonoid2 ⅋-isMonoid ⅋-sym (external ∷ ε)
+module M▷ = S.SMonoid1 ▷-isMonoid (medial ∷ ε) (tidy ∷ ε)
+module D = S.SDuoidal ⅋-isMonoid ⅋-sym (external ∷ ε) ▷-isMonoid (medial ∷ ε) (tidy ∷ ε) ⅋-▷-isDuoidal
 
-open chu.Construction S.≤S-isPreorder
+open S._≤S_
+open S.Sheaf
+
+-- The units of the two monoids are equal (thanks to the tidy rule)
+units-iso : MS.I S.≃S M▷.I
+units-iso .proj₁ .*≤S* x (t , x≤t) = M▷.I .S≤-closed x≤t (M▷.I .Sclosed t)
+units-iso .proj₂ .*≤S* x x≤I = S.lf (x , x≤I) , ε
+
+open chu.Construction
+    S.≤S-isPreorder
     MS.⊗-isMonoid MS.⊗-sym MS.⊸-isClosure
     S.∧S-isMeet S.∨S-isJoin
     MS.I
@@ -146,9 +198,12 @@ open chu.Construction S.≤S-isPreorder
               I to ⟦I⟧;
               ¬ to ⟦¬⟧) hiding (⅋-mono; ⅋-sym)
 
+open SelfDual M▷.▷-isMonoid
+        (S.≤S-trans (M▷.▷-mono (D.units-iso .proj₁) S.≤S-refl) (M▷.▷-lunit .proj₁))
+        (D.units-iso .proj₂)
+        D.⊗-▷-isDuoidal
+
 open Chu
-open S.Sheaf
-open S._≤S_
 open P._≤P_
 
 _>>>_ = ⟶*-trans
@@ -172,6 +227,7 @@ atom a .int = S.≤S-trans (MS.α-monoidal .proj₁) (S.α-mono (atom-int a))
 ⟦ p ⊗ q ⟧ = ⟦ p ⟧ ⟦⊗⟧ ⟦ q ⟧
 ⟦ p & q ⟧ = ⟦ p ⟧ ⟦&⟧ ⟦ q ⟧
 ⟦ p ⊕ q ⟧ = ⟦ p ⟧ ⟦⊕⟧ ⟦ q ⟧
+⟦ p ▷ q ⟧ = ⟦ p ⟧ ⍮ ⟦ q ⟧
 
 open _==>_
 
@@ -186,7 +242,7 @@ tidyup (t , p⟶*t) = p⟶*t >>> tidyup-lem t
 
 mutual
   okada : ∀ p → ⟦ p ⟧ .neg .SCarrier p
-  okada I = (S.lf (I , lift ε)) , ε
+  okada I = S.lf (I , lift ε) , ε
   okada (+at a) = S.lf (+at a , lift ε) , ε
   okada (-at a) = S.lf (-at a , lift ε) , ε
   okada (p ⅋ q) = S.lf (p ⅋ q , p , q , ε , okada p , okada q) , ε
@@ -203,6 +259,8 @@ mutual
   okada (p ⊕ q) =
     ⟦ p ⟧ .neg .S≤-closed (left ∷ ε) (okada p) ,
     ⟦ q ⟧ .neg .S≤-closed (right ∷ ε) (okada q)
+  okada (p ▷ q) =
+    p , q , ε , okada p , okada q
 
   okada2 : ∀ p r → ⟦ p ⟧ .pos .SCarrier r → (r ⅋ p) ⟶* I
   okada2 p r ϕ =

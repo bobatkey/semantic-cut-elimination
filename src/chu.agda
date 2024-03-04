@@ -4,15 +4,8 @@ module chu where
 
 -- If we have a preordered closed symmetric monoid with finite meets
 -- and chosen element K, then the Chu construction is a *-autonomous
--- category. Moreover, if the preorder is duoidal, and K is a monoid,
--- then Chu(A,K) is duoidal.
-
--- X+ ⊗ X- ==> ⊥ is satisfied by X- = (X+ ⊸ ⊥)
-
--- if we require X+ ⊗ X- ≅ ⊥, then X+ ≅ X- ⊸ ⊥?
-
--- The profunctor version is more general, because we don't
--- necessarily get a duality?
+-- preorder. Moreover, if the preorder is duoidal, and K is a
+-- ▷-monoid, then Chu(A,K) is duoidal.
 
 open import Level
 open import Data.Product
@@ -199,27 +192,30 @@ module Construction {a b} {A : Set a}
   module SelfDual {_▷_ : A → A → A} {ι : A}
                   (▷-isMonoid : IsMonoid ≤-isPreorder _▷_ ι)
                   (K-m : (K ▷ K) ≤ K) (K-u : ι ≤ K) -- K is a ▷-monoid
-                  (▷-exchange : ∀ {w x y z} → ((w ▷ x) • (y ▷ z)) ≤ ((w • y) ▷ (x • z)))
-                  -- (co)monoid structures on the units
-                  (μ : (ι • ι) ≤ ι)
-                  -- (Δ : ε ≤ (ε ▷ ε)) -- what is this needed for?
-                  -- (u : ε ≤ ι) -- what is this needed for?
-                  where
+                  (•-▷-isDuoidal : IsDuoidal ≤-isPreorder •-isMonoid ▷-isMonoid)
+                where
 
     open IsMonoid ▷-isMonoid renaming (mono  to ▷-mono;
                                        assoc to ▷-assoc;
                                        lunit to ▷-lunit;
                                        runit to ▷-runit)
+    open IsDuoidal •-▷-isDuoidal
 
     _⍮_ : Chu → Chu → Chu
     (X ⍮ Y) .pos = X .pos ▷ Y .pos
     (X ⍮ Y) .neg = X .neg ▷ Y .neg
-    (X ⍮ Y) .int = ▷-exchange >> (▷-mono (X .int) (Y .int) >> K-m)
+    (X ⍮ Y) .int = sequence >> (▷-mono (X .int) (Y .int) >> K-m)
+
+    self-dual : ∀ {X Y} → ¬ (X ⍮ Y) ≅ (¬ X ⍮ ¬ Y)
+    self-dual .proj₁ .fpos = refl
+    self-dual .proj₁ .fneg = refl
+    self-dual .proj₂ .fpos = refl
+    self-dual .proj₂ .fneg = refl
 
     J : Chu
     J .pos = ι
     J .neg = ι
-    J .int = μ >> K-u
+    J .int = mu >> K-u
 
     -- ⍮ is self-dual, so the structure is quite repetitive...
     ⍮-mono : ∀ {X₁ Y₁ X₂ Y₂} → X₁ ==> X₂ → Y₁ ==> Y₂ → (X₁ ⍮ Y₁) ==> (X₂ ⍮ Y₂)
@@ -245,18 +241,18 @@ module Construction {a b} {A : Set a}
     ⍮-assoc .proj₂ .fneg = ▷-assoc .proj₁
 
     -- transpose for any closed duoidal category
-    ▷-exchange' : ∀ {w x y z} → ((w -• x) ▷ (y -• z)) ≤ ((w ▷ y) -• (x ▷ z))
-    ▷-exchange' = lambda (▷-exchange >> ▷-mono eval eval)
+    sequence' : ∀ {w x y z} → ((w -• x) ▷ (y -• z)) ≤ ((w ▷ y) -• (x ▷ z))
+    sequence' = lambda (sequence >> ▷-mono eval eval)
 
     ▷-medial : ∀ {A B C D} → ((A ∧ B) ▷ (C ∧ D)) ≤ ((A ▷ C) ∧ (B ▷ D))
     ▷-medial = ⟨ ▷-mono π₁ π₁ , ▷-mono π₂ π₂ ⟩
 
-    exchange : ∀ {W X Y Z} → ((W ⍮ X) ⊗ (Y ⍮ Z)) ==> ((W ⊗ Y) ⍮ (X ⊗ Z))
-    exchange .fpos = ▷-exchange
-    exchange .fneg = ▷-medial >> ∧-mono ▷-exchange' ▷-exchange'
+    ⍮-sequence : ∀ {W X Y Z} → ((W ⍮ X) ⊗ (Y ⍮ Z)) ==> ((W ⊗ Y) ⍮ (X ⊗ Z))
+    ⍮-sequence .fpos = sequence
+    ⍮-sequence .fneg = ▷-medial >> ∧-mono sequence' sequence'
 
-    mu : (J ⊗ J) ==> J
-    mu .fpos = μ
-    mu .fneg = ⟨ lambda μ , lambda μ ⟩
+    ⍮-mu : (J ⊗ J) ==> J
+    ⍮-mu .fpos = mu
+    ⍮-mu .fneg = ⟨ lambda mu , lambda mu ⟩
 
-    -- presuambly Δ and eps are derivable too if we assume them
+    -- presumably Δ and eps are derivable too if we assume them

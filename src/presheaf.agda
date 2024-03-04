@@ -97,20 +97,20 @@ module Monoid {_∙_ : A → A → A} {ε : A} (∙-isMonoid : IsMonoid ≤-isPr
   (F • G) .≤-closed x≤x' (y , z , x'≤yz , ϕ₁ , ϕ₂) =
     y , z , trans x≤x' x'≤yz , ϕ₁ , ϕ₂
 
-  J : PreSheaf
-  J = η ε
+  I : PreSheaf
+  I = η ε
 
   •-mono : ∀ {F₁ G₁ F₂ G₂} → F₁ ≤P F₂ → G₁ ≤P G₂ → (F₁ • G₁) ≤P (F₂ • G₂)
   •-mono F₁≤F₂ G₁≤G₂ .*≤P* x (y , z , x≤yz , F₁y , G₁z) =
     y , z , x≤yz , F₁≤F₂ .*≤P* y F₁y , G₁≤G₂ .*≤P* z G₁z
 
-  •-lunit : ∀ {F} → J • F ≃P F
+  •-lunit : ∀ {F} → I • F ≃P F
   •-lunit {F} .proj₁ .*≤P* x (y , z , x≤yz , lift y≤ε , Fz) =
     F .≤-closed (trans x≤yz (trans (mono y≤ε refl) (lunit .proj₁))) Fz
   •-lunit {F} .proj₂ .*≤P* x Fx =
     ε , x , lunit .proj₂ , lift refl , Fx
 
-  •-runit : ∀ {F} → F • J ≃P F
+  •-runit : ∀ {F} → F • I ≃P F
   •-runit {F} .proj₁ .*≤P* x (y , z , x≤yz , Fy , lift z≤ε) =
     F .≤-closed (trans x≤yz (trans (mono refl z≤ε) (runit .proj₁))) Fy
   •-runit {F} .proj₂ .*≤P* x Fx =
@@ -126,11 +126,11 @@ module Monoid {_∙_ : A → A → A} {ε : A} (∙-isMonoid : IsMonoid ≤-isPr
     (y , u , refl , Fy , Gu) ,
     Hv
 
-  •-isMonoid : IsMonoid ≤P-isPreorder _•_ J
-  •-isMonoid .IsMonoid.mono {F₁}{G₁}{F₂}{G₂} = •-mono {F₁}{G₁}{F₂}{G₂}
-  •-isMonoid .IsMonoid.assoc {F}{G}{H} = •-assoc {F}{G}{H}
-  •-isMonoid .IsMonoid.lunit {F} = •-lunit {F}
-  •-isMonoid .IsMonoid.runit {F} = •-runit {F}
+  •-isMonoid : IsMonoid ≤P-isPreorder _•_ I
+  •-isMonoid .IsMonoid.mono = •-mono
+  •-isMonoid .IsMonoid.assoc = •-assoc
+  •-isMonoid .IsMonoid.lunit = •-lunit
+  •-isMonoid .IsMonoid.runit = •-runit
 
   •-sym : (∀ {x y} → (x ∙ y) ≤ (y ∙ x)) → ∀ {F G} → F • G ≤P G • F
   •-sym ∙-sym .*≤P* x (y , z , x≤yz , Fy , Gz) = z , y , trans x≤yz ∙-sym , Gz , Fy
@@ -158,6 +158,8 @@ module Monoid {_∙_ : A → A → A} {ε : A} (∙-isMonoid : IsMonoid ≤-isPr
 -- FIXME: If we have two monoids in a duoidal relationship, then they
 -- have this relationship on the presheaf preorder. Let's do the
 -- simple case where they share a unit first.
+--
+-- FIXME: use basics.IsDuoidal
 module Duoidal {_∙_ : A → A → A} {_▷_ : A → A → A} {ι : A}
                (∙-isMonoid : IsMonoid ≤-isPreorder _∙_ ι)
                (▷-isMonoid : IsMonoid ≤-isPreorder _▷_ ι)
@@ -178,13 +180,11 @@ module Duoidal {_∙_ : A → A → A} {_▷_ : A → A → A} {ι : A}
       (y₂ , z₂ , refl , Xy₂ , Zz₂)
 
 
--- A particular kind of Grothendieck preorder sheaf
---
 -- FIXME: not sheaves! we do not necessarily know that α : PreSheaf →
 -- Sheaf defined below preserves finite limits. This is an extra
--- property that would turn it into a Grothendieck topos. I guess that
--- this would need _&_ to distribute over meets in A (if we assume
--- that A has meets)?
+-- property that would turn it into a preorder Grothendieck topos. I
+-- guess that this would need _&_ to distribute over meets in A (if we
+-- assume that A has meets)?
 --
 -- Alternatively, the closure of the closure operation
 --     C X x = Σ[ t ∈ tree (Σ[ x ∈ A ] X .Carrier x) ] x ≤ join t
@@ -239,11 +239,14 @@ module sheaf (_&_ : A → A → A)
       *≤S* : ∀ x → F .SCarrier x → G .SCarrier x
   open _≤S_
 
+  ≤S-refl : ∀ {F} → F ≤S F
+  ≤S-refl .*≤S* x Fx = Fx
+
   ≤S-trans : ∀ {F G H} → F ≤S G → G ≤S H → F ≤S H
   ≤S-trans F≤G G≤H .*≤S* = λ x z → G≤H .*≤S* x (F≤G .*≤S* x z)
 
   ≤S-isPreorder : IsPreorder _≤S_
-  ≤S-isPreorder .IsPreorder.refl .*≤S* x ϕ = ϕ
+  ≤S-isPreorder .IsPreorder.refl = ≤S-refl
   ≤S-isPreorder .IsPreorder.trans = ≤S-trans
 
   _≃S_ = SymmetricClosure _≤S_
@@ -259,7 +262,7 @@ module sheaf (_&_ : A → A → A)
   α-mono F≤G .*≤S* x (t , ψ) = map-tree (F≤G .*≤P*) t , trans ψ (map-join _ t)
 
   α-cong : ∀ {F G} → F ≃P G → α F ≃S α G
-  α-cong (ϕ , ψ) = (α-mono ϕ) , (α-mono ψ)
+  α-cong (ϕ , ψ) = α-mono ϕ , α-mono ψ
 
   U : Sheaf → PreSheaf
   U F .Carrier  = F .SCarrier
@@ -390,7 +393,12 @@ module sheaf (_&_ : A → A → A)
 
     -- Associativity etc. are now the same as before, because the
     -- carrier is the same
-    open Monoid ∙-isMonoid
+    open Monoid ∙-isMonoid renaming (I to J)
+
+    ▷-mono : ∀ {F₁ G₁ F₂ G₂} → F₁ ≤S F₂ → G₁ ≤S G₂ → (F₁ ▷ G₁) ≤S (F₂ ▷ G₂)
+    ▷-mono {F₁}{G₁}{F₂}{G₂} m₁ m₂ .*≤S* =
+      •-mono {U F₁}{U G₁}{U F₂}{U G₂}
+        (record { *≤P* = m₁ .*≤S* }) (record { *≤P* = m₂ .*≤S* }) .*≤P*
 
     ▷-assoc : ∀ {F G H} → ((F ▷ G) ▷ H) ≃S (F ▷ (G ▷ H))
     ▷-assoc {F}{G}{H} .proj₁ .*≤S* = •-assoc {U F}{U G}{U H} .proj₁ .*≤P*
@@ -410,6 +418,9 @@ module sheaf (_&_ : A → A → A)
     ▷-isMonoid .IsMonoid.lunit = ▷-lunit
     ▷-isMonoid .IsMonoid.runit = ▷-runit
 
+    U-monoidal : ∀ {F G} → U (F ▷ G) ≃P (U F • U G)
+    U-monoidal .proj₁ .*≤P* x ϕ = ϕ
+    U-monoidal .proj₂ .*≤P* x ϕ = ϕ
 
   -- A commutative monoid that distributes over the 'join' also
   -- gives a monoid on sheaves.
@@ -420,13 +431,13 @@ module sheaf (_&_ : A → A → A)
                  where
 
     open IsMonoid ∙-isMonoid
-    open Monoid ∙-isMonoid
+    open Monoid ∙-isMonoid renaming (I to J)
 
     _⊗_ : Sheaf → Sheaf → Sheaf
     F ⊗ G = α (U F • U G)
 
     I : Sheaf
-    I = α (η ε)
+    I = α J
 
     -- α is strong monoidal from PreSheaf to Sheaf
     module _ {F G : PreSheaf} where
@@ -469,6 +480,9 @@ module sheaf (_&_ : A → A → A)
     module _ where
       open IsMonoid •-isMonoid renaming (cong to •-cong)
       open Setoid (setoidOf ≤P-isPreorder) renaming (refl to P-refl)
+
+      ⊗-mono : ∀ {F₁ G₁ F₂ G₂} → F₁ ≤S F₂ → G₁ ≤S G₂ → (F₁ ⊗ G₁) ≤S (F₂ ⊗ G₂)
+      ⊗-mono m₁ m₂ = α-mono (•-mono (U-mono m₁) (U-mono m₂))
 
       ⊗-assoc : ∀ {F G H} → ((F ⊗ G) ⊗ H) ≃S (F ⊗ (G ⊗ H))
       ⊗-assoc {F}{G}{H} = begin
@@ -521,7 +535,7 @@ module sheaf (_&_ : A → A → A)
           where open import Relation.Binary.Reasoning.Setoid (setoidOf ≤S-isPreorder)
 
     ⊗-isMonoid : IsMonoid ≤S-isPreorder _⊗_ I
-    ⊗-isMonoid .IsMonoid.mono m₁ m₂ = α-mono (•-mono (U-mono m₁) (U-mono m₂))
+    ⊗-isMonoid .IsMonoid.mono = ⊗-mono
     ⊗-isMonoid .IsMonoid.assoc = ⊗-assoc
     ⊗-isMonoid .IsMonoid.lunit = ⊗-lunit
     ⊗-isMonoid .IsMonoid.runit = ⊗-runit
@@ -529,9 +543,8 @@ module sheaf (_&_ : A → A → A)
     ⊗-sym : ∀ {F G} → (F ⊗ G) ≤S (G ⊗ F)
     ⊗-sym {F}{G} = α-mono (•-sym ∙-sym {U F} {U G})
 
-    -- Residuals are automatically closed, relying on
-    -- distributivity. Is this deducible from strong monoidality of
-    -- α?
+    -- Residuals are automatically closed, relying on distributivity.
+    -- Is this deducible from strong monoidality of α?
     ⊸-lemma : ∀ F G →
               (t : tree (Σ[ x ∈ A ] (∀ y → F .SCarrier y → G .SCarrier (x ∙ y)))) →
               (y : A) → F .SCarrier y →
@@ -560,8 +573,41 @@ module sheaf (_&_ : A → A → A)
        ≤S-trans (α-mono (•-mono U⊸ (≤P-isPreorder .IsPreorder.refl)))
        (≤S-trans (α-mono (-•-isClosure .IsClosure.eval)) counit)
 
--- FIXME: now prove that if we have two duoidal monoids on A, with
--- the appropriate interactions with _&_, then we get a pair of
--- duoidal monoids on sheaves.
+  module SDuoidal {_∙_ : A → A → A} {_⍮_ : A → A → A} {ε : A}
+                  (∙-isMonoid : IsMonoid ≤-isPreorder _∙_ ε)
+                  (∙-sym : ∀ {x y} → (x ∙ y) ≤ (y ∙ x))
+                  (∙-&-distrib : ∀ {x y z} → ((x & y) ∙ z) ≤ ((x ∙ z) & (y ∙ z)))
+                  (⍮-isMonoid : IsMonoid ≤-isPreorder _⍮_ ε)
+                  (medial : ∀ {w x y z} → ((w ⍮ x) & (y ⍮ z)) ≤ ((w & y) ⍮ (x & z)))
+                  (tidy   : (ε & ε) ≤ ε)
+                  (∙-⍮-isDuoidal : IsDuoidal ≤-isPreorder ∙-isMonoid ⍮-isMonoid)
+              where
 
--- α (U (A ▷ B) • U (C ▷ D)) ≅ α ((U A ▷ U B) • (U C ▷ U D)) ≤ α ((U A • U C) ▷ (U B • U D)) ≤ α (U ((A • C) ▷ (B • D)))
+    open Monoid ∙-isMonoid renaming (_•_ to _⊛_; •-mono to ⊛-mono)
+    open Monoid ⍮-isMonoid renaming (_•_ to _,-_; •-mono to ,--mono)
+    open SMonoid1 ⍮-isMonoid medial tidy renaming (I to J)
+    open SMonoid2 ∙-isMonoid ∙-sym ∙-&-distrib renaming (I to I⊗)
+
+    open Duoidal ∙-isMonoid ⍮-isMonoid (∙-⍮-isDuoidal .IsDuoidal.sequence)
+
+    units-iso : I⊗ ≃S J
+    units-iso .proj₁ .*≤S* x (t , x≤t) = J .S≤-closed x≤t (J .Sclosed t)
+    units-iso .proj₂ .*≤S* x x≤I = lf (x , x≤I) , refl
+
+    _>>_ = ≤S-trans
+
+    ⊗-▷-isDuoidal : IsDuoidal ≤S-isPreorder ⊗-isMonoid ▷-isMonoid
+    ⊗-▷-isDuoidal .IsDuoidal.sequence =
+      α-mono (⊛-mono (U-monoidal .proj₁) (U-monoidal .proj₁)) >>
+      (α-mono •-⍮-exchange >>
+      (α-mono (,--mono (unit _) (unit _)) >>
+      (α-mono (U-monoidal .proj₂)
+      >> counit)))
+      --   (w ▷ x) ⊗ (y ▷ z)
+      -- ≡ α (U (w ▷ x) • U(y ▷ z))
+      -- ≃ α ((U w ⍮ U x) • (U y ⍮ U z))
+      -- ≤ α ((U w • U y) ⍮ (U x • U z))
+      -- ≤ α (U (α (U w • U y)) ⍮ U (α (U x • U z)))
+      -- ≃ α (U ((w ⊗ y) ▷ (x ⊗ z))
+      -- ≡ (w ⊗ y) ▷ (x ⊗ z)
+    ⊗-▷-isDuoidal .IsDuoidal.mu = ⊗-mono (units-iso .proj₂) ≤S-refl >> ⊗-lunit .proj₁
