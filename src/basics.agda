@@ -75,6 +75,9 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ∧ y₁) ≤ (x₂ ∧ y₂)
     mono x₁≤x₂ y₁≤y₂ = ⟨ trans π₁ x₁≤x₂ , trans π₂ y₁≤y₂ ⟩
 
+    cong : ∀ {x₁ y₁ x₂ y₂} → x₁ ≃ x₂ → y₁ ≃ y₂ → (x₁ ∧ y₁) ≃ (x₂ ∧ y₂)
+    cong m₁ m₂ = mono (m₁ .proj₁) (m₂ . proj₁) , mono (m₁ .proj₂) (m₂ . proj₂)
+
     assoc : ∀ {x y z} → (x ∧ y) ∧ z ≃ x ∧ (y ∧ z)
     assoc .proj₁ = ⟨ trans π₁ π₁ , ⟨ trans π₁ π₂ , π₂ ⟩ ⟩
     assoc .proj₂ = ⟨ ⟨ π₁ , trans π₂ π₁ ⟩ , trans π₂ π₂ ⟩
@@ -111,6 +114,9 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ∨ y₁) ≤ (x₂ ∨ y₂)
     mono x₁≤x₂ y₁≤y₂ = [ trans x₁≤x₂ inl , trans y₁≤y₂ inr ]
 
+    cong : ∀ {x₁ y₁ x₂ y₂} → x₁ ≃ x₂ → y₁ ≃ y₂ → (x₁ ∨ y₁) ≃ (x₂ ∨ y₂)
+    cong m₁ m₂ = mono (m₁ .proj₁) (m₂ . proj₁) , mono (m₁ .proj₂) (m₂ . proj₂)
+
     assoc : ∀ {x y z} → (x ∨ y) ∨ z ≃ x ∨ (y ∨ z)
     assoc .proj₁ = [ [ inl , trans inl inr ] , trans inr inr ]
     assoc .proj₂ = [ trans inl inl , [ trans inr inl , inr ] ]
@@ -131,7 +137,6 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
            (isClosure : IsClosure isMonoid _-∙_)
            (isJoin : IsJoin _∨_) where
     open IsPreorder ≤-isPreorder
-    open IsMonoid isMonoid
     open IsClosure isClosure
     open IsJoin isJoin
 
@@ -165,14 +170,11 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     _⅋_ : A → A → A
     x ⅋ y = ¬ (¬ x ⊗ ¬ y)
 
-    ⅋-mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ⅋ y₁) ≤ (x₂ ⅋ y₂)
-    ⅋-mono m₁ m₂ = ¬-mono (mono (¬-mono m₁) (¬-mono m₂))
-
     ⅋-sym : ∀ {x y} → (x ⅋ y) ≤ (y ⅋ x)
     ⅋-sym = ¬-mono ⊗-sym
 
     ⅋-isMonoid : IsMonoid _⅋_ ⊥
-    ⅋-isMonoid .IsMonoid.mono = ⅋-mono
+    ⅋-isMonoid .IsMonoid.mono m₁ m₂ = ¬-mono (mono (¬-mono m₁) (¬-mono m₂))
     ⅋-isMonoid .IsMonoid.assoc {x}{y}{z} =
       begin
         (x ⅋ y) ⅋ z            ≡⟨⟩
@@ -199,6 +201,11 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
         x                  ∎
       where open import Relation.Binary.Reasoning.Setoid setoidOf
 
+    open IsMonoid ⅋-isMonoid renaming (mono to ⅋-mono; cong to ⅋-cong; assoc to ⅋-assoc; lunit to ⅋-lunit; runit to ⅋-runit) public
+
+    ev : ∀ {x} → (x ⊗ ¬ x) ≤ ⊥
+    ev = *-aut⁻¹ (trans (involution .proj₁) (¬-mono (runit .proj₁)))
+
     _⊸_ : A → A → A
     x ⊸ y = ¬ x ⅋ y
 
@@ -207,6 +214,9 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
       *-aut (trans (mono refl (involution .proj₂)) (trans m (involution .proj₁)))
     ⊸-isClosure .IsClosure.eval =
       trans (*-aut⁻¹ (¬-mono (mono (involution .proj₁) refl))) (involution .proj₂)
+
+    coev : ∀ {x} → ε ≤ (x ⅋ ¬ x)
+    coev = trans (⊸-isClosure .IsClosure.lambda (lunit .proj₁)) ⅋-sym
 
     linear-distrib : ∀ {x y z} → (x ⊗ (y ⅋ z)) ≤ ((x ⊗ y) ⅋ z)
     linear-distrib =

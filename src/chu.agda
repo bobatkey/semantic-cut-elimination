@@ -240,6 +240,12 @@ module Construction {a b} {A : Set a}
     ⍮-assoc .proj₂ .fpos = ▷-assoc .proj₂
     ⍮-assoc .proj₂ .fneg = ▷-assoc .proj₁
 
+    ⍮-isMonoid : IsMonoid ==>-isPreorder _⍮_ J
+    ⍮-isMonoid .IsMonoid.mono = ⍮-mono
+    ⍮-isMonoid .IsMonoid.assoc = ⍮-assoc
+    ⍮-isMonoid .IsMonoid.lunit = ⍮-lunit
+    ⍮-isMonoid .IsMonoid.runit = ⍮-runit
+
     -- transpose for any closed duoidal category
     exchange' : ∀ {w x y z} → ((w -• x) ▷ (y -• z)) ≤ ((w ▷ y) -• (x ▷ z))
     exchange' = lambda (exchange >> ▷-mono eval eval)
@@ -256,3 +262,6 @@ module Construction {a b} {A : Set a}
     ⍮-mu .fneg = ⟨ lambda mu , lambda mu ⟩
 
     -- presumably Δ and eps are derivable too if we assume them
+    ⊗-⍮-isDuoidal : IsDuoidal ==>-isPreorder ⊗-isMonoid ⍮-isMonoid
+    ⊗-⍮-isDuoidal .IsDuoidal.exchange = ⍮-exchange
+    ⊗-⍮-isDuoidal .IsDuoidal.mu = ⍮-mu
