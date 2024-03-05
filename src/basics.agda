@@ -18,8 +18,9 @@ module _ {a} {A : Set a} where
 
 module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreorder _≤_) where
 
-  _≃_ = SymmetricClosure _≤_
-  infix 4 _≃_
+  private
+    _≃_ = SymmetricClosure _≤_
+    infix 4 _≃_
 
   module _ where
     open IsPreorder ≤-isPreorder
@@ -215,13 +216,11 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
             ⅋-sym
 
   ------------------------------------------------------------------------------
-  -- FIXME: this is the special case where the two monoids share a
-  -- unit. Should do the general case.
   record IsDuoidal {_⊗_ : A → A → A} {ε : A} {_⍮_ : A → A → A} {ι : A}
                    (⊗-isMonoid : IsMonoid _⊗_ ε)
                    (⍮-isMonoid : IsMonoid _⍮_ ι) : Set (a ⊔ b) where
     field
-      sequence : ∀ {w x y z} → ((w ⍮ x) ⊗ (y ⍮ z)) ≤ ((w ⊗ y) ⍮ (x ⊗ z))
+      exchange : ∀ {w x y z} → ((w ⍮ x) ⊗ (y ⍮ z)) ≤ ((w ⊗ y) ⍮ (x ⊗ z))
       mu       : (ι ⊗ ι) ≤ ι
       -- (Δ : ε ≤ (ε ▷ ε)) -- what is this needed for?
       -- (u : ε ≤ ι) -- what is this needed for?

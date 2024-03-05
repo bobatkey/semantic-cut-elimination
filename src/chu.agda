@@ -8,7 +8,7 @@ module chu where
 -- ▷-monoid, then Chu(A,K) is duoidal.
 
 open import Level
-open import Data.Product
+open import Data.Product using (proj₁; proj₂)
 open import basics
 
 module Construction {a b} {A : Set a}
@@ -204,7 +204,7 @@ module Construction {a b} {A : Set a}
     _⍮_ : Chu → Chu → Chu
     (X ⍮ Y) .pos = X .pos ▷ Y .pos
     (X ⍮ Y) .neg = X .neg ▷ Y .neg
-    (X ⍮ Y) .int = sequence >> (▷-mono (X .int) (Y .int) >> K-m)
+    (X ⍮ Y) .int = exchange >> (▷-mono (X .int) (Y .int) >> K-m)
 
     self-dual : ∀ {X Y} → ¬ (X ⍮ Y) ≅ (¬ X ⍮ ¬ Y)
     self-dual .proj₁ .fpos = refl
@@ -241,15 +241,15 @@ module Construction {a b} {A : Set a}
     ⍮-assoc .proj₂ .fneg = ▷-assoc .proj₁
 
     -- transpose for any closed duoidal category
-    sequence' : ∀ {w x y z} → ((w -• x) ▷ (y -• z)) ≤ ((w ▷ y) -• (x ▷ z))
-    sequence' = lambda (sequence >> ▷-mono eval eval)
+    exchange' : ∀ {w x y z} → ((w -• x) ▷ (y -• z)) ≤ ((w ▷ y) -• (x ▷ z))
+    exchange' = lambda (exchange >> ▷-mono eval eval)
 
     ▷-medial : ∀ {A B C D} → ((A ∧ B) ▷ (C ∧ D)) ≤ ((A ▷ C) ∧ (B ▷ D))
     ▷-medial = ⟨ ▷-mono π₁ π₁ , ▷-mono π₂ π₂ ⟩
 
-    ⍮-sequence : ∀ {W X Y Z} → ((W ⍮ X) ⊗ (Y ⍮ Z)) ==> ((W ⊗ Y) ⍮ (X ⊗ Z))
-    ⍮-sequence .fpos = sequence
-    ⍮-sequence .fneg = ▷-medial >> ∧-mono sequence' sequence'
+    ⍮-exchange : ∀ {W X Y Z} → ((W ⍮ X) ⊗ (Y ⍮ Z)) ==> ((W ⊗ Y) ⍮ (X ⊗ Z))
+    ⍮-exchange .fpos = exchange
+    ⍮-exchange .fneg = ▷-medial >> ∧-mono exchange' exchange'
 
     ⍮-mu : (J ⊗ J) ==> J
     ⍮-mu .fpos = mu

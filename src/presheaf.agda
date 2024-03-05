@@ -588,7 +588,7 @@ module sheaf (_&_ : A → A → A)
     open SMonoid1 ⍮-isMonoid medial tidy renaming (I to J)
     open SMonoid2 ∙-isMonoid ∙-sym ∙-&-distrib renaming (I to I⊗)
 
-    open Duoidal ∙-isMonoid ⍮-isMonoid (∙-⍮-isDuoidal .IsDuoidal.sequence)
+    open Duoidal ∙-isMonoid ⍮-isMonoid (∙-⍮-isDuoidal .IsDuoidal.exchange)
 
     units-iso : I⊗ ≃S J
     units-iso .proj₁ .*≤S* x (t , x≤t) = J .S≤-closed x≤t (J .Sclosed t)
@@ -597,7 +597,7 @@ module sheaf (_&_ : A → A → A)
     _>>_ = ≤S-trans
 
     ⊗-▷-isDuoidal : IsDuoidal ≤S-isPreorder ⊗-isMonoid ▷-isMonoid
-    ⊗-▷-isDuoidal .IsDuoidal.sequence =
+    ⊗-▷-isDuoidal .IsDuoidal.exchange =
       α-mono (⊛-mono (U-monoidal .proj₁) (U-monoidal .proj₁)) >>
       (α-mono •-⍮-exchange >>
       (α-mono (,--mono (unit _) (unit _)) >>

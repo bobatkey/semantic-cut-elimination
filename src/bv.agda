@@ -134,7 +134,7 @@ _⟨▷*_ : ∀ {p₁ p₂} → p₁ ⟶* p₂ → ∀ q → (p₁ ▷ q) ⟶* (
 ▷-isMonoid .IsMonoid.runit = ▷-runit ∷ ε , ▷-runit⁻¹ ∷ ε
 
 ⅋-▷-isDuoidal : IsDuoidal ⟶*-isPreorder ⅋-isMonoid ▷-isMonoid
-⅋-▷-isDuoidal .IsDuoidal.sequence = sequence ∷ ε
+⅋-▷-isDuoidal .IsDuoidal.exchange = sequence ∷ ε
 ⅋-▷-isDuoidal .IsDuoidal.mu = ⅋-unit ∷ ε
 
 -- & is a monotone operator
@@ -229,9 +229,6 @@ atom a .int = S.≤S-trans (MS.α-monoidal .proj₁) (S.α-mono (atom-int a))
 ⟦ p ⊕ q ⟧ = ⟦ p ⟧ ⟦⊕⟧ ⟦ q ⟧
 ⟦ p ▷ q ⟧ = ⟦ p ⟧ ⍮ ⟦ q ⟧
 
-open _==>_
-
-
 tidyup-lem : (t : S.tree (Σ[ p ∈ fmla ] (Lift 0ℓ (p ⟶* I)))) →
              S.join t ⟶* I
 tidyup-lem (S.lf (p , lift p⟶*I)) = p⟶*I
@@ -268,4 +265,4 @@ mutual
 
 -- if 'p' is provable, then it has a cut-free proof
 cut-elim : ∀ p → ⟦I⟧ ==> ⟦ p ⟧ → p ⟶* I
-cut-elim p prf = tidyup (prf .fneg .*≤S* p (okada p))
+cut-elim p prf = tidyup (prf ._==>_.fneg .*≤S* p (okada p))
