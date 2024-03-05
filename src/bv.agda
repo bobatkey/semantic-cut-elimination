@@ -9,25 +9,7 @@ open import basics
 
 open import fmla At
 
--- data fmla : Set where
---   I : fmla
---   +at -at : At → fmla
---   _⅋_ _⊗_ _&_ _⊕_ _▷_ : fmla → fmla → fmla
-
--- ¬ : fmla → fmla
--- ¬ I = I
--- ¬ (+at a) = -at a
--- ¬ (-at a) = +at a
--- ¬ (p ⅋ q) = ¬ p ⊗ ¬ q
--- ¬ (p ⊗ q) = ¬ p ⅋ ¬ q
--- ¬ (p & q) = ¬ p ⊕ ¬ q
--- ¬ (p ⊕ q) = ¬ p & ¬ q
--- ¬ (p ▷ q) = ¬ p ▷ ¬ q
-
--- _⊸_ : fmla → fmla → fmla
--- p ⊸ q = ¬ p ⅋ q
-
--- One step of the proof system
+-- One step of the “analytic” proof system
 data _⟶_ : fmla → fmla → Set where
   `axiom    : ∀ {a} → (+at a `⅋ -at a) ⟶ `I
 
@@ -67,62 +49,14 @@ data _⟶_ : fmla → fmla → Set where
   _⟨`&_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p `& q) ⟶ (p' `& q)
   _`&⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p `& q) ⟶ (p `& q')
 
-  -- _⟨`⊕_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p `⊕ q) ⟶ (p' `⊕ q)
-  -- _`⊕⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p `⊕ q) ⟶ (p `⊕ q')
-
--- tidy     : (`I `& `I) ⟶ `I
-  -- switch   : ∀ {p q r} → ((p `⊗ q) `⅋ r) ⟶ (p `⊗ (q `⅋ r))
-  -- sequence : ∀ {p q r s} → ((p `▷ q) `⅋ (r `▷ s)) ⟶ ((p `⅋ r) `▷ (q `⅋ s))
-  -- left     : ∀ {p q} → (p `⊕ q) ⟶ p
-  -- right    : ∀ {p q} → (p `⊕ q) ⟶ q
-  -- external : ∀ {p q r} → ((p `& q) `⅋ r) ⟶ ((p ⅋ r) & (q ⅋ r))
-  -- medial   : ∀ {p q r s} → ((p ▷ q) & (r ▷ s)) ⟶ ((p & r) ▷ (q & s))
-
-  -- --  _⟨⊗_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p ⊗ q) ⟶ (p' ⊗ q)
-  -- _⊗⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p ⊗ q) ⟶ (p ⊗ q')
-  -- -- ⊗-assoc   : ∀ {p q r} → (p ⊗ (q ⊗ r)) ⟶ ((p ⊗ q) ⊗ r)
-  -- -- ⊗-assoc⁻¹ : ∀ {p q r} → ((p ⊗ q) ⊗ r) ⟶ (p ⊗ (q ⊗ r))
-  -- ⊗-comm    : ∀ {p q} → (p ⊗ q) ⟶ (q ⊗ p)    -- could replace this with "switch-right"
-  -- ⊗-unit    : ∀ {p}   → (p ⊗ I) ⟶ p
-  -- --  ⊗-unit⁻¹  : ∀ {p}   → p ⟶ (p ⊗ I)
-
-  -- _⟨⅋_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p ⅋ q) ⟶ (p' ⅋ q)
-  -- _⅋⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p ⅋ q) ⟶ (p ⅋ q')
-  -- ⅋-assoc   : ∀ {p q r} → (p ⅋ (q ⅋ r)) ⟶ ((p ⅋ q) ⅋ r)
-  -- ⅋-assoc⁻¹ : ∀ {p q r} → ((p ⅋ q) ⅋ r) ⟶ (p ⅋ (q ⅋ r))
-  -- ⅋-comm    : ∀ {p q} → (p ⅋ q) ⟶ (q ⅋ p)
-  -- ⅋-unit    : ∀ {p}   → (p ⅋ I) ⟶ p
-  -- ⅋-unit⁻¹  : ∀ {p}   → p ⟶ (p ⅋ I)
-
-  -- _⟨▷_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p ▷ q) ⟶ (p' ▷ q)
-  -- _▷⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p ▷ q) ⟶ (p ▷ q')
-  -- ▷-assoc   : ∀ {p q r} → (p ▷ (q ▷ r)) ⟶ ((p ▷ q) ▷ r)
-  -- ▷-assoc⁻¹ : ∀ {p q r} → ((p ▷ q) ▷ r) ⟶ (p ▷ (q ▷ r))
-  -- ▷-runit   : ∀ {p}   → (p ▷ I) ⟶ p
-  -- ▷-runit⁻¹ : ∀ {p}   → p ⟶ (p ▷ I)
-  -- ▷-lunit   : ∀ {p}   → (I ▷ p) ⟶ p
-  -- ▷-lunit⁻¹ : ∀ {p}   → p ⟶ (I ▷ p)
-
-  -- _⟨&_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p & q) ⟶ (p' & q)
-  -- _&⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p & q) ⟶ (p & q')
-
-  -- -- Not needed:
-  -- -- _⟨⊕_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p ⊕ q) ⟶ (p' ⊕ q)
-  -- -- _⊕⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p ⊕ q) ⟶ (p ⊕ q')
-
 
 data _⟶*_ : fmla → fmla → Set where
   ε : ∀ {p} → p ⟶* p
   _∷_ : ∀ {p q r} → p ⟶ q → q ⟶* r → p ⟶* r
 infixr 6 _∷_
 
--- test1 : ((`I `& `I) ⊸ I) ⟶* I
--- test1 = left ⟨⅋ I ∷ ⅋-unit ∷ ε
-
--- test2 : ((I ⊕ I) ⊸ I) ⟶* I
--- test2 = external ∷ (⅋-unit ⟨& (I ⅋ I)) ∷ I &⟩ ⅋-unit ∷ tidy ∷ ε
-
 ------------------------------------------------------------------------------
+-- Turning the proof system into a pre-order
 
 ⟶*-refl : ∀ {p} → p ⟶* p
 ⟶*-refl = ε
@@ -340,7 +274,6 @@ cut-elim p prf = sem-cut-elim p ⟦ prf ⟧steps
 -- An example:
 --
 --  Normalising a proof that (`I `⊕ `I) `▷ (`I `& `I) ⊸ (`I `⊕ `I) `▷ (`I `& `I):
---
 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
