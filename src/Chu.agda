@@ -10,6 +10,7 @@ module Chu where
 open import Level
 open import Data.Product using (proj₁; proj₂)
 open import Prelude
+open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 
 module Construction {a b} {A : Set a}
           {_≤_ : A → A → Set b}
@@ -42,7 +43,7 @@ module Construction {a b} {A : Set a}
   open _==>_
   infix 4 _==>_
 
-  _≅_ = SymmetricClosure _==>_
+  _≅_ = SymCore _==>_
 
   open IsPreorder ≤-isPreorder
   open IsMonoid •-isMonoid

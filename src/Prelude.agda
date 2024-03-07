@@ -5,6 +5,7 @@ module Prelude where
 open import Level using (_⊔_)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Relation.Binary using (Setoid; IsEquivalence)
+open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 
 module _
     {a}
@@ -16,9 +17,6 @@ module _
       refl  : ∀ {x} → x ≤ x
       trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
 
-  SymmetricClosure : ∀ {b} → (A → A → Set b) → (A → A → Set b)
-  SymmetricClosure R x y = R x y × R y x
-
 module _
     {a b}
     {A : Set a}
@@ -27,13 +25,13 @@ module _
   where
 
   private
-    _≃_ = SymmetricClosure _≤_
+    _≃_ = SymCore _≤_
     infix 4 _≃_
 
   module _ where
     open IsPreorder ≤-isPreorder
 
-    isEquivalenceOf : IsEquivalence (SymmetricClosure _≤_)
+    isEquivalenceOf : IsEquivalence (SymCore _≤_)
     isEquivalenceOf .IsEquivalence.refl = refl , refl
     isEquivalenceOf .IsEquivalence.sym (x≤y , y≤x) = y≤x , x≤y
     isEquivalenceOf .IsEquivalence.trans (x≤y , y≤x) (y≤z , z≤y) =
@@ -41,7 +39,7 @@ module _
 
     setoidOf : Setoid a b
     setoidOf .Setoid.Carrier = A
-    setoidOf .Setoid._≈_ = SymmetricClosure _≤_
+    setoidOf .Setoid._≈_ = SymCore _≤_
     setoidOf .Setoid.isEquivalence = isEquivalenceOf
 
   record IsMonoid (_∙_ : A → A → A) (ε : A) : Set (a ⊔ b) where

@@ -6,6 +6,7 @@ open import Data.Sum using (_⊎_; inj₁; inj₂) renaming ([_,_] to [_⊎_])
 open import Data.Unit using (⊤; tt)
 open import Relation.Binary using (Setoid)
 open import Prelude
+open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 
 module PreSheaf {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreorder _≤_) where
 
@@ -31,7 +32,7 @@ open _≤P_ public
 ≤P-trans = ≤P-isPreorder .IsPreorder.trans
 
 _≃P_ : PreSheaf → PreSheaf → Set (a ⊔ b)
-_≃P_ = SymmetricClosure _≤P_
+_≃P_ = SymCore _≤P_
 
 infix 4 _≤P_
 infix 4 _≃P_
@@ -247,7 +248,7 @@ module Sheaf (_&_ : A → A → A)
   ≤S-isPreorder .IsPreorder.refl = ≤S-refl
   ≤S-isPreorder .IsPreorder.trans = ≤S-trans
 
-  _≃S_ = SymmetricClosure _≤S_
+  _≃S_ = SymCore _≤S_
 
   ------------------------------------------------------------------------------
   -- Turn a presheaf into a sheaf by closing under imaginary joins
