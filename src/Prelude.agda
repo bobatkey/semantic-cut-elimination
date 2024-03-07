@@ -1,12 +1,15 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-module basics where
+module Prelude where
 
 open import Level using (_⊔_)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Relation.Binary using (Setoid; IsEquivalence)
 
-module _ {a} {A : Set a} where
+module _
+    {a}
+    {A : Set a}
+  where
 
   record IsPreorder {b} (_≤_ : A → A → Set b) : Set (a ⊔ b) where
     field
@@ -16,7 +19,12 @@ module _ {a} {A : Set a} where
   SymmetricClosure : ∀ {b} → (A → A → Set b) → (A → A → Set b)
   SymmetricClosure R x y = R x y × R y x
 
-module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreorder _≤_) where
+module _
+    {a b}
+    {A : Set a}
+    {_≤_ : A → A → Set b}
+    (≤-isPreorder : IsPreorder _≤_)
+  where
 
   private
     _≃_ = SymmetricClosure _≤_
@@ -48,9 +56,7 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
       mono (eq₁ .proj₁) (eq₂ .proj₁) ,
       mono (eq₁ .proj₂) (eq₂ .proj₂)
 
-  record IsClosure {_∙_ : A → A → A} {ε : A}
-                   (∙-isMonoid : IsMonoid _∙_ ε)
-                   (_-∙_ : A → A → A) : Set (a ⊔ b) where
+  record IsClosure {_∙_ : A → A → A} {ε : A} (∙-isMonoid : IsMonoid _∙_ ε) (_-∙_ : A → A → A) : Set (a ⊔ b) where
     field
       lambda : ∀ {x y z} → (x ∙ y) ≤ z → x ≤ (y -∙ z)
       eval   : ∀ {x y} → ((x -∙ y) ∙ x) ≤ y
@@ -90,7 +96,12 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     field
       ≤-top : ∀ {x} → x ≤ ⊤
 
-  module _ {_∧_ : A → A → A} {⊤ : A} (isMeet : IsMeet _∧_) (isTop : IsTop ⊤) where
+  module _
+      {_∧_ : A → A → A}
+      {⊤ : A}
+      (isMeet : IsMeet _∧_)
+      (isTop : IsTop ⊤)
+    where
     open IsPreorder ≤-isPreorder
     open IsMeet isMeet
     open IsTop isTop

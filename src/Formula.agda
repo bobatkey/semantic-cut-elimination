@@ -1,13 +1,13 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-module fmla (At : Set) where
+module Formula (At : Set) where
 
-data fmla : Set where
-  `I : fmla
-  +at -at : At → fmla
-  _`⅋_ _`⊗_ _`&_ _`⊕_ _`▷_ : fmla → fmla → fmla
+data Formula : Set where
+  `I : Formula
+  +at -at : At → Formula
+  _`⅋_ _`⊗_ _`&_ _`⊕_ _`▷_ : Formula → Formula → Formula
 
-`¬ : fmla → fmla
+`¬ : Formula → Formula
 `¬ `I = `I
 `¬ (+at a) = -at a
 `¬ (-at a) = +at a

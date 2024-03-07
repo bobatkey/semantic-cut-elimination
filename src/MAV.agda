@@ -1,15 +1,15 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-module smav (At : Set) where
+module MAV (At : Set) where
 
 open import Level
 open import Data.Product using (proj₁; proj₂)
 open import Relation.Binary using (IsEquivalence)
-open import basics
+open import Prelude
 
-open import fmla At
+open import Formula At
 
-data _⟶_ : fmla → fmla → Set where
+data _⟶_ : Formula → Formula → Set where
   `axiom    : ∀ p → (p `⅋ `¬ p) ⟶ `I
   `cut      : ∀ p → `I ⟶ (p `⊗ `¬ p)
 
@@ -21,24 +21,24 @@ data _⟶_ : fmla → fmla → Set where
   `external : ∀ {p q r} → ((p `& q) `⅋ r) ⟶ ((p `⅋ r) `& (q `⅋ r))
   `medial   : ∀ {p q r s} → ((p `▷ q) `& (r `▷ s)) ⟶ ((p `& r) `▷ (q `& s))
 
-  _⟨`⊗_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p `⊗ q) ⟶ (p' `⊗ q)
-  _`⊗⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p `⊗ q) ⟶ (p `⊗ q')
+  _⟨`⊗_      : ∀ {p p'} → p ⟶ p' → (q : Formula) → (p `⊗ q) ⟶ (p' `⊗ q)
+  _`⊗⟩_      : ∀ {q q'} → (p : Formula) → q ⟶ q' → (p `⊗ q) ⟶ (p `⊗ q')
   `⊗-assoc   : ∀ {p q r} → (p `⊗ (q `⊗ r)) ⟶ ((p `⊗ q) `⊗ r)
   `⊗-assoc⁻¹ : ∀ {p q r} → ((p `⊗ q) `⊗ r) ⟶ (p `⊗ (q `⊗ r))
   `⊗-comm    : ∀ {p q} → (p `⊗ q) ⟶ (q `⊗ p)
   `⊗-unit    : ∀ {p}   → (p `⊗ `I) ⟶ p
   `⊗-unit⁻¹  : ∀ {p}   → p ⟶ (p `⊗ `I)
 
-  _⟨`⅋_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p `⅋ q) ⟶ (p' `⅋ q)
-  _`⅋⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p `⅋ q) ⟶ (p `⅋ q')
+  _⟨`⅋_      : ∀ {p p'} → p ⟶ p' → (q : Formula) → (p `⅋ q) ⟶ (p' `⅋ q)
+  _`⅋⟩_      : ∀ {q q'} → (p : Formula) → q ⟶ q' → (p `⅋ q) ⟶ (p `⅋ q')
   `⅋-assoc   : ∀ {p q r} → (p `⅋ (q `⅋ r)) ⟶ ((p `⅋ q) `⅋ r)
   `⅋-assoc⁻¹ : ∀ {p q r} → ((p `⅋ q) `⅋ r) ⟶ (p `⅋ (q `⅋ r))
   `⅋-comm    : ∀ {p q} → (p `⅋ q) ⟶ (q `⅋ p)
   `⅋-unit    : ∀ {p}   → (p `⅋ `I) ⟶ p
   `⅋-unit⁻¹  : ∀ {p}   → p ⟶ (p `⅋ `I)
 
-  _⟨`▷_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p `▷ q) ⟶ (p' `▷ q)
-  _`▷⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p `▷ q) ⟶ (p `▷ q')
+  _⟨`▷_      : ∀ {p p'} → p ⟶ p' → (q : Formula) → (p `▷ q) ⟶ (p' `▷ q)
+  _`▷⟩_      : ∀ {q q'} → (p : Formula) → q ⟶ q' → (p `▷ q) ⟶ (p `▷ q')
   `▷-assoc   : ∀ {p q r} → (p `▷ (q `▷ r)) ⟶ ((p `▷ q) `▷ r)
   `▷-assoc⁻¹ : ∀ {p q r} → ((p `▷ q) `▷ r) ⟶ (p `▷ (q `▷ r))
   `▷-runit   : ∀ {p}   → (p `▷ `I) ⟶ p
@@ -46,18 +46,18 @@ data _⟶_ : fmla → fmla → Set where
   `▷-lunit   : ∀ {p}   → (`I `▷ p) ⟶ p
   `▷-lunit⁻¹ : ∀ {p}   → p ⟶ (`I `▷ p)
 
-  _⟨`&_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p `& q) ⟶ (p' `& q)
-  _`&⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p `& q) ⟶ (p `& q')
+  _⟨`&_      : ∀ {p p'} → p ⟶ p' → (q : Formula) → (p `& q) ⟶ (p' `& q)
+  _`&⟩_      : ∀ {q q'} → (p : Formula) → q ⟶ q' → (p `& q) ⟶ (p `& q')
 
-  _⟨`⊕_      : ∀ {p p'} → p ⟶ p' → (q : fmla) → (p `⊕ q) ⟶ (p' `⊕ q)
-  _`⊕⟩_      : ∀ {q q'} → (p : fmla) → q ⟶ q' → (p `⊕ q) ⟶ (p `⊕ q')
+  _⟨`⊕_      : ∀ {p p'} → p ⟶ p' → (q : Formula) → (p `⊕ q) ⟶ (p' `⊕ q)
+  _`⊕⟩_      : ∀ {q q'} → (p : Formula) → q ⟶ q' → (p `⊕ q) ⟶ (p `⊕ q')
 
-data _⟶*_ : fmla → fmla → Set where
+data _⟶*_ : Formula → Formula → Set where
   ε : ∀ {p} → p ⟶* p
   _∷_ : ∀ {p q r} → p ⟶ q → q ⟶* r → p ⟶* r
 infixr 6 _∷_
 
-test : fmla
+test : Formula
 test = (`I `⊕ `I) `▷ (`I `& `I)
 
 test-id : (test `⅋ `¬ test) ⟶* `I
@@ -66,7 +66,7 @@ test-id = `axiom test ∷ ε
 
 
 
-record MAVModel a b : Set (suc (a ⊔ b)) where
+record Model a b : Set (suc (a ⊔ b)) where
   field
     Carrier : Set a
     _≤_     : Carrier → Carrier → Set b
@@ -95,15 +95,16 @@ record MAVModel a b : Set (suc (a ⊔ b)) where
     ⊗-▷-isDuoidal : IsDuoidal ≤-isPreorder ⊗-isMonoid ▷-isMonoid
 
   open IsPreorder ≤-isPreorder public
-  open IsEquivalence (isEquivalenceOf ≤-isPreorder) renaming (refl to ≃-refl; sym to ≃-sym; trans to ≃-trans) public
-  open IsMonoid ⊗-isMonoid
+  open IsEquivalence (isEquivalenceOf ≤-isPreorder) public
+    renaming (refl to ≃-refl; sym to ≃-sym; trans to ≃-trans)
+  open IsMonoid ⊗-isMonoid public
     renaming (mono to ⊗-mono; assoc to ⊗-assoc; lunit to ⊗-lunit; runit to ⊗-runit; cong to ⊗-cong)
-    public
-  open IsMonoid ▷-isMonoid
+  open IsMonoid ▷-isMonoid public
     renaming (mono to ▷-mono; assoc to ▷-assoc; lunit to ▷-lunit; runit to ▷-runit; cong to ▷-cong)
-    public
   open IsStarAuto ⊗-*aut public
-  open IsMeet &-isMeet renaming (mono to &-mono; cong to &-cong) hiding (assoc; idem) public
+  open IsMeet &-isMeet public
+    renaming (mono to &-mono; cong to &-cong)
+    hiding (assoc; idem)
   open IsDuoidal ⊗-▷-isDuoidal
 
   -- Some derived facts, used in the interpretation
@@ -115,7 +116,9 @@ record MAVModel a b : Set (suc (a ⊔ b)) where
   ⊕-isJoin .IsJoin.inr = trans (involution .proj₁) (¬-mono π₂)
   ⊕-isJoin .IsJoin.[_,_] m₁ m₂ = trans (¬-mono ⟨ ¬-mono m₁ , ¬-mono m₂ ⟩) (involution .proj₂)
 
-  open IsJoin ⊕-isJoin renaming (mono to ⊕-mono; cong to ⊕-cong) hiding (assoc; idem) public
+  open IsJoin ⊕-isJoin public
+    renaming (mono to ⊕-mono; cong to ⊕-cong)
+    hiding (assoc; idem)
 
   sequence : ∀ {w x y z} → ((w ⅋ x) ▷ (y ⅋ z)) ≤ ((w ▷ y) ⅋ (x ▷ z))
   sequence =
@@ -136,11 +139,11 @@ record MAVModel a b : Set (suc (a ⊔ b)) where
                   (trans ⊕-⊗-distrib
                          (¬-mono (&-mono ⅋-sym ⅋-sym))))))
 
-module interpretation {a b} (M : MAVModel a b) (V : At → M .MAVModel.Carrier) where
+module Interpretation {a b} (M : Model a b) (V : At → M .Model.Carrier) where
 
-  open MAVModel M
+  open Model M
 
-  ⟦_⟧ : fmla → Carrier
+  ⟦_⟧ : Formula → Carrier
   ⟦ `I ⟧ = I
   ⟦ +at x ⟧ = V x
   ⟦ -at x ⟧ = ¬ (V x)

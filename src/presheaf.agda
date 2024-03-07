@@ -5,10 +5,9 @@ open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ-syntax)
 open import Data.Sum using (_⊎_; inj₁; inj₂) renaming ([_,_] to [_⊎_])
 open import Data.Unit using (⊤; tt)
 open import Relation.Binary using (Setoid)
-open import basics
+open import Prelude
 
-module presheaf {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreorder _≤_)
-    where
+module PreSheaf {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreorder _≤_) where
 
 open IsPreorder ≤-isPreorder
 
@@ -158,16 +157,15 @@ module Monoid {_∙_ : A → A → A} {ε : A} (∙-isMonoid : IsMonoid ≤-isPr
 -- FIXME: If we have two monoids in a duoidal relationship, then they
 -- have this relationship on the presheaf preorder. Let's do the
 -- simple case where they share a unit first.
---
--- FIXME: use basics.IsDuoidal
 module Duoidal {_∙_ : A → A → A} {_▷_ : A → A → A} {ι : A}
                (∙-isMonoid : IsMonoid ≤-isPreorder _∙_ ι)
                (▷-isMonoid : IsMonoid ≤-isPreorder _▷_ ι)
-               (∙-▷-exchange : ∀ {w x y z} → ((w ▷ x) ∙ (y ▷ z)) ≤ ((w ∙ y) ▷ (x ∙ z)))
+               (∙-▷-isDuoidal : IsDuoidal ≤-isPreorder ∙-isMonoid ▷-isMonoid)
   where
 
   open Monoid ∙-isMonoid using (_•_)
   open Monoid ▷-isMonoid renaming (_•_ to _⍮_)
+  open IsDuoidal ∙-▷-isDuoidal renaming (exchange to ∙-▷-exchange)
   open IsMonoid ∙-isMonoid
 
   •-⍮-exchange : ∀ {w x y z} → ((w ⍮ x) • (y ⍮ z)) ≤P ((w • y) ⍮ (x • z))
@@ -187,40 +185,40 @@ module Duoidal {_∙_ : A → A → A} {_▷_ : A → A → A} {ι : A}
 -- assume that A has meets)?
 --
 -- Alternatively, the closure of the closure operation
---     C X x = Σ[ t ∈ tree (Σ[ x ∈ A ] X .Carrier x) ] x ≤ join t
+--     C X x = Σ[ t ∈ Tree (Σ[ x ∈ A ] X .Carrier x) ] x ≤ join t
 
-module sheaf (_&_ : A → A → A)
+module Sheaf (_&_ : A → A → A)
              (&-mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ & y₁) ≤ (x₂ & y₂))
           where -- we have some binary operator that we want to name the joins
 
-  data tree {a} (A : Set a) : Set a where
-    lf : A → tree A
-    br : tree A → tree A → tree A
+  data Tree {a} (A : Set a) : Set a where
+    lf : A → Tree A
+    br : Tree A → Tree A → Tree A
 
-  map-tree : ∀ {a b}{X : A → Set a}{Y : A → Set b} →
-             ((x : A) → X x → Y x) → tree (Σ[ x ∈ A ] X x) → tree (Σ[ x ∈ A ] Y x)
-  map-tree f (lf (a , x)) = lf (a , f a x)
-  map-tree f (br s t) = br (map-tree f s) (map-tree f t)
+  map-Tree : ∀ {a b}{X : A → Set a}{Y : A → Set b} →
+             ((x : A) → X x → Y x) → Tree (Σ[ x ∈ A ] X x) → Tree (Σ[ x ∈ A ] Y x)
+  map-Tree f (lf (a , x)) = lf (a , f a x)
+  map-Tree f (br s t) = br (map-Tree f s) (map-Tree f t)
 
-  join : ∀ {X : A → Set (a ⊔ b)} → tree (Σ[ x ∈ A ] X x) → A
+  join : ∀ {X : A → Set (a ⊔ b)} → Tree (Σ[ x ∈ A ] X x) → A
   join (lf (x , _)) = x
   join (br s t) = join s & join t
 
   map-join : ∀ {X Y : A → Set (a ⊔ b)} →
              (f : (x : A) → X x → Y x) →
-             (t : tree (Σ[ x ∈ A ] X x)) →
-             join t ≤ join (map-tree f t)
+             (t : Tree (Σ[ x ∈ A ] X x)) →
+             join t ≤ join (map-Tree f t)
   map-join f (lf x) = refl
   map-join f (br s t) = &-mono (map-join f s) (map-join f t)
 
   flatten : {X : A → Set (a ⊔ b)} →
-            tree (Σ[ x ∈ A ] (Σ[ t ∈ tree (Σ[ y ∈ A ] X y) ] x ≤ join t)) →
-            tree (Σ[ y ∈ A ] X y)
+            Tree (Σ[ x ∈ A ] (Σ[ t ∈ Tree (Σ[ y ∈ A ] X y) ] x ≤ join t)) →
+            Tree (Σ[ y ∈ A ] X y)
   flatten (lf (x , t , ϕ)) = t
   flatten (br s t)         = br (flatten s) (flatten t)
 
   flatten-join : {X : A → Set (a ⊔ b)} →
-                 (t : tree (Σ[ x ∈ A ] (Σ[ t ∈ tree (Σ[ y ∈ A ] X y) ] x ≤ join t))) →
+                 (t : Tree (Σ[ x ∈ A ] (Σ[ t ∈ Tree (Σ[ y ∈ A ] X y) ] x ≤ join t))) →
                  join t ≤ join (flatten t)
   flatten-join (lf (x , t , ϕ)) = ϕ
   flatten-join (br s t) = &-mono (flatten-join s) (flatten-join t)
@@ -230,7 +228,7 @@ module sheaf (_&_ : A → A → A)
     field
       SCarrier  : A → Set (a ⊔ b)
       S≤-closed : ∀ {x y} → x ≤ y → SCarrier y → SCarrier x
-      Sclosed   : (t : tree (Σ[ x ∈ A ] SCarrier x)) → SCarrier (join t)
+      Sclosed   : (t : Tree (Σ[ x ∈ A ] SCarrier x)) → SCarrier (join t)
   open Sheaf
 
   record _≤S_ (F G : Sheaf) : Set (a ⊔ b) where
@@ -254,12 +252,12 @@ module sheaf (_&_ : A → A → A)
   ------------------------------------------------------------------------------
   -- Turn a presheaf into a sheaf by closing under imaginary joins
   α : PreSheaf → Sheaf
-  α F .SCarrier x = Σ[ t ∈ tree (Σ[ x ∈ A ] F .Carrier x) ] (x ≤ join t)
+  α F .SCarrier x = Σ[ t ∈ Tree (Σ[ x ∈ A ] F .Carrier x) ] (x ≤ join t)
   α F .S≤-closed x≤y (t , ψ) = t , trans x≤y ψ
   α F .Sclosed t = flatten t , flatten-join t
 
   α-mono : ∀ {F G} → F ≤P G → α F ≤S α G
-  α-mono F≤G .*≤S* x (t , ψ) = map-tree (F≤G .*≤P*) t , trans ψ (map-join _ t)
+  α-mono F≤G .*≤S* x (t , ψ) = map-Tree (F≤G .*≤P*) t , trans ψ (map-join _ t)
 
   α-cong : ∀ {F G} → F ≃P G → α F ≃S α G
   α-cong (ϕ , ψ) = α-mono ϕ , α-mono ψ
@@ -289,9 +287,11 @@ module sheaf (_&_ : A → A → A)
 
   ------------------------------------------------------------------------------
   -- The topology is subcanonical if _&_ is sub-idempotent.
-  module _ (&-idem : ∀ {x} → (x & x) ≤ x) where
+  module _
+      (&-idem : ∀ {x} → (x & x) ≤ x)
+    where
 
-    joinJ : ∀ x (t : tree (Σ[ y ∈ A ] Lift a (y ≤ x))) → join t ≤ x
+    joinJ : ∀ x (t : Tree (Σ[ y ∈ A ] Lift a (y ≤ x))) → join t ≤ x
     joinJ x (lf (y , lift y≤x)) = y≤x
     joinJ x (br s t) = trans (&-mono (joinJ x s) (joinJ x t)) &-idem
 
@@ -306,8 +306,8 @@ module sheaf (_&_ : A → A → A)
   (F ∧S G) .SCarrier x = F .SCarrier x × G .SCarrier x
   (F ∧S G) .S≤-closed x≤y (Fy , Gy) = (F .S≤-closed x≤y Fy) , (G .S≤-closed x≤y Gy)
   (F ∧S G) .Sclosed t =
-    F .S≤-closed (map-join _ t) (F .Sclosed (map-tree (λ _ → proj₁) t)) ,
-    G .S≤-closed (map-join _ t) (G .Sclosed (map-tree (λ _ → proj₂) t))
+    F .S≤-closed (map-join _ t) (F .Sclosed (map-Tree (λ _ → proj₁) t)) ,
+    G .S≤-closed (map-join _ t) (G .Sclosed (map-Tree (λ _ → proj₂) t))
 
   ∧S-isMeet : IsMeet ≤S-isPreorder _∧S_
   ∧S-isMeet .IsMeet.π₁ .*≤S* _ = proj₁
@@ -340,7 +340,7 @@ module sheaf (_&_ : A → A → A)
   [_,_]S : ∀ {F G H} → F ≤S H → G ≤S H → (F ∨S G) ≤S H
   [_,_]S {F}{G}{H} m₁ m₂ .*≤S* x (t , x≤t) =
     H .S≤-closed (trans x≤t (map-join _ t))
-      (H .Sclosed (map-tree (λ x → [ m₁ .*≤S* x ⊎ m₂ .*≤S* x ]) t))
+      (H .Sclosed (map-Tree (λ x → [ m₁ .*≤S* x ⊎ m₂ .*≤S* x ]) t))
 
   ∨S-isJoin : IsJoin ≤S-isPreorder _∨S_
   ∨S-isJoin .IsJoin.inl = inl
@@ -360,9 +360,9 @@ module sheaf (_&_ : A → A → A)
     open IsMonoid ∙-isMonoid
 
     split : ∀ {F G : A → Set (a ⊔ b)} →
-            (t : tree (Σ[ x ∈ A ] Σ[ y ∈ A ] Σ[ z ∈ A ] (x ≤ (y ∙ z)) × F y × G z)) →
-            Σ[ t₁ ∈ tree (Σ[ x ∈ A ] F x) ]
-            Σ[ t₂ ∈ tree (Σ[ x ∈ A ] G x) ]
+            (t : Tree (Σ[ x ∈ A ] Σ[ y ∈ A ] Σ[ z ∈ A ] (x ≤ (y ∙ z)) × F y × G z)) →
+            Σ[ t₁ ∈ Tree (Σ[ x ∈ A ] F x) ]
+            Σ[ t₂ ∈ Tree (Σ[ x ∈ A ] G x) ]
               (join t ≤ (join t₁ ∙ join t₂))
     split (lf (x , y , z , x≤yz , Fy , Gz)) = lf (y , Fy) , lf (z , Gz) , x≤yz
     split (br s t) =
@@ -382,7 +382,7 @@ module sheaf (_&_ : A → A → A)
 
     -- FIXME: this is the same as 'tidyup' in 'bv.agda', and is a
     -- special case of joinJ above.
-    collapse : (t : tree (Σ[ x ∈ A ] Lift a (x ≤ ε))) → join t ≤ ε
+    collapse : (t : Tree (Σ[ x ∈ A ] Lift a (x ≤ ε))) → join t ≤ ε
     collapse (lf (x , lift x≤ε)) = x≤ε
     collapse (br s t) = trans (&-mono (collapse s) (collapse t)) tidy
 
@@ -441,15 +441,15 @@ module sheaf (_&_ : A → A → A)
 
     -- α is strong monoidal from PreSheaf to Sheaf
     module _ {F G : PreSheaf} where
-       mul : tree (Σ[ x ∈ A ] F .Carrier x) →
-             tree (Σ[ x ∈ A ] G .Carrier x) →
-             tree (Σ[ x ∈ A ] (F • G) .Carrier x)
+       mul : Tree (Σ[ x ∈ A ] F .Carrier x) →
+             Tree (Σ[ x ∈ A ] G .Carrier x) →
+             Tree (Σ[ x ∈ A ] (F • G) .Carrier x)
        mul (lf (x , Fx)) (lf (y , Gy)) = lf (x ∙ y , x , y , refl , Fx , Gy)
        mul (lf x)        (br t₁ t₂)    = br (mul (lf x) t₁) (mul (lf x) t₂)
        mul (br s₁ s₂)    t             = br (mul s₁ t) (mul s₂ t)
 
-       mul-join : (t₁ : tree (Σ[ x ∈ A ] F .Carrier x)) →
-                  (t₂ : tree (Σ[ x ∈ A ] G .Carrier x)) →
+       mul-join : (t₁ : Tree (Σ[ x ∈ A ] F .Carrier x)) →
+                  (t₂ : Tree (Σ[ x ∈ A ] G .Carrier x)) →
                   (join t₁ ∙ join t₂) ≤ join (mul t₁ t₂)
        mul-join (lf x) (lf x₁) = refl
        mul-join (lf x) (br t₂ t₃) =
@@ -463,9 +463,9 @@ module sheaf (_&_ : A → A → A)
        -- The 2nd and 3rd arguments are unpacked to satisfy the termination checker
        -- FIXME: this is essentially a map-and-join operation that preserves the first components
        lemma : ∀ x
-               (t : tree (Σ[ y ∈ A ] (U (α F) • U (α G)) .Carrier y)) →
+               (t : Tree (Σ[ y ∈ A ] (U (α F) • U (α G)) .Carrier y)) →
                x ≤ join t →
-               Σ[ t ∈ tree (Σ[ x ∈ A ] ((F • G) .Carrier x)) ] (x ≤ join t)
+               Σ[ t ∈ Tree (Σ[ x ∈ A ] ((F • G) .Carrier x)) ] (x ≤ join t)
        lemma x (lf (y , (y₁ , y₂ , y≤y₁y₂ , (t₁ , y₁≤t₁) , (t₂ , y₂≤t₂)))) x≤y =
          (mul t₁ t₂) , trans x≤y (trans y≤y₁y₂ (trans (mono y₁≤t₁ y₂≤t₂) (mul-join t₁ t₂)))
        lemma x (br s t) x≤s&t =
@@ -546,9 +546,9 @@ module sheaf (_&_ : A → A → A)
     -- Residuals are automatically closed, relying on distributivity.
     -- Is this deducible from strong monoidality of α?
     ⊸-lemma : ∀ F G →
-              (t : tree (Σ[ x ∈ A ] (∀ y → F .SCarrier y → G .SCarrier (x ∙ y)))) →
+              (t : Tree (Σ[ x ∈ A ] (∀ y → F .SCarrier y → G .SCarrier (x ∙ y)))) →
               (y : A) → F .SCarrier y →
-              Σ[ t' ∈ tree (Σ[ x ∈ A ] (G .SCarrier x)) ] (join t ∙ y) ≤ join t'
+              Σ[ t' ∈ Tree (Σ[ x ∈ A ] (G .SCarrier x)) ] (join t ∙ y) ≤ join t'
     ⊸-lemma F G (lf (x , f)) y Fy = (lf (x ∙ y , f y Fy)) , refl
     ⊸-lemma F G (br s t)     y Fy =
       let (s' , sy≤s') = ⊸-lemma F G s y Fy
@@ -588,7 +588,7 @@ module sheaf (_&_ : A → A → A)
     open SMonoid1 ⍮-isMonoid medial tidy renaming (I to J)
     open SMonoid2 ∙-isMonoid ∙-sym ∙-&-distrib renaming (I to I⊗)
 
-    open Duoidal ∙-isMonoid ⍮-isMonoid (∙-⍮-isDuoidal .IsDuoidal.exchange)
+    open Duoidal ∙-isMonoid ⍮-isMonoid ∙-⍮-isDuoidal
 
     units-iso : I⊗ ≃S J
     units-iso .proj₁ .*≤S* x (t , x≤t) = J .S≤-closed x≤t (J .Sclosed t)

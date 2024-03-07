@@ -1,6 +1,6 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-module chu where
+module Chu where
 
 -- If we have a preordered closed symmetric monoid with finite meets
 -- and chosen element K, then the Chu construction is a *-autonomous
@@ -9,7 +9,7 @@ module chu where
 
 open import Level
 open import Data.Product using (proj₁; proj₂)
-open import basics
+open import Prelude
 
 module Construction {a b} {A : Set a}
           {_≤_ : A → A → Set b}
