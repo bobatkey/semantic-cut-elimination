@@ -1,11 +1,12 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
 open import Level using (Level; _⊔_)
-open import Function using (flip)
-open import Data.Product using (_×_; _,_; proj₁; proj₂; swap)
-open import Relation.Binary using (Rel; Reflexive; Transitive; IsPreorder; IsEquivalence; Setoid)
 open import Algebra.Core using (Op₁; Op₂)
 open import Algebra.Definitions using (Congruent₁; Congruent₂)
+open import Data.Product using (_×_; _,_; proj₁; proj₂; swap)
+open import Function using (flip)
+open import Relation.Binary using (Rel; Reflexive; Transitive; IsPreorder; IsEquivalence; Setoid)
+import Relation.Binary.PropositionalEquality as PropEq
 
 module Relation.Binary.Construct.Core.Symmetric where
 
@@ -41,15 +42,20 @@ module _
       isEquivalence isPreorder .IsEquivalence.sym = swap
       isEquivalence isPreorder .IsEquivalence.trans = transitive (IsPreorder.trans isPreorder)
 
-      isPreorder : IsPreorder _≈_ _∼_ → IsPreorder (SymCore _∼_) _∼_
-      isPreorder isPreorder .IsPreorder.isEquivalence = isEquivalence isPreorder
-      isPreorder isPreorder .IsPreorder.reflexive x≃y = x≃y .proj₁
-      isPreorder isPreorder .IsPreorder.trans = IsPreorder.trans isPreorder
+      isPreorder⇒isPreorder : IsPreorder _≈_ _∼_ → IsPreorder (SymCore _∼_) _∼_
+      isPreorder⇒isPreorder isPreorder .IsPreorder.isEquivalence = isEquivalence isPreorder
+      isPreorder⇒isPreorder isPreorder .IsPreorder.reflexive x≃y = x≃y .proj₁
+      isPreorder⇒isPreorder isPreorder .IsPreorder.trans = IsPreorder.trans isPreorder
 
       setoid : IsPreorder _≈_ _∼_ →  Setoid a ℓ
-      setoid isPreorder = record
-        { Carrier = A 
-        ; _≈_ = SymCore _∼_
-        ; isEquivalence = isEquivalence isPreorder
-        }
+      setoid isPreorder .Setoid.Carrier = A 
+      setoid isPreorder .Setoid._≈_ = SymCore _∼_
+      setoid isPreorder .Setoid.isEquivalence = isEquivalence isPreorder
   
+    reflexive-transitive⇒isPreorder : Reflexive _∼_ → Transitive _∼_ → IsPreorder (SymCore _∼_) _∼_
+    reflexive-transitive⇒isPreorder refl trans = isPreorder⇒isPreorder ≡-isPreorder
+      where
+        ≡-isPreorder : IsPreorder PropEq._≡_ _∼_
+        ≡-isPreorder .IsPreorder.isEquivalence = PropEq.isEquivalence
+        ≡-isPreorder .IsPreorder.reflexive PropEq.refl = reflexive refl .proj₁
+        ≡-isPreorder .IsPreorder.trans = trans
