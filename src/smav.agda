@@ -68,10 +68,11 @@ test-id = `axiom test ∷ ε
 
 record MAVModel a b : Set (suc (a ⊔ b)) where
   field
-    Carrier : Set a
-    _≤_     : Carrier → Carrier → Set b
+    Carrier       : Set a
+    _≤_           : Carrier → Carrier → Set b
+    ≤-isPreorder  : IsPreorder _≤_
 
-  _≃_ = SymmetricClosure _≤_
+  open IsPreorder ≤-isPreorder public
 
   field
     ¬       : Carrier → Carrier
@@ -81,7 +82,6 @@ record MAVModel a b : Set (suc (a ⊔ b)) where
     _▷_     : Carrier → Carrier → Carrier
     _&_     : Carrier → Carrier → Carrier
 
-    ≤-isPreorder  : IsPreorder _≤_
     ⊗-isMonoid    : IsMonoid ≤-isPreorder _⊗_ I
     ⊗-sym         : ∀ {x y} → (x ⊗ y) ≤ (y ⊗ x)
     ⊗-*aut        : IsStarAuto ≤-isPreorder ⊗-isMonoid ⊗-sym ¬
@@ -94,8 +94,7 @@ record MAVModel a b : Set (suc (a ⊔ b)) where
     ▷-self-dual   : ∀ {x y} → (¬ (x ▷ y)) ≃ ((¬ x) ▷ (¬ y))
     ⊗-▷-isDuoidal : IsDuoidal ≤-isPreorder ⊗-isMonoid ▷-isMonoid
 
-  open IsPreorder ≤-isPreorder public
-  open IsEquivalence (isEquivalenceOf ≤-isPreorder) renaming (refl to ≃-refl; sym to ≃-sym; trans to ≃-trans) public
+  open IsEquivalence ≃-isEquivalence renaming (refl to ≃-refl; sym to ≃-sym; trans to ≃-trans) public
   open IsMonoid ⊗-isMonoid
     renaming (mono to ⊗-mono; assoc to ⊗-assoc; lunit to ⊗-lunit; runit to ⊗-runit; cong to ⊗-cong)
     public

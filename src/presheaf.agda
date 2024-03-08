@@ -10,7 +10,7 @@ open import basics
 module presheaf {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreorder _≤_)
     where
 
-open IsPreorder ≤-isPreorder
+open IsPreorder ≤-isPreorder hiding (≃-setoid)
 
 record PreSheaf : Set (lsuc (a ⊔ b)) where
   no-eta-equality
@@ -32,7 +32,7 @@ open _≤P_ public
 ≤P-trans = ≤P-isPreorder .IsPreorder.trans
 
 _≃P_ : PreSheaf → PreSheaf → Set (a ⊔ b)
-_≃P_ = SymmetricClosure _≤P_
+_≃P_ = SymmetricCore _≤P_
 
 infix 4 _≤P_
 infix 4 _≃P_
@@ -249,7 +249,7 @@ module sheaf (_&_ : A → A → A)
   ≤S-isPreorder .IsPreorder.refl = ≤S-refl
   ≤S-isPreorder .IsPreorder.trans = ≤S-trans
 
-  _≃S_ = SymmetricClosure _≤S_
+  _≃S_ = SymmetricCore _≤S_
 
   ------------------------------------------------------------------------------
   -- Turn a presheaf into a sheaf by closing under imaginary joins
@@ -479,7 +479,7 @@ module sheaf (_&_ : A → A → A)
 
     module _ where
       open IsMonoid •-isMonoid renaming (cong to •-cong)
-      open Setoid (setoidOf ≤P-isPreorder) renaming (refl to P-refl)
+      open Setoid (IsPreorder.≃-setoid ≤P-isPreorder) renaming (refl to P-refl)
 
       ⊗-mono : ∀ {F₁ G₁ F₂ G₂} → F₁ ≤S F₂ → G₁ ≤S G₂ → (F₁ ⊗ G₁) ≤S (F₂ ⊗ G₂)
       ⊗-mono m₁ m₂ = α-mono (•-mono (U-mono m₁) (U-mono m₂))
@@ -500,7 +500,7 @@ module sheaf (_&_ : A → A → A)
         ≈˘⟨ α-cong (•-cong (U-cong counit-≃) P-refl) ⟩
           (F ⊗ (G ⊗ H))
         ∎
-        where open import Relation.Binary.Reasoning.Setoid (setoidOf ≤S-isPreorder)
+        where open import Relation.Binary.Reasoning.Setoid (IsPreorder.≃-setoid ≤S-isPreorder)
 
       ⊗-lunit : ∀ {F} → (I ⊗ F) ≃S F
       ⊗-lunit {F} = begin
@@ -516,7 +516,7 @@ module sheaf (_&_ : A → A → A)
           ≈˘⟨ counit-≃ ⟩
             F
           ∎
-          where open import Relation.Binary.Reasoning.Setoid (setoidOf ≤S-isPreorder)
+          where open import Relation.Binary.Reasoning.Setoid (IsPreorder.≃-setoid ≤S-isPreorder)
 
       ⊗-runit : ∀ {F} → (F ⊗ I) ≃S F
       ⊗-runit {F} = begin
@@ -532,7 +532,7 @@ module sheaf (_&_ : A → A → A)
           ≈˘⟨ counit-≃ ⟩
             F
           ∎
-          where open import Relation.Binary.Reasoning.Setoid (setoidOf ≤S-isPreorder)
+          where open import Relation.Binary.Reasoning.Setoid (IsPreorder.≃-setoid ≤S-isPreorder)
 
     ⊗-isMonoid : IsMonoid ≤S-isPreorder _⊗_ I
     ⊗-isMonoid .IsMonoid.mono = ⊗-mono

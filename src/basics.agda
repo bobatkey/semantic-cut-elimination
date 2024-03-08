@@ -2,41 +2,37 @@
 
 module basics where
 
-open import Level using (_⊔_)
+open import Level using (_⊔_; suc)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Relation.Binary using (Setoid; IsEquivalence)
 
 module _ {a} {A : Set a} where
 
+  SymmetricCore : ∀ {b} → (A → A → Set b) → (A → A → Set b)
+  SymmetricCore R x y = R x y × R y x
+
   record IsPreorder {b} (_≤_ : A → A → Set b) : Set (a ⊔ b) where
     field
       refl  : ∀ {x} → x ≤ x
       trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
+    _≃_ = SymmetricCore _≤_
+    infix 4 _≃_
 
-  SymmetricClosure : ∀ {b} → (A → A → Set b) → (A → A → Set b)
-  SymmetricClosure R x y = R x y × R y x
+    ≃-isEquivalence : IsEquivalence _≃_
+    ≃-isEquivalence .IsEquivalence.refl = refl , refl
+    ≃-isEquivalence .IsEquivalence.sym (x≤y , y≤x) = y≤x , x≤y
+    ≃-isEquivalence .IsEquivalence.trans (x≤y , y≤x) (y≤z , z≤y) =
+      (trans x≤y y≤z) , (trans z≤y y≤x)
+
+    ≃-setoid : Setoid a b
+    ≃-setoid .Setoid.Carrier = A
+    ≃-setoid .Setoid._≈_ = _≃_
+    ≃-setoid .Setoid.isEquivalence = ≃-isEquivalence
 
 module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreorder _≤_) where
 
-  private
-    _≃_ = SymmetricClosure _≤_
-    infix 4 _≃_
-
-  module _ where
-    open IsPreorder ≤-isPreorder
-
-    isEquivalenceOf : IsEquivalence (SymmetricClosure _≤_)
-    isEquivalenceOf .IsEquivalence.refl = refl , refl
-    isEquivalenceOf .IsEquivalence.sym (x≤y , y≤x) = y≤x , x≤y
-    isEquivalenceOf .IsEquivalence.trans (x≤y , y≤x) (y≤z , z≤y) =
-      (trans x≤y y≤z) , (trans z≤y y≤x)
-
-    setoidOf : Setoid a b
-    setoidOf .Setoid.Carrier = A
-    setoidOf .Setoid._≈_ = SymmetricClosure _≤_
-    setoidOf .Setoid.isEquivalence = isEquivalenceOf
-
   record IsMonoid (_∙_ : A → A → A) (ε : A) : Set (a ⊔ b) where
+    open IsPreorder ≤-isPreorder
     field
       mono  : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ∙ y₁) ≤ (x₂ ∙ y₂)
       assoc : ∀ {x y z} → (x ∙ y) ∙ z ≃ x ∙ (y ∙ z)
@@ -90,6 +86,11 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     field
       ≤-top : ∀ {x} → x ≤ ⊤
 
+  record IsBigMeet iℓ (⋀ : (I : Set iℓ) → (I → A) → A) : Set (a ⊔ b ⊔ suc iℓ) where
+    field
+      lower    : (I : Set iℓ) (x : I → A) (i : I) → ⋀ I x ≤ x i
+      greatest : (I : Set iℓ) (x : I → A) (z : A) → (∀ i → z ≤ x i) → z ≤ ⋀ I x
+
   module _ {_∧_ : A → A → A} {⊤ : A} (isMeet : IsMeet _∧_) (isTop : IsTop ⊤) where
     open IsPreorder ≤-isPreorder
     open IsMeet isMeet
@@ -128,6 +129,15 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     sym : ∀ {x y} → (x ∨ y) ≤ (y ∨ x)
     sym = [ inr , inl ]
 
+  record IsBigJoin iℓ (⋁ : (I : Set iℓ) → (I → A) → A) : Set (a ⊔ b ⊔ suc iℓ) where
+    field
+      upper : (I : Set iℓ) (x : I → A) (i : I) → x i ≤ ⋁ I x
+      least : (I : Set iℓ) (x : I → A) (z : A) → (∀ i → x i ≤ z) → ⋁ I x ≤ z
+
+  record IsBottom (⊥ : A) : Set (a ⊔ b) where
+    field
+      ≤-bottom : ∀ {x} → ⊥ ≤ x
+
   ------------------------------------------------------------------------------
   -- closure implies distributivity of joins and the monoid
   -- FIXME: don't assume symmetry and do the left and right ones separately
@@ -150,6 +160,7 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
                     (⊗-isMonoid : IsMonoid _⊗_ ε)
                     (⊗-sym : ∀ {x y} → (x ⊗ y) ≤ (y ⊗ x))
                     (¬ : A → A) : Set (a ⊔ b) where
+    open IsPreorder ≤-isPreorder
     field
       ¬-mono     : ∀ {x y} → x ≤ y → ¬ y ≤ ¬ x
       involution : ∀ {x} → x ≃ ¬ (¬ x)
@@ -157,7 +168,6 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
       *-aut   : ∀ {x y z} → (x ⊗ y) ≤ ¬ z → x ≤ ¬ (y ⊗ z)
       *-aut⁻¹ : ∀ {x y z} → x ≤ ¬ (y ⊗ z) → (x ⊗ y) ≤ ¬ z
 
-    open IsPreorder ≤-isPreorder
     open IsMonoid ⊗-isMonoid
 
     ¬-cong : ∀ {x y} → x ≃ y → ¬ x ≃ ¬ y
@@ -183,7 +193,7 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
         ¬ (¬ x ⊗ (¬ y ⊗ ¬ z))   ≈⟨ ¬-cong (cong (refl , refl) involution) ⟩
         ¬ (¬ x ⊗ ¬ (y ⅋ z))     ≡⟨⟩
         x ⅋ (y ⅋ z)            ∎
-      where open import Relation.Binary.Reasoning.Setoid setoidOf
+      where open import Relation.Binary.Reasoning.Setoid ≃-setoid
     ⅋-isMonoid .IsMonoid.lunit {x} =
       begin
         ⊥ ⅋ x             ≡⟨⟩
@@ -191,7 +201,7 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
         ¬ (ε ⊗ ¬ x)        ≈⟨ ¬-cong lunit ⟩
         ¬ (¬ x)            ≈˘⟨ involution ⟩
         x                  ∎
-      where open import Relation.Binary.Reasoning.Setoid setoidOf
+      where open import Relation.Binary.Reasoning.Setoid ≃-setoid
     ⅋-isMonoid .IsMonoid.runit {x} =
       begin
         x ⅋ ⊥             ≡⟨⟩
@@ -199,9 +209,14 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
         ¬ (¬ x ⊗ ε)        ≈⟨ ¬-cong runit ⟩
         ¬ (¬ x)            ≈˘⟨ involution ⟩
         x                  ∎
-      where open import Relation.Binary.Reasoning.Setoid setoidOf
+      where open import Relation.Binary.Reasoning.Setoid ≃-setoid
 
-    open IsMonoid ⅋-isMonoid renaming (mono to ⅋-mono; cong to ⅋-cong; assoc to ⅋-assoc; lunit to ⅋-lunit; runit to ⅋-runit) public
+    open IsMonoid ⅋-isMonoid
+      renaming (mono to ⅋-mono;
+                cong to ⅋-cong;
+                assoc to ⅋-assoc;
+                lunit to ⅋-lunit;
+                runit to ⅋-runit) public
 
     ev : ∀ {x} → (x ⊗ ¬ x) ≤ ⊥
     ev = *-aut⁻¹ (trans (involution .proj₁) (¬-mono (runit .proj₁)))
@@ -224,6 +239,19 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
                    (trans (mono refl (trans (mono (trans (⅋-mono refl (involution .proj₁)) ⅋-sym) refl) (⊸-isClosure .IsClosure.eval)))
                           (involution .proj₁))))
             ⅋-sym
+
+  ------------------------------------------------------------------------------
+  record IsClosureOp (C : A → A) : Set (a ⊔ b) where
+    open IsPreorder ≤-isPreorder
+
+    field
+      mono   : ∀ {x y} → x ≤ y → C x ≤ C y
+      unit   : ∀ {x} → x ≤ C x
+      closed : ∀ {x} → C (C x) ≤ C x
+
+    idem : ∀ {x} → C (C x) ≃ C x
+    idem .proj₁ = closed
+    idem .proj₂ = mono unit
 
   ------------------------------------------------------------------------------
   record IsDuoidal {_⊗_ : A → A → A} {ε : A} {_⍮_ : A → A → A} {ι : A}

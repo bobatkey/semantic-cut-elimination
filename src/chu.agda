@@ -42,7 +42,7 @@ module Construction {a b} {A : Set a}
   open _==>_
   infix 4 _==>_
 
-  _≅_ = SymmetricClosure _==>_
+  _≅_ = SymmetricCore _==>_
 
   open IsPreorder ≤-isPreorder
   open IsMonoid •-isMonoid
