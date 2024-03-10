@@ -1,12 +1,12 @@
+###########
+## Setup ##
+###########
+
+MAIN ?= paper
+
 AGDA ?= $(shell which agda)
 ifeq (,$(AGDA))
 $(error "Building the paper requires Agda ( https://agda.readthedocs.io/ ).")
-endif
-AGDA_DIR := $(shell $(AGDA) --print-agda-dir)
-
-BIBTEX ?= $(shell which bibtex)
-ifeq (,$(BIBTEX))
-$(error "Building the paper requires bibtex. Please install a LaTeX distribution.")
 endif
 
 LATEXMK ?= $(shell which latexmk)
@@ -18,9 +18,9 @@ endif
 ## Build ##
 ###########
 
-MAIN ?= paper
+AGDA_DIR := $(shell $(AGDA) --print-agda-dir)
 SOURCES_LAGDA := $(wildcard sections/*.lagda)
-SOURCES := agda.sty $(MAIN).tex $(MAIN).bib $(SOURCES_LAGDA)
+SOURCES := .latexmkrc agda.sty $(MAIN).tex $(MAIN).bib $(SOURCES_LAGDA)
 
 .PHONY: build
 build: $(MAIN).pdf
@@ -32,11 +32,11 @@ watch: $(SOURCES)
 $(MAIN).pdf: $(SOURCES)
 	$(LATEXMK) -pdf -interaction=nonstopmode $(MAIN).tex
 
-# sections_latex/%.tex: sections/%.lagda
-# 	$(AGDA) --latex --latex-dir=sections_latex $<
-
 agda.sty: $(AGDA_DIR)/latex/agda.sty
 	cp $(AGDA_DIR)/latex/agda.sty agda.sty
+
+.latexmkrc: .latexmkrc.sample
+	cp .latexmkrc.sample .latexmkrc
 
 ###########
 ## Clean ##
