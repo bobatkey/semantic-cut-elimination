@@ -33,11 +33,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Please fill in the following information:                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\def\lastname{List Authors' Lastnames Here}
+\def\lastname{Atkey, Kokke}
 % ^-- If more than three authors, use et al.
-\def\runtitle{List a short title here}
+\def\runtitle{Semantic Cut Elimation for MAV}
 % ^-- Short title appears in the running header on even pages. 
-\def\copynames{A. Author1, B. Author2, \ldots}
+\def\copynames{R. Atkey, W. Kokke}
 % ^-- Fill in the first initial and last name of the authors
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -47,6 +47,24 @@
 % ^-- Be sure the correct Creative Commons copyright symbol is chosen.
 %     See Section 2 of:
 %     https://mirrors.concertpass.com/tex-archive/fonts/ccicons/ccicons.pdf
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Preamble:                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include agda.sty
+\usepackage{agda}
+
+% Set up unicode support
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+  \DeclareUnicodeCharacter{2115}{\ensuremath{\mathbb{N}}}
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+\fi
 
 \begin{document}
 
@@ -58,7 +76,11 @@
   \thanks[ALL]{General thanks to everyone who should be thanked.}
   \author{Robert Atkey\thanksref{msp}\thanksref{bobemail}}
   \author{Wen Kokke\thanksref{msp}\thanksref{wenemail}}
-  \address[msp]{University of Strathclyde\\Glasgow, Scotland, UK}
+  \address[msp]{%
+    Mathematically Structured Programming\\
+    Computer and Information Sciences\\
+    University of Strathclyde\\
+    Glasgow, Scotland, UK}
   \thanks[bobemail]%
   {Email: \href{robert.atkey@strath.ac.uk}%
     {\texttt{\normalshape robert.atkey@strath.ac.uk}}}
@@ -74,11 +96,11 @@
   \end{keyword}
 \end{frontmatter}
 
-Stuff.
+\input{sections_latex/introduction}
 
 \cite{Horne15:mav,Okada99:psc}
 
 \bibliographystyle{./entics}
-\bibliography{index}
+\bibliography{paper}
 
 \end{document}

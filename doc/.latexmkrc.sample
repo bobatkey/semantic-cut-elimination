@@ -1,1 +1,2 @@
-$pdf_previewer = 'open -a Skim %S';
+# Set Evince as the default PDF previewer
+# $pdf_previewer = 'evince %S';
