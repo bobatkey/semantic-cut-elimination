@@ -33,10 +33,12 @@ $(MAIN).pdf: $(SOURCES)
 	$(LATEXMK) -pdf -interaction=nonstopmode $(MAIN).tex
 
 agda.sty: $(AGDA_DIR)/latex/agda.sty
-	cp $(AGDA_DIR)/latex/agda.sty agda.sty
+	@cp $(AGDA_DIR)/latex/agda.sty agda.sty
 
 .latexmkrc: .latexmkrc.sample
-	cp .latexmkrc.sample .latexmkrc
+	@cp .latexmkrc.sample .latexmkrc
+	@echo "Created .latexmkrc from .latexmkrc.sample."
+	@echo "Please review the file and modify it as needed."
 
 ###########
 ## Clean ##
