@@ -43,14 +43,22 @@ agda.sty: $(AGDA_DIR)/latex/agda.sty
 ###########
 
 GEN_LAGDA_TEX := $(wildcard $(patsubst %.lagda,%.tex,$(SOURCES_LAGDA)))
+GEN_MAIN_PTB := $(wildcard $(MAIN).ptb)
 GEN_AGDA_STY := $(wildcard agda.sty sections/agda.sty)
+GEN_AGDA_BUILD := $(wildcard _build)
 
 .PHONY: clean
 clean:
 	$(LATEXMK) -C $(MAIN).tex
 ifneq (,$(GEN_LAGDA_TEX))
-	rm $(GEN_LAGDA_TEX)
+	rm $(addprefix ./,$(GEN_LAGDA_TEX))
+endif
+ifneq (,$(GEN_MAIN_PTB))
+	rm $(addprefix ./,$(GEN_MAIN_PTB))
 endif
 ifneq (,$(GEN_AGDA_STY))
-	rm $(GEN_AGDA_STY)
+	rm $(addprefix ./,$(GEN_AGDA_STY))
+endif
+ifneq (,$(GEN_AGDA_BUILD))
+	rm -r $(addprefix ./,$(GEN_AGDA_BUILD))
 endif
