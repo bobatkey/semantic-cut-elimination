@@ -1,4 +1,5 @@
-\documentclass[twoside,11pt]{entics} 
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\documentclass[twoside,11pt]{entics}
 \usepackage{enticsmacro}
 \usepackage{graphicx}
 \usepackage[all]{xy}
@@ -66,6 +67,24 @@
   \usepackage{unicode-math} % this also loads fontspec
 \fi
 
+% Set up TODO macros
+\usepackage{todonotes}
+% \usepackage{regexpatch}
+% \makeatletter
+% \xpatchcmd{\@todo}{%
+%   \setkeys{todonotes}{#1}}{%
+%   \setkeys{todonotes}{inline,#1}}{}{}
+% \makeatother
+\presetkeys{todonotes}{inline}{}
+\newcommand{\wen}[2][]{\todo[%
+  author=Wen,%
+  color=Thistle,%
+  textcolor=Black,#1]{#2}}
+\newcommand{\bob}[2][]{\todo[%
+  author=Bob,%
+  color=Turquoise,%
+  textcolor=Black,#1]{#2}}
+
 \begin{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -96,9 +115,7 @@
   \end{keyword}
 \end{frontmatter}
 
-\input{sections_latex/introduction}
-
-\cite{Horne15:mav,Okada99:psc}
+\input{sections/index}
 
 \bibliographystyle{./entics}
 \bibliography{paper}

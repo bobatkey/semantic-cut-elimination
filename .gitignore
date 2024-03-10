@@ -4,7 +4,8 @@ _build/
 doc/paper.pdf
 doc/.latexmkrc
 doc/agda.sty
-doc/sections_latex/
+doc/sections/agda.sty
+doc/sections/*.tex
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

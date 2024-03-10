@@ -1,6 +1,8 @@
 \section{Introduction}\label{sec:introduction}
 
-Hello.
+\wen{Add basic structure}
+
+\cite{Horne15:mav,Okada99:psc}
 
 \begin{code}
   open import Data.Nat
