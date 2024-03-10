@@ -480,7 +480,7 @@ module Sheaf (_&_ : A → A → A)
 
     module _ where
       open IsMonoid •-isMonoid renaming (cong to •-cong)
-      open Setoid (setoidOf ≤P-isPreorder) renaming (refl to P-refl)
+      open Setoid (IsPreorder.≃-setoid ≤P-isPreorder) renaming (refl to P-refl)
 
       ⊗-mono : ∀ {F₁ G₁ F₂ G₂} → F₁ ≤S F₂ → G₁ ≤S G₂ → (F₁ ⊗ G₁) ≤S (F₂ ⊗ G₂)
       ⊗-mono m₁ m₂ = α-mono (•-mono (U-mono m₁) (U-mono m₂))
@@ -501,7 +501,7 @@ module Sheaf (_&_ : A → A → A)
         ≈˘⟨ α-cong (•-cong (U-cong counit-≃) P-refl) ⟩
           (F ⊗ (G ⊗ H))
         ∎
-        where open import Relation.Binary.Reasoning.Setoid (setoidOf ≤S-isPreorder)
+        where open IsPreorder.≃-SetoidReasoning ≤S-isPreorder
 
       ⊗-lunit : ∀ {F} → (I ⊗ F) ≃S F
       ⊗-lunit {F} = begin
@@ -517,7 +517,7 @@ module Sheaf (_&_ : A → A → A)
           ≈˘⟨ counit-≃ ⟩
             F
           ∎
-          where open import Relation.Binary.Reasoning.Setoid (setoidOf ≤S-isPreorder)
+          where open IsPreorder.≃-SetoidReasoning ≤S-isPreorder
 
       ⊗-runit : ∀ {F} → (F ⊗ I) ≃S F
       ⊗-runit {F} = begin
@@ -533,7 +533,7 @@ module Sheaf (_&_ : A → A → A)
           ≈˘⟨ counit-≃ ⟩
             F
           ∎
-          where open import Relation.Binary.Reasoning.Setoid (setoidOf ≤S-isPreorder)
+          where open IsPreorder.≃-SetoidReasoning ≤S-isPreorder
 
     ⊗-isMonoid : IsMonoid ≤S-isPreorder _⊗_ I
     ⊗-isMonoid .IsMonoid.mono = ⊗-mono

@@ -72,8 +72,6 @@ record Model a b : Set (suc (a ⊔ b)) where
     Carrier : Set a
     _≤_     : Carrier → Carrier → Set b
 
-  _≃_ = SymCore _≤_
-
   field
     ¬       : Carrier → Carrier
     I       : Carrier
@@ -82,7 +80,12 @@ record Model a b : Set (suc (a ⊔ b)) where
     _▷_     : Carrier → Carrier → Carrier
     _&_     : Carrier → Carrier → Carrier
 
+  field
     ≤-isPreorder  : IsPreorder _≤_
+
+  open IsPreorder ≤-isPreorder public
+  
+  field
     ⊗-isMonoid    : IsMonoid ≤-isPreorder _⊗_ I
     ⊗-sym         : ∀ {x y} → (x ⊗ y) ≤ (y ⊗ x)
     ⊗-*aut        : IsStarAuto ≤-isPreorder ⊗-isMonoid ⊗-sym ¬
@@ -95,8 +98,7 @@ record Model a b : Set (suc (a ⊔ b)) where
     ▷-self-dual   : ∀ {x y} → (¬ (x ▷ y)) ≃ ((¬ x) ▷ (¬ y))
     ⊗-▷-isDuoidal : IsDuoidal ≤-isPreorder ⊗-isMonoid ▷-isMonoid
 
-  open IsPreorder ≤-isPreorder public
-  open IsEquivalence (isEquivalenceOf ≤-isPreorder) public
+  open IsEquivalence ≃-isEquivalence public
     renaming (refl to ≃-refl; sym to ≃-sym; trans to ≃-trans)
   open IsMonoid ⊗-isMonoid public
     renaming (mono to ⊗-mono; assoc to ⊗-assoc; lunit to ⊗-lunit; runit to ⊗-runit; cong to ⊗-cong)
