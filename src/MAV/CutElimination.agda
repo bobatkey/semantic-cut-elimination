@@ -9,51 +9,63 @@ open import Prelude
 
 open import MAV.Formula At
 
+private
+  variable
+    a a′ : At
+    p p′ : Formula
+    q q′ : Formula
+    r r′ : Formula
+    s s′ : Formula
+
+infix 5 _⟶_
+
 -- One step of the “analytic” proof system
 data _⟶_ : Formula → Formula → Set where
-  `axiom    : ∀ {a} → (+at a `⅋ -at a) ⟶ `I
+  `axiom    : `+ a `⅋ `- a ⟶ `I
 
-  `tidy     : (`I `& `I) ⟶ `I
-  `switch   : ∀ {p q r} → ((p `⊗ q) `⅋ r) ⟶ (p `⊗ (q `⅋ r))
-  `sequence : ∀ {p q r s} → ((p `▷ q) `⅋ (r `▷ s)) ⟶ ((p `⅋ r) `▷ (q `⅋ s))
-  `left     : ∀ {p q} → (p `⊕ q) ⟶ p
-  `right    : ∀ {p q} → (p `⊕ q) ⟶ q
-  `external : ∀ {p q r} → ((p `& q) `⅋ r) ⟶ ((p `⅋ r) `& (q `⅋ r))
-  `medial   : ∀ {p q r s} → ((p `▷ q) `& (r `▷ s)) ⟶ ((p `& r) `▷ (q `& s))
+  `tidy     : `I `& `I ⟶ `I
+  `switch   : (p `⊗ q) `⅋ r ⟶ p `⊗ (q `⅋ r)
+  `sequence : (p `▷ q) `⅋ (r `▷ s) ⟶ (p `⅋ r) `▷ (q `⅋ s)
+  `left     : p `⊕ q ⟶ p
+  `right    : p `⊕ q ⟶ q
+  `external : (p `& q) `⅋ r ⟶ (p `⅋ r) `& (q `⅋ r)
+  `medial   : (p `▷ q) `& (r `▷ s) ⟶ (p `& r) `▷ (q `& s)
 
---  _⟨`⊗_      : ∀ {p p'} → p ⟶ p' → (q : Formula) → (p `⊗ q) ⟶ (p' `⊗ q)
-  _`⊗⟩_      : ∀ {q q'} → (p : Formula) → q ⟶ q' → (p `⊗ q) ⟶ (p `⊗ q')
---  `⊗-assoc   : ∀ {p q r} → (p `⊗ (q `⊗ r)) ⟶ ((p `⊗ q) `⊗ r)
---  `⊗-assoc⁻¹ : ∀ {p q r} → ((p `⊗ q) `⊗ r) ⟶ (p `⊗ (q `⊗ r))
-  `⊗-comm    : ∀ {p q} → (p `⊗ q) ⟶ (q `⊗ p)
+  -- _⟨`⊗_      : p ⟶ p′ → (q : Formula) → (p `⊗ q) ⟶ (p′ `⊗ q)
+  _`⊗⟩_      : (p : Formula) → q ⟶ q′ → (p `⊗ q) ⟶ (p `⊗ q′)
+  -- `⊗-assoc   : (p `⊗ (q `⊗ r)) ⟶ ((p `⊗ q) `⊗ r)
+  -- `⊗-assoc⁻¹ : ((p `⊗ q) `⊗ r) ⟶ (p `⊗ (q `⊗ r))
+  `⊗-comm    : (p `⊗ q) ⟶ (q `⊗ p)
   `⊗-unit    : ∀ {p}   → (p `⊗ `I) ⟶ p
---  `⊗-unit⁻¹  : ∀ {p}   → p ⟶ (p `⊗ `I)
+  -- `⊗-unit⁻¹  : ∀ {p}   → p ⟶ (p `⊗ `I)
 
-  _⟨`⅋_      : ∀ {p p'} → p ⟶ p' → (q : Formula) → (p `⅋ q) ⟶ (p' `⅋ q)
-  _`⅋⟩_      : ∀ {q q'} → (p : Formula) → q ⟶ q' → (p `⅋ q) ⟶ (p `⅋ q')
-  `⅋-assoc   : ∀ {p q r} → (p `⅋ (q `⅋ r)) ⟶ ((p `⅋ q) `⅋ r)
-  `⅋-assoc⁻¹ : ∀ {p q r} → ((p `⅋ q) `⅋ r) ⟶ (p `⅋ (q `⅋ r))
-  `⅋-comm    : ∀ {p q} → (p `⅋ q) ⟶ (q `⅋ p)
+  _⟨`⅋_      : p ⟶ p′ → (q : Formula) → (p `⅋ q) ⟶ (p′ `⅋ q)
+  _`⅋⟩_      : (p : Formula) → q ⟶ q′ → (p `⅋ q) ⟶ (p `⅋ q′)
+  `⅋-assoc   : (p `⅋ (q `⅋ r)) ⟶ ((p `⅋ q) `⅋ r)
+  `⅋-assoc⁻¹ : ((p `⅋ q) `⅋ r) ⟶ (p `⅋ (q `⅋ r))
+  `⅋-comm    : (p `⅋ q) ⟶ (q `⅋ p)
   `⅋-unit    : ∀ {p}   → (p `⅋ `I) ⟶ p
   `⅋-unit⁻¹  : ∀ {p}   → p ⟶ (p `⅋ `I)
 
-  _⟨`▷_      : ∀ {p p'} → p ⟶ p' → (q : Formula) → (p `▷ q) ⟶ (p' `▷ q)
-  _`▷⟩_      : ∀ {q q'} → (p : Formula) → q ⟶ q' → (p `▷ q) ⟶ (p `▷ q')
-  `▷-assoc   : ∀ {p q r} → (p `▷ (q `▷ r)) ⟶ ((p `▷ q) `▷ r)
-  `▷-assoc⁻¹ : ∀ {p q r} → ((p `▷ q) `▷ r) ⟶ (p `▷ (q `▷ r))
+  _⟨`▷_      : p ⟶ p′ → (q : Formula) → (p `▷ q) ⟶ (p′ `▷ q)
+  _`▷⟩_      : (p : Formula) → q ⟶ q′ → (p `▷ q) ⟶ (p `▷ q′)
+  `▷-assoc   : (p `▷ (q `▷ r)) ⟶ ((p `▷ q) `▷ r)
+  `▷-assoc⁻¹ : ((p `▷ q) `▷ r) ⟶ (p `▷ (q `▷ r))
   `▷-runit   : ∀ {p}   → (p `▷ `I) ⟶ p
   `▷-runit⁻¹ : ∀ {p}   → p ⟶ (p `▷ `I)
   `▷-lunit   : ∀ {p}   → (`I `▷ p) ⟶ p
   `▷-lunit⁻¹ : ∀ {p}   → p ⟶ (`I `▷ p)
 
-  _⟨`&_      : ∀ {p p'} → p ⟶ p' → (q : Formula) → (p `& q) ⟶ (p' `& q)
-  _`&⟩_      : ∀ {q q'} → (p : Formula) → q ⟶ q' → (p `& q) ⟶ (p `& q')
+  _⟨`&_      : p ⟶ p′ → (q : Formula) → (p `& q) ⟶ (p′ `& q)
+  _`&⟩_      : (p : Formula) → q ⟶ q′ → (p `& q) ⟶ (p `& q′)
 
+
+infix  5 _⟶*_
+infixr 6 _∷_
 
 data _⟶*_ : Formula → Formula → Set where
   ε : ∀ {p} → p ⟶* p
-  _∷_ : ∀ {p q r} → p ⟶ q → q ⟶* r → p ⟶* r
-infixr 6 _∷_
+  _∷_ : p ⟶ q → q ⟶* r → p ⟶* r
 
 ------------------------------------------------------------------------------
 -- Turning the proof system into a pre-order
@@ -61,8 +73,8 @@ infixr 6 _∷_
 ⟶*-refl : ∀ {p} → p ⟶* p
 ⟶*-refl = ε
 
-⟶*-trans : ∀ {p q r} → p ⟶* q → q ⟶* r → p ⟶* r
-⟶*-trans ε          q⟶*r = q⟶*r
+⟶*-trans : p ⟶* q → q ⟶* r → p ⟶* r
+⟶*-trans ε           q⟶*r = q⟶*r
 ⟶*-trans (x ∷ p⟶*q) q⟶*r = x ∷ ⟶*-trans p⟶*q q⟶*r
 
 ⟶*-isPreorder : IsPreorder _⟶*_
@@ -87,7 +99,7 @@ _⟨⅋*_ : ∀ {p₁ p₂} → p₁ ⟶* p₂ → ∀ q → (p₁ `⅋ q) ⟶* 
 `⅋-isMonoid .IsMonoid.lunit = `⅋-comm ∷ `⅋-unit ∷ ε , `⅋-unit⁻¹ ∷ `⅋-comm ∷ ε
 `⅋-isMonoid .IsMonoid.runit = `⅋-unit ∷ ε , `⅋-unit⁻¹ ∷ ε
 
-`⅋-sym : ∀ {p q} → (p `⅋ q) ⟶* (q `⅋ p)
+`⅋-sym : (p `⅋ q) ⟶* (q `⅋ p)
 `⅋-sym = `⅋-comm ∷ ε
 
 -- ▷ is a monoid in the proof system
@@ -220,13 +232,13 @@ ChuModel .Model.⊗-▷-isDuoidal = ⊗-⍮-isDuoidal
 _>>>_ = ⟶*-trans
 
 -- The atom interaction law in PreSheaves
-atom-int : ∀ a → (P.η (-at a) M.• P.η (+at a)) P.≤P P.η `I
+atom-int : ∀ a → (P.η (`- a) M.• P.η (`+ a)) P.≤P P.η `I
 atom-int a .*≤P* p (p₁ , p₂ , p≤p₁p₂ , lift p₁≤a , lift p₂≤-a) .lower =
    p≤p₁p₂ >>> (`⅋-mono p₁≤a p₂≤-a >>> (`⅋-comm ∷ `axiom ∷ ε))
 
 atom : At → Chu
-atom a .pos = S.α (P.η (-at a))
-atom a .neg = S.α (P.η (+at a))
+atom a .pos = S.α (P.η (`- a))
+atom a .neg = S.α (P.η (`+ a))
 atom a .int = S.≤S-trans (MS.α-monoidal .proj₁) (S.α-mono (atom-int a))
 
 open Interpretation ChuModel atom
@@ -242,8 +254,8 @@ tidyup (t , p⟶*t) = p⟶*t >>> tidyup-lem t
 mutual
   okada : ∀ p → ⟦ p ⟧ .neg .SCarrier p
   okada `I = S.lf (`I , lift ε) , ε
-  okada (+at a) = S.lf (+at a , lift ε) , ε
-  okada (-at a) = S.lf (-at a , lift ε) , ε
+  okada (`+ a) = S.lf (`+ a , lift ε) , ε
+  okada (`- a) = S.lf (`- a , lift ε) , ε
   okada (p `⅋ q) = S.lf (p `⅋ q , p , q , ε , okada p , okada q) , ε
   okada (p `⊗ q) .proj₁ r x =
     ⟦ p ⟧ .neg .S≤-closed
@@ -265,7 +277,7 @@ mutual
   okada2 p r ϕ =
     tidyup (⟦ p ⟧ .int .*≤S* (r `⅋ p) (S.lf (r `⅋ p , r , p , ε , ϕ , okada p) , ε))
 
--- if 'p' is provable, then it has a cut-free proof
+-- if 'p′ is provable, then it has a cut-free proof
 sem-cut-elim : ∀ p → ⟦I⟧ ==> ⟦ p ⟧ → p ⟶* `I
 sem-cut-elim p prf = tidyup (prf ._==>_.fneg .*≤S* p (okada p))
 
