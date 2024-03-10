@@ -2,6 +2,7 @@
 *.agdai
 _build/
 index.pdf
+doc/.latexmkrc
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
