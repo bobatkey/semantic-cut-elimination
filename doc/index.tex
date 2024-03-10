@@ -15,7 +15,7 @@
 % Asterisk      *           Plus         +          Comma         ,
 % Minus         -           Point        .          Solidus       /
 % Colon         :           Semicolon    ;          Less than     <
-% Equals        =3D           Greater than >          Question mark ?
+% Equals        =           Greater than >          Question mark ?
 % At            @           Left bracket [          Backslash     \
 % Right bracket ]           Circumflex   ^          Underscore    _
 % Grave accent  `           Left brace   {          Vertical bar  |
@@ -54,20 +54,18 @@
 %% Frontmatter                                                                %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frontmatter}
-  \title{An Example Paper\thanksref{ALL}}
+  \title{A Semantic Proof of Cut Elimination for Multiplicative Additive System Virtual\thanksref{ALL}}
   \thanks[ALL]{General thanks to everyone who should be thanked.}
-  \author{My Name\thanksref{a}\thanksref{myemail}}
-  \author{My Co-author\thanksref{b}\thanksref{coemail}}
-  \address[a]{My Department\\ My University\\My City, My Country}
-  \thanks[myemail]%
-  {Email: \href{mailto:myuserid@mydept.myinst.myedu}%
-    {\texttt{\normalshape myuserid@mydept.myinst.myedu}}}
+  \author{Robert Atkey\thanksref{msp}\thanksref{bobemail}}
+  \author{Wen Kokke\thanksref{msp}\thanksref{wenemail}}
+  \address[msp]{University of Strathclyde\\Glasgow, Scotland, UK}
+  \thanks[bobemail]%
+  {Email: \href{robert.atkey@strath.ac.uk}%
+    {\texttt{\normalshape robert.atkey@strath.ac.uk}}}
   % ^-- If all authors share same institution, only list the address once, after the second author. There also is a link from the first author to the co-author's address to show how to list affiliations to more than one institution, when needed. 
-  \address[b]{My Co-author's Department\\My Co-author's University\\
-    My Co-author's City, My Co-author's Country}
-  \thanks[coemail]%
-  {Email: \href{mailto:couserid@codept.coinst.coedu}%
-    {\texttt{\normalshape couserid@codept.coinst.coedu}}}
+  \thanks[wenemail]%
+  {Email: \href{wen.kokke@strath.ac.uk}%
+    {\texttt{\normalshape wen.kokke@strath.ac.uk}}}
   \begin{abstract}
     To be written...
   \end{abstract}
@@ -76,7 +74,9 @@
   \end{keyword}
 \end{frontmatter}
 
+\cite{Horne15:mav,Okada99:psc}
+
 \bibliographystyle{./entics}
-% \bibliography{index}
+\bibliography{index}
 
 \end{document}
