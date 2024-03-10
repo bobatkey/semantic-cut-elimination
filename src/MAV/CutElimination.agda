@@ -11,11 +11,11 @@ open import MAV.Formula At
 
 private
   variable
-    a a′ : At
-    p p′ : Formula
-    q q′ : Formula
-    r r′ : Formula
-    s s′ : Formula
+    a a′ a₁ a₂ : At
+    p p′ p₁ p₂ : Formula
+    q q′ q₁ q₂ : Formula
+    r r′ r₁ r₂ : Formula
+    s s′ s₁ s₂ : Formula
 
 infix 5 _⟶_
 
@@ -31,13 +31,13 @@ data _⟶_ : Formula → Formula → Set where
   `external : (p `& q) `⅋ r ⟶ (p `⅋ r) `& (q `⅋ r)
   `medial   : (p `▷ q) `& (r `▷ s) ⟶ (p `& r) `▷ (q `& s)
 
-  -- _⟨`⊗_      : p ⟶ p′ → (q : Formula) → (p `⊗ q) ⟶ (p′ `⊗ q)
-  _`⊗⟩_      : (p : Formula) → q ⟶ q′ → (p `⊗ q) ⟶ (p `⊗ q′)
-  -- `⊗-assoc   : (p `⊗ (q `⊗ r)) ⟶ ((p `⊗ q) `⊗ r)
-  -- `⊗-assoc⁻¹ : ((p `⊗ q) `⊗ r) ⟶ (p `⊗ (q `⊗ r))
-  `⊗-comm    : (p `⊗ q) ⟶ (q `⊗ p)
-  `⊗-unit    : ∀ {p}   → (p `⊗ `I) ⟶ p
-  -- `⊗-unit⁻¹  : ∀ {p}   → p ⟶ (p `⊗ `I)
+  -- _⟨`⊗_      : p ⟶ p′ → (q : Formula) → p `⊗ q ⟶ p′ `⊗ q
+  _`⊗⟩_      : (p : Formula) → q ⟶ q′ → p `⊗ q ⟶ p `⊗ q′
+  -- `⊗-assoc   : p `⊗ (q `⊗ r) ⟶ (p `⊗ q) `⊗ r
+  -- `⊗-assoc⁻¹ : (p `⊗ q) `⊗ r ⟶ p `⊗ (q `⊗ r)
+  `⊗-comm    : p `⊗ q ⟶ q `⊗ p
+  `⊗-unit    : p `⊗ `I ⟶ p
+  -- `⊗-unit⁻¹  : p ⟶ (p `⊗ `I)
 
   _⟨`⅋_      : p ⟶ p′ → (q : Formula) → (p `⅋ q) ⟶ (p′ `⅋ q)
   _`⅋⟩_      : (p : Formula) → q ⟶ q′ → (p `⅋ q) ⟶ (p `⅋ q′)
@@ -82,16 +82,16 @@ data _⟶*_ : Formula → Formula → Set where
 ⟶*-isPreorder .IsPreorder.trans = ⟶*-trans
 
 -- ⅋ is a monoid in the proof system
-_⅋⟩*_ : ∀ p {q₁ q₂} → q₁ ⟶* q₂ → (p `⅋ q₁) ⟶* (p `⅋ q₂)
-p ⅋⟩* ε = ε
-p ⅋⟩* (x ∷ ϕ) = (p `⅋⟩ x) ∷ (p ⅋⟩* ϕ)
+_`⅋⟩*_ : (p : Formula) → q₁ ⟶* q₂ → (p `⅋ q₁) ⟶* (p `⅋ q₂)
+p `⅋⟩* ε = ε
+p `⅋⟩* (x ∷ ϕ) = (p `⅋⟩ x) ∷ (p `⅋⟩* ϕ)
 
-_⟨⅋*_ : ∀ {p₁ p₂} → p₁ ⟶* p₂ → ∀ q → (p₁ `⅋ q) ⟶* (p₂ `⅋ q)
-ε ⟨⅋* q = ε
-(x ∷ ϕ) ⟨⅋* q = (x ⟨`⅋ q) ∷ (ϕ ⟨⅋* q)
+_⟨`⅋*_ : p ⟶* p′ → (q : Formula) →  (p `⅋ q) ⟶* (p′ `⅋ q)
+ε       ⟨`⅋* q = ε
+(x ∷ ϕ) ⟨`⅋* q = (x ⟨`⅋ q) ∷ (ϕ ⟨`⅋* q)
 
-`⅋-mono : ∀ {p₁ q₁ p₂ q₂} → (p₁ ⟶* p₂) → (q₁ ⟶* q₂) → (p₁ `⅋ q₁) ⟶* (p₂ `⅋ q₂)
-`⅋-mono {p₁}{q₁}{p₂}{q₂} f g = ⟶*-trans (p₁ ⅋⟩* g) (f ⟨⅋* q₂)
+`⅋-mono : (p ⟶* p′) → (q ⟶* q′) → (p `⅋ q) ⟶* (p′ `⅋ q′)
+`⅋-mono {p = p} {q′ = q′} f g = ⟶*-trans (p `⅋⟩* g) (f ⟨`⅋* q′)
 
 `⅋-isMonoid : IsMonoid ⟶*-isPreorder _`⅋_ `I
 `⅋-isMonoid .IsMonoid.mono = `⅋-mono
@@ -99,20 +99,20 @@ _⟨⅋*_ : ∀ {p₁ p₂} → p₁ ⟶* p₂ → ∀ q → (p₁ `⅋ q) ⟶* 
 `⅋-isMonoid .IsMonoid.lunit = `⅋-comm ∷ `⅋-unit ∷ ε , `⅋-unit⁻¹ ∷ `⅋-comm ∷ ε
 `⅋-isMonoid .IsMonoid.runit = `⅋-unit ∷ ε , `⅋-unit⁻¹ ∷ ε
 
-`⅋-sym : (p `⅋ q) ⟶* (q `⅋ p)
+`⅋-sym : p `⅋ q ⟶* q `⅋ p
 `⅋-sym = `⅋-comm ∷ ε
 
 -- ▷ is a monoid in the proof system
-_`▷⟩*_ : ∀ p {q₁ q₂} → q₁ ⟶* q₂ → (p `▷ q₁) ⟶* (p `▷ q₂)
+_`▷⟩*_ : (p : Formula) → q₁ ⟶* q₂ → p `▷ q₁ ⟶* p `▷ q₂
 p `▷⟩* ε = ε
 p `▷⟩* (x ∷ ϕ) = (p `▷⟩ x) ∷ (p `▷⟩* ϕ)
 
-_⟨`▷*_ : ∀ {p₁ p₂} → p₁ ⟶* p₂ → ∀ q → (p₁ `▷ q) ⟶* (p₂ `▷ q)
-ε ⟨`▷* q = ε
+_⟨`▷*_ : p ⟶* p′ → (q : Formula) → p `▷ q ⟶* p′ `▷ q
+ε       ⟨`▷* q = ε
 (x ∷ ϕ) ⟨`▷* q = (x ⟨`▷ q) ∷ (ϕ ⟨`▷* q)
 
-`▷-mono : ∀ {p₁ q₁ p₂ q₂} → (p₁ ⟶* p₂) → (q₁ ⟶* q₂) → (p₁ `▷ q₁) ⟶* (p₂ `▷ q₂)
-`▷-mono {p₁}{q₁}{p₂}{q₂} f g = ⟶*-trans (p₁ `▷⟩* g) (f ⟨`▷* q₂)
+`▷-mono : (p ⟶* p′) → (q ⟶* q′) → (p `▷ q) ⟶* (p′ `▷ q′)
+`▷-mono {p = p} {q′ = q′} f g = ⟶*-trans (p `▷⟩* g) (f ⟨`▷* q′)
 
 `▷-isMonoid : IsMonoid ⟶*-isPreorder _`▷_ `I
 `▷-isMonoid .IsMonoid.mono = `▷-mono
@@ -125,25 +125,25 @@ _⟨`▷*_ : ∀ {p₁ p₂} → p₁ ⟶* p₂ → ∀ q → (p₁ `▷ q) ⟶*
 ⅋-`▷-isDuoidal .IsDuoidal.mu = `⅋-unit ∷ ε
 
 -- & is a monotone operator
-_`&⟩*_ : ∀ p {q₁ q₂} → q₁ ⟶* q₂ → (p `& q₁) ⟶* (p `& q₂)
+_`&⟩*_ : (p : Formula) → q ⟶* q′ → p `& q ⟶* p `& q′
 p `&⟩* ε = ε
 p `&⟩* (x ∷ ϕ) = (p `&⟩ x) ∷ (p `&⟩* ϕ)
 
-_⟨`&*_ : ∀ {p₁ p₂} → p₁ ⟶* p₂ → ∀ q → (p₁ `& q) ⟶* (p₂ `& q)
-ε ⟨`&* q = ε
+_⟨`&*_ : p ⟶* p′ → (q : Formula) → (p `& q) ⟶* (p′ `& q)
+ε       ⟨`&* q = ε
 (x ∷ ϕ) ⟨`&* q = (x ⟨`& q) ∷ (ϕ ⟨`&* q)
 
-`&-mono : ∀ {p₁ q₁ p₂ q₂} → (p₁ ⟶* p₂) → (q₁ ⟶* q₂) → (p₁ `& q₁) ⟶* (p₂ `& q₂)
-`&-mono {p₁}{q₁}{p₂}{q₂} f g = ⟶*-trans (p₁ `&⟩* g) (f ⟨`&* q₂)
+`&-mono : p ⟶* p′ → q ⟶* q′ → p `& q ⟶* p′ `& q′
+`&-mono {p = p} {q′ = q′} f g = ⟶*-trans (p `&⟩* g) (f ⟨`&* q′)
 
 -- _⊗_ is a monotone operator
-_`⊗⟩*_ : ∀ p {q₁ q₂} → q₁ ⟶* q₂ → (p `⊗ q₁) ⟶* (p `⊗ q₂)
+_`⊗⟩*_ : (p : Formula) → q ⟶* q′ → (p `⊗ q) ⟶* (p `⊗ q′)
 p `⊗⟩* ε = ε
 p `⊗⟩* (x ∷ ϕ) = (p `⊗⟩ x) ∷ (p `⊗⟩* ϕ)
 
--- _⟨⊗*_ : ∀ {p₁ p₂} → p₁ ⟶* p₂ → ∀ q → (p₁ ⊗ q) ⟶* (p₂ ⊗ q)
--- ε ⟨⊗* q = ε
--- (x ∷ ϕ) ⟨⊗* q = (x ⟨⊗ q) ∷ (ϕ ⟨⊗* q)
+-- _⟨`⊗*_ : p ⟶* p′ → (q : Formula) → (p `⊗ q) ⟶* (p′ `⊗ q)
+-- ε       ⟨`⊗* q = ε
+-- (x ∷ ϕ) ⟨`⊗* q = (x `⟨⊗ q) ∷ (ϕ ⟨`⊗* q)
 
 
 

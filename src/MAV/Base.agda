@@ -12,11 +12,11 @@ open import MAV.Formula At
 
 private
   variable
-    a a′ : At
-    p p′ : Formula
-    q q′ : Formula
-    r r′ : Formula
-    s s′ : Formula
+    a a′ a₁ a₂ : At
+    p p′ p₁ p₂ : Formula
+    q q′ q₁ q₂ : Formula
+    r r′ r₁ r₂ : Formula
+    s s′ s₁ s₂ : Formula
 
 infix 5 _⟶_
 
