@@ -1,6 +1,6 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-module MAV (At : Set) where
+module MAV.Base (At : Set) where
 
 open import Level
 open import Data.Product using (proj₁; proj₂)
@@ -8,7 +8,7 @@ open import Relation.Binary using (IsEquivalence)
 open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 open import Prelude
 
-open import Formula At
+open import MAV.Formula At
 
 data _⟶_ : Formula → Formula → Set where
   `axiom    : ∀ p → (p `⅋ `¬ p) ⟶ `I

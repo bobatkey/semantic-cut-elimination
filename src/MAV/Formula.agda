@@ -1,6 +1,6 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-module Formula (At : Set) where
+module MAV.Formula (At : Set) where
 
 data Formula : Set where
   `I : Formula

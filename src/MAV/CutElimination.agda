@@ -7,7 +7,7 @@ open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Level using (0ℓ; lift; lower; Lift; suc)
 open import Prelude
 
-open import Formula At
+open import MAV.Formula At
 
 -- One step of the “analytic” proof system
 data _⟶_ : Formula → Formula → Set where
@@ -181,7 +181,7 @@ open CC.SelfDual M▷.▷-isMonoid
         D.⊗-▷-isDuoidal
 open P._≤P_
 
-open import MAV At
+open import MAV.Base At
     using (Model; module Interpretation; test; test-id)
     renaming (_⟶*_ to _s⟶*_)
 
