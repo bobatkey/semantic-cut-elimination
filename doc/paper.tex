@@ -2,6 +2,8 @@
 \documentclass[twoside,11pt]{entics}
 \usepackage{enticsmacro}
 \usepackage{graphicx}
+\usepackage{cmll}
+\usepackage{mathpartir}
 \usepackage[all]{xy}
 %\usepackage{url}
 \sloppy
@@ -54,7 +56,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Include agda.sty
-\usepackage{agda}
+%\usepackage{agda}
 
 % Set up unicode support
 \usepackage{iftex}
@@ -92,7 +94,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frontmatter}
   \title{A Semantic Proof of Cut Elimination for Multiplicative Additive System Virtual\thanksref{ALL}}
-  \thanks[ALL]{General thanks to everyone who should be thanked.}
+  \thanks[ALL]{General thanks to everyone who should be thanked. FIXME: EPSRC}
   \author{Robert Atkey\thanksref{msp}\thanksref{bobemail}}
   \author{Wen Kokke\thanksref{msp}\thanksref{wenemail}}
   \address[msp]{%
@@ -115,7 +117,175 @@
   \end{keyword}
 \end{frontmatter}
 
-\input{sections/index}
+\section{Introduction}
+
+\begin{enumerate}
+\item It makes sense to add a sequencing connective to MALL. This is
+  motivated by coherence spaces (Retore), or by thinking in terms of
+  session types.
+\item A sequent calculus is not possible (CITE: Tiu, Strassberger),
+  but it is possible to define a proof calculus based on deep
+  inference. (Also Retore's proof nets, but it turns out they define a
+  different logic).
+\item To make sure that a proof system makes sense, we need some kind
+  of Cut-elimination theorem that ensures that all proofs can be
+  placed into a normal form where it is evident that it is not
+  possible to derive all results.
+\end{enumerate}
+
+MAV is defined by Horne \cite{Horne15:mav}, who gave a syntactic proof
+of cut-elimination and the admissibility of several other rules. We
+provide an alternative proof of cut-elimination via a semantic
+model. This proof avoids some of the intrincate syntactic reasoning in
+Horne's proof and is more modular, as evidenced by the extensions we
+present in \autoref{sec:extensions}.
+
+Cut-elimination for MALL by construction of a semantic model is due to
+Okada \cite{Okada99:psc}, who shows that the a Phase Space model of
+MALL (described by Girard \cite{Girard87:ll} and Troelstra
+\cite{TroelstraXX:lnll}) can be constructed from cut-proof proofs. The
+completeness of this model directly yields the existence of a cut-free
+proof for every proof constructible in the MALL sequent calculus. For
+MAV, we cannot use Phase Spaces due to the 
+
+The same technique has been used for MALL with fixpoints (CITE:
+Saurin) and for Bunched Implications with extensions (CITE: Frumin).
+
+
+\subsection{Contributions}
+
+\begin{enumerate}
+\item We define an algebraic semantics for MAV. Due to the close
+  connection between Deep Inference and categorical/algebraic logic
+  (CITE: Hughes), this is a relatively straightforward adaptation, but
+  is needed for what follows. SECTIONREF.
+\item We demonstrate that a useful class of MAV-algebras can be
+  constructed from 
+\item 
+\end{enumerate}
+
+\section{Deep Inference and Multiplicative-Additive System Virtual}
+
+TODO: introduce MAV and Deep Inference.
+
+Formulas:
+\begin{displaymath}
+  P, Q ::= a \mid a^\perp \mid I \mid P \otimes Q \mid P \parr Q \mid P \with Q \mid P \oplus Q \mid P; Q
+\end{displaymath}
+
+Negation:
+\begin{displaymath}
+  \begin{array}{lcl}
+    (a)^\perp           & = & a^\perp \\
+    (a^\perp)^\perp     & = & a \\
+    (I)^\perp           & = & I \\
+    (P \otimes Q)^\perp & = & (P)^\perp \parr   (Q)^\perp \\
+    (P \parr   Q)^\perp & = & (P)^\perp \otimes (Q)^\perp \\
+    (P \with   Q)^\perp & = & (P)^\perp \oplus  (Q)^\perp \\
+    (P \oplus  Q)^\perp & = & (P)^\perp \with   (Q)^\perp \\
+    (P ; Q)^\perp       & = & (P)^\perp ; (Q)^\perp
+  \end{array}
+\end{displaymath}
+
+\section{Semantics of MAV}
+
+\subsection{$*$-autonomous and Duoidal Preorders}
+
+\subsection{MAV Algebras}
+
+\subsection{Interpretation}
+
+\subsection{Chu Construction and Self-Dual Monoids}
+
+\newcommand{\Chu}{\mathrm{Chu}}
+\newcommand{\op}{\mathrm{op}}
+
+To construct suitable MAV Algebras, we use the preorder version of the
+Chu construction \cite{barr}. The Chu construction builds
+$*$-autonomous categories from symmetric monoidal closed categories
+with pullbacks. In the preorder case, the requirement for preorders
+simplifies to binary meets. Therefore, for this section, we let
+$(A, \leq, \bullet, \epsilon, -\kern-9pt\bullet)$ be a symmetric
+monoidal closed preorder with all binary meets.
+
+\begin{definition}
+  Let $k$ be an element of $A$. $\Chu(A, k)$ is the preorder with
+  elements comprised of pairs $(a^+, a^-)$ such that
+  $a^+ \bullet a^- \leq k$, with ordering
+  $(a^+,a^-) \sqsubseteq (b^+, b^-)$ when $a^+ \leq b^+$ and
+  $b^- \leq a^-$.
+\end{definition}
+
+\begin{theorem}
+  $\Chu(A, k)$ is a $*$-autonomous preorder with symmetric monoidal
+  structure and negation defined as:
+  \begin{mathpar}
+    (a^+, a^-) \otimes (b^+, b^-) = (a^+ \bullet b^+, (b^+ \multimap a^-) \land (a^+ \multimap b^-))
+
+    I = (\epsilon, k)
+
+    (a^+,a^-)^\perp = (a^-, a^+)
+  \end{mathpar}
+\end{theorem}
+
+\begin{theorem}
+  If $A$ has binary joins, then $\Chu(A, k)$ has binary meets, given
+  by $(a^+,a^-) \land (b^+,b^-) = (a^+ \land b^+, a^- \lor b^-)$.
+\end{theorem}
+
+\paragraph{Self-dual duoidal structure}
+
+These two theorems give us enough structure to interpret the
+multiplicative and additive constructs of MAV. We need to also
+interpret the self-dual $P; Q$ connective. Let us assume that we have
+an operation $-\rhd- : A \times A \to A$ that we want to induce
+self-dual operator on $\Chu(A, k)$. By the way the Chu construction is
+defined, we can make an operator that is self-dual by definition:
+\begin{displaymath}
+  (a^+, a^-) ; (b^+, b^-) = (a^+ \rhd b^+, a^- \rhd b^-)
+\end{displaymath}
+for this to work, we need to assume duoidality.
+
+And that the dualising object $k$ is a
+satisfies $k \rhd k \leq k$. If $\rhd$ has a unit $j$, then $(j, j)$ is a unit if
+
+
+The Chu construction allows us to state
+directly that any operator we define on $\Chu(A, k)$ is self dual by
+defining as the same
+
+\subsection{Monoids on Lower Sets}
+
+Lower sets: $X : A^\op \to \Omega$.
+
+
+
+\subsection{Closure Operators on Lower Sets}
+
+need the ``preorder of elements'' $\int X$ of a lower set $X$.
+
+need trees
+
+\begin{displaymath}
+  \mathsf{C}(X) = \{ x \mid t \in \mathrm{Tree}(\int X), x \leq \mathrm{combine}(t) \}
+\end{displaymath}
+
+\begin{theorem}
+  $\mathsf{C}$ is a closure operator. Moreover, it is lax monoidal wrt
+  to one operator, and strong monoidal wrt the other.
+\end{theorem}
+
+
+
+\section{Semantic Cut-Elimination}
+
+\subsection{Constructing a preorder from MAV}
+
+\subsection{The Okada Property}
+
+\section{Extensions}
+\label{sec:extensions}
+
 
 \bibliographystyle{./entics}
 \bibliography{paper}
