@@ -1,0 +1,123 @@
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\documentclass[twoside,11pt]{entics}
+\usepackage{enticsmacro}
+\usepackage{graphicx}
+\usepackage[all]{xy}
+%\usepackage{url}
+\sloppy
+% The following is enclosed to allow easy detection of differences in
+% ascii coding.
+% Upper-case    A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+% Lower-case    a b c d e f g h i j k l m n o p q r s t u v w x y z
+% Digits        0 1 2 3 4 5 6 7 8 9
+% Exclamation   !           Double quote "          Hash (number) #
+% Dollar        $           Percent      %          Ampersand     &
+% Acute accent  '           Left paren   (          Right paren   )
+% Asterisk      *           Plus         +          Comma         ,
+% Minus         -           Point        .          Solidus       /
+% Colon         :           Semicolon    ;          Less than     <
+% Equals        =           Greater than >          Question mark ?
+% At            @           Left bracket [          Backslash     \
+% Right bracket ]           Circumflex   ^          Underscore    _
+% Grave accent  `           Left brace   {          Vertical bar  |
+% Right brace   }           Tilde        ~
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Your Corresponding Editor will provide the following information:          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\conf{MFPS 2024}
+\volume{NN}%
+\def\volu{NN}%
+\def\papno{nn}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Please fill in the following information:                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\lastname{Atkey, Kokke}
+% ^-- If more than three authors, use et al.
+\def\runtitle{Semantic Cut Elimation for MAV}
+% ^-- Short title appears in the running header on even pages. 
+\def\copynames{R. Atkey, W. Kokke}
+% ^-- Fill in the first initial and last name of the authors
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Claiming Creative Commons copyright here:                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\CCB{CC@symbol}
+% ^-- Be sure the correct Creative Commons copyright symbol is chosen.
+%     See Section 2 of:
+%     https://mirrors.concertpass.com/tex-archive/fonts/ccicons/ccicons.pdf
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Preamble:                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include agda.sty
+\usepackage{agda}
+
+% Set up unicode support
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+  \DeclareUnicodeCharacter{2115}{\ensuremath{\mathbb{N}}}
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+\fi
+
+% Set up TODO macros
+\usepackage{todonotes}
+% \usepackage{regexpatch}
+% \makeatletter
+% \xpatchcmd{\@todo}{%
+%   \setkeys{todonotes}{#1}}{%
+%   \setkeys{todonotes}{inline,#1}}{}{}
+% \makeatother
+\presetkeys{todonotes}{inline}{}
+\newcommand{\wen}[2][]{\todo[%
+  author=Wen,%
+  color=Thistle,%
+  textcolor=Black,#1]{#2}}
+\newcommand{\bob}[2][]{\todo[%
+  author=Bob,%
+  color=Turquoise,%
+  textcolor=Black,#1]{#2}}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Frontmatter                                                                %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frontmatter}
+  \title{A Semantic Proof of Cut Elimination for Multiplicative Additive System Virtual\thanksref{ALL}}
+  \thanks[ALL]{General thanks to everyone who should be thanked.}
+  \author{Robert Atkey\thanksref{msp}\thanksref{bobemail}}
+  \author{Wen Kokke\thanksref{msp}\thanksref{wenemail}}
+  \address[msp]{%
+    Mathematically Structured Programming\\
+    Computer and Information Sciences\\
+    University of Strathclyde\\
+    Glasgow, Scotland, UK}
+  \thanks[bobemail]%
+  {Email: \href{robert.atkey@strath.ac.uk}%
+    {\texttt{\normalshape robert.atkey@strath.ac.uk}}}
+  % ^-- If all authors share same institution, only list the address once, after the second author. There also is a link from the first author to the co-author's address to show how to list affiliations to more than one institution, when needed. 
+  \thanks[wenemail]%
+  {Email: \href{wen.kokke@strath.ac.uk}%
+    {\texttt{\normalshape wen.kokke@strath.ac.uk}}}
+  \begin{abstract}
+    To be written...
+  \end{abstract}
+  \begin{keyword}
+    Please list keywords from your paper here, separated by commas.
+  \end{keyword}
+\end{frontmatter}
+
+\input{sections/index}
+
+\bibliographystyle{./entics}
+\bibliography{paper}
+
+\end{document}

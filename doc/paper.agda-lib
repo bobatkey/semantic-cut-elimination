@@ -1,0 +1,3 @@
+name: paper
+include: sections
+depend: standard-library

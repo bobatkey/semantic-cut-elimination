@@ -1,24 +1,28 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-module basics where
+module Prelude where
 
 open import Level using (_⊔_; suc)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Relation.Binary using (Setoid; IsEquivalence)
+open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
+import Relation.Binary.Reasoning.Setoid as SetoidReasoning
 
-module _ {a} {A : Set a} where
-
-  SymmetricCore : ∀ {b} → (A → A → Set b) → (A → A → Set b)
-  SymmetricCore R x y = R x y × R y x
+module _
+    {a}
+    {A : Set a}
+  where
 
   record IsPreorder {b} (_≤_ : A → A → Set b) : Set (a ⊔ b) where
     field
       refl  : ∀ {x} → x ≤ x
       trans : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
-    _≃_ = SymmetricCore _≤_
+
+    _≃_ : A → A → Set b
+    _≃_ = SymCore _≤_
     infix 4 _≃_
 
-    ≃-isEquivalence : IsEquivalence _≃_
+    ≃-isEquivalence : IsEquivalence (SymCore _≤_)
     ≃-isEquivalence .IsEquivalence.refl = refl , refl
     ≃-isEquivalence .IsEquivalence.sym (x≤y , y≤x) = y≤x , x≤y
     ≃-isEquivalence .IsEquivalence.trans (x≤y , y≤x) (y≤z , z≤y) =
@@ -26,10 +30,17 @@ module _ {a} {A : Set a} where
 
     ≃-setoid : Setoid a b
     ≃-setoid .Setoid.Carrier = A
-    ≃-setoid .Setoid._≈_ = _≃_
+    ≃-setoid .Setoid._≈_ = SymCore _≤_
     ≃-setoid .Setoid.isEquivalence = ≃-isEquivalence
 
-module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreorder _≤_) where
+    module ≃-SetoidReasoning = SetoidReasoning ≃-setoid
+
+module _
+    {a b}
+    {A : Set a}
+    {_≤_ : A → A → Set b}
+    (≤-isPreorder : IsPreorder _≤_)
+  where
 
   record IsMonoid (_∙_ : A → A → A) (ε : A) : Set (a ⊔ b) where
     open IsPreorder ≤-isPreorder
@@ -44,15 +55,12 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
       mono (eq₁ .proj₁) (eq₂ .proj₁) ,
       mono (eq₁ .proj₂) (eq₂ .proj₂)
 
-  record IsClosure {_∙_ : A → A → A} {ε : A}
-                   (∙-isMonoid : IsMonoid _∙_ ε)
-                   (_-∙_ : A → A → A) : Set (a ⊔ b) where
+  record IsClosure {_∙_ : A → A → A} {ε : A} (∙-isMonoid : IsMonoid _∙_ ε) (_-∙_ : A → A → A) : Set (a ⊔ b) where
+    open IsPreorder ≤-isPreorder
+    open IsMonoid ∙-isMonoid
     field
       lambda : ∀ {x y z} → (x ∙ y) ≤ z → x ≤ (y -∙ z)
       eval   : ∀ {x y} → ((x -∙ y) ∙ x) ≤ y
-
-    open IsPreorder ≤-isPreorder
-    open IsMonoid ∙-isMonoid
 
     -∙-mono : ∀ {x₁ y₁ x₂ y₂} → x₂ ≤ x₁ → y₁ ≤ y₂ → (x₁ -∙ y₁) ≤ (x₂ -∙ y₂)
     -∙-mono x₂≤x₁ y₁≤y₂ = lambda (trans (mono refl x₂≤x₁) (trans eval y₁≤y₂))
@@ -61,12 +69,11 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     lambda⁻¹ x≤y-z = trans (mono x≤y-z refl) eval
 
   record IsMeet (_∧_ : A → A → A) : Set (a ⊔ b) where
+    open IsPreorder ≤-isPreorder
     field
       π₁ : ∀ {x y} → (x ∧ y) ≤ x
       π₂ : ∀ {x y} → (x ∧ y) ≤ y
       ⟨_,_⟩ : ∀ {x y z} → x ≤ y → x ≤ z → x ≤ (y ∧ z)
-
-    open IsPreorder ≤-isPreorder
 
     mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ∧ y₁) ≤ (x₂ ∧ y₂)
     mono x₁≤x₂ y₁≤y₂ = ⟨ trans π₁ x₁≤x₂ , trans π₂ y₁≤y₂ ⟩
@@ -86,12 +93,17 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     field
       ≤-top : ∀ {x} → x ≤ ⊤
 
-  record IsBigMeet iℓ (⋀ : (I : Set iℓ) → (I → A) → A) : Set (a ⊔ b ⊔ suc iℓ) where
+  record IsBigMeet ℓ (⋀ : (I : Set ℓ) → (I → A) → A) : Set (a ⊔ b ⊔ suc ℓ) where
     field
-      lower    : (I : Set iℓ) (x : I → A) (i : I) → ⋀ I x ≤ x i
-      greatest : (I : Set iℓ) (x : I → A) (z : A) → (∀ i → z ≤ x i) → z ≤ ⋀ I x
+      lower    : (I : Set ℓ) (x : I → A) (i : I) → ⋀ I x ≤ x i
+      greatest : (I : Set ℓ) (x : I → A) (z : A) → (∀ i → z ≤ x i) → z ≤ ⋀ I x
 
-  module _ {_∧_ : A → A → A} {⊤ : A} (isMeet : IsMeet _∧_) (isTop : IsTop ⊤) where
+  module _
+      {_∧_ : A → A → A}
+      {⊤ : A}
+      (isMeet : IsMeet _∧_)
+      (isTop : IsTop ⊤)
+    where
     open IsPreorder ≤-isPreorder
     open IsMeet isMeet
     open IsTop isTop
@@ -105,12 +117,11 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
     monoidOfMeet .IsMonoid.runit .proj₂ = ⟨ refl , ≤-top ⟩
 
   record IsJoin (_∨_ : A → A → A) : Set (a ⊔ b) where
+    open IsPreorder ≤-isPreorder
     field
       inl : ∀ {x y} → x ≤ (x ∨ y)
       inr : ∀ {x y} → y ≤ (x ∨ y)
       [_,_] : ∀ {x y z} → x ≤ z → y ≤ z → (x ∨ y) ≤ z
-
-    open IsPreorder ≤-isPreorder
 
     mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ ∨ y₁) ≤ (x₂ ∨ y₂)
     mono x₁≤x₂ y₁≤y₂ = [ trans x₁≤x₂ inl , trans y₁≤y₂ inr ]
@@ -193,7 +204,7 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
         ¬ (¬ x ⊗ (¬ y ⊗ ¬ z))   ≈⟨ ¬-cong (cong (refl , refl) involution) ⟩
         ¬ (¬ x ⊗ ¬ (y ⅋ z))     ≡⟨⟩
         x ⅋ (y ⅋ z)            ∎
-      where open import Relation.Binary.Reasoning.Setoid ≃-setoid
+      where open ≃-SetoidReasoning
     ⅋-isMonoid .IsMonoid.lunit {x} =
       begin
         ⊥ ⅋ x             ≡⟨⟩
@@ -201,7 +212,7 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
         ¬ (ε ⊗ ¬ x)        ≈⟨ ¬-cong lunit ⟩
         ¬ (¬ x)            ≈˘⟨ involution ⟩
         x                  ∎
-      where open import Relation.Binary.Reasoning.Setoid ≃-setoid
+      where open ≃-SetoidReasoning
     ⅋-isMonoid .IsMonoid.runit {x} =
       begin
         x ⅋ ⊥             ≡⟨⟩
@@ -209,14 +220,14 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
         ¬ (¬ x ⊗ ε)        ≈⟨ ¬-cong runit ⟩
         ¬ (¬ x)            ≈˘⟨ involution ⟩
         x                  ∎
-      where open import Relation.Binary.Reasoning.Setoid ≃-setoid
+      where open ≃-SetoidReasoning
 
-    open IsMonoid ⅋-isMonoid
+    open IsMonoid ⅋-isMonoid public
       renaming (mono to ⅋-mono;
                 cong to ⅋-cong;
                 assoc to ⅋-assoc;
                 lunit to ⅋-lunit;
-                runit to ⅋-runit) public
+                runit to ⅋-runit)
 
     ev : ∀ {x} → (x ⊗ ¬ x) ≤ ⊥
     ev = *-aut⁻¹ (trans (involution .proj₁) (¬-mono (runit .proj₁)))
@@ -243,7 +254,6 @@ module _ {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreor
   ------------------------------------------------------------------------------
   record IsClosureOp (C : A → A) : Set (a ⊔ b) where
     open IsPreorder ≤-isPreorder
-
     field
       mono   : ∀ {x y} → x ≤ y → C x ≤ C y
       unit   : ∀ {x} → x ≤ C x
