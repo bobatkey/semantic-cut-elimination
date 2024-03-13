@@ -1,0 +1,90 @@
+\section{Semantics}\label{sec:mav-semantics}
+
+\subsection{$*$-autonomous and Duoidal Preorders}
+
+\subsection{MAV Algebras}
+
+\subsection{Interpretation}
+
+\subsection{Chu Construction and Self-Dual Monoids}
+
+\newcommand{\Chu}{\mathrm{Chu}}
+\newcommand{\op}{\mathrm{op}}
+
+To construct suitable MAV Algebras, we use the preorder version of the
+Chu construction \cite{barr}. The Chu construction builds
+$*$-autonomous categories from symmetric monoidal closed categories
+with pullbacks. In the preorder case, the requirement for preorders
+simplifies to binary meets. Therefore, for this section, we let
+$(A, \leq, \bullet, \epsilon, -\kern-9pt\bullet)$ be a symmetric
+monoidal closed preorder with all binary meets.
+
+\begin{definition}
+  Let $k$ be an element of $A$. $\Chu(A, k)$ is the preorder with
+  elements comprised of pairs $(a^+, a^-)$ such that
+  $a^+ \bullet a^- \leq k$, with ordering
+  $(a^+,a^-) \sqsubseteq (b^+, b^-)$ when $a^+ \leq b^+$ and
+  $b^- \leq a^-$.
+\end{definition}
+
+\begin{theorem}
+  $\Chu(A, k)$ is a $*$-autonomous preorder with symmetric monoidal
+  structure and negation defined as:
+  \begin{mathpar}
+    (a^+, a^-) \otimes (b^+, b^-) = (a^+ \bullet b^+, (b^+ \multimap a^-) \land (a^+ \multimap b^-))
+
+    I = (\epsilon, k)
+
+    (a^+,a^-)^\perp = (a^-, a^+)
+  \end{mathpar}
+\end{theorem}
+
+\begin{theorem}
+  If $A$ has binary joins, then $\Chu(A, k)$ has binary meets, given
+  by $(a^+,a^-) \land (b^+,b^-) = (a^+ \land b^+, a^- \lor b^-)$.
+\end{theorem}
+
+\paragraph{Self-dual duoidal structure}
+These two theorems give us enough structure to interpret the
+multiplicative and additive constructs of MAV. We need to also
+interpret the self-dual $P; Q$ connective. Let us assume that we have
+an operation $-\rhd- : A \times A \to A$ that we want to induce
+self-dual operator on $\Chu(A, k)$. By the way the Chu construction is
+defined, we can make an operator that is self-dual by definition:
+\begin{displaymath}
+  (a^+, a^-) ; (b^+, b^-) = (a^+ \rhd b^+, a^- \rhd b^-)
+\end{displaymath}
+for this to work, we need to assume duoidality.
+
+And that the dualising object $k$ is a
+satisfies $k \rhd k \leq k$. If $\rhd$ has a unit $j$, then $(j, j)$ is a unit if
+
+
+The Chu construction allows us to state
+directly that any operator we define on $\Chu(A, k)$ is self dual by
+defining as the same
+
+\subsection{Monoids on Lower Sets}
+
+Lower sets: $X : A^\op \to \Omega$.
+
+\begin{proposition}
+  FIXME: Day construction.
+\end{proposition}
+
+\subsection{Closure Operators on Lower Sets}
+
+need the ``preorder of elements'' $\int X$ of a lower set $X$.
+
+need trees, and their combination.
+
+% what would the category version of this look like? 
+
+\begin{displaymath}
+  \mathsf{C}(X) = \{ x \mid t \in \mathrm{Tree}(\int X), x \leq \mathrm{combine}(t) \}
+\end{displaymath}
+
+\begin{theorem}
+  $\mathsf{C}$ is a closure operator. Moreover, it is lax monoidal wrt
+  to one operator, and strong monoidal wrt the other.
+\end{theorem}

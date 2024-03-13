@@ -6,6 +6,7 @@ doc/.latexmkrc
 doc/agda.sty
 doc/sections/agda.sty
 doc/sections/*.tex
+!doc/sections/*.lagda.tex
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

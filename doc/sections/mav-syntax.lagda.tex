@@ -1,0 +1,50 @@
+\begin{comment}
+\begin{code}
+module mav-syntax (At : Set) where
+\end{code}
+\end{comment}
+\section{Multiplicative-Additive System Virtual}\label{sec:mav-syntax}
+
+TODO: introduce MAV and Deep Inference.
+
+Formulas:
+\begin{displaymath}
+  P, Q ::= a \mid a^\perp \mid I \mid P \otimes Q \mid P \parr Q \mid P \with Q \mid P \oplus Q \mid P; Q
+\end{displaymath}
+
+\begin{code}
+data Formula : Set where
+  I    : Formula
+  +_   : At → Formula
+  -_   : At → Formula
+  _⅋_  : Formula → Formula → Formula
+  _⊗_  : Formula → Formula → Formula
+  _&_  : Formula → Formula → Formula
+  _⊕_  : Formula → Formula → Formula
+  _▷_  : Formula → Formula → Formula
+\end{code}
+
+Negation:
+\begin{displaymath}
+  \begin{array}{lcl}
+    (a)^\perp           & = & a^\perp                     \\
+    (a^\perp)^\perp     & = & a                           \\
+    (I)^\perp           & = & I                           \\
+    (P \otimes Q)^\perp & = & (P)^\perp \parr   (Q)^\perp \\
+    (P \parr   Q)^\perp & = & (P)^\perp \otimes (Q)^\perp \\
+    (P \with   Q)^\perp & = & (P)^\perp \oplus  (Q)^\perp \\
+    (P \oplus  Q)^\perp & = & (P)^\perp \with   (Q)^\perp \\
+    (P ; Q)^\perp       & = & (P)^\perp ; (Q)^\perp
+  \end{array}
+\end{displaymath}
+\begin{code}
+¬ : Formula → Formula
+¬ I        = I
+¬ (+ a)    = - a
+¬ (- a)    = + a
+¬ (p ⅋ q)  = ¬ p ⊗ ¬ q
+¬ (p ⊗ q)  = ¬ p ⅋ ¬ q
+¬ (p & q)  = ¬ p ⊕ ¬ q
+¬ (p ⊕ q)  = ¬ p & ¬ q
+¬ (p ▷ q)  = ¬ p ▷ ¬ q
+\end{code}

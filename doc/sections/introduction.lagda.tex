@@ -1,0 +1,33 @@
+\section{Introduction}\label{sec:introduction}
+
+\begin{enumerate}
+      \item It makes sense to add a sequencing connective to MALL. This is
+            motivated by coherence spaces (Retore), or by thinking in terms of
+            session types.
+      \item A sequent calculus is not possible (CITE: Tiu, Strassberger),
+            but it is possible to define a proof calculus based on deep
+            inference. (Also Retore's proof nets, but it turns out they define a
+            different logic).
+      \item To make sure that a proof system makes sense, we need some kind
+            of Cut-elimination theorem that ensures that all proofs can be
+            placed into a normal form where it is evident that it is not
+            possible to derive all results.
+\end{enumerate}
+
+MAV is defined by Horne \cite{Horne15:mav}, who gave a syntactic proof
+of cut-elimination and the admissibility of several other rules. We
+provide an alternative proof of cut-elimination via a semantic
+model. This proof avoids some of the intrincate syntactic reasoning in
+Horne's proof and is more modular, as evidenced by the extensions we
+present in \autoref{sec:mav-extensions}.
+
+Cut-elimination for MALL by construction of a semantic model is due to
+Okada \cite{Okada99:psc}, who shows that the a Phase Space model of
+MALL (described by Girard \cite{Girard87:ll} and Troelstra
+\cite{TroelstraXX:lnll}) can be constructed from cut-proof proofs. The
+completeness of this model directly yields the existence of a cut-free
+proof for every proof constructible in the MALL sequent calculus. For
+MAV, we cannot use Phase Spaces due to the
+
+The same technique has been used for MALL with fixpoints (CITE:
+Saurin) and for Bunched Implications with extensions (CITE: Frumin).

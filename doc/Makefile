@@ -19,7 +19,7 @@ endif
 ###########
 
 AGDA_DIR := $(shell $(AGDA) --print-agda-dir)
-SOURCES_LAGDA := $(wildcard sections/*.lagda)
+SOURCES_LAGDA := $(wildcard sections/*.lagda.tex)
 SOURCES := .latexmkrc agda.sty $(MAIN).tex $(MAIN).bib $(SOURCES_LAGDA)
 
 .PHONY: build
@@ -44,7 +44,7 @@ agda.sty: $(AGDA_DIR)/latex/agda.sty
 ## Clean ##
 ###########
 
-GEN_LAGDA_TEX := $(wildcard $(patsubst %.lagda,%.tex,$(SOURCES_LAGDA)))
+GEN_LAGDA_TEX := $(wildcard $(patsubst %.lagda.tex,%.tex,$(SOURCES_LAGDA)))
 GEN_MAIN_PTB := $(wildcard $(MAIN).ptb)
 GEN_AGDA_STY := $(wildcard agda.sty sections/agda.sty)
 GEN_AGDA_BUILD := $(wildcard _build)
