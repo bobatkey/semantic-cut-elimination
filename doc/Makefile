@@ -64,3 +64,15 @@ endif
 ifneq (,$(GEN_AGDA_BUILD))
 	rm -r $(addprefix ./,$(GEN_AGDA_BUILD))
 endif
+
+###########
+## Shell ##
+###########
+
+ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+
+docker-nix-shell: shell.nix
+	docker run -v "$(ROOT):/doc" -w "/doc" -ti nixos/nix nix-shell
+
+docker-nix-build: shell.nix
+	docker run -v "$(ROOT):/doc" -w "/doc" -ti nixos/nix nix-shell --run "make build"
