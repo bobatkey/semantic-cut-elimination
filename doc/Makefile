@@ -76,3 +76,6 @@ docker-nix-shell: shell.nix
 
 docker-nix-build: shell.nix
 	docker run -v "$(ROOT):/doc" -w "/doc" -ti nixos/nix nix-shell --run "make build"
+
+docker-nix-watch: shell.nix
+	docker run -v "$(ROOT):/doc" -w "/doc" -ti nixos/nix nix-shell --run "make watch"
