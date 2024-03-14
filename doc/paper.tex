@@ -65,15 +65,32 @@
   \usepackage{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{newunicodechar}
-  \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
   \usepackage{unicode-math} % this also loads fontspec
   \usepackage{newunicodechar}
 \fi
-\newunicodechar{⅋}{\ensuremath{\mathnormal\parr}}
-\newunicodechar{⊗}{\ensuremath{\mathnormal\otimes}}
-\newunicodechar{⊕}{\ensuremath{\mathnormal\oplus}}
-\newunicodechar{▷}{\ensuremath{\mathnormal\triangleright}}
+\usepackage{textcomp} % provide euro and other symbols
+\newlength{\parrlength}
+\settowidth{\parrlength}{$\parr$}
+\newunicodechar{−}{\ensuremath{\mathnormal-}}
+\newunicodechar{⅋}{%
+  \ensuremath{\mathnormal\parr}}
+\newunicodechar{⊗}{%
+  \makebox[\parrlength][c]{\ensuremath{\mathnormal\otimes}}}
+\newunicodechar{⊕}{%
+  \makebox[\parrlength][c]{\ensuremath{\mathnormal\oplus}}}
+\newunicodechar{▷}{%
+  \makebox[\parrlength][c]{\ensuremath{\mathnormal\triangleright}}}
+\newunicodechar{⟶}{%
+  \ensuremath{\mathnormal\longrightarrow}}
+\newunicodechar{⁻}{%
+  \ensuremath{^{-}}}
+\newunicodechar{¹}{%
+  \ensuremath{^{1}}}
+\newunicodechar{′}{%
+  \ensuremath{^{\prime}}}
+\newunicodechar{∀}{%
+  \ensuremath{\mathnormal\forall}}
 
 % Set up TODO macros
 \usepackage{todonotes}

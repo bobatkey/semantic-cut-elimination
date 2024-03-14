@@ -44,17 +44,17 @@ data _⟶_ : Formula → Formula → Set where
   `⅋-assoc   : (p `⅋ (q `⅋ r)) ⟶ ((p `⅋ q) `⅋ r)
   `⅋-assoc⁻¹ : ((p `⅋ q) `⅋ r) ⟶ (p `⅋ (q `⅋ r))
   `⅋-comm    : (p `⅋ q) ⟶ (q `⅋ p)
-  `⅋-unit    : ∀ {p}   → (p `⅋ `I) ⟶ p
-  `⅋-unit⁻¹  : ∀ {p}   → p ⟶ (p `⅋ `I)
+  `⅋-unit    : (p `⅋ `I) ⟶ p
+  `⅋-unit⁻¹  : p ⟶ (p `⅋ `I)
 
   _⟨`▷_      : p ⟶ p′ → (q : Formula) → (p `▷ q) ⟶ (p′ `▷ q)
   _`▷⟩_      : (p : Formula) → q ⟶ q′ → (p `▷ q) ⟶ (p `▷ q′)
   `▷-assoc   : (p `▷ (q `▷ r)) ⟶ ((p `▷ q) `▷ r)
   `▷-assoc⁻¹ : ((p `▷ q) `▷ r) ⟶ (p `▷ (q `▷ r))
-  `▷-runit   : ∀ {p}   → (p `▷ `I) ⟶ p
-  `▷-runit⁻¹ : ∀ {p}   → p ⟶ (p `▷ `I)
-  `▷-lunit   : ∀ {p}   → (`I `▷ p) ⟶ p
-  `▷-lunit⁻¹ : ∀ {p}   → p ⟶ (`I `▷ p)
+  `▷-runit   : (p `▷ `I) ⟶ p
+  `▷-runit⁻¹ : p ⟶ (p `▷ `I)
+  `▷-lunit   : (`I `▷ p) ⟶ p
+  `▷-lunit⁻¹ : p ⟶ (`I `▷ p)
 
   _⟨`&_      : p ⟶ p′ → (q : Formula) → (p `& q) ⟶ (p′ `& q)
   _`&⟩_      : (p : Formula) → q ⟶ q′ → (p `& q) ⟶ (p `& q′)

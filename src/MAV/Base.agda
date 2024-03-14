@@ -21,47 +21,47 @@ private
 infix 5 _⟶_
 
 data _⟶_ : Formula → Formula → Set where
-  `axiom    : ∀ p → p `⅋ `¬ p ⟶ `I
-  `cut      : ∀ p → `I ⟶ p `⊗ `¬ p
+  axiom    : ∀ p → p ⅋ ¬ p ⟶ I
+  cut      : ∀ p → I ⟶ p ⊗ ¬ p
 
-  `tidy     : `I `& `I ⟶ `I
-  `switch   : (p `⊗ q) `⅋ r ⟶ p `⊗ (q `⅋ r)
-  `sequence : (p `▷ q) `⅋ (r `▷ s) ⟶ (p `⅋ r) `▷ (q `⅋ s)
-  `left     : p `⊕ q ⟶ p
-  `right    : p `⊕ q ⟶ q
-  `external : (p `& q) `⅋ r ⟶ (p `⅋ r) `& (q `⅋ r)
-  `medial   : (p `▷ q) `& (r `▷ s) ⟶ (p `& r) `▷ (q `& s)
+  tidy     : I & I ⟶ I
+  switch   : (p ⊗ q) ⅋ r ⟶ p ⊗ (q ⅋ r)
+  sequence : (p ▷ q) ⅋ (r ▷ s) ⟶ (p ⅋ r) ▷ (q ⅋ s)
+  left     : p ⊕ q ⟶ p
+  right    : p ⊕ q ⟶ q
+  external : (p & q) ⅋ r ⟶ (p ⅋ r) & (q ⅋ r)
+  medial   : (p ▷ q) & (r ▷ s) ⟶ (p & r) ▷ (q & s)
 
-  _⟨`⊗_      : p ⟶ p′ → (q : Formula) → p `⊗ q ⟶ p′ `⊗ q
-  _`⊗⟩_      : (p : Formula) → q ⟶ q′ → p `⊗ q ⟶ p `⊗ q′
-  `⊗-assoc   : p `⊗ (q `⊗ r) ⟶ (p `⊗ q) `⊗ r
-  `⊗-assoc⁻¹ : (p `⊗ q) `⊗ r ⟶ p `⊗ (q `⊗ r)
-  `⊗-comm    : p `⊗ q ⟶ q `⊗ p
-  `⊗-unit    : p `⊗ `I ⟶ p
-  `⊗-unit⁻¹  : p ⟶ p `⊗ `I
+  _⟨⊗_      : p ⟶ p′ → (q : Formula) → p ⊗ q ⟶ p′ ⊗ q
+  _⊗⟩_      : (p : Formula) → q ⟶ q′ → p ⊗ q ⟶ p ⊗ q′
+  ⊗-assoc   : p ⊗ (q ⊗ r) ⟶ (p ⊗ q) ⊗ r
+  ⊗-assoc⁻¹ : (p ⊗ q) ⊗ r ⟶ p ⊗ (q ⊗ r)
+  ⊗-comm    : p ⊗ q ⟶ q ⊗ p
+  ⊗-unit    : p ⊗ I ⟶ p
+  ⊗-unit⁻¹  : p ⟶ p ⊗ I
 
-  _⟨`⅋_      : p ⟶ p′ → (q : Formula) → p `⅋ q ⟶ p′ `⅋ q
-  _`⅋⟩_      : (p : Formula) → q ⟶ q′ → p `⅋ q ⟶ p `⅋ q′
-  `⅋-assoc   : p `⅋ (q `⅋ r) ⟶ (p `⅋ q) `⅋ r
-  `⅋-assoc⁻¹ : (p `⅋ q) `⅋ r ⟶ p `⅋ (q `⅋ r)
-  `⅋-comm    : p `⅋ q ⟶ q `⅋ p
-  `⅋-unit    : p `⅋ `I ⟶ p
-  `⅋-unit⁻¹  : p ⟶ p `⅋ `I
+  _⟨⅋_      : p ⟶ p′ → (q : Formula) → p ⅋ q ⟶ p′ ⅋ q
+  _⅋⟩_      : (p : Formula) → q ⟶ q′ → p ⅋ q ⟶ p ⅋ q′
+  ⅋-assoc   : p ⅋ (q ⅋ r) ⟶ (p ⅋ q) ⅋ r
+  ⅋-assoc⁻¹ : (p ⅋ q) ⅋ r ⟶ p ⅋ (q ⅋ r)
+  ⅋-comm    : p ⅋ q ⟶ q ⅋ p
+  ⅋-unit    : p ⅋ I ⟶ p
+  ⅋-unit⁻¹  : p ⟶ p ⅋ I
 
-  _⟨`▷_      : p ⟶ p′ → (q : Formula) → p `▷ q ⟶ p′ `▷ q
-  _`▷⟩_      : (p : Formula) → q ⟶ q′ → p `▷ q ⟶ p `▷ q′
-  `▷-assoc   : p `▷ (q `▷ r) ⟶ (p `▷ q) `▷ r
-  `▷-assoc⁻¹ : (p `▷ q) `▷ r ⟶ p `▷ (q `▷ r)
-  `▷-runit   : p `▷ `I ⟶ p
-  `▷-runit⁻¹ : p ⟶ p `▷ `I
-  `▷-lunit   : `I `▷ p ⟶ p
-  `▷-lunit⁻¹ : p ⟶ `I `▷ p
+  _⟨▷_      : p ⟶ p′ → (q : Formula) → p ▷ q ⟶ p′ ▷ q
+  _▷⟩_      : (p : Formula) → q ⟶ q′ → p ▷ q ⟶ p ▷ q′
+  ▷-assoc   : p ▷ (q ▷ r) ⟶ (p ▷ q) ▷ r
+  ▷-assoc⁻¹ : (p ▷ q) ▷ r ⟶ p ▷ (q ▷ r)
+  ▷-runit   : p ▷ I ⟶ p
+  ▷-runit⁻¹ : p ⟶ p ▷ I
+  ▷-lunit   : I ▷ p ⟶ p
+  ▷-lunit⁻¹ : p ⟶ I ▷ p
 
-  _⟨`&_      : p ⟶ p′ → (q : Formula) → p `& q ⟶ p′ `& q
-  _`&⟩_      : (p : Formula) → q ⟶ q′ → p `& q ⟶ p `& q′
+  _⟨&_      : p ⟶ p′ → (q : Formula) → p & q ⟶ p′ & q
+  _&⟩_      : (p : Formula) → q ⟶ q′ → p & q ⟶ p & q′
 
-  _⟨`⊕_      : p ⟶ p′ → (q : Formula) → p `⊕ q ⟶ p′ `⊕ q
-  _`⊕⟩_      : (p : Formula) → q ⟶ q′ → p `⊕ q ⟶ p `⊕ q′
+  _⟨⊕_      : p ⟶ p′ → (q : Formula) → p ⊕ q ⟶ p′ ⊕ q
+  _⊕⟩_      : (p : Formula) → q ⟶ q′ → p ⊕ q ⟶ p ⊕ q′
 
 infix  5 _⟶*_
 infixr 6 _∷_
@@ -71,10 +71,10 @@ data _⟶*_ : Formula → Formula → Set where
   _∷_ : p ⟶ q → q ⟶* r → p ⟶* r
 
 test : Formula
-test = (`I `⊕ `I) `▷ (`I `& `I)
+test = (I ⊕ I) ▷ (I & I)
 
-test-id : (test `⅋ `¬ test) ⟶* `I
-test-id = `axiom test ∷ ε
+test-id : (test ⅋ ¬ test) ⟶* I
+test-id = axiom test ∷ ε
 
 
 
@@ -159,62 +159,62 @@ module Interpretation {a b} (M : Model a b) (V : At → M .Model.Carrier) where
   open Model M
 
   ⟦_⟧ : Formula → Carrier
-  ⟦ `I     ⟧ = I
-  ⟦ `+ x   ⟧ = V x
-  ⟦ `- x   ⟧ = ¬ (V x)
-  ⟦ p `⅋ q ⟧ = ⟦ p ⟧ ⅋ ⟦ q ⟧
-  ⟦ p `⊗ q ⟧ = ⟦ p ⟧ ⊗ ⟦ q ⟧
-  ⟦ p `& q ⟧ = ⟦ p ⟧ & ⟦ q ⟧
-  ⟦ p `⊕ q ⟧ = ⟦ p ⟧ ⊕ ⟦ q ⟧
-  ⟦ p `▷ q ⟧ = ⟦ p ⟧ ▷ ⟦ q ⟧
+  ⟦ I     ⟧ = I
+  ⟦ + x   ⟧ = V x
+  ⟦ - x   ⟧ = ¬ (V x)
+  ⟦ p ⅋ q ⟧ = ⟦ p ⟧ ⅋ ⟦ q ⟧
+  ⟦ p ⊗ q ⟧ = ⟦ p ⟧ ⊗ ⟦ q ⟧
+  ⟦ p & q ⟧ = ⟦ p ⟧ & ⟦ q ⟧
+  ⟦ p ⊕ q ⟧ = ⟦ p ⟧ ⊕ ⟦ q ⟧
+  ⟦ p ▷ q ⟧ = ⟦ p ⟧ ▷ ⟦ q ⟧
 
-  dual-ok : ∀ p → ⟦ `¬ p ⟧ ≃ ¬ ⟦ p ⟧
-  dual-ok `I = mix
-  dual-ok (`+ x) = ≃-refl
-  dual-ok (`- x) = involution
-  dual-ok (p `⅋ q) = ≃-trans (⊗-cong (dual-ok p) (dual-ok q)) involution
-  dual-ok (p `⊗ q) =
+  dual-ok : ∀ p → ⟦ ¬ p ⟧ ≃ ¬ ⟦ p ⟧
+  dual-ok I = mix
+  dual-ok (+ x) = ≃-refl
+  dual-ok (- x) = involution
+  dual-ok (p ⅋ q) = ≃-trans (⊗-cong (dual-ok p) (dual-ok q)) involution
+  dual-ok (p ⊗ q) =
     ≃-trans (⅋-cong (dual-ok p) (dual-ok q)) (¬-cong (⊗-cong (≃-sym involution) (≃-sym involution)))
-  dual-ok (p `& q) = ≃-trans (⊕-cong (dual-ok p) (dual-ok q)) (¬-cong (&-cong (≃-sym involution) (≃-sym involution)))
-  dual-ok (p `⊕ q) = ≃-trans (&-cong (dual-ok p) (dual-ok q)) involution
-  dual-ok (p `▷ q) = ≃-trans (▷-cong (dual-ok p) (dual-ok q)) (≃-sym ▷-self-dual)
+  dual-ok (p & q) = ≃-trans (⊕-cong (dual-ok p) (dual-ok q)) (¬-cong (&-cong (≃-sym involution) (≃-sym involution)))
+  dual-ok (p ⊕ q) = ≃-trans (&-cong (dual-ok p) (dual-ok q)) involution
+  dual-ok (p ▷ q) = ≃-trans (▷-cong (dual-ok p) (dual-ok q)) (≃-sym ▷-self-dual)
 
   ⟦_⟧step : p ⟶ q → ⟦ q ⟧ ≤ ⟦ p ⟧
-  ⟦ `axiom p   ⟧step = trans coev (⅋-mono refl (dual-ok p .proj₂))
-  ⟦ `cut p     ⟧step = trans (⊗-mono refl (dual-ok p .proj₁)) (trans ev (mix .proj₂))
-  ⟦ `tidy      ⟧step = ⟨ refl , refl ⟩
-  ⟦ `switch    ⟧step = linear-distrib
-  ⟦ `sequence  ⟧step = sequence
-  ⟦ `left      ⟧step = inl
-  ⟦ `right     ⟧step = inr
-  ⟦ `external  ⟧step = &-⅋-distrib
-  ⟦ `medial    ⟧step = ⟨ ▷-mono π₁ π₁ , ▷-mono π₂ π₂ ⟩
-  ⟦ s ⟨`⊗ q    ⟧step = ⊗-mono ⟦ s ⟧step refl
-  ⟦ p `⊗⟩ s    ⟧step = ⊗-mono refl ⟦ s ⟧step
-  ⟦ `⊗-assoc   ⟧step = ⊗-assoc .proj₁
-  ⟦ `⊗-assoc⁻¹ ⟧step = ⊗-assoc .proj₂
-  ⟦ `⊗-comm    ⟧step = ⊗-sym
-  ⟦ `⊗-unit    ⟧step = ⊗-runit .proj₂
-  ⟦ `⊗-unit⁻¹  ⟧step = ⊗-runit .proj₁
-  ⟦ s ⟨`⅋ q    ⟧step = ⅋-mono ⟦ s ⟧step refl
-  ⟦ p `⅋⟩ s    ⟧step = ⅋-mono refl ⟦ s ⟧step
-  ⟦ `⅋-assoc   ⟧step = ⅋-assoc .proj₁
-  ⟦ `⅋-assoc⁻¹ ⟧step = ⅋-assoc .proj₂
-  ⟦ `⅋-comm    ⟧step = ⅋-sym
-  ⟦ `⅋-unit    ⟧step = trans (⅋-runit .proj₂) (⅋-mono refl (mix .proj₂))
-  ⟦ `⅋-unit⁻¹  ⟧step = trans (⅋-mono refl (mix .proj₁)) (⅋-runit .proj₁)
-  ⟦ s ⟨`▷ q    ⟧step = ▷-mono ⟦ s ⟧step refl
-  ⟦ p `▷⟩ s    ⟧step = ▷-mono refl ⟦ s ⟧step
-  ⟦ `▷-assoc   ⟧step = ▷-assoc .proj₁
-  ⟦ `▷-assoc⁻¹ ⟧step = ▷-assoc .proj₂
-  ⟦ `▷-runit   ⟧step = trans (▷-runit .proj₂) (▷-mono refl (I-eq-J .proj₂))
-  ⟦ `▷-runit⁻¹ ⟧step = trans (▷-mono refl (I-eq-J .proj₁)) (▷-runit .proj₁)
-  ⟦ `▷-lunit   ⟧step = trans (▷-lunit .proj₂) (▷-mono (I-eq-J .proj₂) refl)
-  ⟦ `▷-lunit⁻¹ ⟧step = trans  (▷-mono (I-eq-J .proj₁) refl) (▷-lunit .proj₁)
-  ⟦ s ⟨`& q    ⟧step = &-mono ⟦ s ⟧step refl
-  ⟦ p `&⟩ s    ⟧step = &-mono refl ⟦ s ⟧step
-  ⟦ s ⟨`⊕ q    ⟧step = ⊕-mono ⟦ s ⟧step refl
-  ⟦ p `⊕⟩ s    ⟧step = ⊕-mono refl ⟦ s ⟧step
+  ⟦ axiom p   ⟧step = trans coev (⅋-mono refl (dual-ok p .proj₂))
+  ⟦ cut p     ⟧step = trans (⊗-mono refl (dual-ok p .proj₁)) (trans ev (mix .proj₂))
+  ⟦ tidy      ⟧step = ⟨ refl , refl ⟩
+  ⟦ switch    ⟧step = linear-distrib
+  ⟦ sequence  ⟧step = sequence
+  ⟦ left      ⟧step = inl
+  ⟦ right     ⟧step = inr
+  ⟦ external  ⟧step = &-⅋-distrib
+  ⟦ medial    ⟧step = ⟨ ▷-mono π₁ π₁ , ▷-mono π₂ π₂ ⟩
+  ⟦ s ⟨⊗ q    ⟧step = ⊗-mono ⟦ s ⟧step refl
+  ⟦ p ⊗⟩ s    ⟧step = ⊗-mono refl ⟦ s ⟧step
+  ⟦ ⊗-assoc   ⟧step = ⊗-assoc .proj₁
+  ⟦ ⊗-assoc⁻¹ ⟧step = ⊗-assoc .proj₂
+  ⟦ ⊗-comm    ⟧step = ⊗-sym
+  ⟦ ⊗-unit    ⟧step = ⊗-runit .proj₂
+  ⟦ ⊗-unit⁻¹  ⟧step = ⊗-runit .proj₁
+  ⟦ s ⟨⅋ q    ⟧step = ⅋-mono ⟦ s ⟧step refl
+  ⟦ p ⅋⟩ s    ⟧step = ⅋-mono refl ⟦ s ⟧step
+  ⟦ ⅋-assoc   ⟧step = ⅋-assoc .proj₁
+  ⟦ ⅋-assoc⁻¹ ⟧step = ⅋-assoc .proj₂
+  ⟦ ⅋-comm    ⟧step = ⅋-sym
+  ⟦ ⅋-unit    ⟧step = trans (⅋-runit .proj₂) (⅋-mono refl (mix .proj₂))
+  ⟦ ⅋-unit⁻¹  ⟧step = trans (⅋-mono refl (mix .proj₁)) (⅋-runit .proj₁)
+  ⟦ s ⟨▷ q    ⟧step = ▷-mono ⟦ s ⟧step refl
+  ⟦ p ▷⟩ s    ⟧step = ▷-mono refl ⟦ s ⟧step
+  ⟦ ▷-assoc   ⟧step = ▷-assoc .proj₁
+  ⟦ ▷-assoc⁻¹ ⟧step = ▷-assoc .proj₂
+  ⟦ ▷-runit   ⟧step = trans (▷-runit .proj₂) (▷-mono refl (I-eq-J .proj₂))
+  ⟦ ▷-runit⁻¹ ⟧step = trans (▷-mono refl (I-eq-J .proj₁)) (▷-runit .proj₁)
+  ⟦ ▷-lunit   ⟧step = trans (▷-lunit .proj₂) (▷-mono (I-eq-J .proj₂) refl)
+  ⟦ ▷-lunit⁻¹ ⟧step = trans  (▷-mono (I-eq-J .proj₁) refl) (▷-lunit .proj₁)
+  ⟦ s ⟨& q    ⟧step = &-mono ⟦ s ⟧step refl
+  ⟦ p &⟩ s    ⟧step = &-mono refl ⟦ s ⟧step
+  ⟦ s ⟨⊕ q    ⟧step = ⊕-mono ⟦ s ⟧step refl
+  ⟦ p ⊕⟩ s    ⟧step = ⊕-mono refl ⟦ s ⟧step
 
   ⟦_⟧steps : p ⟶* q → ⟦ q ⟧ ≤ ⟦ p ⟧
   ⟦ ε     ⟧steps = refl

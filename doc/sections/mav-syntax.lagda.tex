@@ -1,22 +1,30 @@
-\begin{comment}
-\begin{code}
-module mav-syntax (At : Set) where
+\begin{code}[hide]
+module mav-syntax (Atom : Set) where
 \end{code}
-\end{comment}
 \section{Multiplicative-Additive System Virtual}\label{sec:mav-syntax}
 
 TODO: introduce MAV and Deep Inference.
 
 Formulas:
-\begin{displaymath}
-  P, Q ::= a \mid a^\perp \mid I \mid P \otimes Q \mid P \parr Q \mid P \with Q \mid P \oplus Q \mid P; Q
-\end{displaymath}
+% \begin{displaymath}
+%   P, Q ::= a \mid a^\perp \mid I \mid P \otimes Q \mid P \parr Q \mid P \with Q \mid P \oplus Q \mid P; Q
+% \end{displaymath}
+
+\begin{code}[hide]
+infixr 20 +_ 
+infixr 20 −_ 
+infixr 10 _⅋_
+infixr 10 _⊗_
+infixr 10 _&_
+infixr 10 _⊕_
+infixr 10 _▷_
+\end{code}
 
 \begin{code}
 data Formula : Set where
   I    : Formula
-  +_   : At → Formula
-  -_   : At → Formula
+  +_   : Atom → Formula
+  −_   : Atom → Formula
   _⅋_  : Formula → Formula → Formula
   _⊗_  : Formula → Formula → Formula
   _&_  : Formula → Formula → Formula
@@ -25,26 +33,81 @@ data Formula : Set where
 \end{code}
 
 Negation:
-\begin{displaymath}
-  \begin{array}{lcl}
-    (a)^\perp           & = & a^\perp                     \\
-    (a^\perp)^\perp     & = & a                           \\
-    (I)^\perp           & = & I                           \\
-    (P \otimes Q)^\perp & = & (P)^\perp \parr   (Q)^\perp \\
-    (P \parr   Q)^\perp & = & (P)^\perp \otimes (Q)^\perp \\
-    (P \with   Q)^\perp & = & (P)^\perp \oplus  (Q)^\perp \\
-    (P \oplus  Q)^\perp & = & (P)^\perp \with   (Q)^\perp \\
-    (P ; Q)^\perp       & = & (P)^\perp ; (Q)^\perp
-  \end{array}
-\end{displaymath}
+% \begin{displaymath}
+%   \begin{array}{lcl}
+%     (a)^\perp           & = & a^\perp                     \\
+%     (a^\perp)^\perp     & = & a                           \\
+%     (I)^\perp           & = & I                           \\
+%     (P \otimes Q)^\perp & = & (P)^\perp \parr   (Q)^\perp \\
+%     (P \parr   Q)^\perp & = & (P)^\perp \otimes (Q)^\perp \\
+%     (P \with   Q)^\perp & = & (P)^\perp \oplus  (Q)^\perp \\
+%     (P \oplus  Q)^\perp & = & (P)^\perp \with   (Q)^\perp \\
+%     (P ; Q)^\perp       & = & (P)^\perp ; (Q)^\perp
+%   \end{array}
+% \end{displaymath}
+
 \begin{code}
 ¬ : Formula → Formula
 ¬ I        = I
-¬ (+ a)    = - a
-¬ (- a)    = + a
-¬ (p ⅋ q)  = ¬ p ⊗ ¬ q
-¬ (p ⊗ q)  = ¬ p ⅋ ¬ q
-¬ (p & q)  = ¬ p ⊕ ¬ q
-¬ (p ⊕ q)  = ¬ p & ¬ q
-¬ (p ▷ q)  = ¬ p ▷ ¬ q
+¬ (+ a)    = − a
+¬ (− a)    = + a
+¬ (p  ⅋  q)  = ¬ p  ⊗  ¬ q
+¬ (p  ⊗  q)  = ¬ p  ⅋  ¬ q
+¬ (p  &  q)  = ¬ p  ⊕  ¬ q
+¬ (p  ⊕  q)  = ¬ p  &  ¬ q
+¬ (p  ▷  q)  = ¬ p  ▷  ¬ q
+\end{code}
+
+\begin{code}[hide]
+variable
+  a a′ a₁ a₂ : Atom
+  p p′ p₁ p₂ : Formula
+  q q′ q₁ q₂ : Formula
+  r r′ r₁ r₂ : Formula
+  s s′ s₁ s₂ : Formula
+\end{code}
+
+\begin{code}[hide]
+infix 5 _⟶_
+\end{code}
+
+\begin{code}
+data _⟶_ : Formula → Formula → Set where
+  axiom      : + a ⅋ − a ⟶ I
+
+  tidy       : I & I ⟶ I
+  switch     : (p ⊗ q) ⅋ r ⟶ p ⊗ (q ⅋ r)
+  sequence   : (p ▷ q) ⅋ (r ▷ s) ⟶ (p ⅋ r) ▷ (q ⅋ s)
+  left       : p ⊕ q ⟶ p
+  right      : p ⊕ q ⟶ q
+  external   : (p & q) ⅋ r ⟶ (p ⅋ r) & (q ⅋ r)
+  medial     : (p ▷ q) & (r ▷ s) ⟶ (p & r) ▷ (q & s)
+
+  ⊗-assoc    : p ⊗ (q ⊗ r) ⟶ (p ⊗ q) ⊗ r
+  ⊗-assoc⁻¹  : (p ⊗ q) ⊗ r ⟶ p ⊗ (q ⊗ r)
+  ⊗-comm     : p ⊗ q ⟶ q ⊗ p
+  ⊗-unit     : p ⊗ I ⟶ p
+  ⊗-unit⁻¹   : p ⟶ (p ⊗ I)
+
+  ⅋-assoc    : p ⅋ (q ⅋ r) ⟶ (p ⅋ q) ⅋ r
+  ⅋-assoc⁻¹  : (p ⅋ q) ⅋ r ⟶ p ⅋ (q ⅋ r)
+  ⅋-comm     : p ⅋ q ⟶ q ⅋ p
+  ⅋-unit     : p ⅋ I ⟶ p
+  ⅋-unit⁻¹   : p ⟶ (p ⅋ I)
+
+  ▷-assoc    : p ▷ (q ▷ r) ⟶ (p ▷ q) ▷ r
+  ▷-assoc⁻¹  : (p ▷ q) ▷ r ⟶ p ▷ (q ▷ r)
+  ▷-runit    : p ▷ I ⟶ p
+  ▷-runit⁻¹  : p ⟶ p ▷ I
+  ▷-lunit    : I ▷ p ⟶ p
+  ▷-lunit⁻¹  : p ⟶ I ▷ p
+
+  _⟨⅋        : p ⟶ p′ → p ⅋ q ⟶ p′ ⅋ q
+  ⅋⟩_        : q ⟶ q′ → p ⅋ q ⟶ p ⅋ q′
+  _⟨▷        : p ⟶ p′ → p ▷ q ⟶ p′ ▷ q
+  ▷⟩_        : q ⟶ q′ → p ▷ q ⟶ p ▷ q′
+  _⟨⊗        : p ⟶ p′ → p ⊗ q ⟶ p′ ⊗ q
+  ⊗⟩_        : q ⟶ q′ → p ⊗ q ⟶ p ⊗ q′
+  _⟨&        : p ⟶ p′ → p & q ⟶ p′ & q
+  &⟩_        : q ⟶ q′ → p & q ⟶ p & q′
 \end{code}

@@ -30,7 +30,7 @@ watch: $(SOURCES)
 	$(LATEXMK) -pdf -pvc -interaction=nonstopmode $(MAIN)
 
 $(MAIN).pdf: $(SOURCES)
-	$(LATEXMK) -pdf -interaction=nonstopmode $(MAIN).tex
+	$(LATEXMK) -pdf -interaction=nonstopmode -e '$$max_repeat=10' $(MAIN).tex
 
 agda.sty: $(AGDA_DIR)/latex/agda.sty
 	@cp $(AGDA_DIR)/latex/agda.sty agda.sty
