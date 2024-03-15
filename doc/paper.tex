@@ -1,10 +1,10 @@
 \PassOptionsToPackage{dvipsnames}{xcolor}
 \documentclass[twoside,11pt]{entics}
 \usepackage{enticsmacro}
+\usepackage[fixamsmath]{mathtools}
 \usepackage{graphicx}
 \usepackage{cmll}
 \usepackage{mathpartir}
-\usepackage{comment}
 \usepackage[all]{xy}
 %\usepackage{url}
 \sloppy
@@ -56,8 +56,40 @@
 %% Preamble:                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\def\bvunit{%
+  \ensuremath{\mathbb{I}}}
+\def\bvparr{%
+  \ensuremath{\parr}}
+\def\bvtens{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\parrlength][c]{\ensuremath{\mathnormal\otimes}}}}}
+\def\bvplus{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\parrlength][c]{\ensuremath{\mathnormal\oplus}}}}}
+\def\bvwith{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\parrlength][c]{\ensuremath{\mathnormal\with}}}}}
+\def\bvseq{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\parrlength][c]{\ensuremath{\mathnormal\,\,\!\triangleright}}}}}
+
 % Include agda.sty
-\usepackage{agda}
+\usepackage[bw]{agda}
+\usepackage{ifthen}
+
+\DeclareRobustCommand{\AgdaFormat}[2]{%
+  \ifthenelse{\equal{#1}{\&}}%
+  {\bvwith}%
+  {%
+    \ifthenelse{\equal{#1}{I}}%
+    {\bvunit}%
+    {#2}%
+  }%
+  }
 
 % Set up unicode support
 \usepackage{iftex}
@@ -73,24 +105,20 @@
 \newlength{\parrlength}
 \settowidth{\parrlength}{$\parr$}
 \newunicodechar{−}{\ensuremath{\mathnormal-}}
-\newunicodechar{⅋}{%
-  \ensuremath{\mathnormal\parr}}
-\newunicodechar{⊗}{%
-  \makebox[\parrlength][c]{\ensuremath{\mathnormal\otimes}}}
-\newunicodechar{⊕}{%
-  \makebox[\parrlength][c]{\ensuremath{\mathnormal\oplus}}}
-\newunicodechar{▷}{%
-  \makebox[\parrlength][c]{\ensuremath{\mathnormal\triangleright}}}
-\newunicodechar{⟶}{%
-  \ensuremath{\mathnormal\longrightarrow}}
-\newunicodechar{⁻}{%
-  \ensuremath{^{-}}}
-\newunicodechar{¹}{%
-  \ensuremath{^{1}}}
-\newunicodechar{′}{%
-  \ensuremath{^{\prime}}}
-\newunicodechar{∀}{%
-  \ensuremath{\mathnormal\forall}}
+\newunicodechar{α}{\ensuremath{\alpha}}
+\newunicodechar{⊗}{\bvtens}
+\newunicodechar{⅋}{\bvparr}
+\newunicodechar{⊕}{\bvplus}
+\newunicodechar{▷}{\bvseq}
+\newunicodechar{∼}{\ensuremath{\mathnormal\sim}}
+\newunicodechar{≡}{\ensuremath{\mathnormal\equiv}}
+\newunicodechar{⟶}{\ensuremath{\mathnormal\longrightarrow}}
+\newunicodechar{⋆}{\ensuremath{\mathnormal\star}}
+\newunicodechar{⁺}{\ensuremath{^{+}}}
+\newunicodechar{⁻}{\ensuremath{^{-}}}
+\newunicodechar{¹}{\ensuremath{^{1}}}
+\newunicodechar{′}{\ensuremath{^{\prime}}}
+\newunicodechar{∀}{\ensuremath{\mathnormal\forall}}
 
 % Set up TODO macros
 \usepackage{todonotes}

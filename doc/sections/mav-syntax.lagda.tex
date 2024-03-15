@@ -1,35 +1,59 @@
 \begin{code}[hide]
-module mav-syntax (Atom : Set) where
+  open import Level using (zero)
+  import Relation.Binary.Construct.Closure.Equivalence as EqClosure
+  open EqClosure using (EqClosure)
+  import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star
+  open Star using (Star)
+\end{code}
+\begin{code}[hide]
+  module mav-syntax (Atom : Set) where
 \end{code}
 \section{Multiplicative-Additive System Virtual}\label{sec:mav-syntax}
 
 TODO: introduce MAV and Deep Inference.
 
 Formulas:
-% \begin{displaymath}
-%   P, Q ::= a \mid a^\perp \mid I \mid P \otimes Q \mid P \parr Q \mid P \with Q \mid P \oplus Q \mid P; Q
-% \end{displaymath}
-
 \begin{code}[hide]
-infixr 20 +_ 
-infixr 20 −_ 
-infixr 10 _⅋_
-infixr 10 _⊗_
-infixr 10 _&_
-infixr 10 _⊕_
-infixr 10 _▷_
+  infix 20 _⁺
+  infix 20 _⁻
+  infix 10 _⅋_
+  infix 10 _⊗_
+  infix 10 _&_
+  infix 10 _⊕_
+  infix 10 _▷_
 \end{code}
 
 \begin{code}
-data Formula : Set where
-  I    : Formula
-  +_   : Atom → Formula
-  −_   : Atom → Formula
-  _⅋_  : Formula → Formula → Formula
-  _⊗_  : Formula → Formula → Formula
-  _&_  : Formula → Formula → Formula
-  _⊕_  : Formula → Formula → Formula
-  _▷_  : Formula → Formula → Formula
+  data Formula : Set where
+    I    : Formula
+    _⁺   : Atom → Formula
+    _⁻   : Atom → Formula
+    _⅋_  : Formula → Formula → Formula
+    _⊗_  : Formula → Formula → Formula
+    _&_  : Formula → Formula → Formula
+    _⊕_  : Formula → Formula → Formula
+    _▷_  : Formula → Formula → Formula
+\end{code}
+
+\begin{displaymath}
+  P, Q
+  \Coloneq A^{+}
+  \mid     A^{-}
+  \mid     I
+  \mid     P \bvtens Q
+  \mid     P \bvparr Q
+  \mid     P \bvwith Q
+  \mid     P \bvplus Q
+  \mid     P \bvseq  Q
+\end{displaymath}
+
+\begin{code}[hide]
+  variable
+    A A′ A₁ A₂ : Atom
+    P P′ P₁ P₂ : Formula
+    Q Q′ Q₁ Q₂ : Formula
+    R R′ R₁ R₂ : Formula
+    S S′ S₁ S₂ : Formula
 \end{code}
 
 Negation:
@@ -46,68 +70,83 @@ Negation:
 %   \end{array}
 % \end{displaymath}
 
-\begin{code}
-¬ : Formula → Formula
-¬ I        = I
-¬ (+ a)    = − a
-¬ (− a)    = + a
-¬ (p  ⅋  q)  = ¬ p  ⊗  ¬ q
-¬ (p  ⊗  q)  = ¬ p  ⅋  ¬ q
-¬ (p  &  q)  = ¬ p  ⊕  ¬ q
-¬ (p  ⊕  q)  = ¬ p  &  ¬ q
-¬ (p  ▷  q)  = ¬ p  ▷  ¬ q
-\end{code}
-
 \begin{code}[hide]
-variable
-  a a′ a₁ a₂ : Atom
-  p p′ p₁ p₂ : Formula
-  q q′ q₁ q₂ : Formula
-  r r′ r₁ r₂ : Formula
-  s s′ s₁ s₂ : Formula
-\end{code}
-
-\begin{code}[hide]
-infix 5 _⟶_
+  infix 15 ¬_
 \end{code}
 
 \begin{code}
-data _⟶_ : Formula → Formula → Set where
-  axiom      : + a ⅋ − a ⟶ I
+  ¬_ : Formula → Formula
+  ¬ I          = I
+  ¬ A ⁺        = A ⁻
+  ¬ A ⁻        = A ⁺
+  ¬ (P  ⅋  Q)  = ¬ P  ⊗  ¬ Q
+  ¬ (P  ⊗  Q)  = ¬ P  ⅋  ¬ Q
+  ¬ (P  &  Q)  = ¬ P  ⊕  ¬ Q
+  ¬ (P  ⊕  Q)  = ¬ P  &  ¬ Q
+  ¬ (P  ▷  Q)  = ¬ P  ▷  ¬ Q
+\end{code}
 
-  tidy       : I & I ⟶ I
-  switch     : (p ⊗ q) ⅋ r ⟶ p ⊗ (q ⅋ r)
-  sequence   : (p ▷ q) ⅋ (r ▷ s) ⟶ (p ⅋ r) ▷ (q ⅋ s)
-  left       : p ⊕ q ⟶ p
-  right      : p ⊕ q ⟶ q
-  external   : (p & q) ⅋ r ⟶ (p ⅋ r) & (q ⅋ r)
-  medial     : (p ▷ q) & (r ▷ s) ⟶ (p & r) ▷ (q & s)
+\begin{code}[hide]
+  infix 5 _∼_
+\end{code}
 
-  ⊗-assoc    : p ⊗ (q ⊗ r) ⟶ (p ⊗ q) ⊗ r
-  ⊗-assoc⁻¹  : (p ⊗ q) ⊗ r ⟶ p ⊗ (q ⊗ r)
-  ⊗-comm     : p ⊗ q ⟶ q ⊗ p
-  ⊗-unit     : p ⊗ I ⟶ p
-  ⊗-unit⁻¹   : p ⟶ (p ⊗ I)
+\begin{code}
+  data _∼_ : Formula → Formula → Set where
+    ⊗-assoc    : P  ⊗ (Q  ⊗ R)  ∼ (P ⊗ Q) ⊗ R
+    ⊗-comm     : P  ⊗ Q         ∼ Q ⊗ P
+    ⊗-unit     : P  ⊗ I         ∼ P
 
-  ⅋-assoc    : p ⅋ (q ⅋ r) ⟶ (p ⅋ q) ⅋ r
-  ⅋-assoc⁻¹  : (p ⅋ q) ⅋ r ⟶ p ⅋ (q ⅋ r)
-  ⅋-comm     : p ⅋ q ⟶ q ⅋ p
-  ⅋-unit     : p ⅋ I ⟶ p
-  ⅋-unit⁻¹   : p ⟶ (p ⅋ I)
+    ⅋-assoc    : P  ⅋ (Q  ⅋ R)  ∼ (P ⅋ Q) ⅋ R
+    ⅋-comm     : P  ⅋ Q         ∼ Q ⅋ P
+    ⅋-unit     : P  ⅋ I         ∼ P
 
-  ▷-assoc    : p ▷ (q ▷ r) ⟶ (p ▷ q) ▷ r
-  ▷-assoc⁻¹  : (p ▷ q) ▷ r ⟶ p ▷ (q ▷ r)
-  ▷-runit    : p ▷ I ⟶ p
-  ▷-runit⁻¹  : p ⟶ p ▷ I
-  ▷-lunit    : I ▷ p ⟶ p
-  ▷-lunit⁻¹  : p ⟶ I ▷ p
+    ▷-assoc    : P  ▷ (Q  ▷ R)  ∼ (P  ▷ Q) ▷ R
+    ▷-runit    : P  ▷ I         ∼ P
+    ▷-lunit    : I  ▷ P         ∼ P
+\end{code}
 
-  _⟨⅋        : p ⟶ p′ → p ⅋ q ⟶ p′ ⅋ q
-  ⅋⟩_        : q ⟶ q′ → p ⅋ q ⟶ p ⅋ q′
-  _⟨▷        : p ⟶ p′ → p ▷ q ⟶ p′ ▷ q
-  ▷⟩_        : q ⟶ q′ → p ▷ q ⟶ p ▷ q′
-  _⟨⊗        : p ⟶ p′ → p ⊗ q ⟶ p′ ⊗ q
-  ⊗⟩_        : q ⟶ q′ → p ⊗ q ⟶ p ⊗ q′
-  _⟨&        : p ⟶ p′ → p & q ⟶ p′ & q
-  &⟩_        : q ⟶ q′ → p & q ⟶ p & q′
+\begin{code}[hide]
+  infix 5 _≡_
+\end{code}
+
+\begin{code}
+  _≡_ : Formula → Formula → Set
+  _≡_ = EqClosure _∼_
+\end{code}
+
+\begin{code}[hide]
+  infix 5 _⟶_
+\end{code}
+
+\begin{code}
+  data _⟶_ : Formula → Formula → Set where
+    axiom      : P ⅋ ¬ P  ⟶ I
+    cut        : I        ⟶ P ⊗ ¬ P
+
+    tidy       : I & I              ⟶ I
+    switch     : (P ⊗ Q) ⅋ R        ⟶ P ⊗ (Q ⅋ R)
+    sequence   : (P ▷ Q) ⅋ (R ▷ S)  ⟶ (P ⅋ R) ▷ (Q ⅋ S)
+    left       : P ⊕ Q              ⟶ P
+    right      : P ⊕ Q              ⟶ Q
+    external   : (P & Q) ⅋ R        ⟶ (P ⅋ R) & (Q ⅋ R)
+    medial     : (P ▷ Q) & (R ▷ S)  ⟶ (P & R) ▷ (Q & S)
+
+    equiv      : P  ≡ Q   →  P      ⟶  Q
+    _⟨⅋        : P  ⟶  R  →  P ⅋ Q  ⟶  R ⅋ Q
+    ⅋⟩_        : Q  ⟶  S  →  P ⅋ Q  ⟶  P ⅋ S
+    _⟨▷        : P  ⟶  R  →  P ▷ Q  ⟶  R ▷ Q
+    ▷⟩_        : Q  ⟶  S  →  P ▷ Q  ⟶  P ▷ S
+    _⟨⊗        : P  ⟶  R  →  P ⊗ Q  ⟶  R ⊗ Q
+    ⊗⟩_        : Q  ⟶  S  →  P ⊗ Q  ⟶  P ⊗ S
+    _⟨&        : P  ⟶  R  →  P & Q  ⟶  R & Q
+    &⟩_        : Q  ⟶  S  →  P & Q  ⟶  P & S
+\end{code}
+
+\begin{code}[hide]
+  infix 5 _⟶⋆_
+\end{code}
+
+\begin{code}
+  _⟶⋆_ : Formula → Formula → Set
+  _⟶⋆_ = Star _⟶_
 \end{code}
