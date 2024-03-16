@@ -1,11 +1,4 @@
 \begin{code}[hide]
-  open import Level using (zero)
-  import Relation.Binary.Construct.Closure.Equivalence as EqClosure
-  open EqClosure using (EqClosure)
-  import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star
-  open Star using (Star)
-\end{code}
-\begin{code}[hide]
   module mav-syntax (Atom : Set) where
 \end{code}
 \section{Multiplicative-Additive System Virtual}\label{sec:mav-syntax}
@@ -84,69 +77,4 @@ Negation:
   ¬ (P  &  Q)  = ¬ P  ⊕  ¬ Q
   ¬ (P  ⊕  Q)  = ¬ P  &  ¬ Q
   ¬ (P  ▷  Q)  = ¬ P  ▷  ¬ Q
-\end{code}
-
-\begin{code}[hide]
-  infix 5 _∼_
-\end{code}
-
-\begin{code}
-  data _∼_ : Formula → Formula → Set where
-    ⊗-assoc    : P  ⊗ (Q  ⊗ R)  ∼ (P ⊗ Q) ⊗ R
-    ⊗-comm     : P  ⊗ Q         ∼ Q ⊗ P
-    ⊗-unit     : P  ⊗ I         ∼ P
-
-    ⅋-assoc    : P  ⅋ (Q  ⅋ R)  ∼ (P ⅋ Q) ⅋ R
-    ⅋-comm     : P  ⅋ Q         ∼ Q ⅋ P
-    ⅋-unit     : P  ⅋ I         ∼ P
-
-    ▷-assoc    : P  ▷ (Q  ▷ R)  ∼ (P  ▷ Q) ▷ R
-    ▷-runit    : P  ▷ I         ∼ P
-    ▷-lunit    : I  ▷ P         ∼ P
-\end{code}
-
-\begin{code}[hide]
-  infix 5 _≡_
-\end{code}
-
-\begin{code}
-  _≡_ : Formula → Formula → Set
-  _≡_ = EqClosure _∼_
-\end{code}
-
-\begin{code}[hide]
-  infix 5 _⟶_
-\end{code}
-
-\begin{code}
-  data _⟶_ : Formula → Formula → Set where
-    axiom      : P ⅋ ¬ P  ⟶ I
-    cut        : I        ⟶ P ⊗ ¬ P
-
-    tidy       : I & I              ⟶ I
-    switch     : (P ⊗ Q) ⅋ R        ⟶ P ⊗ (Q ⅋ R)
-    sequence   : (P ▷ Q) ⅋ (R ▷ S)  ⟶ (P ⅋ R) ▷ (Q ⅋ S)
-    left       : P ⊕ Q              ⟶ P
-    right      : P ⊕ Q              ⟶ Q
-    external   : (P & Q) ⅋ R        ⟶ (P ⅋ R) & (Q ⅋ R)
-    medial     : (P ▷ Q) & (R ▷ S)  ⟶ (P & R) ▷ (Q & S)
-
-    equiv      : P  ≡ Q   →  P      ⟶  Q
-    _⟨⅋        : P  ⟶  R  →  P ⅋ Q  ⟶  R ⅋ Q
-    ⅋⟩_        : Q  ⟶  S  →  P ⅋ Q  ⟶  P ⅋ S
-    _⟨▷        : P  ⟶  R  →  P ▷ Q  ⟶  R ▷ Q
-    ▷⟩_        : Q  ⟶  S  →  P ▷ Q  ⟶  P ▷ S
-    _⟨⊗        : P  ⟶  R  →  P ⊗ Q  ⟶  R ⊗ Q
-    ⊗⟩_        : Q  ⟶  S  →  P ⊗ Q  ⟶  P ⊗ S
-    _⟨&        : P  ⟶  R  →  P & Q  ⟶  R & Q
-    &⟩_        : Q  ⟶  S  →  P & Q  ⟶  P & S
-\end{code}
-
-\begin{code}[hide]
-  infix 5 _⟶⋆_
-\end{code}
-
-\begin{code}
-  _⟶⋆_ : Formula → Formula → Set
-  _⟶⋆_ = Star _⟶_
 \end{code}

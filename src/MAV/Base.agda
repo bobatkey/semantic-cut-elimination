@@ -2,14 +2,13 @@
 
 module MAV.Base (Atom : Set) where
 
-open import Level
-open import Data.Product using (proj₁; proj₂)
-open import Relation.Binary using (IsEquivalence)
-open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
-open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star; ε; _◅_)
-import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as Star
-      
+open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ-syntax)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Level using (0ℓ; lift; lower; Lift; suc)
 open import Prelude
+open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star)
+open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (ε; _◅_)
+import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as Star
 
 open import MAV.Formula Atom
 
@@ -23,9 +22,9 @@ private
 
 infix 5 _⟶_
 
+-- One step of the “analytic” proof system
 data _⟶_ : Formula → Formula → Set where
-  `axiom    : ∀ P → P `⅋ `¬ P ⟶ `I
-  `cut      : ∀ P → `I ⟶ P `⊗ `¬ P
+  `axiom    : `+ A `⅋ `- A ⟶ `I
 
   `tidy     : `I `& `I ⟶ `I
   `switch   : (P `⊗ Q) `⅋ R ⟶ P `⊗ (Q `⅋ R)
@@ -35,190 +34,114 @@ data _⟶_ : Formula → Formula → Set where
   `external : (P `& Q) `⅋ R ⟶ (P `⅋ R) `& (Q `⅋ R)
   `medial   : (P `▷ Q) `& (R `▷ S) ⟶ (P `& R) `▷ (Q `& S)
 
-  _`⟨⊗_      : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
+  -- _`⟨⊗_      : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
   _`⊗⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊗ Q ⟶ P `⊗ Q′
-  `⊗-assoc   : P `⊗ (Q `⊗ R) ⟶ (P `⊗ Q) `⊗ R
-  `⊗-assoc⁻¹ : (P `⊗ Q) `⊗ R ⟶ P `⊗ (Q `⊗ R)
+  -- `⊗-assoc   : P `⊗ (Q `⊗ R) ⟶ (P `⊗ Q) `⊗ R
+  -- `⊗-assoc⁻¹ : (P `⊗ Q) `⊗ R ⟶ P `⊗ (Q `⊗ R)
   `⊗-comm    : P `⊗ Q ⟶ Q `⊗ P
   `⊗-unit    : P `⊗ `I ⟶ P
-  `⊗-unit⁻¹  : P ⟶ P `⊗ `I
+  -- `⊗-unit⁻¹  : P ⟶ (P `⊗ `I)
 
-  _`⟨⅋_      : P ⟶ P′ → (Q : Formula) → P `⅋ Q ⟶ P′ `⅋ Q
-  _`⅋⟩_      : (P : Formula) → Q ⟶ Q′ → P `⅋ Q ⟶ P `⅋ Q′
-  `⅋-assoc   : P `⅋ (Q `⅋ R) ⟶ (P `⅋ Q) `⅋ R
-  `⅋-assoc⁻¹ : (P `⅋ Q) `⅋ R ⟶ P `⅋ (Q `⅋ R)
-  `⅋-comm    : P `⅋ Q ⟶ Q `⅋ P
-  `⅋-unit    : P `⅋ `I ⟶ P
-  `⅋-unit⁻¹  : P ⟶ P `⅋ `I
+  _`⟨⅋_      : P ⟶ P′ → (Q : Formula) → (P `⅋ Q) ⟶ (P′ `⅋ Q)
+  _`⅋⟩_      : (P : Formula) → Q ⟶ Q′ → (P `⅋ Q) ⟶ (P `⅋ Q′)
+  `⅋-assoc   : (P `⅋ (Q `⅋ R)) ⟶ ((P `⅋ Q) `⅋ R)
+  `⅋-assoc⁻¹ : ((P `⅋ Q) `⅋ R) ⟶ (P `⅋ (Q `⅋ R))
+  `⅋-comm    : (P `⅋ Q) ⟶ (Q `⅋ P)
+  `⅋-unit    : (P `⅋ `I) ⟶ P
+  `⅋-unit⁻¹  : P ⟶ (P `⅋ `I)
 
-  _`⟨▷_      : P ⟶ P′ → (Q : Formula) → P `▷ Q ⟶ P′ `▷ Q
-  _`▷⟩_      : (P : Formula) → Q ⟶ Q′ → P `▷ Q ⟶ P `▷ Q′
-  `▷-assoc   : P `▷ (Q `▷ R) ⟶ (P `▷ Q) `▷ R
-  `▷-assoc⁻¹ : (P `▷ Q) `▷ R ⟶ P `▷ (Q `▷ R)
-  `▷-runit   : P `▷ `I ⟶ P
-  `▷-runit⁻¹ : P ⟶ P `▷ `I
-  `▷-lunit   : `I `▷ P ⟶ P
-  `▷-lunit⁻¹ : P ⟶ `I `▷ P
+  _`⟨▷_      : P ⟶ P′ → (Q : Formula) → (P `▷ Q) ⟶ (P′ `▷ Q)
+  _`▷⟩_      : (P : Formula) → Q ⟶ Q′ → (P `▷ Q) ⟶ (P `▷ Q′)
+  `▷-assoc   : (P `▷ (Q `▷ R)) ⟶ ((P `▷ Q) `▷ R)
+  `▷-assoc⁻¹ : ((P `▷ Q) `▷ R) ⟶ (P `▷ (Q `▷ R))
+  `▷-runit   : (P `▷ `I) ⟶ P
+  `▷-runit⁻¹ : P ⟶ (P `▷ `I)
+  `▷-lunit   : (`I `▷ P) ⟶ P
+  `▷-lunit⁻¹ : P ⟶ (`I `▷ P)
 
-  _`⟨&_      : P ⟶ P′ → (Q : Formula) → P `& Q ⟶ P′ `& Q
-  _`&⟩_      : (P : Formula) → Q ⟶ Q′ → P `& Q ⟶ P `& Q′
+  _`⟨&_      : P ⟶ P′ → (Q : Formula) → (P `& Q) ⟶ (P′ `& Q)
+  _`&⟩_      : (P : Formula) → Q ⟶ Q′ → (P `& Q) ⟶ (P `& Q′)
 
-  _`⟨⊕_      : P ⟶ P′ → (Q : Formula) → P `⊕ Q ⟶ P′ `⊕ Q
-  _`⊕⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊕ Q ⟶ P `⊕ Q′
 
 infix  5 _⟶*_
 
 _⟶*_ : Formula → Formula → Set
 _⟶*_ = Star _⟶_
 
-test : Formula
-test = (`I `⊕ `I) `▷ (`I `& `I)
+------------------------------------------------------------------------------
+-- Turning the proof system into A pre-order
 
-test-id : (test `⅋ `¬ test) ⟶* `I
-test-id = `axiom test ◅ ε
+⟶*-refl : ∀ {P} → P ⟶* P
+⟶*-refl = ε
 
-record Model (a ℓ : Level) : Set (suc (a ⊔ ℓ)) where
-  field
-    Carrier : Set a
-    _≤_     : Carrier → Carrier → Set ℓ
+⟶*-trans : P ⟶* Q → Q ⟶* R → P ⟶* R
+⟶*-trans ε           q⟶*R = q⟶*R
+⟶*-trans (x ◅ p⟶*Q) q⟶*R = x ◅ ⟶*-trans p⟶*Q q⟶*R
 
-  infixr 15 ¬_
-  infixr 10 _⊗_
-  infixr 10 _&_
-  infixr 10 _▷_
-  
-  field
-    ¬_      : Carrier → Carrier
-    I       : Carrier
-    J       : Carrier
-    _⊗_     : Carrier → Carrier → Carrier
-    _▷_     : Carrier → Carrier → Carrier
-    _&_     : Carrier → Carrier → Carrier
+⟶*-isPreorder : IsPreorder _⟶*_
+⟶*-isPreorder .IsPreorder.refl = ⟶*-refl
+⟶*-isPreorder .IsPreorder.trans = ⟶*-trans
 
-  field
-    ≤-isPreorder  : IsPreorder _≤_
+-- ⅋ is A monoid in the proof system
+_`⅋⟩*_ : (P : Formula) → Q ⟶* Q′ → (P `⅋ Q) ⟶* (P `⅋ Q′)
+P `⅋⟩* ε = ε
+P `⅋⟩* (x ◅ ϕ) = (P `⅋⟩ x) ◅ (P `⅋⟩* ϕ)
 
-  open IsPreorder ≤-isPreorder public
-  
-  field
-    ⊗-isMonoid    : IsMonoid ≤-isPreorder _⊗_ I
-    ⊗-sym         : ∀ {x y} → (x ⊗ y) ≤ (y ⊗ x)
-    ⊗-*aut        : IsStarAuto ≤-isPreorder ⊗-isMonoid ⊗-sym ¬_
-    mix           : I ≃ (¬ I)
+_`⟨⅋*_ : P ⟶* P′ → (Q : Formula) →  (P `⅋ Q) ⟶* (P′ `⅋ Q)
+ε       `⟨⅋* Q = ε
+(x ◅ ϕ) `⟨⅋* Q = (x `⟨⅋ Q) ◅ (ϕ `⟨⅋* Q)
 
-    &-isMeet      : IsMeet ≤-isPreorder _&_
+`⅋-mono : (P ⟶* P′) → (Q ⟶* Q′) → (P `⅋ Q) ⟶* (P′ `⅋ Q′)
+`⅋-mono {P = P} {Q′ = Q′} f g = ⟶*-trans (P `⅋⟩* g) (f `⟨⅋* Q′)
 
-    ▷-isMonoid    : IsMonoid ≤-isPreorder _▷_ J
-    I-eq-J        : I ≃ J
-    ▷-self-dual   : ∀ {x y} → (¬ (x ▷ y)) ≃ ((¬ x) ▷ (¬ y))
-    ⊗-▷-isDuoidal : IsDuoidal ≤-isPreorder ⊗-isMonoid ▷-isMonoid
+`⅋-isMonoid : IsMonoid ⟶*-isPreorder _`⅋_ `I
+`⅋-isMonoid .IsMonoid.mono = `⅋-mono
+`⅋-isMonoid .IsMonoid.assoc = `⅋-assoc⁻¹ ◅ ε , `⅋-assoc ◅ ε
+`⅋-isMonoid .IsMonoid.lunit = `⅋-comm ◅ `⅋-unit ◅ ε , `⅋-unit⁻¹ ◅ `⅋-comm ◅ ε
+`⅋-isMonoid .IsMonoid.runit = `⅋-unit ◅ ε , `⅋-unit⁻¹ ◅ ε
 
-  open IsEquivalence ≃-isEquivalence public
-    renaming (refl to ≃-refl; sym to ≃-sym; trans to ≃-trans)
-  open IsMonoid ⊗-isMonoid public
-    renaming (mono to ⊗-mono; assoc to ⊗-assoc; lunit to ⊗-lunit; runit to ⊗-runit; cong to ⊗-cong)
-  open IsMonoid ▷-isMonoid public
-    renaming (mono to ▷-mono; assoc to ▷-assoc; lunit to ▷-lunit; runit to ▷-runit; cong to ▷-cong)
-  open IsStarAuto ⊗-*aut public
-  open IsMeet &-isMeet public
-    renaming (mono to &-mono; cong to &-cong)
-    hiding (assoc; idem)
-  open IsDuoidal ⊗-▷-isDuoidal
+`⅋-sym : P `⅋ Q ⟶* Q `⅋ P
+`⅋-sym = `⅋-comm ◅ ε
 
-  -- Some derived facts, used in the interpretation
-  _⊕_ : Carrier → Carrier → Carrier
-  x ⊕ y = ¬ (¬ x & ¬ y)
+-- ▷ is A monoid in the proof system
+_`▷⟩*_ : (P : Formula) → Q ⟶* Q′ → P `▷ Q ⟶* P `▷ Q′
+P `▷⟩* ε = ε
+P `▷⟩* (x ◅ ϕ) = (P `▷⟩ x) ◅ (P `▷⟩* ϕ)
 
-  ⊕-isJoin : IsJoin ≤-isPreorder _⊕_
-  ⊕-isJoin .IsJoin.inl = trans (involution .proj₁) (¬-mono π₁)
-  ⊕-isJoin .IsJoin.inr = trans (involution .proj₁) (¬-mono π₂)
-  ⊕-isJoin .IsJoin.[_,_] m₁ m₂ = trans (¬-mono ⟨ ¬-mono m₁ , ¬-mono m₂ ⟩) (involution .proj₂)
+_`⟨▷*_ : P ⟶* P′ → (Q : Formula) → P `▷ Q ⟶* P′ `▷ Q
+ε       `⟨▷* Q = ε
+(x ◅ ϕ) `⟨▷* Q = (x `⟨▷ Q) ◅ (ϕ `⟨▷* Q)
 
-  open IsJoin ⊕-isJoin public
-    renaming (mono to ⊕-mono; cong to ⊕-cong)
-    hiding (assoc; idem)
+`▷-mono : (P ⟶* P′) → (Q ⟶* Q′) → (P `▷ Q) ⟶* (P′ `▷ Q′)
+`▷-mono {P = P} {Q′ = Q′} f g = ⟶*-trans (P `▷⟩* g) (f `⟨▷* Q′)
 
-  sequence : ∀ {w x y z} → ((w ⅋ x) ▷ (y ⅋ z)) ≤ ((w ▷ y) ⅋ (x ▷ z))
-  sequence =
-    trans (involution .proj₁)
-          (¬-mono (trans (⊗-mono (▷-self-dual .proj₁) (▷-self-dual .proj₁))
-                  (trans exchange
-                  (trans (▷-mono (involution .proj₁) (involution .proj₁))
-                  (▷-self-dual .proj₂)))))
+`▷-isMonoid : IsMonoid ⟶*-isPreorder _`▷_ `I
+`▷-isMonoid .IsMonoid.mono = `▷-mono
+`▷-isMonoid .IsMonoid.assoc = `▷-assoc⁻¹ ◅ ε , `▷-assoc ◅ ε
+`▷-isMonoid .IsMonoid.lunit = `▷-lunit ◅ ε , `▷-lunit⁻¹ ◅ ε
+`▷-isMonoid .IsMonoid.runit = `▷-runit ◅ ε , `▷-runit⁻¹ ◅ ε
 
-  ⊕-⊗-distrib : ∀ {x y z} → (x ⊗ (y ⊕ z)) ≤ ((x ⊗ y) ⊕ (x ⊗ z))
-  ⊕-⊗-distrib = ∙-∨-distrib ≤-isPreorder ⊗-isMonoid ⊗-sym ⊸-isClosure ⊕-isJoin
+⅋-`▷-isDuoidal : IsDuoidal ⟶*-isPreorder `⅋-isMonoid `▷-isMonoid
+⅋-`▷-isDuoidal .IsDuoidal.exchange = `sequence ◅ ε
+⅋-`▷-isDuoidal .IsDuoidal.mu = `⅋-unit ◅ ε
 
-  &-⅋-distrib : ∀ {x y z} → ((x ⅋ z) & (y ⅋ z)) ≤ ((x & y) ⅋ z)
-  &-⅋-distrib =
-    trans (involution .proj₁)
-          (¬-mono (trans ⊗-sym
-                  (trans (⊗-mono refl (¬-mono (&-mono (involution .proj₂) (involution .proj₂))))
-                  (trans ⊕-⊗-distrib
-                         (¬-mono (&-mono ⅋-sym ⅋-sym))))))
+-- & is A monotone operator
+_`&⟩*_ : (P : Formula) → Q ⟶* Q′ → P `& Q ⟶* P `& Q′
+P `&⟩* ε = ε
+P `&⟩* (x ◅ ϕ) = (P `&⟩ x) ◅ (P `&⟩* ϕ)
 
-module Interpretation {a ℓ : Level} (M : Model a ℓ) (V : Atom → M .Model.Carrier) where
+_`⟨&*_ : P ⟶* P′ → (Q : Formula) → (P `& Q) ⟶* (P′ `& Q)
+ε       `⟨&* Q = ε
+(x ◅ ϕ) `⟨&* Q = (x `⟨& Q) ◅ (ϕ `⟨&* Q)
 
-  open Model M
+`&-mono : P ⟶* P′ → Q ⟶* Q′ → P `& Q ⟶* P′ `& Q′
+`&-mono {P = P} {Q′ = Q′} f g = ⟶*-trans (P `&⟩* g) (f `⟨&* Q′)
 
-  ⟦_⟧ : Formula → Carrier
-  ⟦ `I     ⟧ = I
-  ⟦ `+ x   ⟧ = V x
-  ⟦ `- x   ⟧ = ¬ (V x)
-  ⟦ P `⅋ Q ⟧ = ⟦ P ⟧ ⅋ ⟦ Q ⟧
-  ⟦ P `⊗ Q ⟧ = ⟦ P ⟧ ⊗ ⟦ Q ⟧
-  ⟦ P `& Q ⟧ = ⟦ P ⟧ & ⟦ Q ⟧
-  ⟦ P `⊕ Q ⟧ = ⟦ P ⟧ ⊕ ⟦ Q ⟧
-  ⟦ P `▷ Q ⟧ = ⟦ P ⟧ ▷ ⟦ Q ⟧
+-- _⊗_ is A monotone operator
+_`⊗⟩*_ : (P : Formula) → Q ⟶* Q′ → (P `⊗ Q) ⟶* (P `⊗ Q′)
+P `⊗⟩* ε = ε
+P `⊗⟩* (x ◅ ϕ) = (P `⊗⟩ x) ◅ (P `⊗⟩* ϕ)
 
-  dual-ok : ∀ P → ⟦ `¬ P ⟧ ≃ ¬ ⟦ P ⟧
-  dual-ok `I = mix
-  dual-ok (`+ x) = ≃-refl
-  dual-ok (`- x) = involution
-  dual-ok (P `⅋ Q) = ≃-trans (⊗-cong (dual-ok P) (dual-ok Q)) involution
-  dual-ok (P `⊗ Q) =
-    ≃-trans (⅋-cong (dual-ok P) (dual-ok Q)) (¬-cong (⊗-cong (≃-sym involution) (≃-sym involution)))
-  dual-ok (P `& Q) = ≃-trans (⊕-cong (dual-ok P) (dual-ok Q)) (¬-cong (&-cong (≃-sym involution) (≃-sym involution)))
-  dual-ok (P `⊕ Q) = ≃-trans (&-cong (dual-ok P) (dual-ok Q)) involution
-  dual-ok (P `▷ Q) = ≃-trans (▷-cong (dual-ok P) (dual-ok Q)) (≃-sym ▷-self-dual)
-
-  ⟦_⟧step : P ⟶ Q → ⟦ Q ⟧ ≤ ⟦ P ⟧
-  ⟦ `axiom P   ⟧step = trans coev (⅋-mono refl (dual-ok P .proj₂))
-  ⟦ `cut P     ⟧step = trans (⊗-mono refl (dual-ok P .proj₁)) (trans ev (mix .proj₂))
-  ⟦ `tidy      ⟧step = ⟨ refl , refl ⟩
-  ⟦ `switch    ⟧step = linear-distrib
-  ⟦ `sequence  ⟧step = sequence
-  ⟦ `left      ⟧step = inl
-  ⟦ `right     ⟧step = inr
-  ⟦ `external  ⟧step = &-⅋-distrib
-  ⟦ `medial    ⟧step = ⟨ ▷-mono π₁ π₁ , ▷-mono π₂ π₂ ⟩
-  ⟦ S `⟨⊗ Q    ⟧step = ⊗-mono ⟦ S ⟧step refl
-  ⟦ P `⊗⟩ S    ⟧step = ⊗-mono refl ⟦ S ⟧step
-  ⟦ `⊗-assoc   ⟧step = ⊗-assoc .proj₁
-  ⟦ `⊗-assoc⁻¹ ⟧step = ⊗-assoc .proj₂
-  ⟦ `⊗-comm    ⟧step = ⊗-sym
-  ⟦ `⊗-unit    ⟧step = ⊗-runit .proj₂
-  ⟦ `⊗-unit⁻¹  ⟧step = ⊗-runit .proj₁
-  ⟦ S `⟨⅋ Q    ⟧step = ⅋-mono ⟦ S ⟧step refl
-  ⟦ P `⅋⟩ S    ⟧step = ⅋-mono refl ⟦ S ⟧step
-  ⟦ `⅋-assoc   ⟧step = ⅋-assoc .proj₁
-  ⟦ `⅋-assoc⁻¹ ⟧step = ⅋-assoc .proj₂
-  ⟦ `⅋-comm    ⟧step = ⅋-sym
-  ⟦ `⅋-unit    ⟧step = trans (⅋-runit .proj₂) (⅋-mono refl (mix .proj₂))
-  ⟦ `⅋-unit⁻¹  ⟧step = trans (⅋-mono refl (mix .proj₁)) (⅋-runit .proj₁)
-  ⟦ S `⟨▷ Q    ⟧step = ▷-mono ⟦ S ⟧step refl
-  ⟦ P `▷⟩ S    ⟧step = ▷-mono refl ⟦ S ⟧step
-  ⟦ `▷-assoc   ⟧step = ▷-assoc .proj₁
-  ⟦ `▷-assoc⁻¹ ⟧step = ▷-assoc .proj₂
-  ⟦ `▷-runit   ⟧step = trans (▷-runit .proj₂) (▷-mono refl (I-eq-J .proj₂))
-  ⟦ `▷-runit⁻¹ ⟧step = trans (▷-mono refl (I-eq-J .proj₁)) (▷-runit .proj₁)
-  ⟦ `▷-lunit   ⟧step = trans (▷-lunit .proj₂) (▷-mono (I-eq-J .proj₂) refl)
-  ⟦ `▷-lunit⁻¹ ⟧step = trans  (▷-mono (I-eq-J .proj₁) refl) (▷-lunit .proj₁)
-  ⟦ S `⟨& Q    ⟧step = &-mono ⟦ S ⟧step refl
-  ⟦ P `&⟩ S    ⟧step = &-mono refl ⟦ S ⟧step
-  ⟦ S `⟨⊕ Q    ⟧step = ⊕-mono ⟦ S ⟧step refl
-  ⟦ P `⊕⟩ S    ⟧step = ⊕-mono refl ⟦ S ⟧step
-
-  ⟦_⟧steps : P ⟶* Q → ⟦ Q ⟧ ≤ ⟦ P ⟧
-  ⟦ ε     ⟧steps = refl
-  ⟦ x ◅ S ⟧steps = trans ⟦ S ⟧steps ⟦ x ⟧step
+-- _`⟨⊗*_ : P ⟶* P′ → (Q : Formula) → (P `⊗ Q) ⟶* (P′ `⊗ Q)
+-- ε       `⟨⊗* Q = ε
+-- (x ◅ ϕ) `⟨⊗* Q = (x `⟨⊗ Q) ◅ (ϕ `⟨⊗* Q)
