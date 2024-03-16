@@ -2,13 +2,14 @@
 
 module MAV.Formula (At : Set) where
 
-infixr 20 `+_ 
-infixr 20 `-_ 
-infixr 10 _`⅋_
-infixr 10 _`⊗_
-infixr 10 _`&_
-infixr 10 _`⊕_
-infixr 10 _`▷_
+infix 20 `+_ 
+infix 20 `-_ 
+infix 15 `¬_
+infix 10 _`⅋_
+infix 10 _`⊗_
+infix 10 _`&_
+infix 10 _`⊕_
+infix 10 _`▷_
 
 data Formula : Set where
   `I   : Formula
@@ -20,7 +21,7 @@ data Formula : Set where
   _`⊕_ : Formula → Formula → Formula
   _`▷_ : Formula → Formula → Formula
 
-`¬ : Formula → Formula
+`¬_ : Formula → Formula
 `¬ `I = `I
 `¬ (`+ a) = `- a
 `¬ (`- a) = `+ a

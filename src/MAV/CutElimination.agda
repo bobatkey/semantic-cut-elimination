@@ -212,7 +212,7 @@ I-eq-J .proj₂ .Chu.Construction._==>_.fneg = units-iso .proj₁
 ChuModel : Model (suc (suc 0ℓ)) 0ℓ
 ChuModel .Model.Carrier = Chu
 ChuModel .Model._≤_ = _==>_
-ChuModel .Model.¬ = ⟦¬⟧
+ChuModel .Model.¬_ = ⟦¬⟧
 ChuModel .Model.I = ⟦I⟧
 ChuModel .Model.J = J
 ChuModel .Model._⊗_ = _⟦⊗⟧_
