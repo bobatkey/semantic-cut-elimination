@@ -1,149 +1,149 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-module MAV.CutElimination (At : Set) where
+module MAV.CutElimination (Atom : Set) where
 
 open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ-syntax)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Level using (0ℓ; lift; lower; Lift; suc)
 open import Prelude
+open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star; ε; _◅_)
+import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as Star
 
-open import MAV.Formula At
+open import MAV.Formula Atom
 
 private
   variable
-    a a′ a₁ a₂ : At
-    p p′ p₁ p₂ : Formula
-    q q′ q₁ q₂ : Formula
-    r r′ r₁ r₂ : Formula
-    s s′ s₁ s₂ : Formula
+    A A′ : Atom
+    P P′ : Formula
+    Q Q′ : Formula
+    R R′ : Formula
+    S S′ : Formula
 
 infix 5 _⟶_
 
 -- One step of the “analytic” proof system
 data _⟶_ : Formula → Formula → Set where
-  `axiom    : `+ a `⅋ `- a ⟶ `I
+  `axiom    : `+ A `⅋ `- A ⟶ `I
 
   `tidy     : `I `& `I ⟶ `I
-  `switch   : (p `⊗ q) `⅋ r ⟶ p `⊗ (q `⅋ r)
-  `sequence : (p `▷ q) `⅋ (r `▷ s) ⟶ (p `⅋ r) `▷ (q `⅋ s)
-  `left     : p `⊕ q ⟶ p
-  `right    : p `⊕ q ⟶ q
-  `external : (p `& q) `⅋ r ⟶ (p `⅋ r) `& (q `⅋ r)
-  `medial   : (p `▷ q) `& (r `▷ s) ⟶ (p `& r) `▷ (q `& s)
+  `switch   : (P `⊗ Q) `⅋ R ⟶ P `⊗ (Q `⅋ R)
+  `sequence : (P `▷ Q) `⅋ (R `▷ S) ⟶ (P `⅋ R) `▷ (Q `⅋ S)
+  `left     : P `⊕ Q ⟶ P
+  `right    : P `⊕ Q ⟶ Q
+  `external : (P `& Q) `⅋ R ⟶ (P `⅋ R) `& (Q `⅋ R)
+  `medial   : (P `▷ Q) `& (R `▷ S) ⟶ (P `& R) `▷ (Q `& S)
 
-  -- _⟨`⊗_      : p ⟶ p′ → (q : Formula) → p `⊗ q ⟶ p′ `⊗ q
-  _`⊗⟩_      : (p : Formula) → q ⟶ q′ → p `⊗ q ⟶ p `⊗ q′
-  -- `⊗-assoc   : p `⊗ (q `⊗ r) ⟶ (p `⊗ q) `⊗ r
-  -- `⊗-assoc⁻¹ : (p `⊗ q) `⊗ r ⟶ p `⊗ (q `⊗ r)
-  `⊗-comm    : p `⊗ q ⟶ q `⊗ p
-  `⊗-unit    : p `⊗ `I ⟶ p
-  -- `⊗-unit⁻¹  : p ⟶ (p `⊗ `I)
+  -- _`⟨⊗_      : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
+  _`⊗⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊗ Q ⟶ P `⊗ Q′
+  -- `⊗-assoc   : P `⊗ (Q `⊗ R) ⟶ (P `⊗ Q) `⊗ R
+  -- `⊗-assoc⁻¹ : (P `⊗ Q) `⊗ R ⟶ P `⊗ (Q `⊗ R)
+  `⊗-comm    : P `⊗ Q ⟶ Q `⊗ P
+  `⊗-unit    : P `⊗ `I ⟶ P
+  -- `⊗-unit⁻¹  : P ⟶ (P `⊗ `I)
 
-  _⟨`⅋_      : p ⟶ p′ → (q : Formula) → (p `⅋ q) ⟶ (p′ `⅋ q)
-  _`⅋⟩_      : (p : Formula) → q ⟶ q′ → (p `⅋ q) ⟶ (p `⅋ q′)
-  `⅋-assoc   : (p `⅋ (q `⅋ r)) ⟶ ((p `⅋ q) `⅋ r)
-  `⅋-assoc⁻¹ : ((p `⅋ q) `⅋ r) ⟶ (p `⅋ (q `⅋ r))
-  `⅋-comm    : (p `⅋ q) ⟶ (q `⅋ p)
-  `⅋-unit    : (p `⅋ `I) ⟶ p
-  `⅋-unit⁻¹  : p ⟶ (p `⅋ `I)
+  _`⟨⅋_      : P ⟶ P′ → (Q : Formula) → (P `⅋ Q) ⟶ (P′ `⅋ Q)
+  _`⅋⟩_      : (P : Formula) → Q ⟶ Q′ → (P `⅋ Q) ⟶ (P `⅋ Q′)
+  `⅋-assoc   : (P `⅋ (Q `⅋ R)) ⟶ ((P `⅋ Q) `⅋ R)
+  `⅋-assoc⁻¹ : ((P `⅋ Q) `⅋ R) ⟶ (P `⅋ (Q `⅋ R))
+  `⅋-comm    : (P `⅋ Q) ⟶ (Q `⅋ P)
+  `⅋-unit    : (P `⅋ `I) ⟶ P
+  `⅋-unit⁻¹  : P ⟶ (P `⅋ `I)
 
-  _⟨`▷_      : p ⟶ p′ → (q : Formula) → (p `▷ q) ⟶ (p′ `▷ q)
-  _`▷⟩_      : (p : Formula) → q ⟶ q′ → (p `▷ q) ⟶ (p `▷ q′)
-  `▷-assoc   : (p `▷ (q `▷ r)) ⟶ ((p `▷ q) `▷ r)
-  `▷-assoc⁻¹ : ((p `▷ q) `▷ r) ⟶ (p `▷ (q `▷ r))
-  `▷-runit   : (p `▷ `I) ⟶ p
-  `▷-runit⁻¹ : p ⟶ (p `▷ `I)
-  `▷-lunit   : (`I `▷ p) ⟶ p
-  `▷-lunit⁻¹ : p ⟶ (`I `▷ p)
+  _`⟨▷_      : P ⟶ P′ → (Q : Formula) → (P `▷ Q) ⟶ (P′ `▷ Q)
+  _`▷⟩_      : (P : Formula) → Q ⟶ Q′ → (P `▷ Q) ⟶ (P `▷ Q′)
+  `▷-assoc   : (P `▷ (Q `▷ R)) ⟶ ((P `▷ Q) `▷ R)
+  `▷-assoc⁻¹ : ((P `▷ Q) `▷ R) ⟶ (P `▷ (Q `▷ R))
+  `▷-runit   : (P `▷ `I) ⟶ P
+  `▷-runit⁻¹ : P ⟶ (P `▷ `I)
+  `▷-lunit   : (`I `▷ P) ⟶ P
+  `▷-lunit⁻¹ : P ⟶ (`I `▷ P)
 
-  _⟨`&_      : p ⟶ p′ → (q : Formula) → (p `& q) ⟶ (p′ `& q)
-  _`&⟩_      : (p : Formula) → q ⟶ q′ → (p `& q) ⟶ (p `& q′)
+  _`⟨&_      : P ⟶ P′ → (Q : Formula) → (P `& Q) ⟶ (P′ `& Q)
+  _`&⟩_      : (P : Formula) → Q ⟶ Q′ → (P `& Q) ⟶ (P `& Q′)
 
 
 infix  5 _⟶*_
-infixr 6 _∷_
 
-data _⟶*_ : Formula → Formula → Set where
-  ε : ∀ {p} → p ⟶* p
-  _∷_ : p ⟶ q → q ⟶* r → p ⟶* r
+_⟶*_ : Formula → Formula → Set
+_⟶*_ = Star _⟶_
 
 ------------------------------------------------------------------------------
--- Turning the proof system into a pre-order
+-- Turning the proof system into A pre-order
 
-⟶*-refl : ∀ {p} → p ⟶* p
+⟶*-refl : ∀ {P} → P ⟶* P
 ⟶*-refl = ε
 
-⟶*-trans : p ⟶* q → q ⟶* r → p ⟶* r
-⟶*-trans ε           q⟶*r = q⟶*r
-⟶*-trans (x ∷ p⟶*q) q⟶*r = x ∷ ⟶*-trans p⟶*q q⟶*r
+⟶*-trans : P ⟶* Q → Q ⟶* R → P ⟶* R
+⟶*-trans ε           q⟶*R = q⟶*R
+⟶*-trans (x ◅ p⟶*Q) q⟶*R = x ◅ ⟶*-trans p⟶*Q q⟶*R
 
 ⟶*-isPreorder : IsPreorder _⟶*_
 ⟶*-isPreorder .IsPreorder.refl = ⟶*-refl
 ⟶*-isPreorder .IsPreorder.trans = ⟶*-trans
 
--- ⅋ is a monoid in the proof system
-_`⅋⟩*_ : (p : Formula) → q₁ ⟶* q₂ → (p `⅋ q₁) ⟶* (p `⅋ q₂)
-p `⅋⟩* ε = ε
-p `⅋⟩* (x ∷ ϕ) = (p `⅋⟩ x) ∷ (p `⅋⟩* ϕ)
+-- ⅋ is A monoid in the proof system
+_`⅋⟩*_ : (P : Formula) → Q ⟶* Q′ → (P `⅋ Q) ⟶* (P `⅋ Q′)
+P `⅋⟩* ε = ε
+P `⅋⟩* (x ◅ ϕ) = (P `⅋⟩ x) ◅ (P `⅋⟩* ϕ)
 
-_⟨`⅋*_ : p ⟶* p′ → (q : Formula) →  (p `⅋ q) ⟶* (p′ `⅋ q)
-ε       ⟨`⅋* q = ε
-(x ∷ ϕ) ⟨`⅋* q = (x ⟨`⅋ q) ∷ (ϕ ⟨`⅋* q)
+_`⟨⅋*_ : P ⟶* P′ → (Q : Formula) →  (P `⅋ Q) ⟶* (P′ `⅋ Q)
+ε       `⟨⅋* Q = ε
+(x ◅ ϕ) `⟨⅋* Q = (x `⟨⅋ Q) ◅ (ϕ `⟨⅋* Q)
 
-`⅋-mono : (p ⟶* p′) → (q ⟶* q′) → (p `⅋ q) ⟶* (p′ `⅋ q′)
-`⅋-mono {p = p} {q′ = q′} f g = ⟶*-trans (p `⅋⟩* g) (f ⟨`⅋* q′)
+`⅋-mono : (P ⟶* P′) → (Q ⟶* Q′) → (P `⅋ Q) ⟶* (P′ `⅋ Q′)
+`⅋-mono {P = P} {Q′ = Q′} f g = ⟶*-trans (P `⅋⟩* g) (f `⟨⅋* Q′)
 
 `⅋-isMonoid : IsMonoid ⟶*-isPreorder _`⅋_ `I
 `⅋-isMonoid .IsMonoid.mono = `⅋-mono
-`⅋-isMonoid .IsMonoid.assoc = `⅋-assoc⁻¹ ∷ ε , `⅋-assoc ∷ ε
-`⅋-isMonoid .IsMonoid.lunit = `⅋-comm ∷ `⅋-unit ∷ ε , `⅋-unit⁻¹ ∷ `⅋-comm ∷ ε
-`⅋-isMonoid .IsMonoid.runit = `⅋-unit ∷ ε , `⅋-unit⁻¹ ∷ ε
+`⅋-isMonoid .IsMonoid.assoc = `⅋-assoc⁻¹ ◅ ε , `⅋-assoc ◅ ε
+`⅋-isMonoid .IsMonoid.lunit = `⅋-comm ◅ `⅋-unit ◅ ε , `⅋-unit⁻¹ ◅ `⅋-comm ◅ ε
+`⅋-isMonoid .IsMonoid.runit = `⅋-unit ◅ ε , `⅋-unit⁻¹ ◅ ε
 
-`⅋-sym : p `⅋ q ⟶* q `⅋ p
-`⅋-sym = `⅋-comm ∷ ε
+`⅋-sym : P `⅋ Q ⟶* Q `⅋ P
+`⅋-sym = `⅋-comm ◅ ε
 
--- ▷ is a monoid in the proof system
-_`▷⟩*_ : (p : Formula) → q₁ ⟶* q₂ → p `▷ q₁ ⟶* p `▷ q₂
-p `▷⟩* ε = ε
-p `▷⟩* (x ∷ ϕ) = (p `▷⟩ x) ∷ (p `▷⟩* ϕ)
+-- ▷ is A monoid in the proof system
+_`▷⟩*_ : (P : Formula) → Q ⟶* Q′ → P `▷ Q ⟶* P `▷ Q′
+P `▷⟩* ε = ε
+P `▷⟩* (x ◅ ϕ) = (P `▷⟩ x) ◅ (P `▷⟩* ϕ)
 
-_⟨`▷*_ : p ⟶* p′ → (q : Formula) → p `▷ q ⟶* p′ `▷ q
-ε       ⟨`▷* q = ε
-(x ∷ ϕ) ⟨`▷* q = (x ⟨`▷ q) ∷ (ϕ ⟨`▷* q)
+_`⟨▷*_ : P ⟶* P′ → (Q : Formula) → P `▷ Q ⟶* P′ `▷ Q
+ε       `⟨▷* Q = ε
+(x ◅ ϕ) `⟨▷* Q = (x `⟨▷ Q) ◅ (ϕ `⟨▷* Q)
 
-`▷-mono : (p ⟶* p′) → (q ⟶* q′) → (p `▷ q) ⟶* (p′ `▷ q′)
-`▷-mono {p = p} {q′ = q′} f g = ⟶*-trans (p `▷⟩* g) (f ⟨`▷* q′)
+`▷-mono : (P ⟶* P′) → (Q ⟶* Q′) → (P `▷ Q) ⟶* (P′ `▷ Q′)
+`▷-mono {P = P} {Q′ = Q′} f g = ⟶*-trans (P `▷⟩* g) (f `⟨▷* Q′)
 
 `▷-isMonoid : IsMonoid ⟶*-isPreorder _`▷_ `I
 `▷-isMonoid .IsMonoid.mono = `▷-mono
-`▷-isMonoid .IsMonoid.assoc = `▷-assoc⁻¹ ∷ ε , `▷-assoc ∷ ε
-`▷-isMonoid .IsMonoid.lunit = `▷-lunit ∷ ε , `▷-lunit⁻¹ ∷ ε
-`▷-isMonoid .IsMonoid.runit = `▷-runit ∷ ε , `▷-runit⁻¹ ∷ ε
+`▷-isMonoid .IsMonoid.assoc = `▷-assoc⁻¹ ◅ ε , `▷-assoc ◅ ε
+`▷-isMonoid .IsMonoid.lunit = `▷-lunit ◅ ε , `▷-lunit⁻¹ ◅ ε
+`▷-isMonoid .IsMonoid.runit = `▷-runit ◅ ε , `▷-runit⁻¹ ◅ ε
 
 ⅋-`▷-isDuoidal : IsDuoidal ⟶*-isPreorder `⅋-isMonoid `▷-isMonoid
-⅋-`▷-isDuoidal .IsDuoidal.exchange = `sequence ∷ ε
-⅋-`▷-isDuoidal .IsDuoidal.mu = `⅋-unit ∷ ε
+⅋-`▷-isDuoidal .IsDuoidal.exchange = `sequence ◅ ε
+⅋-`▷-isDuoidal .IsDuoidal.mu = `⅋-unit ◅ ε
 
--- & is a monotone operator
-_`&⟩*_ : (p : Formula) → q ⟶* q′ → p `& q ⟶* p `& q′
-p `&⟩* ε = ε
-p `&⟩* (x ∷ ϕ) = (p `&⟩ x) ∷ (p `&⟩* ϕ)
+-- & is A monotone operator
+_`&⟩*_ : (P : Formula) → Q ⟶* Q′ → P `& Q ⟶* P `& Q′
+P `&⟩* ε = ε
+P `&⟩* (x ◅ ϕ) = (P `&⟩ x) ◅ (P `&⟩* ϕ)
 
-_⟨`&*_ : p ⟶* p′ → (q : Formula) → (p `& q) ⟶* (p′ `& q)
-ε       ⟨`&* q = ε
-(x ∷ ϕ) ⟨`&* q = (x ⟨`& q) ∷ (ϕ ⟨`&* q)
+_`⟨&*_ : P ⟶* P′ → (Q : Formula) → (P `& Q) ⟶* (P′ `& Q)
+ε       `⟨&* Q = ε
+(x ◅ ϕ) `⟨&* Q = (x `⟨& Q) ◅ (ϕ `⟨&* Q)
 
-`&-mono : p ⟶* p′ → q ⟶* q′ → p `& q ⟶* p′ `& q′
-`&-mono {p = p} {q′ = q′} f g = ⟶*-trans (p `&⟩* g) (f ⟨`&* q′)
+`&-mono : P ⟶* P′ → Q ⟶* Q′ → P `& Q ⟶* P′ `& Q′
+`&-mono {P = P} {Q′ = Q′} f g = ⟶*-trans (P `&⟩* g) (f `⟨&* Q′)
 
--- _⊗_ is a monotone operator
-_`⊗⟩*_ : (p : Formula) → q ⟶* q′ → (p `⊗ q) ⟶* (p `⊗ q′)
-p `⊗⟩* ε = ε
-p `⊗⟩* (x ∷ ϕ) = (p `⊗⟩ x) ∷ (p `⊗⟩* ϕ)
+-- _⊗_ is A monotone operator
+_`⊗⟩*_ : (P : Formula) → Q ⟶* Q′ → (P `⊗ Q) ⟶* (P `⊗ Q′)
+P `⊗⟩* ε = ε
+P `⊗⟩* (x ◅ ϕ) = (P `⊗⟩ x) ◅ (P `⊗⟩* ϕ)
 
--- _⟨`⊗*_ : p ⟶* p′ → (q : Formula) → (p `⊗ q) ⟶* (p′ `⊗ q)
--- ε       ⟨`⊗* q = ε
--- (x ∷ ϕ) ⟨`⊗* q = (x `⟨⊗ q) ∷ (ϕ ⟨`⊗* q)
+-- _`⟨⊗*_ : P ⟶* P′ → (Q : Formula) → (P `⊗ Q) ⟶* (P′ `⊗ Q)
+-- ε       `⟨⊗* Q = ε
+-- (x ◅ ϕ) `⟨⊗* Q = (x `⟨⊗ Q) ◅ (ϕ `⟨⊗* Q)
 
 
 
@@ -152,8 +152,8 @@ p `⊗⟩* (x ∷ ϕ) = (p `⊗⟩ x) ∷ (p `⊗⟩* ϕ)
 
 ------------------------------------------------------------------------------
 -- Construct the syntactic model from presheaves and chu. We can turn
--- MAV into a *-autonomous category with finite products and
--- coproducts in such a way that we can deduce cut-elimination is
+-- MAV into A *-autonomous category with finite products and
+-- coproducts in such A way that we can deduce cut-elimination is
 -- admissible.
 
 import PreSheaf
@@ -161,9 +161,9 @@ import Chu
 module P = PreSheaf ⟶*-isPreorder
 module M = P.Monoid `⅋-isMonoid
 module S = P.Sheaf _`&_ `&-mono
-module MS = S.SMonoid2 `⅋-isMonoid `⅋-sym (`external ∷ ε)
-module M▷ = S.SMonoid1 `▷-isMonoid (`medial ∷ ε) (`tidy ∷ ε)
-module D = S.SDuoidal `⅋-isMonoid `⅋-sym (`external ∷ ε) `▷-isMonoid (`medial ∷ ε) (`tidy ∷ ε) ⅋-`▷-isDuoidal
+module MS = S.SMonoid2 `⅋-isMonoid `⅋-sym (`external ◅ ε)
+module M▷ = S.SMonoid1 `▷-isMonoid (`medial ◅ ε) (`tidy ◅ ε)
+module D = S.SDuoidal `⅋-isMonoid `⅋-sym (`external ◅ ε) `▷-isMonoid (`medial ◅ ε) (`tidy ◅ ε) ⅋-`▷-isDuoidal
 
 open S._≤S_
 open S.Sheaf
@@ -193,7 +193,7 @@ open CC.SelfDual M▷.▷-isMonoid
         D.⊗-▷-isDuoidal
 open P._≤P_
 
-open import MAV.Base At
+open import MAV.Base Atom
     using (Model; module Interpretation; test; test-id)
     renaming (_⟶*_ to _s⟶*_)
 
@@ -232,94 +232,94 @@ ChuModel .Model.⊗-▷-isDuoidal = ⊗-⍮-isDuoidal
 _>>>_ = ⟶*-trans
 
 -- The atom interaction law in PreSheaves
-atom-int : ∀ a → (P.η (`- a) M.• P.η (`+ a)) P.≤P P.η `I
-atom-int a .*≤P* p (p₁ , p₂ , p≤p₁p₂ , lift p₁≤a , lift p₂≤-a) .lower =
-   p≤p₁p₂ >>> (`⅋-mono p₁≤a p₂≤-a >>> (`⅋-comm ∷ `axiom ∷ ε))
+atom-int : ∀ A → (P.η (`- A) M.• P.η (`+ A)) P.≤P P.η `I
+atom-int A .*≤P* P (p₁ , p₂ , p≤p₁p₂ , lift p₁≤a , lift p₂≤-A) .lower =
+   p≤p₁p₂ >>> (`⅋-mono p₁≤a p₂≤-A >>> (`⅋-comm ◅ `axiom ◅ ε))
 
-atom : At → Chu
-atom a .pos = S.α (P.η (`- a))
-atom a .neg = S.α (P.η (`+ a))
-atom a .int = S.≤S-trans (MS.α-monoidal .proj₁) (S.α-mono (atom-int a))
+atom : Atom → Chu
+atom A .pos = S.α (P.η (`- A))
+atom A .neg = S.α (P.η (`+ A))
+atom A .int = S.≤S-trans (MS.α-monoidal .proj₁) (S.α-mono (atom-int A))
 
 open Interpretation ChuModel atom
 
-tidyup-lem : (t : S.Tree (Σ[ p ∈ Formula ] (Lift 0ℓ (p ⟶* `I)))) →
+tidyup-lem : (t : S.Tree (Σ[ P ∈ Formula ] (Lift 0ℓ (P ⟶* `I)))) →
              S.join t ⟶* `I
-tidyup-lem (S.lf (p , lift p⟶*I)) = p⟶*I
-tidyup-lem (S.br s t) = `&-mono (tidyup-lem s) (tidyup-lem t) >>> (`tidy ∷ ε)
+tidyup-lem (S.lf (P , lift p⟶*I)) = p⟶*I
+tidyup-lem (S.br S t) = `&-mono (tidyup-lem S) (tidyup-lem t) >>> (`tidy ◅ ε)
 
-tidyup : ∀ {p} → MS.I .SCarrier p → p ⟶* `I
+tidyup : ∀ {P} → MS.I .SCarrier P → P ⟶* `I
 tidyup (t , p⟶*t) = p⟶*t >>> tidyup-lem t
 
 mutual
-  okada : ∀ p → ⟦ p ⟧ .neg .SCarrier p
+  okada : ∀ P → ⟦ P ⟧ .neg .SCarrier P
   okada `I = S.lf (`I , lift ε) , ε
-  okada (`+ a) = S.lf (`+ a , lift ε) , ε
-  okada (`- a) = S.lf (`- a , lift ε) , ε
-  okada (p `⅋ q) = S.lf (p `⅋ q , p , q , ε , okada p , okada q) , ε
-  okada (p `⊗ q) .proj₁ r x =
-    ⟦ p ⟧ .neg .S≤-closed
-      ((`switch ∷ ε) >>> ((p `⊗⟩* (`⅋-sym >>> okada2 q r x)) >>> (`⊗-unit ∷ ε)))
-      (okada p)
-  okada (p `⊗ q) .proj₂ r x =
-    ⟦ q ⟧ .neg .S≤-closed
-      ((`⊗-comm ⟨`⅋ r ∷ `switch ∷ ε) >>> ((q `⊗⟩* (`⅋-sym >>> okada2 p r x)) >>> (`⊗-unit ∷ ε)))
-      (okada q)
-  okada (p `& q) =
-    S.br (S.lf (p , inj₁ (okada p))) (S.lf (q , inj₂ (okada q))) , ε
-  okada (p `⊕ q) =
-    ⟦ p ⟧ .neg .S≤-closed (`left ∷ ε) (okada p) ,
-    ⟦ q ⟧ .neg .S≤-closed (`right ∷ ε) (okada q)
-  okada (p `▷ q) =
-    p , q , ε , okada p , okada q
+  okada (`+ A) = S.lf (`+ A , lift ε) , ε
+  okada (`- A) = S.lf (`- A , lift ε) , ε
+  okada (P `⅋ Q) = S.lf (P `⅋ Q , P , Q , ε , okada P , okada Q) , ε
+  okada (P `⊗ Q) .proj₁ R x =
+    ⟦ P ⟧ .neg .S≤-closed
+      ((`switch ◅ ε) >>> ((P `⊗⟩* (`⅋-sym >>> okada2 Q R x)) >>> (`⊗-unit ◅ ε)))
+      (okada P)
+  okada (P `⊗ Q) .proj₂ R x =
+    ⟦ Q ⟧ .neg .S≤-closed
+      ((`⊗-comm `⟨⅋ R ◅ `switch ◅ ε) >>> ((Q `⊗⟩* (`⅋-sym >>> okada2 P R x)) >>> (`⊗-unit ◅ ε)))
+      (okada Q)
+  okada (P `& Q) =
+    S.br (S.lf (P , inj₁ (okada P))) (S.lf (Q , inj₂ (okada Q))) , ε
+  okada (P `⊕ Q) =
+    ⟦ P ⟧ .neg .S≤-closed (`left ◅ ε) (okada P) ,
+    ⟦ Q ⟧ .neg .S≤-closed (`right ◅ ε) (okada Q)
+  okada (P `▷ Q) =
+    P , Q , ε , okada P , okada Q
 
-  okada2 : ∀ p r → ⟦ p ⟧ .pos .SCarrier r → (r `⅋ p) ⟶* `I
-  okada2 p r ϕ =
-    tidyup (⟦ p ⟧ .int .*≤S* (r `⅋ p) (S.lf (r `⅋ p , r , p , ε , ϕ , okada p) , ε))
+  okada2 : ∀ P R → ⟦ P ⟧ .pos .SCarrier R → (R `⅋ P) ⟶* `I
+  okada2 P R ϕ =
+    tidyup (⟦ P ⟧ .int .*≤S* (R `⅋ P) (S.lf (R `⅋ P , R , P , ε , ϕ , okada P) , ε))
 
--- if 'p′ is provable, then it has a cut-free proof
-sem-cut-elim : ∀ p → ⟦I⟧ ==> ⟦ p ⟧ → p ⟶* `I
-sem-cut-elim p prf = tidyup (prf ._==>_.fneg .*≤S* p (okada p))
+-- if 'P′ is provable, then it has A cut-free proof
+sem-cut-elim : ∀ P → ⟦I⟧ ==> ⟦ P ⟧ → P ⟶* `I
+sem-cut-elim P prf = tidyup (prf ._==>_.fneg .*≤S* P (okada P))
 
-cut-elim : (p : Formula) → (p s⟶* `I) → p ⟶* `I
-cut-elim p prf = sem-cut-elim p ⟦ prf ⟧steps
+cut-elim : (P : Formula) → (P s⟶* `I) → P ⟶* `I
+cut-elim P prf = sem-cut-elim P ⟦ prf ⟧steps
 
 
 -- An example:
 --
---  Normalising a proof that (`I `⊕ `I) `▷ (`I `& `I) ⊸ (`I `⊕ `I) `▷ (`I `& `I):
+--  Normalising A proof that (`I `⊕ `I) `▷ (`I `& `I) ⊸ (`I `⊕ `I) `▷ (`I `& `I):
 
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 
 normalised-proof : (test `⅋ `¬ test) ⟶* `I
-normalised-proof = `⅋-comm ∷
-                   `⅋-comm ∷
-                   `⅋-comm ∷
-                   `sequence ∷
-                   (`⅋-comm ⟨`▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ∷
-                   (`⅋-comm ⟨`▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ∷
-                   (`external ⟨`▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ∷
-                   (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) ⟨`▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ∷
-                   (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) ⟨`▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ∷
-                   (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) ⟨`▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ∷
-                   (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-unit) ⟨`▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ∷
-                   (((`I `⅋ (`I `⊕ `I)) `&⟩ `right) ⟨`▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ∷
-                   ((`⅋-comm ⟨`& `I) ⟨`▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ∷
-                   ((`⅋-comm ⟨`& `I) ⟨`▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ∷
-                   ((`⅋-comm ⟨`& `I) ⟨`▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ∷
-                   ((`⅋-unit ⟨`& `I) ⟨`▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ∷
-                   ((`left ⟨`& `I) ⟨`▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ∷
-                   (`tidy ⟨`▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ∷
-                   `▷-lunit ∷
-                   `⅋-comm ∷
-                   `external ∷
-                   ((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) ∷
-                   ((`I `⅋ (`I `⊕ `I)) `&⟩ (`right ⟨`⅋ `I)) ∷
-                   ((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) ∷
-                   ((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-unit) ∷
-                   (`⅋-comm ⟨`& `I) ∷
-                   ((`left ⟨`⅋ `I) ⟨`& `I) ∷
-                   (`⅋-comm ⟨`& `I) ∷ (`⅋-unit ⟨`& `I) ∷ `tidy ∷ ε
+normalised-proof = `⅋-comm ◅
+                   `⅋-comm ◅
+                   `⅋-comm ◅
+                   `sequence ◅
+                   (`⅋-comm `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+                   (`⅋-comm `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+                   (`external `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+                   (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+                   (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+                   (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+                   (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-unit) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+                   (((`I `⅋ (`I `⊕ `I)) `&⟩ `right) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+                   ((`⅋-comm `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+                   ((`⅋-comm `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+                   ((`⅋-comm `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+                   ((`⅋-unit `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+                   ((`left `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+                   (`tidy `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+                   `▷-lunit ◅
+                   `⅋-comm ◅
+                   `external ◅
+                   ((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) ◅
+                   ((`I `⅋ (`I `⊕ `I)) `&⟩ (`right `⟨⅋ `I)) ◅
+                   ((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) ◅
+                   ((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-unit) ◅
+                   (`⅋-comm `⟨& `I) ◅
+                   ((`left `⟨⅋ `I) `⟨& `I) ◅
+                   (`⅋-comm `⟨& `I) ◅ (`⅋-unit `⟨& `I) ◅ `tidy ◅ ε
 
 test-norm : cut-elim _ test-id ≡ normalised-proof
 test-norm = refl

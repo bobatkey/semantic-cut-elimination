@@ -45,8 +45,8 @@ module Construction {a b} {A : Set a}
 
   _≅_ = SymCore _==>_
 
-  open IsPreorder ≤-isPreorder
-  open IsMonoid •-isMonoid
+  open IsPreorder ≤-isPreorder using (refl; trans)
+  open IsMonoid •-isMonoid using (lunit; runit; mono; assoc)
   open IsMeet ∧-isMeet renaming (mono to ∧-mono) hiding (assoc)
   open IsJoin ∨-isJoin renaming (mono to ∨-mono) hiding (assoc)
   open IsClosure -•-isClosure renaming (-∙-mono to -•-mono)

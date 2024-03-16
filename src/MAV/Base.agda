@@ -6,6 +6,9 @@ open import Level
 open import Data.Product using (proj₁; proj₂)
 open import Relation.Binary using (IsEquivalence)
 open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
+open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star; ε; _◅_)
+import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as Star
+      
 open import Prelude
 
 open import MAV.Formula Atom
@@ -64,22 +67,20 @@ data _⟶_ : Formula → Formula → Set where
   _`⊕⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊕ Q ⟶ P `⊕ Q′
 
 infix  5 _⟶*_
-infixr 6 _∷_
 
-data _⟶*_ : Formula → Formula → Set where
-  ε : ∀ {P} → P ⟶* P
-  _∷_ : P ⟶ Q → Q ⟶* R → P ⟶* R
+_⟶*_ : Formula → Formula → Set
+_⟶*_ = Star _⟶_
 
 test : Formula
 test = (`I `⊕ `I) `▷ (`I `& `I)
 
 test-id : (test `⅋ `¬ test) ⟶* `I
-test-id = `axiom test ∷ ε
+test-id = `axiom test ◅ ε
 
-record Model A b : Set (suc (A ⊔ b)) where
+record Model (a ℓ : Level) : Set (suc (a ⊔ ℓ)) where
   field
-    Carrier : Set A
-    _≤_     : Carrier → Carrier → Set b
+    Carrier : Set a
+    _≤_     : Carrier → Carrier → Set ℓ
 
   infixr 15 ¬_
   infixr 10 _⊗_
@@ -156,7 +157,7 @@ record Model A b : Set (suc (A ⊔ b)) where
                   (trans ⊕-⊗-distrib
                          (¬-mono (&-mono ⅋-sym ⅋-sym))))))
 
-module Interpretation {A b} (M : Model A b) (V : Atom → M .Model.Carrier) where
+module Interpretation {a ℓ : Level} (M : Model a ℓ) (V : Atom → M .Model.Carrier) where
 
   open Model M
 
@@ -220,4 +221,4 @@ module Interpretation {A b} (M : Model A b) (V : Atom → M .Model.Carrier) wher
 
   ⟦_⟧steps : P ⟶* Q → ⟦ Q ⟧ ≤ ⟦ P ⟧
   ⟦ ε     ⟧steps = refl
-  ⟦ x ∷ S ⟧steps = trans ⟦ S ⟧steps ⟦ x ⟧step
+  ⟦ x ◅ S ⟧steps = trans ⟦ S ⟧steps ⟦ x ⟧step

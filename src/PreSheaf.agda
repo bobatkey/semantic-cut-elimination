@@ -8,18 +8,18 @@ open import Relation.Binary using (Setoid)
 open import Prelude
 open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 
-module PreSheaf {a b} {A : Set a} {_≤_ : A → A → Set b} (≤-isPreorder : IsPreorder _≤_) where
+module PreSheaf {a ℓ} {A : Set a} {_≤_ : A → A → Set ℓ} (≤-isPreorder : IsPreorder _≤_) where
 
 open IsPreorder ≤-isPreorder
 
-record PreSheaf : Set (lsuc (a ⊔ b)) where
+record PreSheaf : Set (lsuc (a ⊔ ℓ)) where
   no-eta-equality
   field
-    Carrier  : A → Set (a ⊔ b)
+    Carrier  : A → Set (a ⊔ ℓ)
     ≤-closed : ∀ {x y} → x ≤ y → Carrier y → Carrier x
 open PreSheaf
 
-record _≤P_ (F G : PreSheaf) : Set (a ⊔ b) where
+record _≤P_ (F G : PreSheaf) : Set (a ⊔ ℓ) where
   no-eta-equality
   field
     *≤P* : ∀ x → F .Carrier x → G .Carrier x
@@ -31,7 +31,7 @@ open _≤P_ public
 
 ≤P-trans = ≤P-isPreorder .IsPreorder.trans
 
-_≃P_ : PreSheaf → PreSheaf → Set (a ⊔ b)
+_≃P_ : PreSheaf → PreSheaf → Set (a ⊔ ℓ)
 _≃P_ = SymCore _≤P_
 
 infix 4 _≤P_
@@ -53,7 +53,7 @@ _∧_ : PreSheaf → PreSheaf → PreSheaf
 ∧-isMeet .IsMeet.⟨_,_⟩ m₁ m₂ .*≤P* x Fx = m₁ .*≤P* x Fx , m₂ .*≤P* x Fx
 
 ⊤P : PreSheaf
-⊤P .Carrier x = Lift (a ⊔ b) ⊤
+⊤P .Carrier x = Lift (a ⊔ ℓ) ⊤
 ⊤P .≤-closed _ x = x
 
 ⊤P-isTop : IsTop ≤P-isPreorder ⊤P
@@ -196,43 +196,43 @@ module Sheaf (_&_ : A → A → A)
     lf : A → Tree A
     br : Tree A → Tree A → Tree A
 
-  map-Tree : ∀ {a b}{X : A → Set a}{Y : A → Set b} →
+  map-Tree : ∀ {a ℓ}{X : A → Set a}{Y : A → Set ℓ} →
              ((x : A) → X x → Y x) → Tree (Σ[ x ∈ A ] X x) → Tree (Σ[ x ∈ A ] Y x)
   map-Tree f (lf (a , x)) = lf (a , f a x)
   map-Tree f (br s t) = br (map-Tree f s) (map-Tree f t)
 
-  join : ∀ {X : A → Set (a ⊔ b)} → Tree (Σ[ x ∈ A ] X x) → A
+  join : ∀ {X : A → Set (a ⊔ ℓ)} → Tree (Σ[ x ∈ A ] X x) → A
   join (lf (x , _)) = x
   join (br s t) = join s & join t
 
-  map-join : ∀ {X Y : A → Set (a ⊔ b)} →
+  map-join : ∀ {X Y : A → Set (a ⊔ ℓ)} →
              (f : (x : A) → X x → Y x) →
              (t : Tree (Σ[ x ∈ A ] X x)) →
              join t ≤ join (map-Tree f t)
   map-join f (lf x) = refl
   map-join f (br s t) = &-mono (map-join f s) (map-join f t)
 
-  flatten : {X : A → Set (a ⊔ b)} →
+  flatten : {X : A → Set (a ⊔ ℓ)} →
             Tree (Σ[ x ∈ A ] (Σ[ t ∈ Tree (Σ[ y ∈ A ] X y) ] x ≤ join t)) →
             Tree (Σ[ y ∈ A ] X y)
   flatten (lf (x , t , ϕ)) = t
   flatten (br s t)         = br (flatten s) (flatten t)
 
-  flatten-join : {X : A → Set (a ⊔ b)} →
+  flatten-join : {X : A → Set (a ⊔ ℓ)} →
                  (t : Tree (Σ[ x ∈ A ] (Σ[ t ∈ Tree (Σ[ y ∈ A ] X y) ] x ≤ join t))) →
                  join t ≤ join (flatten t)
   flatten-join (lf (x , t , ϕ)) = ϕ
   flatten-join (br s t) = &-mono (flatten-join s) (flatten-join t)
 
-  record Sheaf : Set (lsuc (a ⊔ b)) where
+  record Sheaf : Set (lsuc (a ⊔ ℓ)) where
     no-eta-equality
     field
-      SCarrier  : A → Set (a ⊔ b)
+      SCarrier  : A → Set (a ⊔ ℓ)
       S≤-closed : ∀ {x y} → x ≤ y → SCarrier y → SCarrier x
       Sclosed   : (t : Tree (Σ[ x ∈ A ] SCarrier x)) → SCarrier (join t)
   open Sheaf
 
-  record _≤S_ (F G : Sheaf) : Set (a ⊔ b) where
+  record _≤S_ (F G : Sheaf) : Set (a ⊔ ℓ) where
     no-eta-equality
     field
       *≤S* : ∀ x → F .SCarrier x → G .SCarrier x
@@ -360,7 +360,7 @@ module Sheaf (_&_ : A → A → A)
 
     open IsMonoid ∙-isMonoid
 
-    split : ∀ {F G : A → Set (a ⊔ b)} →
+    split : ∀ {F G : A → Set (a ⊔ ℓ)} →
             (t : Tree (Σ[ x ∈ A ] Σ[ y ∈ A ] Σ[ z ∈ A ] (x ≤ (y ∙ z)) × F y × G z)) →
             Σ[ t₁ ∈ Tree (Σ[ x ∈ A ] F x) ]
             Σ[ t₂ ∈ Tree (Σ[ x ∈ A ] G x) ]
