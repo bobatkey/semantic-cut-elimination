@@ -20,6 +20,7 @@ module Algebra.Ordered.Structures
 
 open import Algebra.Core
 open import Algebra.Definitions _≈_
+open import Algebra.Ordered.Definitions _≈_
 open import Algebra.Structures _≈_
 open import Data.Product using (proj₁; proj₂)
 open import Function using (flip)
@@ -79,6 +80,14 @@ record IsPromonoid (∙ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) wher
 
   open IsMonoid isMonoid public using (identityˡ; identityʳ)
 
+record IsResiduatedPromonoid {∙ ⇐ ⇒ : Op₂ A} (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+  field
+    isPromonoid : IsPromonoid ∙ ε
+    residualˡ  : LeftResidual ∙ ⇐
+    residualʳ  : RightResidual ∙ ⇒
+
+  open IsPromonoid isPromonoid public
+
 -- Preordered commutative monoids (commutative promonoids)
 
 record IsCommutativePromonoid (∙ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
@@ -93,6 +102,14 @@ record IsCommutativePromonoid (∙ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ �
 
   open IsCommutativeMonoid isCommutativeMonoid public
     using (isCommutativeSemigroup)
+
+record IsResiduatedCommutativePromonoid {∙ ⇐ ⇒ : Op₂ A} (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+  field
+    isCommutativePromonoid : IsCommutativePromonoid ∙ ε
+    residualˡ  : LeftResidual ∙ ⇐
+    residualʳ  : RightResidual ∙ ⇒
+
+  open IsCommutativePromonoid isCommutativePromonoid public
 
 -- Preordered semirings (prosemirings)
 
@@ -224,6 +241,14 @@ record IsPomonoid (∙ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   open IsPromonoid isPromonoid public
     using (isMonoid; identityˡ; identityʳ)
 
+record IsResiduatedPomonoid {∙ ⇐ ⇒ : Op₂ A} (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+  field
+    isPomonoid : IsPomonoid ∙ ε
+    residualˡ  : LeftResidual ∙ ⇐
+    residualʳ  : RightResidual ∙ ⇒
+
+  open IsPomonoid isPomonoid public
+
 -- Partially ordered commutative monoids (commutative pomonoids)
 
 record IsCommutativePomonoid (∙ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
@@ -238,6 +263,14 @@ record IsCommutativePomonoid (∙ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ �
 
   open IsCommutativePromonoid isCommutativePromonoid public
     using (isCommutativeMonoid; isCommutativeSemigroup)
+
+record IsResiduatedCommutativePomonoid {∙ ⇐ ⇒ : Op₂ A} (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+  field
+    isCommutativePomonoid : IsCommutativePomonoid ∙ ε
+    residualˡ             : LeftResidual ∙ ⇐
+    residualʳ             : RightResidual ∙ ⇒
+
+  open IsCommutativePomonoid isCommutativePomonoid public
 
 -- Partially ordered semirings (posemirings)
 

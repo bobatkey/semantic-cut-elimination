@@ -10,7 +10,7 @@ import Relation.Binary.Construct.Core.Symmetric as SymCore
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star)
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (ε; _◅_)
 import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as Star
-      
+
 open import Prelude
 
 open import MAV.Formula Atom
