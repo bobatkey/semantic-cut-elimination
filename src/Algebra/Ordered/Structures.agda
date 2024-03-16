@@ -8,27 +8,28 @@
 -- The contents of this module should be accessed via
 -- `Algebra.Ordered`.
 
-{-# OPTIONS --without-K --safe #-}
+{-# OPTIONS --postfix-projections --without-K --safe #-}
 
 open import Relation.Binary.Core using (Rel; _⇒_)
 
 module Algebra.Ordered.Structures
   {a ℓ₁ ℓ₂} {A : Set a}  -- The underlying set
   (_≈_ : Rel A ℓ₁)       -- The underlying equality relation
-  (_≤_ : Rel A ℓ₂)       -- The order
+  (_≲_ : Rel A ℓ₂)       -- The underlying order relation
   where
 
 open import Algebra.Core
 open import Algebra.Definitions _≈_
-open import Algebra.Ordered.Definitions _≈_
+open import Algebra.Ordered.Definitions _≲_
 open import Algebra.Structures _≈_
-open import Data.Product using (proj₁; proj₂)
+open import Data.Product using (_,_; proj₁; proj₂)
 open import Function using (flip)
 open import Level using (_⊔_)
-open import Relation.Binary.Definitions using (Transitive)
-open import Relation.Binary.Definitions.Ordered using (Monotonic₁; Monotonic₂)
+open import Relation.Binary using (IsEquivalence)
+open import Relation.Binary.Definitions using (Transitive; Monotonic₁; Monotonic₂; AntitonicMonotonic)
 open import Relation.Binary.Structures using (IsPreorder; IsPartialOrder)
-open import Relation.Binary.Consequences.Ordered using (mono₂⇒cong₂)
+open import Relation.Binary.Consequences using (mono₂⇒cong₂)
+open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 
 ------------------------------------------------------------------------
 -- Preordered structures
@@ -37,16 +38,16 @@ open import Relation.Binary.Consequences.Ordered using (mono₂⇒cong₂)
 
 record IsPromagma (∙ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   field
-    isPreorder  : IsPreorder _≈_ _≤_
+    isPreorder  : IsPreorder _≈_ _≲_
     ∙-cong      : Congruent₂ ∙
-    mono        : Monotonic₂ _≤_ _≤_ _≤_ ∙
+    mono        : Monotonic₂ _≲_ _≲_ _≲_ ∙
 
   open IsPreorder isPreorder public
 
-  mono₁ : ∀ {x} → Monotonic₁ _≤_ _≤_ (flip ∙ x)
+  mono₁ : ∀ {x} → Monotonic₁ _≲_ _≲_ (flip ∙ x)
   mono₁ y≈z = mono y≈z refl
 
-  mono₂ : ∀ {x} → Monotonic₁ _≤_ _≤_ (∙ x)
+  mono₂ : ∀ {x} → Monotonic₁ _≲_ _≲_ (∙ x)
   mono₂ y≈z = mono refl y≈z
 
   isMagma : IsMagma ∙
@@ -80,14 +81,6 @@ record IsPromonoid (∙ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) wher
 
   open IsMonoid isMonoid public using (identityˡ; identityʳ)
 
-record IsResiduatedPromonoid {∙ ⇐ ⇒ : Op₂ A} (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
-  field
-    isPromonoid : IsPromonoid ∙ ε
-    residualˡ  : LeftResidual ∙ ⇐
-    residualʳ  : RightResidual ∙ ⇒
-
-  open IsPromonoid isPromonoid public
-
 -- Preordered commutative monoids (commutative promonoids)
 
 record IsCommutativePromonoid (∙ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
@@ -103,21 +96,13 @@ record IsCommutativePromonoid (∙ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ �
   open IsCommutativeMonoid isCommutativeMonoid public
     using (isCommutativeSemigroup)
 
-record IsResiduatedCommutativePromonoid {∙ ⇐ ⇒ : Op₂ A} (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
-  field
-    isCommutativePromonoid : IsCommutativePromonoid ∙ ε
-    residualˡ  : LeftResidual ∙ ⇐
-    residualʳ  : RightResidual ∙ ⇒
-
-  open IsCommutativePromonoid isCommutativePromonoid public
-
 -- Preordered semirings (prosemirings)
 
 record IsProsemiring (+ * : Op₂ A) (0# 1# : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   field
     +-isCommutativePromonoid : IsCommutativePromonoid + 0#
     *-cong                   : Congruent₂ *
-    *-mono                   : Monotonic₂ _≤_ _≤_ _≤_ *
+    *-mono                   : Monotonic₂ _≲_ _≲_ _≲_ *
     *-assoc                  : Associative *
     *-identity               : Identity 1# *
     distrib                  : * DistributesOver +
@@ -191,8 +176,8 @@ record IsProsemiring (+ * : Op₂ A) (0# 1# : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂)
 
 record IsPomagma (∙ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   field
-    isPartialOrder : IsPartialOrder _≈_ _≤_
-    mono           : Monotonic₂ _≤_ _≤_ _≤_ ∙
+    isPartialOrder : IsPartialOrder _≈_ _≲_
+    mono           : Monotonic₂ _≲_ _≲_ _≲_ ∙
 
   open IsPartialOrder isPartialOrder public
 
@@ -241,14 +226,6 @@ record IsPomonoid (∙ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   open IsPromonoid isPromonoid public
     using (isMonoid; identityˡ; identityʳ)
 
-record IsResiduatedPomonoid {∙ ⇐ ⇒ : Op₂ A} (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
-  field
-    isPomonoid : IsPomonoid ∙ ε
-    residualˡ  : LeftResidual ∙ ⇐
-    residualʳ  : RightResidual ∙ ⇒
-
-  open IsPomonoid isPomonoid public
-
 -- Partially ordered commutative monoids (commutative pomonoids)
 
 record IsCommutativePomonoid (∙ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
@@ -264,20 +241,12 @@ record IsCommutativePomonoid (∙ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ �
   open IsCommutativePromonoid isCommutativePromonoid public
     using (isCommutativeMonoid; isCommutativeSemigroup)
 
-record IsResiduatedCommutativePomonoid {∙ ⇐ ⇒ : Op₂ A} (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
-  field
-    isCommutativePomonoid : IsCommutativePomonoid ∙ ε
-    residualˡ             : LeftResidual ∙ ⇐
-    residualʳ             : RightResidual ∙ ⇒
-
-  open IsCommutativePomonoid isCommutativePomonoid public
-
 -- Partially ordered semirings (posemirings)
 
 record IsPosemiring (+ * : Op₂ A) (0# 1# : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   field
     +-isCommutativePomonoid : IsCommutativePomonoid + 0#
-    *-mono                  : Monotonic₂ _≤_ _≤_ _≤_ *
+    *-mono                  : Monotonic₂ _≲_ _≲_ _≲_ *
     *-assoc                 : Associative *
     *-identity              : Identity 1# *
     distrib                 : * DistributesOver +
@@ -355,3 +324,84 @@ record IsPosemiring (+ * : Op₂ A) (0# 1# : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) 
 
   open IsProsemiring isProsemiring public
     using (isSemiring; distribˡ; distribʳ; zeroˡ; zeroʳ) 
+
+------------------------------------------------------------------------------
+-- Residuated monoids
+
+record IsResiduatedPromonoid (∙ ⇦ ⇨ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+  field
+    isPromonoid : IsPromonoid ∙ ε
+    residuated  : Residuated ∙ ⇦ ⇨
+
+  open IsPromonoid isPromonoid public
+
+  residualˡ : LeftResidual ∙ ⇦
+  residualˡ = proj₁ residuated
+
+  residualʳ : RightResidual ∙ ⇨
+  residualʳ = proj₂ residuated
+
+record IsResiduatedCommutativePromonoid (∙ ⇨ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+  field
+    isCommutativePromonoid : IsCommutativePromonoid ∙ ε
+    residualʳ              : RightResidual ∙ ⇨
+
+  open IsCommutativePromonoid isCommutativePromonoid public
+
+  residualˡ : LeftResidual ∙ (flip ⇨)
+  residualˡ x y z .Function.Equivalence.to x∙y≲z = 
+    residualʳ y x z .Function.Equivalence.to (≲-respˡ-≈ (comm x y) x∙y≲z)
+  residualˡ x y z .Function.Equivalence.from y≲z⇦x =
+    ≲-respˡ-≈ (comm y x) (residualʳ y x z .Function.Equivalence.from y≲z⇦x)
+  residualˡ x y z .Function.Equivalence.to-cong PropEq.refl = PropEq.refl
+  residualˡ x y z .Function.Equivalence.from-cong PropEq.refl = PropEq.refl
+
+  residuated : Residuated ∙ (flip ⇨) ⇨
+  residuated = residualˡ , residualʳ
+
+  eval : ∀ x y → ∙ x (⇨ x y) ≲ y
+  eval x y = residualˡ x (⇨ x y) y .Function.Equivalence.from refl
+
+  ⇨-antitonic-monotonic : AntitonicMonotonic _≲_ _≲_ _≲_ ⇨
+  ⇨-antitonic-monotonic x≲w y≲z =
+    residualʳ _ _ _ .Function.Equivalence.to 
+      (trans (mono refl x≲w) (trans (trans ((≲-respˡ-≈ (comm _ _) refl)) (eval _ _)) y≲z))
+
+record IsResiduatedPomonoid (∙ ⇦ ⇨ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+  field
+    isPomonoid : IsPomonoid ∙ ε
+    residuated : Residuated ∙ ⇦ ⇨
+
+  open IsPomonoid isPomonoid public
+
+record IsResiduatedCommutativePomonoid (∙ ⇨ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+  field
+    isCommutativePomonoid : IsCommutativePomonoid ∙ ε
+    residualʳ              : RightResidual ∙ ⇨
+
+  open IsCommutativePomonoid isCommutativePomonoid public
+
+  isResiduatedCommutativePromonoid : IsResiduatedCommutativePromonoid ∙ ⇨ ε
+  isResiduatedCommutativePromonoid = record
+    { isCommutativePromonoid = isCommutativePromonoid
+    ; residualʳ              = residualʳ
+    }
+
+  open IsResiduatedCommutativePromonoid isResiduatedCommutativePromonoid public
+    using (residualˡ; residuated)
+
+------------------------------------------------------------------------------
+-- Residuated monoids
+
+import Algebra.Definitions _≲_        as ≲
+import Algebra.Definitions (flip _≲_) as ≳
+
+record IsDuoidal (∙ ▷ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+  field
+    ∙-isPomonoid   : IsPomonoid ∙ ε
+    ▷-isPomonoid   : IsPomonoid ▷ ι
+    ∙-▷-exchange   : Exchange ∙ ▷
+    ∙-idempotent-ι : ∙ ≲.IdempotentOn ι
+    ▷-idempotent-ε : ▷ ≳.IdempotentOn ε
+    ε≲ι            : ε ≲ ι
+ 

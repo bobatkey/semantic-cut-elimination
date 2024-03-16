@@ -39,55 +39,66 @@ module _
     congruent₂ : {∙ : Op₂ A} → Congruent₂ _≲_ ∙ → Congruent₂ (SymCore _≲_) ∙
     congruent₂ cong₂ x₁ x₂ = cong₂ (proj₁ x₁) (proj₁ x₂) , cong₂ (proj₂ x₁) (proj₂ x₂)
 
-    module _ {ℓ′} {_≈_ : Rel A ℓ′} where
+    module _ 
+        {ℓ′} {_≈_ : Rel A ℓ′}
+        (isPreorder : IsPreorder _≈_ _≲_)
+      where
 
-      isPreorder⇒isEquivalence : IsPreorder _≈_ _≲_ → IsEquivalence (SymCore _≲_)
-      isPreorder⇒isEquivalence isPreorder .IsEquivalence.refl = reflexive (IsPreorder.refl isPreorder)
-      isPreorder⇒isEquivalence isPreorder .IsEquivalence.sym = swap
-      isPreorder⇒isEquivalence isPreorder .IsEquivalence.trans = transitive (IsPreorder.trans isPreorder)
+      isPreorder⇒isEquivalence : IsEquivalence (SymCore _≲_)
+      isPreorder⇒isEquivalence .IsEquivalence.refl = reflexive (IsPreorder.refl isPreorder)
+      isPreorder⇒isEquivalence .IsEquivalence.sym = swap
+      isPreorder⇒isEquivalence .IsEquivalence.trans = transitive (IsPreorder.trans isPreorder)
 
-      isPreorder⇒isPreorder : IsPreorder _≈_ _≲_ → IsPreorder (SymCore _≲_) _≲_
-      isPreorder⇒isPreorder isPreorder .IsPreorder.isEquivalence = isPreorder⇒isEquivalence isPreorder
-      isPreorder⇒isPreorder isPreorder .IsPreorder.reflexive x≃y = x≃y .proj₁
-      isPreorder⇒isPreorder isPreorder .IsPreorder.trans = IsPreorder.trans isPreorder
+      isPreorder⇒setoid : Setoid a ℓ
+      isPreorder⇒setoid .Setoid.Carrier = A 
+      isPreorder⇒setoid .Setoid._≈_ = SymCore _≲_
+      isPreorder⇒setoid .Setoid.isEquivalence = isPreorder⇒isEquivalence
 
-      isPreorder⇒setoid : IsPreorder _≈_ _≲_ → Setoid a ℓ
-      isPreorder⇒setoid isPreorder .Setoid.Carrier = A 
-      isPreorder⇒setoid isPreorder .Setoid._≈_ = SymCore _≲_
-      isPreorder⇒setoid isPreorder .Setoid.isEquivalence = isPreorder⇒isEquivalence isPreorder
+      isPreorder⇒isPreorder : IsPreorder (SymCore _≲_) _≲_
+      isPreorder⇒isPreorder .IsPreorder.isEquivalence = isPreorder⇒isEquivalence
+      isPreorder⇒isPreorder .IsPreorder.reflexive x≃y = x≃y .proj₁
+      isPreorder⇒isPreorder .IsPreorder.trans = IsPreorder.trans isPreorder
 
-      isPreorder⇒isPartialOrder : IsPreorder _≈_ _≲_ → IsPartialOrder (SymCore _≲_) _≲_
-      isPreorder⇒isPartialOrder isPreorder .IsPartialOrder.isPreorder = isPreorder⇒isPreorder isPreorder
-      isPreorder⇒isPartialOrder isPreorder .IsPartialOrder.antisym = antisymmetric
+      isPreorder⇒preorder : Preorder a ℓ ℓ
+      isPreorder⇒preorder .Preorder.Carrier = A
+      isPreorder⇒preorder .Preorder._≈_ = SymCore _≲_
+      isPreorder⇒preorder .Preorder._≲_ = _≲_
+      isPreorder⇒preorder .Preorder.isPreorder = isPreorder⇒isPreorder
+
+      isPreorder⇒isPartialOrder : IsPartialOrder (SymCore _≲_) _≲_
+      isPreorder⇒isPartialOrder .IsPartialOrder.isPreorder = isPreorder⇒isPreorder
+      isPreorder⇒isPartialOrder .IsPartialOrder.antisym = antisymmetric
+
+      isPreorder⇒poset : Poset a ℓ ℓ
+      isPreorder⇒poset .Poset.Carrier = A
+      isPreorder⇒poset .Poset._≈_ = SymCore _≲_
+      isPreorder⇒poset .Poset._≤_ = _≲_
+      isPreorder⇒poset .Poset.isPartialOrder = isPreorder⇒isPartialOrder
   
     module _
         (refl : Reflexive _≲_)
         (trans : Transitive _≲_)
       where
 
-      refl,trans⇒isPreorder-≡ : IsPreorder PropEq._≡_ _≲_
-      refl,trans⇒isPreorder-≡ .IsPreorder.isEquivalence = PropEq.isEquivalence
-      refl,trans⇒isPreorder-≡ .IsPreorder.reflexive PropEq.refl = refl
-      refl,trans⇒isPreorder-≡ .IsPreorder.trans = trans
+      refl,trans⇒≡-≲-isPreorder : IsPreorder PropEq._≡_ _≲_
+      refl,trans⇒≡-≲-isPreorder .IsPreorder.isEquivalence = PropEq.isEquivalence
+      refl,trans⇒≡-≲-isPreorder .IsPreorder.reflexive PropEq.refl = refl
+      refl,trans⇒≡-≲-isPreorder .IsPreorder.trans = trans
+   
+      refl,trans⇒isEquivalence : IsEquivalence (SymCore _≲_)
+      refl,trans⇒isEquivalence = isPreorder⇒isEquivalence refl,trans⇒≡-≲-isPreorder
+   
+      refl,trans⇒setoid : Setoid a ℓ
+      refl,trans⇒setoid = isPreorder⇒setoid refl,trans⇒≡-≲-isPreorder
 
       refl,trans⇒isPreorder : IsPreorder (SymCore _≲_) _≲_
-      refl,trans⇒isPreorder = isPreorder⇒isPreorder refl,trans⇒isPreorder-≡
+      refl,trans⇒isPreorder = isPreorder⇒isPreorder refl,trans⇒≡-≲-isPreorder
 
       refl,trans⇒preorder : Preorder a ℓ ℓ
-      refl,trans⇒preorder .Preorder.Carrier = A
-      refl,trans⇒preorder .Preorder._≈_ = SymCore _≲_
-      refl,trans⇒preorder .Preorder._≲_ = _≲_
-      refl,trans⇒preorder .Preorder.isPreorder = refl,trans⇒isPreorder
+      refl,trans⇒preorder = isPreorder⇒preorder refl,trans⇒≡-≲-isPreorder
 
       refl,trans⇒isPartialOrder : IsPartialOrder (SymCore _≲_) _≲_
-      refl,trans⇒isPartialOrder = isPreorder⇒isPartialOrder refl,trans⇒isPreorder-≡
+      refl,trans⇒isPartialOrder = isPreorder⇒isPartialOrder refl,trans⇒≡-≲-isPreorder
 
       refl,trans⇒poset : Poset a ℓ ℓ
-      refl,trans⇒poset .Poset.Carrier = A
-      refl,trans⇒poset .Poset._≈_ = SymCore _≲_
-      refl,trans⇒poset .Poset._≤_ = _≲_
-      refl,trans⇒poset .Poset.isPartialOrder = refl,trans⇒isPartialOrder
-  
-      refl,trans⇒setoid : Setoid a ℓ
-      refl,trans⇒setoid = isPreorder⇒setoid refl,trans⇒isPreorder
-       
+      refl,trans⇒poset = isPreorder⇒poset refl,trans⇒≡-≲-isPreorder
