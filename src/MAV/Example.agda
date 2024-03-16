@@ -1,3 +1,5 @@
+{-# OPTIONS --postfix-projections --safe --without-K #-}
+
 module MAV.Example where
 
 open import Data.Empty using (⊥)
