@@ -342,29 +342,29 @@ record IsResiduatedPromagma (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ�
   ⇨-residual = proj₂ residuated
 
   ⇦-eval : LeftEval ∙ ⇦
-  ⇦-eval x y = ⇦-residual _ _ _ .Function.Equivalence.from refl
+  ⇦-eval = ⇦-residual .Function.Equivalence.from refl
 
   ⇨-eval : RightEval ∙ ⇨
-  ⇨-eval x y = ⇨-residual _ _ _ .Function.Equivalence.from refl
+  ⇨-eval = ⇨-residual .Function.Equivalence.from refl
 
   ⇦-monotonic-antitonic : MonotonicAntitonic _≲_ _≲_ _≲_ ⇦
-  ⇦-monotonic-antitonic {w} {x} {y} {z} w≲x z≲y
-    = ⇦-residual (⇦ w y) z x .to 
+  ⇦-monotonic-antitonic w≲x z≲y
+    = ⇦-residual .to 
     $ flip trans w≲x
-    $ ⇨-residual (⇦ w y) z w .from 
+    $ ⇨-residual .from 
     $ trans z≲y
-    $ ⇨-residual (⇦ w y) y w .to 
-    $ ⇦-residual (⇦ w y) y w .from refl
+    $ ⇨-residual .to 
+    $ ⇦-residual .from refl
     where open Function.Equivalence using (to; from)
 
   ⇨-antitonic-monotonic : AntitonicMonotonic _≲_ _≲_ _≲_ ⇨
   ⇨-antitonic-monotonic {w} {x} {y} {z} x≲w y≲z
-    = ⇨-residual x (⇨ w y) z .to 
+    = ⇨-residual .to 
     $ flip trans y≲z
-    $ ⇦-residual x (⇨ w y) y .from
+    $ ⇦-residual .from
     $ trans x≲w 
-    $ ⇦-residual w (⇨ w y) y .to
-    $ ⇨-residual w (⇨ w y) y .from refl
+    $ ⇦-residual .to
+    $ ⇨-residual .from refl
     where open Function.Equivalence using (to; from)
 
 record IsResiduatedProsemigroup (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where

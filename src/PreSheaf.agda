@@ -4,6 +4,8 @@ open import Level
 open import Algebra
 open import Algebra.Definitions
 open import Algebra.Ordered
+open import Algebra.Ordered.Definitions
+open import Algebra.Ordered.Consequences
 open import Function using (flip)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ-syntax; swap; <_,_>)
 open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
@@ -70,6 +72,12 @@ _≈ᴾ_ = SymCore _≤ᴾ_
       ; reflexive = λ { PropEq.refl → ≤ᴾ-refl } 
       ; trans = ≤ᴾ-trans
       }
+
+open IsPartialOrder ≤ᴾ-isPartialOrder
+  using ()
+  renaming
+    ( isPreorder to ≤ᴾ-isPreorder
+    )
 
 ≥ᴾ-isPartialOrder : IsPartialOrder _≈ᴾ_ _≥ᴾ_
 ≥ᴾ-isPartialOrder = Flip.isPartialOrder ≤ᴾ-isPartialOrder
@@ -153,40 +161,12 @@ open import Relation.Binary.Lattice.Properties.BoundedMeetSemilattice ∧ᴾ-⊤
   }
 
 ------------------------------------------------------------------------------
--- Construct a residuated pomonoid for presheaves
-
-_⇒ᴾ_ : PreSheaf → PreSheaf → PreSheaf
-(F ⇒ᴾ G) .ICarrier x = ∀ y → y ≤ x → F .ICarrier y → G .ICarrier y
-(F ⇒ᴾ G) .≤-closed x≤y f z z≤x Fz = f z (≤-trans z≤x x≤y) Fz
-
-⇒ᴾ-residualʳ-to : (F ∧ᴾ G) ≤ᴾ H → F ≤ᴾ (G ⇒ᴾ H)
-⇒ᴾ-residualʳ-to {F} F∧G≤H .*≤ᴾ* x Fx y y≤x Gy = F∧G≤H .*≤ᴾ* y (F .≤-closed y≤x Fx , Gy)
-
-⇒ᴾ-eval : ((F ⇒ᴾ G) ∧ᴾ F) ≤ᴾ G
-⇒ᴾ-eval .*≤ᴾ* x (f , Fx) = f x ≤-refl Fx
-
-⇒ᴾ-residualʳ-from : F ≤ᴾ (G ⇒ᴾ H) → (F ∧ᴾ G) ≤ᴾ H
-⇒ᴾ-residualʳ-from F≤G⇒H = ≤ᴾ-trans (∧ᴾ-monotonic F≤G⇒H ≤ᴾ-refl) ⇒ᴾ-eval
-
-⇒ᴾ-∧ᴾ-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈ᴾ_ _≤ᴾ_ _∧ᴾ_ _⇒ᴾ_ ⊤ᴾ
-⇒ᴾ-∧ᴾ-isResiduatedCommutativePomonoid = record
-  { isCommutativePomonoid = ∧ᴾ-⊤ᴾ-isCommutativePomonoid 
-  ; residualʳ             = λ F G H → record
-    { to        = ⇒ᴾ-residualʳ-to
-    ; from      = ⇒ᴾ-residualʳ-from 
-    ; to-cong   = λ { PropEq.refl → PropEq.refl }
-    ; from-cong = λ { PropEq.refl → PropEq.refl }
-    }
-  }
-
-------------------------------------------------------------------------------
 -- Construct a join semilattice for presheaves
 
 _∨ᴾ_ : PreSheaf → PreSheaf → PreSheaf
 (F ∨ᴾ G) .ICarrier x = F .ICarrier x ⊎ G .ICarrier x
 (F ∨ᴾ G) .≤-closed x≤y (inj₁ Fy) = inj₁ (F .≤-closed x≤y Fy)
 (F ∨ᴾ G) .≤-closed x≤y (inj₂ Gy) = inj₂ (G .≤-closed x≤y Gy)
-
 
 inj₁ᴾ : F ≤ᴾ (F ∨ᴾ G)
 inj₁ᴾ .*≤ᴾ* x = inj₁
@@ -203,96 +183,136 @@ inj₂ᴾ .*≤ᴾ* x = inj₂
   ; supremum       = λ F G → (inj₁ᴾ , inj₂ᴾ , λ H → [_,_]ᴾ)
   }
 
+open IsJoinSemilattice ∨ᴾ-isJoinSemilattice
+  using ()
+  renaming
+    ( supremum to ∨ᴾ-supremum
+    )
+
+------------------------------------------------------------------------------
+-- Construct a residuated pomonoid for presheaves
+
+_⇒ᴾ_ : PreSheaf → PreSheaf → PreSheaf
+(F ⇒ᴾ G) .ICarrier x = ∀ y → y ≤ x → F .ICarrier y → G .ICarrier y
+(F ⇒ᴾ G) .≤-closed x≤y f z z≤x Fz = f z (≤-trans z≤x x≤y) Fz
+
+⇒ᴾ-residual-to : (F ∧ᴾ G) ≤ᴾ H → G ≤ᴾ (F ⇒ᴾ H)
+⇒ᴾ-residual-to {F} {G} {H} F∧G≤H .*≤ᴾ* x Gx y y≤x Fy = F∧G≤H .*≤ᴾ* y (Fy , G .≤-closed y≤x Gx)
+
+⇒ᴾ-residual-from : G ≤ᴾ (F ⇒ᴾ H) → (F ∧ᴾ G) ≤ᴾ H
+⇒ᴾ-residual-from G≤F⇒H .*≤ᴾ* x (Fx , Gx) = G≤F⇒H .*≤ᴾ* x Gx x ≤-refl Fx
+
+⇒ᴾ-residual : RightResidual _≤ᴾ_ _∧ᴾ_ _⇒ᴾ_
+⇒ᴾ-residual .Function.Equivalence.to        = ⇒ᴾ-residual-to
+⇒ᴾ-residual .Function.Equivalence.from      = ⇒ᴾ-residual-from
+⇒ᴾ-residual .Function.Equivalence.to-cong   = λ { PropEq.refl → PropEq.refl }
+⇒ᴾ-residual .Function.Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
+
+⇒ᴾ-∧ᴾ-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈ᴾ_ _≤ᴾ_ _∧ᴾ_ _⇒ᴾ_ ⊤ᴾ
+⇒ᴾ-∧ᴾ-isResiduatedCommutativePomonoid = record
+  { isCommutativePomonoid = ∧ᴾ-⊤ᴾ-isCommutativePomonoid 
+  ; residuated            = comm∧residual⇒residuated ≤ᴾ-isPreorder ∧ᴾ-comm ⇒ᴾ-residual
+  }
+
 ------------------------------------------------------------------------------
 -- Lift monoids to presheaves
 
-module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε) where
+module LiftIsPomonoid {_∙_} {ε} (isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε) where
 
-  open IsPomonoid ∙-isPomonoid
-    using
-      ( ≤-respˡ-≈
-      ; ≤-respʳ-≈
-      ; ≤-resp-≈
-      )
-    renaming
-      ( assoc     to ∙-assoc
-      ; mono      to •-mono
-      ; identityˡ to •-identityˡ
-      ; identityʳ to •-identityʳ
-      )
+  open IsPomonoid isPomonoid
 
-  _•ᴾ_ : PreSheaf → PreSheaf → PreSheaf
-  (F •ᴾ G) .ICarrier x = 
+  _∙ᴾ_ : PreSheaf → PreSheaf → PreSheaf
+  (F ∙ᴾ G) .ICarrier x = 
     Σ[ y ∈ Carrier ] Σ[ z ∈ Carrier ] (x ≤ (y ∙ z) × F .ICarrier y × G .ICarrier z)
-  (F •ᴾ G) .≤-closed x≤w (y , z , w≤yz , ϕ₁ , ϕ₂) =
+  (F ∙ᴾ G) .≤-closed x≤w (y , z , w≤yz , ϕ₁ , ϕ₂) =
     y , z , ≤-trans x≤w w≤yz , ϕ₁ , ϕ₂
 
-  •ᴾ-mono : Monotonic₂ _≤ᴾ_ _≤ᴾ_ _≤ᴾ_ _•ᴾ_
-  •ᴾ-mono F₁≤F₂ G₁≤G₂ .*≤ᴾ* x (y , z , x≤yz , F₁y , G₁z) =
+  ∙ᴾ-mono : Monotonic₂ _≤ᴾ_ _≤ᴾ_ _≤ᴾ_ _∙ᴾ_
+  ∙ᴾ-mono F₁≤F₂ G₁≤G₂ .*≤ᴾ* x (y , z , x≤yz , F₁y , G₁z) =
     y , z , x≤yz , F₁≤F₂ .*≤ᴾ* y F₁y , G₁≤G₂ .*≤ᴾ* z G₁z
 
   εᴾ : PreSheaf
   εᴾ = η ε
 
-  •ᴾ-identityˡ : LeftIdentity _≈ᴾ_ εᴾ _•ᴾ_
-  •ᴾ-identityˡ F .proj₁ .*≤ᴾ* x (y , z , x≤yz , lift y≤ε , Fz) =
-    F .≤-closed (≤-trans x≤yz (≤-trans (•-mono y≤ε ≤-refl) (≤-respʳ-≈ (•-identityˡ z) ≤-refl) )) Fz
-  •ᴾ-identityˡ F .proj₂ .*≤ᴾ* x Fx =
-    ε , x , ≤-respˡ-≈ (•-identityˡ x) ≤-refl , lift ≤-refl , Fx
+  ∙ᴾ-identityˡ : LeftIdentity _≈ᴾ_ εᴾ _∙ᴾ_
+  ∙ᴾ-identityˡ F .proj₁ .*≤ᴾ* x (y , z , x≤yz , lift y≤ε , Fz) =
+    F .≤-closed (≤-trans x≤yz (≤-trans (mono y≤ε ≤-refl) (≤-respʳ-≈ (identityˡ z) ≤-refl) )) Fz
+  ∙ᴾ-identityˡ F .proj₂ .*≤ᴾ* x Fx =
+    ε , x , ≤-respˡ-≈ (identityˡ x) ≤-refl , lift ≤-refl , Fx
 
-  •ᴾ-identityʳ : RightIdentity _≈ᴾ_ εᴾ _•ᴾ_
-  •ᴾ-identityʳ F .proj₁ .*≤ᴾ* x (y , z , x≤yz , Fy , lift z≤ε) =
-    F .≤-closed (≤-trans x≤yz (≤-trans (•-mono ≤-refl z≤ε) (≤-respʳ-≈ (•-identityʳ y) ≤-refl) )) Fy
-  •ᴾ-identityʳ F .proj₂ .*≤ᴾ* x Fx =
-    x , ε , ≤-respˡ-≈ (•-identityʳ x) ≤-refl , Fx , lift ≤-refl
+  ∙ᴾ-identityʳ : RightIdentity _≈ᴾ_ εᴾ _∙ᴾ_
+  ∙ᴾ-identityʳ F .proj₁ .*≤ᴾ* x (y , z , x≤yz , Fy , lift z≤ε) =
+    F .≤-closed (≤-trans x≤yz (≤-trans (mono ≤-refl z≤ε) (≤-respʳ-≈ (identityʳ y) ≤-refl) )) Fy
+  ∙ᴾ-identityʳ F .proj₂ .*≤ᴾ* x Fx =
+    x , ε , ≤-respˡ-≈ (identityʳ x) ≤-refl , Fx , lift ≤-refl
 
-  •ᴾ-identity : Identity _≈ᴾ_ εᴾ _•ᴾ_
-  •ᴾ-identity = (•ᴾ-identityˡ , •ᴾ-identityʳ)
+  ∙ᴾ-identity : Identity _≈ᴾ_ εᴾ _∙ᴾ_
+  ∙ᴾ-identity = (∙ᴾ-identityˡ , ∙ᴾ-identityʳ)
 
-  •ᴾ-assoc : Associative _≈ᴾ_ _•ᴾ_
-  •ᴾ-assoc F G H .proj₁ .*≤ᴾ* x (y , z , x≤yz , (u , v , y≤uv , Fu , Gv) , Hz) = 
+  ∙ᴾ-assoc : Associative _≈ᴾ_ _∙ᴾ_
+  ∙ᴾ-assoc F G H .proj₁ .*≤ᴾ* x (y , z , x≤yz , (u , v , y≤uv , Fu , Gv) , Hz) = 
     (u , v ∙ z , x≤u∙v∙z , Fu , (v , z , ≤-refl , Gv , Hz))
     where 
-      x≤u∙v∙z = ≤-trans x≤yz (≤-trans (•-mono y≤uv ≤-refl) (≤-respʳ-≈ (∙-assoc u v z)  ≤-refl))
-  •ᴾ-assoc F G H .proj₂ .*≤ᴾ* x (y , z , x≤yz , Fy , (u , v , z≤uv , Gu , Hv)) = 
+      x≤u∙v∙z = ≤-trans x≤yz (≤-trans (mono y≤uv ≤-refl) (≤-respʳ-≈ (assoc u v z)  ≤-refl))
+  ∙ᴾ-assoc F G H .proj₂ .*≤ᴾ* x (y , z , x≤yz , Fy , (u , v , z≤uv , Gu , Hv)) = 
     (y ∙ u , v , x≤y∙u∙v , (y , u , ≤-refl , Fy , Gu) , Hv)
     where
-      x≤y∙u∙v = ≤-trans x≤yz (≤-trans (•-mono ≤-refl z≤uv) (≤-respˡ-≈ (∙-assoc y u v) ≤-refl))
+      x≤y∙u∙v = ≤-trans x≤yz (≤-trans (mono ≤-refl z≤uv) (≤-respˡ-≈ (assoc y u v) ≤-refl))
 
-  •ᴾ-isMonoid : IsPomonoid _≈ᴾ_ _≤ᴾ_ _•ᴾ_ εᴾ
-  •ᴾ-isMonoid = record 
+  ∙ᴾ-isPomonoid : IsPomonoid _≈ᴾ_ _≤ᴾ_ _∙ᴾ_ εᴾ
+  ∙ᴾ-isPomonoid = record 
     { isPosemigroup = record 
       { isPomagma = record
         { isPartialOrder = ≤ᴾ-isPartialOrder 
-        ; mono = •ᴾ-mono
+        ; mono = ∙ᴾ-mono
         } 
-      ; assoc = •ᴾ-assoc 
+      ; assoc = ∙ᴾ-assoc 
       }
-    ; identity = •ᴾ-identity 
+    ; identity = ∙ᴾ-identity 
     }
 
---   •-sym : (∀ {x y} → (x ∙ y) ≤ (y ∙ x)) → ∀ {F G} → F • G ≤ᴾ G • F
---   •-sym ∙-sym .*≤ᴾ* x (y , z , x≤yz , Fy , Gz) = z , y , trans x≤yz ∙-sym , Gz , Fy
+module LiftIsCommutativePomonoid {_∙_} {ε} (isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _∙_ ε) where
 
---   -- FIXME: deducible from closure
---   •-∨-distrib : ∀ {F G H} → (F • (G ∨ H)) ≤ᴾ ((F • G) ∨ (F • H))
---   •-∨-distrib .*≤ᴾ* x (y , z , x≤yz , Fy , inj₁ Gz) = inj₁ (y , z , x≤yz , Fy , Gz)
---   •-∨-distrib .*≤ᴾ* x (y , z , x≤yz , Fy , inj₂ Hz) = inj₂ (y , z , x≤yz , Fy , Hz)
+  open IsCommutativePomonoid isCommutativePomonoid
+  open LiftIsPomonoid isPomonoid
 
---   -- right-closed
---   _-•_ : PreSheaf → PreSheaf → PreSheaf
---   (F -• G) .ICarrier x = ∀ y → F .ICarrier y → G .ICarrier (x ∙ y)
---   (F -• G) .≤-closed x≤x' f y Fy = G .≤-closed (mono x≤x' refl) (f y Fy)
+  ∙ᴾ-comm : Commutative _≈ᴾ_ _∙ᴾ_
+  ∙ᴾ-comm F G .proj₁ .*≤ᴾ* x (y , z , x≤yz , Fy , Gz) = (z , y , trans x≤yz (≤-respˡ-≈ (comm z y) ≤-refl) , Gz , Fy)
+  ∙ᴾ-comm F G .proj₂ .*≤ᴾ* x (y , z , x≤yz , Gy , Fz) = (z , y , trans x≤yz (≤-respˡ-≈ (comm z y) ≤-refl) , Fz , Gy)
 
---   -•-isClosure : IsClosure ≤ᴾ-isPreorder •-isMonoid _-•_
---   -•-isClosure .IsClosure.lambda m .*≤ᴾ* x Fx y Gy =
---     m .*≤ᴾ* (x ∙ y) (x , y , refl , Fx , Gy)
---   -•-isClosure .IsClosure.eval {F}{G} .*≤ᴾ* x (y , z , x≤yz , F-•Gy , Fz) =
---     G .≤-closed x≤yz (F-•Gy z Fz)
+  ∙ᴾ-isCommutativePomonoid : IsCommutativePomonoid _≈ᴾ_ _≤ᴾ_ _∙ᴾ_ εᴾ
+  ∙ᴾ-isCommutativePomonoid = record
+    { isPomonoid = ∙ᴾ-isPomonoid
+    ; comm       = ∙ᴾ-comm 
+    }
 
---   -- and left-closed, but every monoid we care about is symmetric so
---   -- I'll not bother.
+  _⇨ᴾ_ : PreSheaf → PreSheaf → PreSheaf
+  (F ⇨ᴾ G) .ICarrier x = ∀ y → F .ICarrier y → G .ICarrier (x ∙ y)
+  (F ⇨ᴾ G) .≤-closed x≤z f y Fy = G .≤-closed (mono x≤z refl) (f y Fy)
 
+  ⇨ᴾ-residual-to : (F ∙ᴾ G) ≤ᴾ H → G ≤ᴾ (F ⇨ᴾ H)
+  ⇨ᴾ-residual-to F∙G≤H .*≤ᴾ* x Gx y Fy = 
+    F∙G≤H .*≤ᴾ* (x ∙ y) (y , x , ≤-respˡ-≈ (comm y x) ≤-refl , Fy , Gx)
+
+  ⇨ᴾ-residual-from : G ≤ᴾ (F ⇨ᴾ H) → (F ∙ᴾ G) ≤ᴾ H
+  ⇨ᴾ-residual-from {G} {F} {H} G≤F⇨H .*≤ᴾ* x (y , z , x≤y∙z , Fy , Gz) = 
+    H .≤-closed (trans x≤y∙z (≤-respˡ-≈ (comm z y) ≤-refl)) (G≤F⇨H .*≤ᴾ* z Gz y Fy)
+
+  ⇨ᴾ-residual : RightResidual _≤ᴾ_ _∙ᴾ_ _⇨ᴾ_
+  ⇨ᴾ-residual .Function.Equivalence.to        = ⇨ᴾ-residual-to
+  ⇨ᴾ-residual .Function.Equivalence.from      = ⇨ᴾ-residual-from
+  ⇨ᴾ-residual .Function.Equivalence.to-cong   = λ { PropEq.refl → PropEq.refl }
+  ⇨ᴾ-residual .Function.Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
+
+  ⇨ᴾ-∙ᴾ-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈ᴾ_ _≤ᴾ_ _∙ᴾ_ _⇨ᴾ_ εᴾ
+  ⇨ᴾ-∙ᴾ-isResiduatedCommutativePomonoid = record 
+    { isCommutativePomonoid = ∙ᴾ-isCommutativePomonoid 
+    ; residuated = comm∧residual⇒residuated ≤ᴾ-isPreorder ∙ᴾ-comm ⇨ᴾ-residual 
+    }
+
+  ∙ᴾ-∨ᴾ-distrib : _DistributesOver_ _≤ᴾ_ _∙ᴾ_ _∨ᴾ_
+  ∙ᴾ-∨ᴾ-distrib = supremum∧residuated⇒distrib ≤ᴾ-isPreorder ∨ᴾ-supremum 
+    (IsResiduatedCommutativePomonoid.residuated ⇨ᴾ-∙ᴾ-isResiduatedCommutativePomonoid)
 
 -- -- FIXME: If we have two monoids in a duoidal relationship, then they
 -- -- have this relationship on the presheaf preorder. Let's do the
@@ -303,13 +323,13 @@ module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙
 --                (∙-▷-isDuoidal : IsDuoidal ≤-isPreorder ∙-isMonoid ▷-isMonoid)
 --   where
 
---   open Monoid ∙-isMonoid using (_•_)
---   open Monoid ▷-isMonoid renaming (_•_ to _⍮_)
+--   open Monoid ∙-isMonoid using (_∙_)
+--   open Monoid ▷-isMonoid renaming (_∙_ to _⍮_)
 --   open IsDuoidal ∙-▷-isDuoidal renaming (exchange to ∙-▷-exchange)
 --   open IsMonoid ∙-isMonoid
 
---   •-⍮-exchange : ∀ {w x y z} → ((w ⍮ x) • (y ⍮ z)) ≤ᴾ ((w • y) ⍮ (x • z))
---   •-⍮-exchange .*≤ᴾ* x
+--   ∙-⍮-exchange : ∀ {w x y z} → ((w ⍮ x) ∙ (y ⍮ z)) ≤ᴾ ((w ∙ y) ⍮ (x ∙ z))
+--   ∙-⍮-exchange .*≤ᴾ* x
 --       (y , z , x≤yz , (y₁ , y₂ , y≤y₁y₂ , Wy₁ , Xy₂) ,
 --                       (z₁ , z₂ , z≤z₁z₂ , Yz₁ , Zz₂)) =
 --       (y₁ ∙ z₁) , y₂ ∙ z₂ ,
@@ -489,7 +509,7 @@ module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙
 
 --   ------------------------------------------------------------------------------
 --   -- Monoids 1 : if we have a 'medial'-type monoid, then the
---   -- presheaf monoid definition is already a sheaf. I.e., U (α (F • G)) ≃ U (α F) • U (α G)
+--   -- presheaf monoid definition is already a sheaf. I.e., U (α (F ∙ G)) ≃ U (α F) ∙ U (α G)
 --   module SMonoid1 {_∙_ : A → A → A} {ε : A}
 --                   (∙-isMonoid : IsMonoid ≤-isPreorder _∙_ ε)
 --                   -- this is how it interacts with the 'join'
@@ -537,28 +557,28 @@ module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙
 
 --     ▷-mono : ∀ {F₁ G₁ F₂ G₂} → F₁ ≤S F₂ → G₁ ≤S G₂ → (F₁ ▷ G₁) ≤S (F₂ ▷ G₂)
 --     ▷-mono {F₁}{G₁}{F₂}{G₂} m₁ m₂ .*≤S* =
---       •-mono {U F₁}{U G₁}{U F₂}{U G₂}
+--       ∙-mono {U F₁}{U G₁}{U F₂}{U G₂}
 --         (record { *≤ᴾ* = m₁ .*≤S* }) (record { *≤ᴾ* = m₂ .*≤S* }) .*≤ᴾ*
 
 --     ▷-assoc : ∀ {F G H} → ((F ▷ G) ▷ H) ≃S (F ▷ (G ▷ H))
---     ▷-assoc {F}{G}{H} .proj₁ .*≤S* = •-assoc {U F}{U G}{U H} .proj₁ .*≤ᴾ*
---     ▷-assoc {F}{G}{H} .proj₂ .*≤S* = •-assoc {U F}{U G}{U H} .proj₂ .*≤ᴾ*
+--     ▷-assoc {F}{G}{H} .proj₁ .*≤S* = ∙-assoc {U F}{U G}{U H} .proj₁ .*≤ᴾ*
+--     ▷-assoc {F}{G}{H} .proj₂ .*≤S* = ∙-assoc {U F}{U G}{U H} .proj₂ .*≤ᴾ*
 
 --     ▷-lunit : ∀ {F} → (I ▷ F) ≃S F
---     ▷-lunit {F} .proj₁ .*≤S* = •-lunit {U F} .proj₁ .*≤ᴾ*
---     ▷-lunit {F} .proj₂ .*≤S* = •-lunit {U F} .proj₂ .*≤ᴾ*
+--     ▷-lunit {F} .proj₁ .*≤S* = ∙-lunit {U F} .proj₁ .*≤ᴾ*
+--     ▷-lunit {F} .proj₂ .*≤S* = ∙-lunit {U F} .proj₂ .*≤ᴾ*
 
 --     ▷-runit : ∀ {F} → (F ▷ I) ≃S F
---     ▷-runit {F} .proj₁ .*≤S* = •-runit {U F} .proj₁ .*≤ᴾ*
---     ▷-runit {F} .proj₂ .*≤S* = •-runit {U F} .proj₂ .*≤ᴾ*
+--     ▷-runit {F} .proj₁ .*≤S* = ∙-runit {U F} .proj₁ .*≤ᴾ*
+--     ▷-runit {F} .proj₂ .*≤S* = ∙-runit {U F} .proj₂ .*≤ᴾ*
 
 --     ▷-isMonoid : IsMonoid ≤S-isPreorder _▷_ I
---     ▷-isMonoid .IsMonoid.mono m₁ m₂ .*≤S* = •-mono (U-mono m₁) (U-mono m₂) .*≤ᴾ*
+--     ▷-isMonoid .IsMonoid.mono m₁ m₂ .*≤S* = ∙-mono (U-mono m₁) (U-mono m₂) .*≤ᴾ*
 --     ▷-isMonoid .IsMonoid.assoc = ▷-assoc
 --     ▷-isMonoid .IsMonoid.lunit = ▷-lunit
 --     ▷-isMonoid .IsMonoid.runit = ▷-runit
 
---     U-monoidal : ∀ {F G} → U (F ▷ G) ≈ᴾ (U F • U G)
+--     U-monoidal : ∀ {F G} → U (F ▷ G) ≈ᴾ (U F ∙ U G)
 --     U-monoidal .proj₁ .*≤ᴾ* x ϕ = ϕ
 --     U-monoidal .proj₂ .*≤ᴾ* x ϕ = ϕ
 
@@ -574,7 +594,7 @@ module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙
 --     open Monoid ∙-isMonoid renaming (I to J)
 
 --     _⊗_ : Sheaf → Sheaf → Sheaf
---     F ⊗ G = α (U F • U G)
+--     F ⊗ G = α (U F ∙ U G)
 
 --     I : Sheaf
 --     I = α J
@@ -583,7 +603,7 @@ module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙
 --     module _ {F G : PreSheaf} where
 --        mul : Tree (Σ[ x ∈ A ] F .ICarrier x) →
 --              Tree (Σ[ x ∈ A ] G .ICarrier x) →
---              Tree (Σ[ x ∈ A ] (F • G) .ICarrier x)
+--              Tree (Σ[ x ∈ A ] (F ∙ G) .ICarrier x)
 --        mul (lf (x , Fx)) (lf (y , Gy)) = lf (x ∙ y , x , y , refl , Fx , Gy)
 --        mul (lf x)        (br t₁ t₂)    = br (mul (lf x) t₁) (mul (lf x) t₂)
 --        mul (br s₁ s₂)    t             = br (mul s₁ t) (mul s₂ t)
@@ -603,9 +623,9 @@ module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙
 --        -- The 2nd and 3rd arguments are unpacked to satisfy the termination checker
 --        -- FIXME: this is essentially a map-and-join operation that preserves the first components
 --        lemma : ∀ x
---                (t : Tree (Σ[ y ∈ A ] (U (α F) • U (α G)) .ICarrier y)) →
+--                (t : Tree (Σ[ y ∈ A ] (U (α F) ∙ U (α G)) .ICarrier y)) →
 --                x ≤ join t →
---                Σ[ t ∈ Tree (Σ[ x ∈ A ] ((F • G) .ICarrier x)) ] (x ≤ join t)
+--                Σ[ t ∈ Tree (Σ[ x ∈ A ] ((F ∙ G) .ICarrier x)) ] (x ≤ join t)
 --        lemma x (lf (y , (y₁ , y₂ , y≤y₁y₂ , (t₁ , y₁≤t₁) , (t₂ , y₂≤t₂)))) x≤y =
 --          (mul t₁ t₂) , trans x≤y (trans y≤y₁y₂ (trans (mono y₁≤t₁ y₂≤t₂) (mul-join t₁ t₂)))
 --        lemma x (br s t) x≤s&t =
@@ -613,31 +633,31 @@ module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙
 --              (t₂ , ϕ₂) = lemma (join t) t refl
 --          in br t₁ t₂ , trans x≤s&t (&-mono ϕ₁ ϕ₂)
 
---        α-monoidal : (α F ⊗ α G) ≃S α (F • G)
+--        α-monoidal : (α F ⊗ α G) ≃S α (F ∙ G)
 --        α-monoidal .proj₁ .*≤S* x (t , x≤t) = lemma x t x≤t
---        α-monoidal .proj₂ = α-mono (•-mono (unit F) (unit G))
+--        α-monoidal .proj₂ = α-mono (∙-mono (unit F) (unit G))
 
 --     module _ where
---       open IsMonoid •-isMonoid renaming (cong to •-cong)
+--       open IsMonoid ∙-isMonoid renaming (cong to ∙-cong)
 --       open Setoid (IsPreorder.≃-setoid ≤ᴾ-isPreorder) renaming (refl to P-refl)
 
 --       ⊗-mono : ∀ {F₁ G₁ F₂ G₂} → F₁ ≤S F₂ → G₁ ≤S G₂ → (F₁ ⊗ G₁) ≤S (F₂ ⊗ G₂)
---       ⊗-mono m₁ m₂ = α-mono (•-mono (U-mono m₁) (U-mono m₂))
+--       ⊗-mono m₁ m₂ = α-mono (∙-mono (U-mono m₁) (U-mono m₂))
 
 --       ⊗-assoc : ∀ {F G H} → ((F ⊗ G) ⊗ H) ≃S (F ⊗ (G ⊗ H))
 --       ⊗-assoc {F}{G}{H} = begin
 --           ((F ⊗ G) ⊗ H)
 --         ≡⟨⟩
---           α (U (α (U F • U G)) • U H)
---         ≈⟨ α-cong (•-cong P-refl (U-cong counit-≃)) ⟩
---           α (U (α (U F • U G)) • U (α (U H)))
+--           α (U (α (U F ∙ U G)) ∙ U H)
+--         ≈⟨ α-cong (∙-cong P-refl (U-cong counit-≃)) ⟩
+--           α (U (α (U F ∙ U G)) ∙ U (α (U H)))
 --         ≈⟨ α-monoidal ⟩
---           α ((U F • U G) • U H)
---         ≈⟨ α-cong •-assoc ⟩
---           α (U F • (U G • U H))
+--           α ((U F ∙ U G) ∙ U H)
+--         ≈⟨ α-cong ∙-assoc ⟩
+--           α (U F ∙ (U G ∙ U H))
 --         ≈˘⟨ α-monoidal ⟩
---           α (U (α (U F)) • U (α (U G • U H)))
---         ≈˘⟨ α-cong (•-cong (U-cong counit-≃) P-refl) ⟩
+--           α (U (α (U F)) ∙ U (α (U G ∙ U H)))
+--         ≈˘⟨ α-cong (∙-cong (U-cong counit-≃) P-refl) ⟩
 --           (F ⊗ (G ⊗ H))
 --         ∎
 --         where open IsPreorder.≃-SetoidReasoning ≤S-isPreorder
@@ -646,12 +666,12 @@ module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙
 --       ⊗-lunit {F} = begin
 --             I ⊗ F
 --           ≡⟨⟩
---             α (U (α J) • U F)
---           ≈⟨ α-cong (•-cong P-refl (U-cong counit-≃)) ⟩
---             α (U (α J) • U (α (U F)))
+--             α (U (α J) ∙ U F)
+--           ≈⟨ α-cong (∙-cong P-refl (U-cong counit-≃)) ⟩
+--             α (U (α J) ∙ U (α (U F)))
 --           ≈⟨ α-monoidal ⟩
---             α (J • U F)
---           ≈⟨ α-cong •-lunit ⟩
+--             α (J ∙ U F)
+--           ≈⟨ α-cong ∙-lunit ⟩
 --             α (U F)
 --           ≈˘⟨ counit-≃ ⟩
 --             F
@@ -662,12 +682,12 @@ module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙
 --       ⊗-runit {F} = begin
 --             F ⊗ I
 --           ≡⟨⟩
---             α (U F • U (α J))
---           ≈⟨ α-cong (•-cong (U-cong counit-≃) P-refl) ⟩
---             α (U (α (U F)) • U (α J))
+--             α (U F ∙ U (α J))
+--           ≈⟨ α-cong (∙-cong (U-cong counit-≃) P-refl) ⟩
+--             α (U (α (U F)) ∙ U (α J))
 --           ≈⟨ α-monoidal ⟩
---             α (U F • J)
---           ≈⟨ α-cong •-runit ⟩
+--             α (U F ∙ J)
+--           ≈⟨ α-cong ∙-runit ⟩
 --             α (U F)
 --           ≈˘⟨ counit-≃ ⟩
 --             F
@@ -681,7 +701,7 @@ module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙
 --     ⊗-isMonoid .IsMonoid.runit = ⊗-runit
 
 --     ⊗-sym : ∀ {F G} → (F ⊗ G) ≤S (G ⊗ F)
---     ⊗-sym {F}{G} = α-mono (•-sym ∙-sym {U F} {U G})
+--     ⊗-sym {F}{G} = α-mono (∙-sym ∙-sym {U F} {U G})
 
 --     -- Residuals are automatically closed, relying on distributivity.
 --     -- Is this deducible from strong monoidality of α?
@@ -702,7 +722,7 @@ module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙
 --       let t' , ty≤y' = ⊸-lemma F G t y Fy in
 --       G .S≤-closed ty≤y' (G .Sclosed t')
 
---     U⊸ : ∀ {F G} → U (F ⊸ G) ≤ᴾ (U F -• U G)
+--     U⊸ : ∀ {F G} → U (F ⊸ G) ≤ᴾ (U F -∙ U G)
 --     U⊸ .*≤ᴾ* x f = f
 
 --     ⊸-isClosure : IsClosure ≤S-isPreorder ⊗-isMonoid _⊸_
@@ -710,8 +730,8 @@ module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙
 --       -- FIXME: find a more abstract way of doing this
 --       m .*≤S* (x ∙ y) ((lf (x ∙ y , x , y , refl , Fx , Gy)) , refl)
 --     ⊸-isClosure .IsClosure.eval =
---        ≤S-trans (α-mono (•-mono U⊸ (≤ᴾ-isPreorder .IsPreorder.refl)))
---        (≤S-trans (α-mono (-•-isClosure .IsClosure.eval)) counit)
+--        ≤S-trans (α-mono (∙-mono U⊸ (≤ᴾ-isPreorder .IsPreorder.refl)))
+--        (≤S-trans (α-mono (-∙-isClosure .IsClosure.eval)) counit)
 
 --   module SDuoidal {_∙_ : A → A → A} {_⍮_ : A → A → A} {ε : A}
 --                   (∙-isMonoid : IsMonoid ≤-isPreorder _∙_ ε)
@@ -723,8 +743,8 @@ module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙
 --                   (∙-⍮-isDuoidal : IsDuoidal ≤-isPreorder ∙-isMonoid ⍮-isMonoid)
 --               where
 
---     open Monoid ∙-isMonoid renaming (_•_ to _⊛_; •-mono to ⊛-mono)
---     open Monoid ⍮-isMonoid renaming (_•_ to _,-_; •-mono to ,--mono)
+--     open Monoid ∙-isMonoid renaming (_∙_ to _⊛_; ∙-mono to ⊛-mono)
+--     open Monoid ⍮-isMonoid renaming (_∙_ to _,-_; ∙-mono to ,--mono)
 --     open SMonoid1 ⍮-isMonoid medial tidy renaming (I to J)
 --     open SMonoid2 ∙-isMonoid ∙-sym ∙-&-distrib renaming (I to I⊗)
 
@@ -739,16 +759,16 @@ module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙
 --     ⊗-▷-isDuoidal : IsDuoidal ≤S-isPreorder ⊗-isMonoid ▷-isMonoid
 --     ⊗-▷-isDuoidal .IsDuoidal.exchange =
 --       α-mono (⊛-mono (U-monoidal .proj₁) (U-monoidal .proj₁)) >>
---       (α-mono •-⍮-exchange >>
+--       (α-mono ∙-⍮-exchange >>
 --       (α-mono (,--mono (unit _) (unit _)) >>
 --       (α-mono (U-monoidal .proj₂)
 --       >> counit)))
 --       --   (w ▷ x) ⊗ (y ▷ z)
---       -- ≡ α (U (w ▷ x) • U(y ▷ z))
---       -- ≃ α ((U w ⍮ U x) • (U y ⍮ U z))
---       -- ≤ α ((U w • U y) ⍮ (U x • U z))
---       -- ≤ α (U (α (U w • U y)) ⍮ U (α (U x • U z)))
+--       -- ≡ α (U (w ▷ x) ∙ U(y ▷ z))
+--       -- ≃ α ((U w ⍮ U x) ∙ (U y ⍮ U z))
+--       -- ≤ α ((U w ∙ U y) ⍮ (U x ∙ U z))
+--       -- ≤ α (U (α (U w ∙ U y)) ⍮ U (α (U x ∙ U z)))
 --       -- ≃ α (U ((w ⊗ y) ▷ (x ⊗ z))
 --       -- ≡ (w ⊗ y) ▷ (x ⊗ z)
 --     ⊗-▷-isDuoidal .IsDuoidal.mu = ⊗-mono (units-iso .proj₂) ≤S-refl >> ⊗-lunit .proj₁
-  
+   
