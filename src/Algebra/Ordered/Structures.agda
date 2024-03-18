@@ -23,10 +23,10 @@ open import Algebra.Definitions _≈_
 open import Algebra.Ordered.Definitions _≲_
 open import Algebra.Structures _≈_
 open import Data.Product using (_,_; proj₁; proj₂)
-open import Function using (flip)
+open import Function using (flip; _$_)
 open import Level using (_⊔_)
 open import Relation.Binary using (IsEquivalence)
-open import Relation.Binary.Definitions using (Transitive; Monotonic₁; Monotonic₂; AntitonicMonotonic)
+open import Relation.Binary.Definitions using (Transitive; Monotonic₁; Monotonic₂; AntitonicMonotonic; MonotonicAntitonic)
 open import Relation.Binary.Structures using (IsPreorder; IsPartialOrder)
 open import Relation.Binary.Consequences using (mono₂⇒cong₂)
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
@@ -328,44 +328,139 @@ record IsPosemiring (+ * : Op₂ A) (0# 1# : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) 
 ------------------------------------------------------------------------------
 -- Residuated monoids
 
+record IsResiduatedPromagma (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+  field
+    isPromagma : IsPromagma ∙
+    residuated : Residuated ∙ ⇦ ⇨
+
+  open IsPromagma isPromagma public
+
+  ⇦-residual : LeftResidual ∙ ⇦
+  ⇦-residual = proj₁ residuated
+
+  ⇨-residual : RightResidual ∙ ⇨
+  ⇨-residual = proj₂ residuated
+
+  ⇦-eval : LeftEval ∙ ⇦
+  ⇦-eval x y = ⇦-residual _ _ _ .Function.Equivalence.from refl
+
+  ⇨-eval : RightEval ∙ ⇨
+  ⇨-eval x y = ⇨-residual _ _ _ .Function.Equivalence.from refl
+
+  ⇦-monotonic-antitonic : MonotonicAntitonic _≲_ _≲_ _≲_ ⇦
+  ⇦-monotonic-antitonic {w} {x} {y} {z} w≲x z≲y
+    = ⇦-residual (⇦ w y) z x .to 
+    $ flip trans w≲x
+    $ ⇨-residual (⇦ w y) z w .from 
+    $ trans z≲y
+    $ ⇨-residual (⇦ w y) y w .to 
+    $ ⇦-residual (⇦ w y) y w .from refl
+    where open Function.Equivalence using (to; from)
+
+  ⇨-antitonic-monotonic : AntitonicMonotonic _≲_ _≲_ _≲_ ⇨
+  ⇨-antitonic-monotonic {w} {x} {y} {z} x≲w y≲z
+    = ⇨-residual x (⇨ w y) z .to 
+    $ flip trans y≲z
+    $ ⇦-residual x (⇨ w y) y .from
+    $ trans x≲w 
+    $ ⇦-residual w (⇨ w y) y .to
+    $ ⇨-residual w (⇨ w y) y .from refl
+    where open Function.Equivalence using (to; from)
+
+record IsResiduatedProsemigroup (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+  field
+    isProsemigroup : IsProsemigroup ∙
+    residuated : Residuated ∙ ⇦ ⇨
+
+  open IsProsemigroup isProsemigroup public
+
+  isResiduatedPromagma : IsResiduatedPromagma ∙ ⇦ ⇨
+  isResiduatedPromagma = record { isPromagma = isPromagma ; residuated = residuated }
+
+  open IsResiduatedPromagma isResiduatedPromagma public
+    using ( ⇦-residual
+          ; ⇨-residual
+          ; ⇦-eval
+          ; ⇨-eval
+          ; ⇦-monotonic-antitonic
+          ; ⇨-antitonic-monotonic
+          )
+
 record IsResiduatedPromonoid (∙ ⇦ ⇨ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   field
     isPromonoid : IsPromonoid ∙ ε
-    residuated  : Residuated ∙ ⇦ ⇨
+    residuated : Residuated ∙ ⇦ ⇨
 
   open IsPromonoid isPromonoid public
 
-  residualˡ : LeftResidual ∙ ⇦
-  residualˡ = proj₁ residuated
+  isResiduatedProsemigroup : IsResiduatedProsemigroup ∙ ⇦ ⇨
+  isResiduatedProsemigroup = record { isProsemigroup = isProsemigroup ; residuated = residuated }
 
-  residualʳ : RightResidual ∙ ⇨
-  residualʳ = proj₂ residuated
+  open IsResiduatedProsemigroup isResiduatedProsemigroup public
+    using ( ⇦-residual
+          ; ⇨-residual
+          ; ⇦-eval
+          ; ⇨-eval
+          ; ⇦-monotonic-antitonic
+          ; ⇨-antitonic-monotonic
+          )
 
 record IsResiduatedCommutativePromonoid (∙ ⇨ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   field
     isCommutativePromonoid : IsCommutativePromonoid ∙ ε
-    residualʳ              : RightResidual ∙ ⇨
+    residuated             : Residuated ∙ (flip ⇨) ⇨
 
   open IsCommutativePromonoid isCommutativePromonoid public
 
-  residualˡ : LeftResidual ∙ (flip ⇨)
-  residualˡ x y z .Function.Equivalence.to x∙y≲z = 
-    residualʳ y x z .Function.Equivalence.to (≲-respˡ-≈ (comm x y) x∙y≲z)
-  residualˡ x y z .Function.Equivalence.from y≲z⇦x =
-    ≲-respˡ-≈ (comm y x) (residualʳ y x z .Function.Equivalence.from y≲z⇦x)
-  residualˡ x y z .Function.Equivalence.to-cong PropEq.refl = PropEq.refl
-  residualˡ x y z .Function.Equivalence.from-cong PropEq.refl = PropEq.refl
+  isResiduatedPromonoid : IsResiduatedPromonoid ∙ (flip ⇨) ⇨ ε
+  isResiduatedPromonoid = record { isPromonoid = isPromonoid ; residuated = residuated }
 
-  residuated : Residuated ∙ (flip ⇨) ⇨
-  residuated = residualˡ , residualʳ
+  open IsResiduatedPromonoid isResiduatedPromonoid public
+    using ( ⇦-residual
+          ; ⇨-residual
+          ; ⇦-eval
+          ; ⇨-eval
+          ; ⇦-monotonic-antitonic
+          ; ⇨-antitonic-monotonic
+          )
 
-  eval : ∀ x y → ∙ x (⇨ x y) ≲ y
-  eval x y = residualˡ x (⇨ x y) y .Function.Equivalence.from refl
+record IsResiduatedPomagma (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+  field
+    isPomagma  : IsPomagma ∙
+    residuated : Residuated ∙ ⇦ ⇨
 
-  ⇨-antitonic-monotonic : AntitonicMonotonic _≲_ _≲_ _≲_ ⇨
-  ⇨-antitonic-monotonic x≲w y≲z =
-    residualʳ _ _ _ .Function.Equivalence.to 
-      (trans (mono refl x≲w) (trans (trans ((≲-respˡ-≈ (comm _ _) refl)) (eval _ _)) y≲z))
+  open IsPomagma isPomagma public
+
+  isResiduatedPromagma : IsResiduatedPromagma ∙ ⇦ ⇨
+  isResiduatedPromagma = record { isPromagma = isPromagma ; residuated = residuated }
+
+  open IsResiduatedPromagma isResiduatedPromagma public
+    using ( ⇦-residual
+          ; ⇨-residual
+          ; ⇦-eval
+          ; ⇨-eval
+          ; ⇦-monotonic-antitonic
+          ; ⇨-antitonic-monotonic
+          )
+
+record IsResiduatedPosemigroup (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+  field
+    isPosemigroup : IsPosemigroup ∙
+    residuated : Residuated ∙ ⇦ ⇨
+
+  open IsPosemigroup isPosemigroup public
+
+  isResiduatedProsemigroup : IsResiduatedProsemigroup ∙ ⇦ ⇨
+  isResiduatedProsemigroup = record { isProsemigroup = isProsemigroup ; residuated = residuated }
+
+  open IsResiduatedProsemigroup isResiduatedProsemigroup public
+    using ( ⇦-residual
+          ; ⇨-residual
+          ; ⇦-eval
+          ; ⇨-eval
+          ; ⇦-monotonic-antitonic
+          ; ⇨-antitonic-monotonic
+          )
 
 record IsResiduatedPomonoid (∙ ⇦ ⇨ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   field
@@ -374,24 +469,39 @@ record IsResiduatedPomonoid (∙ ⇦ ⇨ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁
 
   open IsPomonoid isPomonoid public
 
+  isResiduatedPromonoid : IsResiduatedPromonoid ∙ ⇦ ⇨ ε
+  isResiduatedPromonoid = record { isPromonoid = isPromonoid ; residuated = residuated }
+
+  open IsResiduatedPromonoid isResiduatedPromonoid public
+    using ( ⇦-residual
+          ; ⇨-residual
+          ; ⇦-eval
+          ; ⇨-eval
+          ; ⇦-monotonic-antitonic
+          ; ⇨-antitonic-monotonic
+          )
+
 record IsResiduatedCommutativePomonoid (∙ ⇨ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   field
     isCommutativePomonoid : IsCommutativePomonoid ∙ ε
-    residualʳ              : RightResidual ∙ ⇨
+    residuated : Residuated ∙ (flip ⇨) ⇨
 
   open IsCommutativePomonoid isCommutativePomonoid public
 
   isResiduatedCommutativePromonoid : IsResiduatedCommutativePromonoid ∙ ⇨ ε
-  isResiduatedCommutativePromonoid = record
-    { isCommutativePromonoid = isCommutativePromonoid
-    ; residualʳ              = residualʳ
-    }
+  isResiduatedCommutativePromonoid = record { isCommutativePromonoid = isCommutativePromonoid ; residuated = residuated }
 
   open IsResiduatedCommutativePromonoid isResiduatedCommutativePromonoid public
-    using (residualˡ; residuated)
+    using ( ⇦-residual
+          ; ⇨-residual
+          ; ⇦-eval
+          ; ⇨-eval
+          ; ⇦-monotonic-antitonic
+          ; ⇨-antitonic-monotonic
+          )
 
 ------------------------------------------------------------------------------
--- Residuated monoids
+-- Duoidal structures
 
 import Algebra.Definitions _≲_        as ≲
 import Algebra.Definitions (flip _≲_) as ≳

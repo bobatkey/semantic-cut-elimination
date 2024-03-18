@@ -19,7 +19,7 @@ module PreSheaf {a ℓ₁ ℓ₂} (poset : Poset a ℓ₁ ℓ₂) where
 open Poset poset
   using (Carrier; _≈_; _≤_)
   renaming
-    ( refl to ≤-refl
+    ( refl  to ≤-refl
     ; trans to ≤-trans
     )
 
@@ -36,42 +36,43 @@ private
     G G₁ G₂ : PreSheaf 
     H H₁ H₂ : PreSheaf
 
-infix 4 _≲ᴾ_
+infix 4 _≤ᴾ_
 
-record _≲ᴾ_ (F G : PreSheaf) : Set (a ⊔ ℓ₂) where
+record _≤ᴾ_ (F G : PreSheaf) : Set (a ⊔ ℓ₂) where
   no-eta-equality
-  constructor mk-≲ᴾ
+  constructor mk-≤ᴾ
   field
-    *≲ᴾ* : ∀ x → F .ICarrier x → G .ICarrier x
-open _≲ᴾ_
+    *≤ᴾ* : ∀ x → F .ICarrier x → G .ICarrier x
+open _≤ᴾ_
 
-infix 4 _≳ᴾ_
+infix 4 _≥ᴾ_
 
-_≳ᴾ_ : PreSheaf → PreSheaf → Set (a ⊔ ℓ₂)
-_≳ᴾ_ = flip _≲ᴾ_
+_≥ᴾ_ : PreSheaf → PreSheaf → Set (a ⊔ ℓ₂)
+_≥ᴾ_ = flip _≤ᴾ_
 
 infix 4 _≈ᴾ_
 
 _≈ᴾ_ : PreSheaf → PreSheaf → Set (a ⊔ ℓ₂)
-_≈ᴾ_ = SymCore _≲ᴾ_
+_≈ᴾ_ = SymCore _≤ᴾ_
 
-≡-≲ᴾ-isPreorder : IsPreorder _≡_ _≲ᴾ_
-≡-≲ᴾ-isPreorder .IsPreorder.isEquivalence = PropEq.isEquivalence
-≡-≲ᴾ-isPreorder .IsPreorder.reflexive PropEq.refl .*≲ᴾ* x Fx = Fx
-≡-≲ᴾ-isPreorder .IsPreorder.trans F≲G G≲H .*≲ᴾ* x Fx = G≲H .*≲ᴾ* x (F≲G .*≲ᴾ* x Fx)
+≤ᴾ-refl : Reflexive _≤ᴾ_
+≤ᴾ-refl .*≤ᴾ* x Fx = Fx
 
-≲ᴾ-isPartialOrder : IsPartialOrder _≈ᴾ_ _≲ᴾ_
-≲ᴾ-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _≲ᴾ_ ≡-≲ᴾ-isPreorder
+≤ᴾ-trans : Transitive _≤ᴾ_
+≤ᴾ-trans F≤G G≤H .*≤ᴾ* x Fx = G≤H .*≤ᴾ* x (F≤G .*≤ᴾ* x Fx) 
 
-open IsPartialOrder ≲ᴾ-isPartialOrder
-  using ()
-  renaming
-    ( refl  to ≲ᴾ-refl
-    ; trans to ≲ᴾ-trans
-    )
+≤ᴾ-isPartialOrder : IsPartialOrder _≈ᴾ_ _≤ᴾ_
+≤ᴾ-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _≤ᴾ_ ≡-≤ᴾ-isPreorder
+  where
+    ≡-≤ᴾ-isPreorder : IsPreorder _≡_ _≤ᴾ_
+    ≡-≤ᴾ-isPreorder = record 
+      { isEquivalence = PropEq.isEquivalence 
+      ; reflexive = λ { PropEq.refl → ≤ᴾ-refl } 
+      ; trans = ≤ᴾ-trans
+      }
 
-≳ᴾ-isPartialOrder : IsPartialOrder _≈ᴾ_ _≳ᴾ_
-≳ᴾ-isPartialOrder = Flip.isPartialOrder ≲ᴾ-isPartialOrder
+≥ᴾ-isPartialOrder : IsPartialOrder _≈ᴾ_ _≥ᴾ_
+≥ᴾ-isPartialOrder = Flip.isPartialOrder ≤ᴾ-isPartialOrder
 
 η : Carrier → PreSheaf
 η x .ICarrier y = Lift a (y ≤ x)
@@ -82,15 +83,21 @@ open IsPartialOrder ≲ᴾ-isPartialOrder
 
 _∧ᴾ_ : PreSheaf → PreSheaf → PreSheaf
 (F ∧ᴾ G) .ICarrier x = F .ICarrier x × G .ICarrier x
-(F ∧ᴾ G) .≤-closed x≲y (Fy , Gy) = (F .≤-closed x≲y Fy , G .≤-closed x≲y Gy)
+(F ∧ᴾ G) .≤-closed x≤y (Fy , Gy) = (F .≤-closed x≤y Fy , G .≤-closed x≤y Gy)
 
-∧ᴾ-isMeetSemilattice : IsMeetSemilattice _≈ᴾ_ _≲ᴾ_ _∧ᴾ_
+proj₁ᴾ : (F ∧ᴾ G) ≤ᴾ F
+proj₁ᴾ .*≤ᴾ* x = proj₁
+
+proj₂ᴾ : (F ∧ᴾ G) ≤ᴾ G
+proj₂ᴾ .*≤ᴾ* x = proj₂
+
+⟨_,_⟩ᴾ : F ≤ᴾ G → F ≤ᴾ H → F ≤ᴾ (G ∧ᴾ H)
+⟨ H≤F , H≤G ⟩ᴾ .*≤ᴾ* x = < H≤F .*≤ᴾ* x , H≤G .*≤ᴾ* x >
+
+∧ᴾ-isMeetSemilattice : IsMeetSemilattice _≈ᴾ_ _≤ᴾ_ _∧ᴾ_
 ∧ᴾ-isMeetSemilattice = record
-  { isPartialOrder = ≲ᴾ-isPartialOrder
-  ; infimum        = λ F G →
-    {- F∧G≤F      -} mk-≲ᴾ (λ x → proj₁) ,
-    {- F∧G≤G      -} mk-≲ᴾ (λ x → proj₂) ,
-    {- ∧-greatest -} λ H H≲F H≲G → mk-≲ᴾ λ x → < H≲F .*≲ᴾ* x , H≲G .*≲ᴾ* x >
+  { isPartialOrder = ≤ᴾ-isPartialOrder
+  ; infimum        = λ F G → (proj₁ᴾ , proj₂ᴾ , λ H → ⟨_,_⟩ᴾ)
   }
 
 ∧ᴾ-meetSemilattice : MeetSemilattice _ _ _
@@ -106,26 +113,23 @@ open import Relation.Binary.Lattice.Properties.MeetSemilattice ∧ᴾ-meetSemila
     ; ∧-comm      to ∧ᴾ-comm
     )
 
-∧ᴾ-⊤ᴾ-isPomagma : IsPomagma _≈ᴾ_ _≲ᴾ_ _∧ᴾ_
-∧ᴾ-⊤ᴾ-isPomagma = record 
-  { isPartialOrder = ≲ᴾ-isPartialOrder
-  ; mono           = ∧ᴾ-monotonic
-  }
-
-∧ᴾ-⊤ᴾ-isPosemigroup : IsPosemigroup _≈ᴾ_ _≲ᴾ_ _∧ᴾ_
+∧ᴾ-⊤ᴾ-isPosemigroup : IsPosemigroup _≈ᴾ_ _≤ᴾ_ _∧ᴾ_
 ∧ᴾ-⊤ᴾ-isPosemigroup = record
-  { isPomagma = ∧ᴾ-⊤ᴾ-isPomagma
-  ; assoc     = ∧ᴾ-assoc
+  { isPomagma = record 
+    { isPartialOrder = ≤ᴾ-isPartialOrder
+    ; mono = ∧ᴾ-monotonic
+    }
+  ; assoc = ∧ᴾ-assoc
   }
 
 ⊤ᴾ : PreSheaf
 ⊤ᴾ .ICarrier x = Lift (a ⊔ ℓ₂) ⊤
 ⊤ᴾ .≤-closed x Fx = Fx
 
-∧ᴾ-⊤ᴾ-isBoundedMeetSemilattice : IsBoundedMeetSemilattice _≈ᴾ_ _≲ᴾ_ _∧ᴾ_ ⊤ᴾ
+∧ᴾ-⊤ᴾ-isBoundedMeetSemilattice : IsBoundedMeetSemilattice _≈ᴾ_ _≤ᴾ_ _∧ᴾ_ ⊤ᴾ
 ∧ᴾ-⊤ᴾ-isBoundedMeetSemilattice = record
   { isMeetSemilattice = ∧ᴾ-isMeetSemilattice
-  ; maximum           = λ F → mk-≲ᴾ (λ x Fx → lift tt)
+  ; maximum           = λ F → mk-≤ᴾ (λ x Fx → lift tt)
   }
 
 ∧ᴾ-⊤ᴾ-boundedMeetSemilattice : BoundedMeetSemilattice _ _ _
@@ -139,16 +143,13 @@ open import Relation.Binary.Lattice.Properties.BoundedMeetSemilattice ∧ᴾ-⊤
     ( identity to ∧ᴾ-⊤ᴾ-identity
     )
 
-∧ᴾ-⊤ᴾ-isPomonoid : IsPomonoid _≈ᴾ_ _≲ᴾ_ _∧ᴾ_ ⊤ᴾ
-∧ᴾ-⊤ᴾ-isPomonoid = record
-  { isPosemigroup = ∧ᴾ-⊤ᴾ-isPosemigroup 
-  ; identity      = ∧ᴾ-⊤ᴾ-identity
-  }
-
-∧ᴾ-⊤ᴾ-isCommutativePomonoid : IsCommutativePomonoid _≈ᴾ_ _≲ᴾ_ _∧ᴾ_ ⊤ᴾ
+∧ᴾ-⊤ᴾ-isCommutativePomonoid : IsCommutativePomonoid _≈ᴾ_ _≤ᴾ_ _∧ᴾ_ ⊤ᴾ
 ∧ᴾ-⊤ᴾ-isCommutativePomonoid = record 
-  { isPomonoid = ∧ᴾ-⊤ᴾ-isPomonoid
-  ; comm       = ∧ᴾ-comm
+  { isPomonoid = record
+    { isPosemigroup = ∧ᴾ-⊤ᴾ-isPosemigroup 
+    ; identity = ∧ᴾ-⊤ᴾ-identity
+    }
+  ; comm = ∧ᴾ-comm
   }
 
 ------------------------------------------------------------------------------
@@ -158,7 +159,16 @@ _⇒ᴾ_ : PreSheaf → PreSheaf → PreSheaf
 (F ⇒ᴾ G) .ICarrier x = ∀ y → y ≤ x → F .ICarrier y → G .ICarrier y
 (F ⇒ᴾ G) .≤-closed x≤y f z z≤x Fz = f z (≤-trans z≤x x≤y) Fz
 
-⇒ᴾ-∧ᴾ-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈ᴾ_ _≲ᴾ_ _∧ᴾ_ _⇒ᴾ_ ⊤ᴾ
+⇒ᴾ-residualʳ-to : (F ∧ᴾ G) ≤ᴾ H → F ≤ᴾ (G ⇒ᴾ H)
+⇒ᴾ-residualʳ-to {F} F∧G≤H .*≤ᴾ* x Fx y y≤x Gy = F∧G≤H .*≤ᴾ* y (F .≤-closed y≤x Fx , Gy)
+
+⇒ᴾ-eval : ((F ⇒ᴾ G) ∧ᴾ F) ≤ᴾ G
+⇒ᴾ-eval .*≤ᴾ* x (f , Fx) = f x ≤-refl Fx
+
+⇒ᴾ-residualʳ-from : F ≤ᴾ (G ⇒ᴾ H) → (F ∧ᴾ G) ≤ᴾ H
+⇒ᴾ-residualʳ-from F≤G⇒H = ≤ᴾ-trans (∧ᴾ-monotonic F≤G⇒H ≤ᴾ-refl) ⇒ᴾ-eval
+
+⇒ᴾ-∧ᴾ-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈ᴾ_ _≤ᴾ_ _∧ᴾ_ _⇒ᴾ_ ⊤ᴾ
 ⇒ᴾ-∧ᴾ-isResiduatedCommutativePomonoid = record
   { isCommutativePomonoid = ∧ᴾ-⊤ᴾ-isCommutativePomonoid 
   ; residualʳ             = λ F G H → record
@@ -168,41 +178,35 @@ _⇒ᴾ_ : PreSheaf → PreSheaf → PreSheaf
     ; from-cong = λ { PropEq.refl → PropEq.refl }
     }
   }
-  where
-    ⇒ᴾ-residualʳ-to : (F ∧ᴾ G) ≲ᴾ H → F ≲ᴾ (G ⇒ᴾ H)
-    ⇒ᴾ-residualʳ-to {F} F∧G≲H .*≲ᴾ* x Fx y y≤x Gy = F∧G≲H .*≲ᴾ* y (F .≤-closed y≤x Fx , Gy)
-
-    ⇒ᴾ-eval : ((F ⇒ᴾ G) ∧ᴾ F) ≲ᴾ G
-    ⇒ᴾ-eval .*≲ᴾ* x (f , Fx) = f x ≤-refl Fx
-
-    ⇒ᴾ-residualʳ-from : F ≲ᴾ (G ⇒ᴾ H) → (F ∧ᴾ G) ≲ᴾ H
-    ⇒ᴾ-residualʳ-from F≲G⇒H = ≲ᴾ-trans (∧ᴾ-monotonic F≲G⇒H ≲ᴾ-refl) ⇒ᴾ-eval
 
 ------------------------------------------------------------------------------
 -- Construct a join semilattice for presheaves
 
 _∨ᴾ_ : PreSheaf → PreSheaf → PreSheaf
 (F ∨ᴾ G) .ICarrier x = F .ICarrier x ⊎ G .ICarrier x
-(F ∨ᴾ G) .≤-closed x≲y (inj₁ Fy) = inj₁ (F .≤-closed x≲y Fy)
-(F ∨ᴾ G) .≤-closed x≲y (inj₂ Gy) = inj₂ (G .≤-closed x≲y Gy)
+(F ∨ᴾ G) .≤-closed x≤y (inj₁ Fy) = inj₁ (F .≤-closed x≤y Fy)
+(F ∨ᴾ G) .≤-closed x≤y (inj₂ Gy) = inj₂ (G .≤-closed x≤y Gy)
 
-∨ᴾ-isJoinSemilattice : IsJoinSemilattice _≈ᴾ_ _≲ᴾ_ _∨ᴾ_
+
+inj₁ᴾ : F ≤ᴾ (F ∨ᴾ G)
+inj₁ᴾ .*≤ᴾ* x = inj₁
+
+inj₂ᴾ : G ≤ᴾ (F ∨ᴾ G)
+inj₂ᴾ .*≤ᴾ* x = inj₂
+
+[_,_]ᴾ : F ≤ᴾ H → G ≤ᴾ H → (F ∨ᴾ G) ≤ᴾ H
+[ H≥F , H≥G ]ᴾ .*≤ᴾ* x = [ H≥F .*≤ᴾ* x , H≥G .*≤ᴾ* x ]
+
+∨ᴾ-isJoinSemilattice : IsJoinSemilattice _≈ᴾ_ _≤ᴾ_ _∨ᴾ_
 ∨ᴾ-isJoinSemilattice = record
-  { isPartialOrder = ≲ᴾ-isPartialOrder
-  ; supremum       = λ F G → 
-    {- F∨G≳F   -} (mk-≲ᴾ (λ x → inj₁)) ,
-    {- F∨G≳G   -} (mk-≲ᴾ (λ x → inj₂)) ,
-    {- ∨-least -} (λ H H≳F H≳G → mk-≲ᴾ (λ x Fx⊎Gx → [ H≳F .*≲ᴾ* x , H≳G .*≲ᴾ* x ] Fx⊎Gx))
+  { isPartialOrder = ≤ᴾ-isPartialOrder
+  ; supremum       = λ F G → (inj₁ᴾ , inj₂ᴾ , λ H → [_,_]ᴾ)
   }
 
 ------------------------------------------------------------------------------
 -- Lift monoids to presheaves
 
-module _
-    {_∙_ : Op₂ Carrier}
-    {ε : Carrier}
-    (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε)
-  where
+module LiftIsPomonoid {_∙_} {ε} (∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε) where
 
   open IsPomonoid ∙-isPomonoid
     using
@@ -211,8 +215,9 @@ module _
       ; ≤-resp-≈
       )
     renaming
-      ( mono      to •-mono
-      ; identityˡ to •-identityˡ 
+      ( assoc     to ∙-assoc
+      ; mono      to •-mono
+      ; identityˡ to •-identityˡ
       ; identityʳ to •-identityʳ
       )
 
@@ -222,59 +227,68 @@ module _
   (F •ᴾ G) .≤-closed x≤w (y , z , w≤yz , ϕ₁ , ϕ₂) =
     y , z , ≤-trans x≤w w≤yz , ϕ₁ , ϕ₂
 
-  •ᴾ-mono : Monotonic₂ _≲ᴾ_ _≲ᴾ_ _≲ᴾ_ _•ᴾ_
-  •ᴾ-mono F₁≲F₂ G₁≲G₂ .*≲ᴾ* x (y , z , x≤yz , F₁y , G₁z) =
-    y , z , x≤yz , F₁≲F₂ .*≲ᴾ* y F₁y , G₁≲G₂ .*≲ᴾ* z G₁z
+  •ᴾ-mono : Monotonic₂ _≤ᴾ_ _≤ᴾ_ _≤ᴾ_ _•ᴾ_
+  •ᴾ-mono F₁≤F₂ G₁≤G₂ .*≤ᴾ* x (y , z , x≤yz , F₁y , G₁z) =
+    y , z , x≤yz , F₁≤F₂ .*≤ᴾ* y F₁y , G₁≤G₂ .*≤ᴾ* z G₁z
 
   εᴾ : PreSheaf
   εᴾ = η ε
 
-  εᴾ-•ᴾ-identityˡ : LeftIdentity _≈ᴾ_ εᴾ _•ᴾ_
-  εᴾ-•ᴾ-identityˡ F .proj₁ .*≲ᴾ* x (y , z , x≲yz , lift y≲ε , Fz) =
-    F .≤-closed (≤-trans x≲yz (≤-trans (•-mono y≲ε ≤-refl) (≤-respʳ-≈ (•-identityˡ z) ≤-refl) )) Fz
-  εᴾ-•ᴾ-identityˡ F .proj₂ .*≲ᴾ* x Fx =
+  •ᴾ-identityˡ : LeftIdentity _≈ᴾ_ εᴾ _•ᴾ_
+  •ᴾ-identityˡ F .proj₁ .*≤ᴾ* x (y , z , x≤yz , lift y≤ε , Fz) =
+    F .≤-closed (≤-trans x≤yz (≤-trans (•-mono y≤ε ≤-refl) (≤-respʳ-≈ (•-identityˡ z) ≤-refl) )) Fz
+  •ᴾ-identityˡ F .proj₂ .*≤ᴾ* x Fx =
     ε , x , ≤-respˡ-≈ (•-identityˡ x) ≤-refl , lift ≤-refl , Fx
 
-  εᴾ-•ᴾ-identityʳ : RightIdentity _≈ᴾ_ εᴾ _•ᴾ_
-  εᴾ-•ᴾ-identityʳ F .proj₁ .*≲ᴾ* x (y , z , x≲yz , Fy , lift z≲ε) =
-    F .≤-closed (≤-trans x≲yz (≤-trans (•-mono ≤-refl z≲ε) ((≤-respʳ-≈ (•-identityʳ y) ≤-refl)) )) Fy
-  εᴾ-•ᴾ-identityʳ F .proj₂ .*≲ᴾ* x Fx =
+  •ᴾ-identityʳ : RightIdentity _≈ᴾ_ εᴾ _•ᴾ_
+  •ᴾ-identityʳ F .proj₁ .*≤ᴾ* x (y , z , x≤yz , Fy , lift z≤ε) =
+    F .≤-closed (≤-trans x≤yz (≤-trans (•-mono ≤-refl z≤ε) (≤-respʳ-≈ (•-identityʳ y) ≤-refl) )) Fy
+  •ᴾ-identityʳ F .proj₂ .*≤ᴾ* x Fx =
     x , ε , ≤-respˡ-≈ (•-identityʳ x) ≤-refl , Fx , lift ≤-refl
 
---   •-assoc : ∀ {F G H} → (F • G) • H ≈ᴾ F • (G • H)
---   •-assoc .proj₁ .*≲ᴾ* x (y , z , x≲yz , (u , v , y≲uv , Fu , Gv) , Hz) =
---     u , v ∙ z , trans x≲yz (trans (mono y≲uv refl) (assoc .proj₁)) ,
---     Fu ,
---     (v , z , refl , Gv , Hz)
---   •-assoc .proj₂ .*≲ᴾ* x (y , z , x≲yz , Fy , (u , v , z≲uv , Gu , Hv)) =
---     y ∙ u , v , trans x≲yz (trans (mono refl z≲uv) (assoc .proj₂)) ,
---     (y , u , refl , Fy , Gu) ,
---     Hv
+  •ᴾ-identity : Identity _≈ᴾ_ εᴾ _•ᴾ_
+  •ᴾ-identity = (•ᴾ-identityˡ , •ᴾ-identityʳ)
 
---   •-isMonoid : IsMonoid ≲ᴾ-isPreorder _•_ I
---   •-isMonoid .IsMonoid.mono = •-mono
---   •-isMonoid .IsMonoid.assoc = •-assoc
---   •-isMonoid .IsMonoid.lunit = •-lunit
---   •-isMonoid .IsMonoid.runit = •-runit
+  •ᴾ-assoc : Associative _≈ᴾ_ _•ᴾ_
+  •ᴾ-assoc F G H .proj₁ .*≤ᴾ* x (y , z , x≤yz , (u , v , y≤uv , Fu , Gv) , Hz) = 
+    (u , v ∙ z , x≤u∙v∙z , Fu , (v , z , ≤-refl , Gv , Hz))
+    where 
+      x≤u∙v∙z = ≤-trans x≤yz (≤-trans (•-mono y≤uv ≤-refl) (≤-respʳ-≈ (∙-assoc u v z)  ≤-refl))
+  •ᴾ-assoc F G H .proj₂ .*≤ᴾ* x (y , z , x≤yz , Fy , (u , v , z≤uv , Gu , Hv)) = 
+    (y ∙ u , v , x≤y∙u∙v , (y , u , ≤-refl , Fy , Gu) , Hv)
+    where
+      x≤y∙u∙v = ≤-trans x≤yz (≤-trans (•-mono ≤-refl z≤uv) (≤-respˡ-≈ (∙-assoc y u v) ≤-refl))
 
---   •-sym : (∀ {x y} → (x ∙ y) ≲ (y ∙ x)) → ∀ {F G} → F • G ≲ᴾ G • F
---   •-sym ∙-sym .*≲ᴾ* x (y , z , x≲yz , Fy , Gz) = z , y , trans x≲yz ∙-sym , Gz , Fy
+  •ᴾ-isMonoid : IsPomonoid _≈ᴾ_ _≤ᴾ_ _•ᴾ_ εᴾ
+  •ᴾ-isMonoid = record 
+    { isPosemigroup = record 
+      { isPomagma = record
+        { isPartialOrder = ≤ᴾ-isPartialOrder 
+        ; mono = •ᴾ-mono
+        } 
+      ; assoc = •ᴾ-assoc 
+      }
+    ; identity = •ᴾ-identity 
+    }
+
+--   •-sym : (∀ {x y} → (x ∙ y) ≤ (y ∙ x)) → ∀ {F G} → F • G ≤ᴾ G • F
+--   •-sym ∙-sym .*≤ᴾ* x (y , z , x≤yz , Fy , Gz) = z , y , trans x≤yz ∙-sym , Gz , Fy
 
 --   -- FIXME: deducible from closure
---   •-∨-distrib : ∀ {F G H} → (F • (G ∨ H)) ≲ᴾ ((F • G) ∨ (F • H))
---   •-∨-distrib .*≲ᴾ* x (y , z , x≲yz , Fy , inj₁ Gz) = inj₁ (y , z , x≲yz , Fy , Gz)
---   •-∨-distrib .*≲ᴾ* x (y , z , x≲yz , Fy , inj₂ Hz) = inj₂ (y , z , x≲yz , Fy , Hz)
+--   •-∨-distrib : ∀ {F G H} → (F • (G ∨ H)) ≤ᴾ ((F • G) ∨ (F • H))
+--   •-∨-distrib .*≤ᴾ* x (y , z , x≤yz , Fy , inj₁ Gz) = inj₁ (y , z , x≤yz , Fy , Gz)
+--   •-∨-distrib .*≤ᴾ* x (y , z , x≤yz , Fy , inj₂ Hz) = inj₂ (y , z , x≤yz , Fy , Hz)
 
 --   -- right-closed
 --   _-•_ : PreSheaf → PreSheaf → PreSheaf
 --   (F -• G) .ICarrier x = ∀ y → F .ICarrier y → G .ICarrier (x ∙ y)
---   (F -• G) .≤-closed x≲x' f y Fy = G .≤-closed (mono x≲x' refl) (f y Fy)
+--   (F -• G) .≤-closed x≤x' f y Fy = G .≤-closed (mono x≤x' refl) (f y Fy)
 
---   -•-isClosure : IsClosure ≲ᴾ-isPreorder •-isMonoid _-•_
---   -•-isClosure .IsClosure.lambda m .*≲ᴾ* x Fx y Gy =
---     m .*≲ᴾ* (x ∙ y) (x , y , refl , Fx , Gy)
---   -•-isClosure .IsClosure.eval {F}{G} .*≲ᴾ* x (y , z , x≲yz , F-•Gy , Fz) =
---     G .≤-closed x≲yz (F-•Gy z Fz)
+--   -•-isClosure : IsClosure ≤ᴾ-isPreorder •-isMonoid _-•_
+--   -•-isClosure .IsClosure.lambda m .*≤ᴾ* x Fx y Gy =
+--     m .*≤ᴾ* (x ∙ y) (x , y , refl , Fx , Gy)
+--   -•-isClosure .IsClosure.eval {F}{G} .*≤ᴾ* x (y , z , x≤yz , F-•Gy , Fz) =
+--     G .≤-closed x≤yz (F-•Gy z Fz)
 
 --   -- and left-closed, but every monoid we care about is symmetric so
 --   -- I'll not bother.
@@ -284,9 +298,9 @@ module _
 -- -- have this relationship on the presheaf preorder. Let's do the
 -- -- simple case where they share a unit first.
 -- module Duoidal {_∙_ : A → A → A} {_▷_ : A → A → A} {ι : A}
---                (∙-isMonoid : IsMonoid ≲-isPreorder _∙_ ι)
---                (▷-isMonoid : IsMonoid ≲-isPreorder _▷_ ι)
---                (∙-▷-isDuoidal : IsDuoidal ≲-isPreorder ∙-isMonoid ▷-isMonoid)
+--                (∙-isMonoid : IsMonoid ≤-isPreorder _∙_ ι)
+--                (▷-isMonoid : IsMonoid ≤-isPreorder _▷_ ι)
+--                (∙-▷-isDuoidal : IsDuoidal ≤-isPreorder ∙-isMonoid ▷-isMonoid)
 --   where
 
 --   open Monoid ∙-isMonoid using (_•_)
@@ -294,12 +308,12 @@ module _
 --   open IsDuoidal ∙-▷-isDuoidal renaming (exchange to ∙-▷-exchange)
 --   open IsMonoid ∙-isMonoid
 
---   •-⍮-exchange : ∀ {w x y z} → ((w ⍮ x) • (y ⍮ z)) ≲ᴾ ((w • y) ⍮ (x • z))
---   •-⍮-exchange .*≲ᴾ* x
---       (y , z , x≲yz , (y₁ , y₂ , y≲y₁y₂ , Wy₁ , Xy₂) ,
---                       (z₁ , z₂ , z≲z₁z₂ , Yz₁ , Zz₂)) =
+--   •-⍮-exchange : ∀ {w x y z} → ((w ⍮ x) • (y ⍮ z)) ≤ᴾ ((w • y) ⍮ (x • z))
+--   •-⍮-exchange .*≤ᴾ* x
+--       (y , z , x≤yz , (y₁ , y₂ , y≤y₁y₂ , Wy₁ , Xy₂) ,
+--                       (z₁ , z₂ , z≤z₁z₂ , Yz₁ , Zz₂)) =
 --       (y₁ ∙ z₁) , y₂ ∙ z₂ ,
---       trans x≲yz (trans (mono y≲y₁y₂ z≲z₁z₂) ∙-▷-exchange) ,
+--       trans x≤yz (trans (mono y≤y₁y₂ z≤z₁z₂) ∙-▷-exchange) ,
 --       (y₁ , z₁ , refl , Wy₁ , Yz₁) ,
 --       (y₂ , z₂ , refl , Xy₂ , Zz₂)
 
@@ -311,10 +325,10 @@ module _
 -- -- assume that A has meets)?
 -- --
 -- -- Alternatively, the closure of the closure operation
--- --     C X x = Σ[ t ∈ Tree (Σ[ x ∈ A ] X .ICarrier x) ] x ≲ join t
+-- --     C X x = Σ[ t ∈ Tree (Σ[ x ∈ A ] X .ICarrier x) ] x ≤ join t
 
 -- module Sheaf (_&_ : A → A → A)
---              (&-mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≲ x₂ → y₁ ≲ y₂ → (x₁ & y₁) ≲ (x₂ & y₂))
+--              (&-mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≤ x₂ → y₁ ≤ y₂ → (x₁ & y₁) ≤ (x₂ & y₂))
 --           where -- we have some binary operator that we want to name the joins
 
 --   data Tree {a} (A : Set a) : Set a where
@@ -333,19 +347,19 @@ module _
 --   map-join : ∀ {X Y : A → Set (a ⊔ ℓ₂)} →
 --              (f : (x : A) → X x → Y x) →
 --              (t : Tree (Σ[ x ∈ A ] X x)) →
---              join t ≲ join (map-Tree f t)
+--              join t ≤ join (map-Tree f t)
 --   map-join f (lf x) = refl
 --   map-join f (br s t) = &-mono (map-join f s) (map-join f t)
 
 --   flatten : {X : A → Set (a ⊔ ℓ₂)} →
---             Tree (Σ[ x ∈ A ] (Σ[ t ∈ Tree (Σ[ y ∈ A ] X y) ] x ≲ join t)) →
+--             Tree (Σ[ x ∈ A ] (Σ[ t ∈ Tree (Σ[ y ∈ A ] X y) ] x ≤ join t)) →
 --             Tree (Σ[ y ∈ A ] X y)
 --   flatten (lf (x , t , ϕ)) = t
 --   flatten (br s t)         = br (flatten s) (flatten t)
 
 --   flatten-join : {X : A → Set (a ⊔ ℓ₂)} →
---                  (t : Tree (Σ[ x ∈ A ] (Σ[ t ∈ Tree (Σ[ y ∈ A ] X y) ] x ≲ join t))) →
---                  join t ≲ join (flatten t)
+--                  (t : Tree (Σ[ x ∈ A ] (Σ[ t ∈ Tree (Σ[ y ∈ A ] X y) ] x ≤ join t))) →
+--                  join t ≤ join (flatten t)
 --   flatten-join (lf (x , t , ϕ)) = ϕ
 --   flatten-join (br s t) = &-mono (flatten-join s) (flatten-join t)
 
@@ -353,92 +367,92 @@ module _
 --     no-eta-equality
 --     field
 --       SCarrier  : A → Set (a ⊔ ℓ₂)
---       S≲-closed : ∀ {x y} → x ≲ y → SCarrier y → SCarrier x
+--       S≤-closed : ∀ {x y} → x ≤ y → SCarrier y → SCarrier x
 --       Sclosed   : (t : Tree (Σ[ x ∈ A ] SCarrier x)) → SCarrier (join t)
 --   open Sheaf
 
---   record _≲S_ (F G : Sheaf) : Set (a ⊔ ℓ₂) where
+--   record _≤S_ (F G : Sheaf) : Set (a ⊔ ℓ₂) where
 --     no-eta-equality
 --     field
---       *≲S* : ∀ x → F .SCarrier x → G .SCarrier x
---   open _≲S_
+--       *≤S* : ∀ x → F .SCarrier x → G .SCarrier x
+--   open _≤S_
 
---   ≲S-refl : ∀ {F} → F ≲S F
---   ≲S-refl .*≲S* x Fx = Fx
+--   ≤S-refl : ∀ {F} → F ≤S F
+--   ≤S-refl .*≤S* x Fx = Fx
 
---   ≲S-trans : ∀ {F G H} → F ≲S G → G ≲S H → F ≲S H
---   ≲S-trans F≲G G≲H .*≲S* = λ x z → G≲H .*≲S* x (F≲G .*≲S* x z)
+--   ≤S-trans : ∀ {F G H} → F ≤S G → G ≤S H → F ≤S H
+--   ≤S-trans F≤G G≤H .*≤S* = λ x z → G≤H .*≤S* x (F≤G .*≤S* x z)
 
---   ≲S-isPreorder : IsPreorder _≲S_
---   ≲S-isPreorder .IsPreorder.refl = ≲S-refl
---   ≲S-isPreorder .IsPreorder.trans = ≲S-trans
+--   ≤S-isPreorder : IsPreorder _≤S_
+--   ≤S-isPreorder .IsPreorder.refl = ≤S-refl
+--   ≤S-isPreorder .IsPreorder.trans = ≤S-trans
 
---   _≃S_ = SymCore _≲S_
+--   _≃S_ = SymCore _≤S_
 
 --   ------------------------------------------------------------------------------
 --   -- Turn a presheaf into a sheaf by closing under imaginary joins
 --   α : PreSheaf → Sheaf
---   α F .SCarrier x = Σ[ t ∈ Tree (Σ[ x ∈ A ] F .ICarrier x) ] (x ≲ join t)
---   α F .S≲-closed x≲y (t , ψ) = t , trans x≲y ψ
+--   α F .SCarrier x = Σ[ t ∈ Tree (Σ[ x ∈ A ] F .ICarrier x) ] (x ≤ join t)
+--   α F .S≤-closed x≤y (t , ψ) = t , trans x≤y ψ
 --   α F .Sclosed t = flatten t , flatten-join t
 
---   α-mono : ∀ {F G} → F ≲ᴾ G → α F ≲S α G
---   α-mono F≲G .*≲S* x (t , ψ) = map-Tree (F≲G .*≲ᴾ*) t , trans ψ (map-join _ t)
+--   α-mono : ∀ {F G} → F ≤ᴾ G → α F ≤S α G
+--   α-mono F≤G .*≤S* x (t , ψ) = map-Tree (F≤G .*≤ᴾ*) t , trans ψ (map-join _ t)
 
 --   α-cong : ∀ {F G} → F ≈ᴾ G → α F ≃S α G
 --   α-cong (ϕ , ψ) = α-mono ϕ , α-mono ψ
 
 --   U : Sheaf → PreSheaf
 --   U F .ICarrier  = F .SCarrier
---   U F .≤-closed = F .S≲-closed
+--   U F .≤-closed = F .S≤-closed
 
---   U-mono : ∀ {F G} → F ≲S G → U F ≲ᴾ U G
---   U-mono F≲G .*≲ᴾ* = F≲G .*≲S*
+--   U-mono : ∀ {F G} → F ≤S G → U F ≤ᴾ U G
+--   U-mono F≤G .*≤ᴾ* = F≤G .*≤S*
 
 --   U-cong : ∀ {F G} → F ≃S G → U F ≈ᴾ U G
 --   U-cong (ϕ , ψ) = (U-mono ϕ) , (U-mono ψ)
 
 --   -- We have a reflective sub order
---   counit : ∀ {F} → α (U F) ≲S F
---   counit {F} .*≲S* x (t , ψ) = F .S≲-closed ψ (F .Sclosed t)
+--   counit : ∀ {F} → α (U F) ≤S F
+--   counit {F} .*≤S* x (t , ψ) = F .S≤-closed ψ (F .Sclosed t)
 
---   counit⁻¹ : ∀ {F} → F ≲S α (U F)
---   counit⁻¹ {F} .*≲S* x ϕ = lf (x , ϕ) , refl
+--   counit⁻¹ : ∀ {F} → F ≤S α (U F)
+--   counit⁻¹ {F} .*≤S* x ϕ = lf (x , ϕ) , refl
 
 --   counit-≃ : ∀ {F} → F ≃S α (U F)
 --   counit-≃ = counit⁻¹ , counit
 
---   unit : ∀ F → F ≲ᴾ U (α F)
---   unit F .*≲ᴾ* x ϕ = lf (x , ϕ) , refl
+--   unit : ∀ F → F ≤ᴾ U (α F)
+--   unit F .*≤ᴾ* x ϕ = lf (x , ϕ) , refl
 
 --   ------------------------------------------------------------------------------
 --   -- The topology is subcanonical if _&_ is sub-idempotent.
 --   module _
---       (&-idem : ∀ {x} → (x & x) ≲ x)
+--       (&-idem : ∀ {x} → (x & x) ≤ x)
 --     where
 
---     joinJ : ∀ x (t : Tree (Σ[ y ∈ A ] Lift a (y ≲ x))) → join t ≲ x
---     joinJ x (lf (y , lift y≲x)) = y≲x
+--     joinJ : ∀ x (t : Tree (Σ[ y ∈ A ] Lift a (y ≤ x))) → join t ≤ x
+--     joinJ x (lf (y , lift y≤x)) = y≤x
 --     joinJ x (br s t) = trans (&-mono (joinJ x s) (joinJ x t)) &-idem
 
 --     ηS : A → Sheaf
---     ηS x .SCarrier y = Lift a (y ≲ x)
---     ηS x .S≲-closed x₁≲y (lift y≲x) = lift (trans x₁≲y y≲x)
+--     ηS x .SCarrier y = Lift a (y ≤ x)
+--     ηS x .S≤-closed x₁≤y (lift y≤x) = lift (trans x₁≤y y≤x)
 --     ηS x .Sclosed t .lower = joinJ _ t
 
 --   ------------------------------------------------------------------------------
 --   -- Meets
 --   _∧ᴾS_ : Sheaf → Sheaf → Sheaf
 --   (F ∧ᴾS G) .SCarrier x = F .SCarrier x × G .SCarrier x
---   (F ∧ᴾS G) .S≲-closed x≲y (Fy , Gy) = (F .S≲-closed x≲y Fy) , (G .S≲-closed x≲y Gy)
+--   (F ∧ᴾS G) .S≤-closed x≤y (Fy , Gy) = (F .S≤-closed x≤y Fy) , (G .S≤-closed x≤y Gy)
 --   (F ∧ᴾS G) .Sclosed t =
---     F .S≲-closed (map-join _ t) (F .Sclosed (map-Tree (λ _ → proj₁) t)) ,
---     G .S≲-closed (map-join _ t) (G .Sclosed (map-Tree (λ _ → proj₂) t))
+--     F .S≤-closed (map-join _ t) (F .Sclosed (map-Tree (λ _ → proj₁) t)) ,
+--     G .S≤-closed (map-join _ t) (G .Sclosed (map-Tree (λ _ → proj₂) t))
 
---   ∧ᴾS-isMeet : IsMeet ≲S-isPreorder _∧ᴾS_
---   ∧ᴾS-isMeet .IsMeet.π₁ .*≲S* _ = proj₁
---   ∧ᴾS-isMeet .IsMeet.π₂ .*≲S* _ = proj₂
---   ∧ᴾS-isMeet .IsMeet.⟨_,_⟩ m₁ m₂ .*≲S* x Fx = m₁ .*≲S* x Fx , m₂ .*≲S* x Fx
+--   ∧ᴾS-isMeet : IsMeet ≤S-isPreorder _∧ᴾS_
+--   ∧ᴾS-isMeet .IsMeet.π₁ .*≤S* _ = proj₁
+--   ∧ᴾS-isMeet .IsMeet.π₂ .*≤S* _ = proj₂
+--   ∧ᴾS-isMeet .IsMeet.⟨_,_⟩ m₁ m₂ .*≤S* x Fx = m₁ .*≤S* x Fx , m₂ .*≤S* x Fx
 
 -- {-
 --   module _ where
@@ -449,7 +463,7 @@ module _
 --     -- work out how to state stability of _&_ under pullbacks.
 --     preserveMeets : ∀ {F G} → α (F ∧ᴾ G) ≃S (α F ∧ᴾS α G)
 --     preserveMeets .proj₁ = ⟨ (α-mono π₁) , (α-mono π₂) ⟩
---     preserveMeets .proj₂ .*≲S* = {!!} -- this would be true if _&_ distributed across meets, which we are not assuming here
+--     preserveMeets .proj₂ .*≤S* = {!!} -- this would be true if _&_ distributed across meets, which we are not assuming here
 -- -}
 
 --   ------------------------------------------------------------------------------
@@ -457,18 +471,18 @@ module _
 --   _∨S_ : Sheaf → Sheaf → Sheaf
 --   F ∨S G = α (U F ∨ U G)
 
---   inl : ∀ {F G} → F ≲S (F ∨S G)
---   inl = ≲S-trans counit⁻¹ (α-mono (∨-isJoin .IsJoin.inl))
+--   inl : ∀ {F G} → F ≤S (F ∨S G)
+--   inl = ≤S-trans counit⁻¹ (α-mono (∨-isJoin .IsJoin.inl))
 
---   inr : ∀ {F G} → G ≲S (F ∨S G)
---   inr = ≲S-trans counit⁻¹ (α-mono (∨-isJoin .IsJoin.inr))
+--   inr : ∀ {F G} → G ≤S (F ∨S G)
+--   inr = ≤S-trans counit⁻¹ (α-mono (∨-isJoin .IsJoin.inr))
 
---   [_,_]S : ∀ {F G H} → F ≲S H → G ≲S H → (F ∨S G) ≲S H
---   [_,_]S {F}{G}{H} m₁ m₂ .*≲S* x (t , x≲t) =
---     H .S≲-closed (trans x≲t (map-join _ t))
---       (H .Sclosed (map-Tree (λ x → [ m₁ .*≲S* x ⊎ m₂ .*≲S* x ]) t))
+--   [_,_]S : ∀ {F G H} → F ≤S H → G ≤S H → (F ∨S G) ≤S H
+--   [_,_]S {F}{G}{H} m₁ m₂ .*≤S* x (t , x≤t) =
+--     H .S≤-closed (trans x≤t (map-join _ t))
+--       (H .Sclosed (map-Tree (λ x → [ m₁ .*≤S* x ⊎ m₂ .*≤S* x ]) t))
 
---   ∨S-isJoin : IsJoin ≲S-isPreorder _∨S_
+--   ∨S-isJoin : IsJoin ≤S-isPreorder _∨S_
 --   ∨S-isJoin .IsJoin.inl = inl
 --   ∨S-isJoin .IsJoin.inr = inr
 --   ∨S-isJoin .IsJoin.[_,_] = [_,_]S
@@ -477,83 +491,83 @@ module _
 --   -- Monoids 1 : if we have a 'medial'-type monoid, then the
 --   -- presheaf monoid definition is already a sheaf. I.e., U (α (F • G)) ≃ U (α F) • U (α G)
 --   module SMonoid1 {_∙_ : A → A → A} {ε : A}
---                   (∙-isMonoid : IsMonoid ≲-isPreorder _∙_ ε)
+--                   (∙-isMonoid : IsMonoid ≤-isPreorder _∙_ ε)
 --                   -- this is how it interacts with the 'join'
---                   (medial : ∀ {w x y z} → ((w ∙ x) & (y ∙ z)) ≲ ((w & y) ∙ (x & z)))
---                   (tidy   : (ε & ε) ≲ ε)
+--                   (medial : ∀ {w x y z} → ((w ∙ x) & (y ∙ z)) ≤ ((w & y) ∙ (x & z)))
+--                   (tidy   : (ε & ε) ≤ ε)
 --        where
 
 --     open IsMonoid ∙-isMonoid
 
 --     split : ∀ {F G : A → Set (a ⊔ ℓ₂)} →
---             (t : Tree (Σ[ x ∈ A ] Σ[ y ∈ A ] Σ[ z ∈ A ] (x ≲ (y ∙ z)) × F y × G z)) →
+--             (t : Tree (Σ[ x ∈ A ] Σ[ y ∈ A ] Σ[ z ∈ A ] (x ≤ (y ∙ z)) × F y × G z)) →
 --             Σ[ t₁ ∈ Tree (Σ[ x ∈ A ] F x) ]
 --             Σ[ t₂ ∈ Tree (Σ[ x ∈ A ] G x) ]
---               (join t ≲ (join t₁ ∙ join t₂))
---     split (lf (x , y , z , x≲yz , Fy , Gz)) = lf (y , Fy) , lf (z , Gz) , x≲yz
+--               (join t ≤ (join t₁ ∙ join t₂))
+--     split (lf (x , y , z , x≤yz , Fy , Gz)) = lf (y , Fy) , lf (z , Gz) , x≤yz
 --     split (br s t) =
---       let s₁ , s₂ , s≲s₁s₂ = split s
---           t₁ , t₂ , t≲t₁t₂ = split t
+--       let s₁ , s₂ , s≤s₁s₂ = split s
+--           t₁ , t₂ , t≤t₁t₂ = split t
 --       in
---       br s₁ t₁ , br s₂ t₂ , trans (&-mono s≲s₁s₂ t≲t₁t₂) medial
+--       br s₁ t₁ , br s₂ t₂ , trans (&-mono s≤s₁s₂ t≤t₁t₂) medial
 
 --     _▷_ : Sheaf → Sheaf → Sheaf
 --     (F ▷ G) .SCarrier x =
---       Σ[ y ∈ A ] Σ[ z ∈ A ] (x ≲ (y ∙ z) × F .SCarrier y × G .SCarrier z)
---     (F ▷ G) .S≲-closed x≲x' (y , z , x'≲yz , Fy , Gz) =
---       y , z , trans x≲x' x'≲yz , Fy , Gz
+--       Σ[ y ∈ A ] Σ[ z ∈ A ] (x ≤ (y ∙ z) × F .SCarrier y × G .SCarrier z)
+--     (F ▷ G) .S≤-closed x≤x' (y , z , x'≤yz , Fy , Gz) =
+--       y , z , trans x≤x' x'≤yz , Fy , Gz
 --     (F ▷ G) .Sclosed t =
---       let ft , gt , t≲fg = split t in
---       join ft , join gt , t≲fg , F .Sclosed ft , G .Sclosed gt
+--       let ft , gt , t≤fg = split t in
+--       join ft , join gt , t≤fg , F .Sclosed ft , G .Sclosed gt
 
 --     -- FIXME: this is the same as 'tidyup' in 'bv.agda', and is a
 --     -- special case of joinJ above.
---     collapse : (t : Tree (Σ[ x ∈ A ] Lift a (x ≲ ε))) → join t ≲ ε
---     collapse (lf (x , lift x≲ε)) = x≲ε
+--     collapse : (t : Tree (Σ[ x ∈ A ] Lift a (x ≤ ε))) → join t ≤ ε
+--     collapse (lf (x , lift x≤ε)) = x≤ε
 --     collapse (br s t) = trans (&-mono (collapse s) (collapse t)) tidy
 
 --     I : Sheaf
---     I .SCarrier x = Lift a (x ≲ ε)
---     I .S≲-closed x≲y (lift y≲ε) = lift (trans x≲y y≲ε)
+--     I .SCarrier x = Lift a (x ≤ ε)
+--     I .S≤-closed x≤y (lift y≤ε) = lift (trans x≤y y≤ε)
 --     I .Sclosed t = lift (collapse t)
 
 --     -- Associativity etc. are now the same as before, because the
 --     -- carrier is the same
 --     open Monoid ∙-isMonoid renaming (I to J)
 
---     ▷-mono : ∀ {F₁ G₁ F₂ G₂} → F₁ ≲S F₂ → G₁ ≲S G₂ → (F₁ ▷ G₁) ≲S (F₂ ▷ G₂)
---     ▷-mono {F₁}{G₁}{F₂}{G₂} m₁ m₂ .*≲S* =
+--     ▷-mono : ∀ {F₁ G₁ F₂ G₂} → F₁ ≤S F₂ → G₁ ≤S G₂ → (F₁ ▷ G₁) ≤S (F₂ ▷ G₂)
+--     ▷-mono {F₁}{G₁}{F₂}{G₂} m₁ m₂ .*≤S* =
 --       •-mono {U F₁}{U G₁}{U F₂}{U G₂}
---         (record { *≲ᴾ* = m₁ .*≲S* }) (record { *≲ᴾ* = m₂ .*≲S* }) .*≲ᴾ*
+--         (record { *≤ᴾ* = m₁ .*≤S* }) (record { *≤ᴾ* = m₂ .*≤S* }) .*≤ᴾ*
 
 --     ▷-assoc : ∀ {F G H} → ((F ▷ G) ▷ H) ≃S (F ▷ (G ▷ H))
---     ▷-assoc {F}{G}{H} .proj₁ .*≲S* = •-assoc {U F}{U G}{U H} .proj₁ .*≲ᴾ*
---     ▷-assoc {F}{G}{H} .proj₂ .*≲S* = •-assoc {U F}{U G}{U H} .proj₂ .*≲ᴾ*
+--     ▷-assoc {F}{G}{H} .proj₁ .*≤S* = •-assoc {U F}{U G}{U H} .proj₁ .*≤ᴾ*
+--     ▷-assoc {F}{G}{H} .proj₂ .*≤S* = •-assoc {U F}{U G}{U H} .proj₂ .*≤ᴾ*
 
 --     ▷-lunit : ∀ {F} → (I ▷ F) ≃S F
---     ▷-lunit {F} .proj₁ .*≲S* = •-lunit {U F} .proj₁ .*≲ᴾ*
---     ▷-lunit {F} .proj₂ .*≲S* = •-lunit {U F} .proj₂ .*≲ᴾ*
+--     ▷-lunit {F} .proj₁ .*≤S* = •-lunit {U F} .proj₁ .*≤ᴾ*
+--     ▷-lunit {F} .proj₂ .*≤S* = •-lunit {U F} .proj₂ .*≤ᴾ*
 
 --     ▷-runit : ∀ {F} → (F ▷ I) ≃S F
---     ▷-runit {F} .proj₁ .*≲S* = •-runit {U F} .proj₁ .*≲ᴾ*
---     ▷-runit {F} .proj₂ .*≲S* = •-runit {U F} .proj₂ .*≲ᴾ*
+--     ▷-runit {F} .proj₁ .*≤S* = •-runit {U F} .proj₁ .*≤ᴾ*
+--     ▷-runit {F} .proj₂ .*≤S* = •-runit {U F} .proj₂ .*≤ᴾ*
 
---     ▷-isMonoid : IsMonoid ≲S-isPreorder _▷_ I
---     ▷-isMonoid .IsMonoid.mono m₁ m₂ .*≲S* = •-mono (U-mono m₁) (U-mono m₂) .*≲ᴾ*
+--     ▷-isMonoid : IsMonoid ≤S-isPreorder _▷_ I
+--     ▷-isMonoid .IsMonoid.mono m₁ m₂ .*≤S* = •-mono (U-mono m₁) (U-mono m₂) .*≤ᴾ*
 --     ▷-isMonoid .IsMonoid.assoc = ▷-assoc
 --     ▷-isMonoid .IsMonoid.lunit = ▷-lunit
 --     ▷-isMonoid .IsMonoid.runit = ▷-runit
 
 --     U-monoidal : ∀ {F G} → U (F ▷ G) ≈ᴾ (U F • U G)
---     U-monoidal .proj₁ .*≲ᴾ* x ϕ = ϕ
---     U-monoidal .proj₂ .*≲ᴾ* x ϕ = ϕ
+--     U-monoidal .proj₁ .*≤ᴾ* x ϕ = ϕ
+--     U-monoidal .proj₂ .*≤ᴾ* x ϕ = ϕ
 
 --   -- A commutative monoid that distributes over the 'join' also
 --   -- gives a monoid on sheaves.
 --   module SMonoid2 {_∙_ : A → A → A} {ε : A}
---                   (∙-isMonoid : IsMonoid ≲-isPreorder _∙_ ε)
---                   (∙-sym : ∀ {x y} → (x ∙ y) ≲ (y ∙ x))
---                   (∙-&-distrib : ∀ {x y z} → ((x & y) ∙ z) ≲ ((x ∙ z) & (y ∙ z)))
+--                   (∙-isMonoid : IsMonoid ≤-isPreorder _∙_ ε)
+--                   (∙-sym : ∀ {x y} → (x ∙ y) ≤ (y ∙ x))
+--                   (∙-&-distrib : ∀ {x y z} → ((x & y) ∙ z) ≤ ((x ∙ z) & (y ∙ z)))
 --                  where
 
 --     open IsMonoid ∙-isMonoid
@@ -576,7 +590,7 @@ module _
 
 --        mul-join : (t₁ : Tree (Σ[ x ∈ A ] F .ICarrier x)) →
 --                   (t₂ : Tree (Σ[ x ∈ A ] G .ICarrier x)) →
---                   (join t₁ ∙ join t₂) ≲ join (mul t₁ t₂)
+--                   (join t₁ ∙ join t₂) ≤ join (mul t₁ t₂)
 --        mul-join (lf x) (lf x₁) = refl
 --        mul-join (lf x) (br t₂ t₃) =
 --          trans ∙-sym
@@ -590,24 +604,24 @@ module _
 --        -- FIXME: this is essentially a map-and-join operation that preserves the first components
 --        lemma : ∀ x
 --                (t : Tree (Σ[ y ∈ A ] (U (α F) • U (α G)) .ICarrier y)) →
---                x ≲ join t →
---                Σ[ t ∈ Tree (Σ[ x ∈ A ] ((F • G) .ICarrier x)) ] (x ≲ join t)
---        lemma x (lf (y , (y₁ , y₂ , y≲y₁y₂ , (t₁ , y₁≲t₁) , (t₂ , y₂≲t₂)))) x≲y =
---          (mul t₁ t₂) , trans x≲y (trans y≲y₁y₂ (trans (mono y₁≲t₁ y₂≲t₂) (mul-join t₁ t₂)))
---        lemma x (br s t) x≲s&t =
+--                x ≤ join t →
+--                Σ[ t ∈ Tree (Σ[ x ∈ A ] ((F • G) .ICarrier x)) ] (x ≤ join t)
+--        lemma x (lf (y , (y₁ , y₂ , y≤y₁y₂ , (t₁ , y₁≤t₁) , (t₂ , y₂≤t₂)))) x≤y =
+--          (mul t₁ t₂) , trans x≤y (trans y≤y₁y₂ (trans (mono y₁≤t₁ y₂≤t₂) (mul-join t₁ t₂)))
+--        lemma x (br s t) x≤s&t =
 --          let (t₁ , ϕ₁) = lemma (join s) s refl
 --              (t₂ , ϕ₂) = lemma (join t) t refl
---          in br t₁ t₂ , trans x≲s&t (&-mono ϕ₁ ϕ₂)
+--          in br t₁ t₂ , trans x≤s&t (&-mono ϕ₁ ϕ₂)
 
 --        α-monoidal : (α F ⊗ α G) ≃S α (F • G)
---        α-monoidal .proj₁ .*≲S* x (t , x≲t) = lemma x t x≲t
+--        α-monoidal .proj₁ .*≤S* x (t , x≤t) = lemma x t x≤t
 --        α-monoidal .proj₂ = α-mono (•-mono (unit F) (unit G))
 
 --     module _ where
 --       open IsMonoid •-isMonoid renaming (cong to •-cong)
---       open Setoid (IsPreorder.≃-setoid ≲ᴾ-isPreorder) renaming (refl to P-refl)
+--       open Setoid (IsPreorder.≃-setoid ≤ᴾ-isPreorder) renaming (refl to P-refl)
 
---       ⊗-mono : ∀ {F₁ G₁ F₂ G₂} → F₁ ≲S F₂ → G₁ ≲S G₂ → (F₁ ⊗ G₁) ≲S (F₂ ⊗ G₂)
+--       ⊗-mono : ∀ {F₁ G₁ F₂ G₂} → F₁ ≤S F₂ → G₁ ≤S G₂ → (F₁ ⊗ G₁) ≤S (F₂ ⊗ G₂)
 --       ⊗-mono m₁ m₂ = α-mono (•-mono (U-mono m₁) (U-mono m₂))
 
 --       ⊗-assoc : ∀ {F G H} → ((F ⊗ G) ⊗ H) ≃S (F ⊗ (G ⊗ H))
@@ -626,7 +640,7 @@ module _
 --         ≈˘⟨ α-cong (•-cong (U-cong counit-≃) P-refl) ⟩
 --           (F ⊗ (G ⊗ H))
 --         ∎
---         where open IsPreorder.≃-SetoidReasoning ≲S-isPreorder
+--         where open IsPreorder.≃-SetoidReasoning ≤S-isPreorder
 
 --       ⊗-lunit : ∀ {F} → (I ⊗ F) ≃S F
 --       ⊗-lunit {F} = begin
@@ -642,7 +656,7 @@ module _
 --           ≈˘⟨ counit-≃ ⟩
 --             F
 --           ∎
---           where open IsPreorder.≃-SetoidReasoning ≲S-isPreorder
+--           where open IsPreorder.≃-SetoidReasoning ≤S-isPreorder
 
 --       ⊗-runit : ∀ {F} → (F ⊗ I) ≃S F
 --       ⊗-runit {F} = begin
@@ -658,15 +672,15 @@ module _
 --           ≈˘⟨ counit-≃ ⟩
 --             F
 --           ∎
---           where open IsPreorder.≃-SetoidReasoning ≲S-isPreorder
+--           where open IsPreorder.≃-SetoidReasoning ≤S-isPreorder
 
---     ⊗-isMonoid : IsMonoid ≲S-isPreorder _⊗_ I
+--     ⊗-isMonoid : IsMonoid ≤S-isPreorder _⊗_ I
 --     ⊗-isMonoid .IsMonoid.mono = ⊗-mono
 --     ⊗-isMonoid .IsMonoid.assoc = ⊗-assoc
 --     ⊗-isMonoid .IsMonoid.lunit = ⊗-lunit
 --     ⊗-isMonoid .IsMonoid.runit = ⊗-runit
 
---     ⊗-sym : ∀ {F G} → (F ⊗ G) ≲S (G ⊗ F)
+--     ⊗-sym : ∀ {F G} → (F ⊗ G) ≤S (G ⊗ F)
 --     ⊗-sym {F}{G} = α-mono (•-sym ∙-sym {U F} {U G})
 
 --     -- Residuals are automatically closed, relying on distributivity.
@@ -674,39 +688,39 @@ module _
 --     ⊸-lemma : ∀ F G →
 --               (t : Tree (Σ[ x ∈ A ] (∀ y → F .SCarrier y → G .SCarrier (x ∙ y)))) →
 --               (y : A) → F .SCarrier y →
---               Σ[ t' ∈ Tree (Σ[ x ∈ A ] (G .SCarrier x)) ] (join t ∙ y) ≲ join t'
+--               Σ[ t' ∈ Tree (Σ[ x ∈ A ] (G .SCarrier x)) ] (join t ∙ y) ≤ join t'
 --     ⊸-lemma F G (lf (x , f)) y Fy = (lf (x ∙ y , f y Fy)) , refl
 --     ⊸-lemma F G (br s t)     y Fy =
---       let (s' , sy≲s') = ⊸-lemma F G s y Fy
---           (t' , ty≲t') = ⊸-lemma F G t y Fy
---       in br s' t' , trans ∙-&-distrib (&-mono sy≲s' ty≲t')
+--       let (s' , sy≤s') = ⊸-lemma F G s y Fy
+--           (t' , ty≤t') = ⊸-lemma F G t y Fy
+--       in br s' t' , trans ∙-&-distrib (&-mono sy≤s' ty≤t')
 
 --     _⊸_ : Sheaf → Sheaf → Sheaf
 --     (F ⊸ G) .SCarrier x = ∀ y → F .SCarrier y → G .SCarrier (x ∙ y)
---     (F ⊸ G) .S≲-closed x≲x' f y Fy = G .S≲-closed (mono x≲x' refl) (f y Fy)
+--     (F ⊸ G) .S≤-closed x≤x' f y Fy = G .S≤-closed (mono x≤x' refl) (f y Fy)
 --     (F ⊸ G) .Sclosed t y Fy =
---       let t' , ty≲y' = ⊸-lemma F G t y Fy in
---       G .S≲-closed ty≲y' (G .Sclosed t')
+--       let t' , ty≤y' = ⊸-lemma F G t y Fy in
+--       G .S≤-closed ty≤y' (G .Sclosed t')
 
---     U⊸ : ∀ {F G} → U (F ⊸ G) ≲ᴾ (U F -• U G)
---     U⊸ .*≲ᴾ* x f = f
+--     U⊸ : ∀ {F G} → U (F ⊸ G) ≤ᴾ (U F -• U G)
+--     U⊸ .*≤ᴾ* x f = f
 
---     ⊸-isClosure : IsClosure ≲S-isPreorder ⊗-isMonoid _⊸_
---     ⊸-isClosure .IsClosure.lambda {F}{G}{H} m .*≲S* x Fx y Gy =
+--     ⊸-isClosure : IsClosure ≤S-isPreorder ⊗-isMonoid _⊸_
+--     ⊸-isClosure .IsClosure.lambda {F}{G}{H} m .*≤S* x Fx y Gy =
 --       -- FIXME: find a more abstract way of doing this
---       m .*≲S* (x ∙ y) ((lf (x ∙ y , x , y , refl , Fx , Gy)) , refl)
+--       m .*≤S* (x ∙ y) ((lf (x ∙ y , x , y , refl , Fx , Gy)) , refl)
 --     ⊸-isClosure .IsClosure.eval =
---        ≲S-trans (α-mono (•-mono U⊸ (≲ᴾ-isPreorder .IsPreorder.refl)))
---        (≲S-trans (α-mono (-•-isClosure .IsClosure.eval)) counit)
+--        ≤S-trans (α-mono (•-mono U⊸ (≤ᴾ-isPreorder .IsPreorder.refl)))
+--        (≤S-trans (α-mono (-•-isClosure .IsClosure.eval)) counit)
 
 --   module SDuoidal {_∙_ : A → A → A} {_⍮_ : A → A → A} {ε : A}
---                   (∙-isMonoid : IsMonoid ≲-isPreorder _∙_ ε)
---                   (∙-sym : ∀ {x y} → (x ∙ y) ≲ (y ∙ x))
---                   (∙-&-distrib : ∀ {x y z} → ((x & y) ∙ z) ≲ ((x ∙ z) & (y ∙ z)))
---                   (⍮-isMonoid : IsMonoid ≲-isPreorder _⍮_ ε)
---                   (medial : ∀ {w x y z} → ((w ⍮ x) & (y ⍮ z)) ≲ ((w & y) ⍮ (x & z)))
---                   (tidy   : (ε & ε) ≲ ε)
---                   (∙-⍮-isDuoidal : IsDuoidal ≲-isPreorder ∙-isMonoid ⍮-isMonoid)
+--                   (∙-isMonoid : IsMonoid ≤-isPreorder _∙_ ε)
+--                   (∙-sym : ∀ {x y} → (x ∙ y) ≤ (y ∙ x))
+--                   (∙-&-distrib : ∀ {x y z} → ((x & y) ∙ z) ≤ ((x ∙ z) & (y ∙ z)))
+--                   (⍮-isMonoid : IsMonoid ≤-isPreorder _⍮_ ε)
+--                   (medial : ∀ {w x y z} → ((w ⍮ x) & (y ⍮ z)) ≤ ((w & y) ⍮ (x & z)))
+--                   (tidy   : (ε & ε) ≤ ε)
+--                   (∙-⍮-isDuoidal : IsDuoidal ≤-isPreorder ∙-isMonoid ⍮-isMonoid)
 --               where
 
 --     open Monoid ∙-isMonoid renaming (_•_ to _⊛_; •-mono to ⊛-mono)
@@ -717,12 +731,12 @@ module _
 --     open Duoidal ∙-isMonoid ⍮-isMonoid ∙-⍮-isDuoidal
 
 --     units-iso : I⊗ ≃S J
---     units-iso .proj₁ .*≲S* x (t , x≲t) = J .S≲-closed x≲t (J .Sclosed t)
---     units-iso .proj₂ .*≲S* x x≲I = lf (x , x≲I) , refl
+--     units-iso .proj₁ .*≤S* x (t , x≤t) = J .S≤-closed x≤t (J .Sclosed t)
+--     units-iso .proj₂ .*≤S* x x≤I = lf (x , x≤I) , refl
 
---     _>>_ = ≲S-trans
+--     _>>_ = ≤S-trans
 
---     ⊗-▷-isDuoidal : IsDuoidal ≲S-isPreorder ⊗-isMonoid ▷-isMonoid
+--     ⊗-▷-isDuoidal : IsDuoidal ≤S-isPreorder ⊗-isMonoid ▷-isMonoid
 --     ⊗-▷-isDuoidal .IsDuoidal.exchange =
 --       α-mono (⊛-mono (U-monoidal .proj₁) (U-monoidal .proj₁)) >>
 --       (α-mono •-⍮-exchange >>
@@ -732,9 +746,9 @@ module _
 --       --   (w ▷ x) ⊗ (y ▷ z)
 --       -- ≡ α (U (w ▷ x) • U(y ▷ z))
 --       -- ≃ α ((U w ⍮ U x) • (U y ⍮ U z))
---       -- ≲ α ((U w • U y) ⍮ (U x • U z))
---       -- ≲ α (U (α (U w • U y)) ⍮ U (α (U x • U z)))
+--       -- ≤ α ((U w • U y) ⍮ (U x • U z))
+--       -- ≤ α (U (α (U w • U y)) ⍮ U (α (U x • U z)))
 --       -- ≃ α (U ((w ⊗ y) ▷ (x ⊗ z))
 --       -- ≡ (w ⊗ y) ▷ (x ⊗ z)
---     ⊗-▷-isDuoidal .IsDuoidal.mu = ⊗-mono (units-iso .proj₂) ≲S-refl >> ⊗-lunit .proj₁
+--     ⊗-▷-isDuoidal .IsDuoidal.mu = ⊗-mono (units-iso .proj₂) ≤S-refl >> ⊗-lunit .proj₁
   

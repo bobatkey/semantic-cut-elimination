@@ -25,10 +25,16 @@ open import Function.Bundles using (_⇔_)
 -- Properties of operations
 
 LeftResidual : Op₂ A → Op₂ A → Set _
-LeftResidual _∙_ _⇦_ = ∀ x y z → (x ∙ y) ≲ z ⇔ y ≲ (z ⇦ x)
+LeftResidual _∙_ _⇦_ = ∀ x y z → (x ∙ y) ≲ z ⇔ x ≲ (z ⇦ y)
+
+LeftEval : Op₂ A → Op₂ A → Set _
+LeftEval _∙_ _⇦_ = ∀ x y → ((y ⇦ x) ∙ x) ≲ y
 
 RightResidual : Op₂ A → Op₂ A → Set _
-RightResidual _∙_ _⇨_ = ∀ x y z → (x ∙ y) ≲ z ⇔ x ≲ (y ⇨ z)
+RightResidual _∙_ _⇨_ = ∀ x y z → (x ∙ y) ≲ z ⇔ y ≲ (x ⇨ z)
+
+RightEval : Op₂ A → Op₂ A → Set _
+RightEval _∙_ _⇨_ = ∀ x y → (x ∙ (x ⇨ y)) ≲ y
 
 Residuated : Op₂ A → Op₂ A → Op₂ A → Set _
 Residuated ∙ ⇦ ⇨ = LeftResidual ∙ ⇦ × RightResidual ∙ ⇨
