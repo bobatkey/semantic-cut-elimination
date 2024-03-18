@@ -20,14 +20,12 @@ module Algebra.Ordered.Structures
 
 open import Algebra.Core
 open import Algebra.Definitions _≈_
-open import Algebra.Ordered.Definitions _≲_
 open import Algebra.Structures _≈_
+open import Algebra.Ordered.Definitions _≲_
 open import Data.Product using (_,_; proj₁; proj₂)
 open import Function using (flip; _$_)
 open import Level using (_⊔_)
-open import Relation.Binary using (IsEquivalence)
-open import Relation.Binary.Definitions using (Transitive; Monotonic₁; Monotonic₂; AntitonicMonotonic; MonotonicAntitonic)
-open import Relation.Binary.Structures using (IsPreorder; IsPartialOrder)
+open import Relation.Binary
 open import Relation.Binary.Consequences using (mono₂⇒cong₂)
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 
@@ -503,15 +501,64 @@ record IsResiduatedCommutativePomonoid (∙ ⇨ : Op₂ A) (ε : A) : Set (a ⊔
 ------------------------------------------------------------------------------
 -- Duoidal structures
 
-import Algebra.Definitions _≲_        as ≲
-import Algebra.Definitions (flip _≲_) as ≳
-
 record IsDuoidal (∙ ▷ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   field
     ∙-isPomonoid   : IsPomonoid ∙ ε
     ▷-isPomonoid   : IsPomonoid ▷ ι
     ∙-▷-exchange   : Exchange ∙ ▷
-    ∙-idempotent-ι : ∙ ≲.IdempotentOn ι
-    ▷-idempotent-ε : ▷ ≳.IdempotentOn ε
+    ∙-idempotent-ι : ∙ SubidempotentOn ι
+    ▷-idempotent-ε : ▷ SuperidempotentOn ε
     ε≲ι            : ε ≲ ι
  
+  open IsPomonoid ∙-isPomonoid public
+    using
+      ( isPreorder
+      ; refl
+      ; trans
+      ; isEquivalence
+      ; setoid
+      ; ∙-cong
+      ; ∙-congˡ
+      ; ∙-congʳ
+      )
+    renaming
+      ( isMagma        to ∙-isMagma
+      ; isSemigroup    to ∙-isSemigroup
+      ; isMonoid       to ∙-isMonoid
+      ; isPromagma     to ∙-isPromagma
+      ; isProsemigroup to ∙-isProsemigroup
+      ; isPromonoid    to ∙-isPromonoid
+      ; assoc          to ∙-assoc
+      ; identity       to ∙-identity
+      ; identityˡ      to ∙-identityˡ
+      ; identityʳ      to ∙-identityʳ
+      ; mono           to ∙-mono
+      ; mono₁          to ∙-mono₁
+      ; mono₂          to ∙-mono₂
+      )
+  open IsPomonoid ▷-isPomonoid public
+    hiding
+      ( isPreorder
+      ; refl
+      ; trans
+      ; isEquivalence
+      ; setoid
+      )
+    renaming
+      ( isMagma        to ▷-isMagma
+      ; isSemigroup    to ▷-isSemigroup
+      ; isMonoid       to ▷-isMonoid
+      ; isPromagma     to ▷-isPromagma
+      ; isProsemigroup to ▷-isProsemigroup
+      ; isPromonoid    to ▷-isPromonoid
+      ; assoc          to ▷-assoc
+      ; identity       to ▷-identity
+      ; identityˡ      to ▷-identityˡ
+      ; identityʳ      to ▷-identityʳ
+      ; mono           to ▷-mono
+      ; mono₁          to ▷-mono₁
+      ; mono₂          to ▷-mono₂
+      ; ∙-cong         to ▷-cong
+      ; ∙-congˡ        to ▷-congˡ
+      ; ∙-congʳ        to ▷-congʳ
+      )

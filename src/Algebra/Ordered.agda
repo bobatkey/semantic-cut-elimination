@@ -10,5 +10,6 @@
 
 module Algebra.Ordered where
 
+open import Algebra.Ordered.Definitions public
 open import Algebra.Ordered.Structures public
 open import Algebra.Ordered.Bundles public

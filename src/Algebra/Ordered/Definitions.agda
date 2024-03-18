@@ -19,6 +19,7 @@ module Algebra.Ordered.Definitions
 
 open import Algebra.Core
 open import Data.Product
+open import Function using (flip)
 open import Function.Bundles using (_⇔_)
 
 ------------------------------------------------------------------------
@@ -41,4 +42,17 @@ Residuated ∙ ⇦ ⇨ = LeftResidual ∙ ⇦ × RightResidual ∙ ⇨
 
 Exchange : Op₂ A → Op₂ A → Set _
 Exchange _∙_ _▷_ = ∀ w x y z → ((w ▷ x) ∙ (y ▷ z)) ≲ ((w ∙ y) ▷ (x ∙ z))
- 
+
+_SubidempotentOn_ : Op₂ A → A → Set _
+∙ SubidempotentOn x = ∙ IdempotentOn x
+  where open import Algebra.Definitions _≲_
+
+_SuperidempotentOn_ : Op₂ A → A → Set _
+∙ SuperidempotentOn x = ∙ IdempotentOn x
+  where open import Algebra.Definitions (flip _≲_)
+
+Subidempotent : Op₂ A → Set _
+Subidempotent ∙ = ∀ x → ∙ SubidempotentOn x
+
+Superidempotent : Op₂ A → Set _
+Superidempotent ∙ = ∀ x → ∙ SuperidempotentOn x
