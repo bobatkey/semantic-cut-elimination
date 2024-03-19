@@ -41,12 +41,12 @@ open Pomagma pomagma
     ; poset
     )
   renaming
-    ( _∙_   to _∨_
-    ; mono  to ∨-mono
-    ; monoˡ to ∨-monoˡ
-    ; monoʳ to ∨-monoʳ
-    ; refl  to ≤-refl
-    ; trans to ≤-trans
+    ( _∙_        to _∨_
+    ; mono       to ∨-mono
+    ; monoˡ      to ∨-monoˡ
+    ; monoʳ      to ∨-monoʳ
+    ; refl       to ≤-refl
+    ; trans      to ≤-trans
     )
 
 open import Algebra.PreSheaf poset as P
@@ -642,11 +642,20 @@ module LiftIsDuoidal
     ∎
     where open PosetReasoning ≤ˢ-poset
 
+  -- WEN: This could probably be simpler using joinᵗ.
+  --      Proving it abstractly requires properties of ηᵖ.
   ⊗ˢ-idem-ιˢ : _SubidempotentOn_ _≤ˢ_ _⊗ˢ_ ιˢ
-  ⊗ˢ-idem-ιˢ = {!   !}
+  ⊗ˢ-idem-ιˢ .*≤ˢ* (t , x≤⋁t) .lower = trans x≤⋁t (helper t)
+    where
+      helper : (t : ∃ᵗᵖ ((U ιˢ) ∙ᵖ (U ιˢ))) → ⋁ᵗ t ≤ ι
+      helper (leaf (x , y , z , x≤y∙z , lift y≤ι , lift z≤ι)) = 
+        trans x≤y∙z (trans (∙-mono y≤ι z≤ι) ∙-idem-ι)
+      helper (node l r) = 
+        let (⋁l≤ι , ⋁r≤ι) = helper l , helper r
+        in  trans (∨-mono ⋁l≤ι ⋁r≤ι) (∨-idem ι)
 
   ▷ˢ-idem-εˢ : _SuperidempotentOn_ _≤ˢ_ _▷ˢ_ εˢ
-  ▷ˢ-idem-εˢ = {!   !}
+  ▷ˢ-idem-εˢ .*≤ˢ* (t , x≤⋁t) = {!   !}
 
   εˢ≤ιˢ : εˢ ≤ˢ ιˢ
   εˢ≤ιˢ = {!   !}
