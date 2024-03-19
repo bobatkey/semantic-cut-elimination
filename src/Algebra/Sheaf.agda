@@ -269,7 +269,6 @@ module LiftIsPomonoid
     (&-entropy : Entropy _≤_ _&_ _∙_) 
     (&-idem : Subidempotent _≤_ _&_)
   where
-  
 
 --     split : ∀ {F G : A → Set (a ⊔ ℓ₂)} →
 --             (t : Tree (Σ[ x ∈ A ] Σ[ y ∈ A ] Σ[ z ∈ A ] (x ≤ (y ∙ z)) × F y × G z)) →

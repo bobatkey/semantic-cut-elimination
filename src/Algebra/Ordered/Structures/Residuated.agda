@@ -40,36 +40,36 @@ record IsResiduatedPromagma (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ�
 
   open IsPromagma isPromagma public
 
-  ⇦-residual : LeftResidual ∙ ⇦
-  ⇦-residual = proj₁ residuated
+  residualˡ : LeftResidual ∙ ⇦
+  residualˡ = proj₁ residuated
 
-  ⇨-residual : RightResidual ∙ ⇨
-  ⇨-residual = proj₂ residuated
+  residualʳ : RightResidual ∙ ⇨
+  residualʳ = proj₂ residuated
 
-  ⇦-eval : LeftEval ∙ ⇦
-  ⇦-eval = ⇦-residual .Function.Equivalence.from refl
+  evalˡ : LeftEval ∙ ⇦
+  evalˡ = residualˡ .Function.Equivalence.from refl
 
-  ⇨-eval : RightEval ∙ ⇨
-  ⇨-eval = ⇨-residual .Function.Equivalence.from refl
+  evalʳ : RightEval ∙ ⇨
+  evalʳ = residualʳ .Function.Equivalence.from refl
 
-  ⇦-monotonic-antitonic : MonotonicAntitonic _≲_ _≲_ _≲_ ⇦
-  ⇦-monotonic-antitonic w≲x z≲y
-    = ⇦-residual .to 
+  mono-antiˡ : MonotonicAntitonic _≲_ _≲_ _≲_ ⇦
+  mono-antiˡ w≲x z≲y
+    = residualˡ .to 
     $ flip trans w≲x
-    $ ⇨-residual .from 
+    $ residualʳ .from 
     $ trans z≲y
-    $ ⇨-residual .to 
-    $ ⇦-residual .from refl
+    $ residualʳ .to 
+    $ residualˡ .from refl
     where open Function.Equivalence using (to; from)
 
-  ⇨-antitonic-monotonic : AntitonicMonotonic _≲_ _≲_ _≲_ ⇨
-  ⇨-antitonic-monotonic {w} {x} {y} {z} x≲w y≲z
-    = ⇨-residual .to 
+  anti-monoʳ : AntitonicMonotonic _≲_ _≲_ _≲_ ⇨
+  anti-monoʳ {w} {x} {y} {z} x≲w y≲z
+    = residualʳ .to 
     $ flip trans y≲z
-    $ ⇦-residual .from
+    $ residualˡ .from
     $ trans x≲w 
-    $ ⇦-residual .to
-    $ ⇨-residual .from refl
+    $ residualˡ .to
+    $ residualʳ .from refl
     where open Function.Equivalence using (to; from)
 
 record IsResiduatedProsemigroup (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
@@ -83,12 +83,12 @@ record IsResiduatedProsemigroup (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ 
   isResiduatedPromagma = record { isPromagma = isPromagma ; residuated = residuated }
 
   open IsResiduatedPromagma isResiduatedPromagma public
-    using ( ⇦-residual
-          ; ⇨-residual
-          ; ⇦-eval
-          ; ⇨-eval
-          ; ⇦-monotonic-antitonic
-          ; ⇨-antitonic-monotonic
+    using ( residualˡ
+          ; residualʳ
+          ; evalˡ
+          ; evalʳ
+          ; mono-antiˡ
+          ; anti-monoʳ
           )
 
 record IsResiduatedPromonoid (∙ ⇦ ⇨ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
@@ -102,12 +102,12 @@ record IsResiduatedPromonoid (∙ ⇦ ⇨ : Op₂ A) (ε : A) : Set (a ⊔ ℓ�
   isResiduatedProsemigroup = record { isProsemigroup = isProsemigroup ; residuated = residuated }
 
   open IsResiduatedProsemigroup isResiduatedProsemigroup public
-    using ( ⇦-residual
-          ; ⇨-residual
-          ; ⇦-eval
-          ; ⇨-eval
-          ; ⇦-monotonic-antitonic
-          ; ⇨-antitonic-monotonic
+    using ( residualˡ
+          ; residualʳ
+          ; evalˡ
+          ; evalʳ
+          ; mono-antiˡ
+          ; anti-monoʳ
           )
 
 record IsResiduatedCommutativePromonoid (∙ ⇨ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
@@ -121,12 +121,12 @@ record IsResiduatedCommutativePromonoid (∙ ⇨ : Op₂ A) (ε : A) : Set (a �
   isResiduatedPromonoid = record { isPromonoid = isPromonoid ; residuated = residuated }
 
   open IsResiduatedPromonoid isResiduatedPromonoid public
-    using ( ⇦-residual
-          ; ⇨-residual
-          ; ⇦-eval
-          ; ⇨-eval
-          ; ⇦-monotonic-antitonic
-          ; ⇨-antitonic-monotonic
+    using ( residualˡ
+          ; residualʳ
+          ; evalˡ
+          ; evalʳ
+          ; mono-antiˡ
+          ; anti-monoʳ
           )
 
 record IsResiduatedPomagma (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
@@ -140,12 +140,12 @@ record IsResiduatedPomagma (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ�
   isResiduatedPromagma = record { isPromagma = isPromagma ; residuated = residuated }
 
   open IsResiduatedPromagma isResiduatedPromagma public
-    using ( ⇦-residual
-          ; ⇨-residual
-          ; ⇦-eval
-          ; ⇨-eval
-          ; ⇦-monotonic-antitonic
-          ; ⇨-antitonic-monotonic
+    using ( residualˡ
+          ; residualʳ
+          ; evalˡ
+          ; evalʳ
+          ; mono-antiˡ
+          ; anti-monoʳ
           )
 
 record IsResiduatedPosemigroup (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
@@ -159,12 +159,12 @@ record IsResiduatedPosemigroup (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ �
   isResiduatedProsemigroup = record { isProsemigroup = isProsemigroup ; residuated = residuated }
 
   open IsResiduatedProsemigroup isResiduatedProsemigroup public
-    using ( ⇦-residual
-          ; ⇨-residual
-          ; ⇦-eval
-          ; ⇨-eval
-          ; ⇦-monotonic-antitonic
-          ; ⇨-antitonic-monotonic
+    using ( residualˡ
+          ; residualʳ
+          ; evalˡ
+          ; evalʳ
+          ; mono-antiˡ
+          ; anti-monoʳ
           )
 
 record IsResiduatedPomonoid (∙ ⇦ ⇨ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
@@ -178,12 +178,12 @@ record IsResiduatedPomonoid (∙ ⇦ ⇨ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁
   isResiduatedPromonoid = record { isPromonoid = isPromonoid ; residuated = residuated }
 
   open IsResiduatedPromonoid isResiduatedPromonoid public
-    using ( ⇦-residual
-          ; ⇨-residual
-          ; ⇦-eval
-          ; ⇨-eval
-          ; ⇦-monotonic-antitonic
-          ; ⇨-antitonic-monotonic
+    using ( residualˡ
+          ; residualʳ
+          ; evalˡ
+          ; evalʳ
+          ; mono-antiˡ
+          ; anti-monoʳ
           )
 
 record IsResiduatedCommutativePomonoid (∙ ⇨ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
@@ -197,10 +197,10 @@ record IsResiduatedCommutativePomonoid (∙ ⇨ : Op₂ A) (ε : A) : Set (a ⊔
   isResiduatedCommutativePromonoid = record { isCommutativePromonoid = isCommutativePromonoid ; residuated = residuated }
 
   open IsResiduatedCommutativePromonoid isResiduatedCommutativePromonoid public
-    using ( ⇦-residual
-          ; ⇨-residual
-          ; ⇦-eval
-          ; ⇨-eval
-          ; ⇦-monotonic-antitonic
-          ; ⇨-antitonic-monotonic
+    using ( residualˡ
+          ; residualʳ
+          ; evalˡ
+          ; evalʳ
+          ; mono-antiˡ
+          ; anti-monoʳ
           )

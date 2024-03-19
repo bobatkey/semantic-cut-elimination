@@ -35,12 +35,12 @@ open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 
 record IsDuoidal (∙ ▷ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   field
-    ∙-isPomonoid   : IsPomonoid ∙ ε
-    ▷-isPomonoid   : IsPomonoid ▷ ι
-    ∙-▷-entropy    : Entropy ∙ ▷
-    ∙-idempotent-ι : ∙ SubidempotentOn ι
-    ▷-idempotent-ε : ▷ SuperidempotentOn ε
-    ε≲ι            : ε ≲ ι
+    ∙-isPomonoid : IsPomonoid ∙ ε
+    ▷-isPomonoid : IsPomonoid ▷ ι
+    ∙-▷-entropy  : Entropy ∙ ▷
+    ∙-idem-ι     : ∙ SubidempotentOn ι
+    ▷-idem-ε     : ▷ SuperidempotentOn ε
+    ε≲ι          : ε ≲ ι
  
   open IsPomonoid ∙-isPomonoid public
     using

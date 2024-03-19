@@ -207,22 +207,22 @@ _⇒ᵖ_ : PreSheaf → PreSheaf → PreSheaf
 (F ⇒ᵖ G) .ICarrier x = ∀ y → y ≤ x → F .ICarrier y → G .ICarrier y
 (F ⇒ᵖ G) .≤-closed x≤y f z z≤x Fz = f z (≤-trans z≤x x≤y) Fz
 
-⇒ᵖ-residual-to : (F ∧ᵖ G) ≤ᵖ H → G ≤ᵖ (F ⇒ᵖ H)
-⇒ᵖ-residual-to {F} {G} {H} F∧G≤H .*≤ᵖ* x Gx y y≤x Fy = F∧G≤H .*≤ᵖ* y (Fy , G .≤-closed y≤x Gx)
+⇒ᵖ-residualʳ-to : (F ∧ᵖ G) ≤ᵖ H → G ≤ᵖ (F ⇒ᵖ H)
+⇒ᵖ-residualʳ-to {F} {G} {H} F∧G≤H .*≤ᵖ* x Gx y y≤x Fy = F∧G≤H .*≤ᵖ* y (Fy , G .≤-closed y≤x Gx)
 
-⇒ᵖ-residual-from : G ≤ᵖ (F ⇒ᵖ H) → (F ∧ᵖ G) ≤ᵖ H
-⇒ᵖ-residual-from G≤F⇒H .*≤ᵖ* x (Fx , Gx) = G≤F⇒H .*≤ᵖ* x Gx x ≤-refl Fx
+⇒ᵖ-residualʳ-from : G ≤ᵖ (F ⇒ᵖ H) → (F ∧ᵖ G) ≤ᵖ H
+⇒ᵖ-residualʳ-from G≤F⇒H .*≤ᵖ* x (Fx , Gx) = G≤F⇒H .*≤ᵖ* x Gx x ≤-refl Fx
 
-⇒ᵖ-residual : RightResidual _≤ᵖ_ _∧ᵖ_ _⇒ᵖ_
-⇒ᵖ-residual .Function.Equivalence.to        = ⇒ᵖ-residual-to
-⇒ᵖ-residual .Function.Equivalence.from      = ⇒ᵖ-residual-from
-⇒ᵖ-residual .Function.Equivalence.to-cong   = λ { PropEq.refl → PropEq.refl }
-⇒ᵖ-residual .Function.Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
+⇒ᵖ-residualʳ : RightResidual _≤ᵖ_ _∧ᵖ_ _⇒ᵖ_
+⇒ᵖ-residualʳ .Function.Equivalence.to        = ⇒ᵖ-residualʳ-to
+⇒ᵖ-residualʳ .Function.Equivalence.from      = ⇒ᵖ-residualʳ-from
+⇒ᵖ-residualʳ .Function.Equivalence.to-cong   = λ { PropEq.refl → PropEq.refl }
+⇒ᵖ-residualʳ .Function.Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
 
 ⇒ᵖ-∧ᵖ-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈ᵖ_ _≤ᵖ_ _∧ᵖ_ _⇒ᵖ_ ⊤ᵖ
 ⇒ᵖ-∧ᵖ-isResiduatedCommutativePomonoid = record
   { isCommutativePomonoid = ∧ᵖ-⊤ᵖ-isCommutativePomonoid 
-  ; residuated            = comm∧residual⇒residuated ≤ᵖ-isPreorder ∧ᵖ-comm ⇒ᵖ-residual
+  ; residuated            = comm∧residual⇒residuated ≤ᵖ-isPreorder ∧ᵖ-comm ⇒ᵖ-residualʳ
   }
 
 ------------------------------------------------------------------------------
@@ -350,23 +350,23 @@ module LiftIsDuoidal {_∙_} {_▷_} {ε} {ι} (isDuoidal : IsDuoidal _≈_ _≤
       (y₁ , z₁ , refl , F₁y₁ , F₂z₁) , 
       (y₂ , z₂ , refl , G₁y₂ , G₂z₂))
 
-  ∙ᵖ-idempotent-ιᵖ : _SubidempotentOn_ _≤ᵖ_ _∙ᵖ_ ιᵖ
-  ∙ᵖ-idempotent-ιᵖ .*≤ᵖ* x (y , z , x≤y∙z , ιy , ιz) .lower = 
-    trans x≤y∙z (trans (∙-mono (ιy .lower) (ιz .lower)) ∙-idempotent-ι)
+  ∙ᵖ-idem-ιᵖ : _SubidempotentOn_ _≤ᵖ_ _∙ᵖ_ ιᵖ
+  ∙ᵖ-idem-ιᵖ .*≤ᵖ* x (y , z , x≤y∙z , ιy , ιz) .lower = 
+    trans x≤y∙z (trans (∙-mono (ιy .lower) (ιz .lower)) ∙-idem-ι)
 
-  ▷ᵖ-idempotent-εᵖ : _SuperidempotentOn_ _≤ᵖ_ _▷ᵖ_ εᵖ
-  ▷ᵖ-idempotent-εᵖ .*≤ᵖ* x εx = 
-    (ε , ε , trans (εx .lower) ▷-idempotent-ε , lift refl , lift refl)
+  ▷ᵖ-idem-εᵖ : _SuperidempotentOn_ _≤ᵖ_ _▷ᵖ_ εᵖ
+  ▷ᵖ-idem-εᵖ .*≤ᵖ* x εx = 
+    (ε , ε , trans (εx .lower) ▷-idem-ε , lift refl , lift refl)
 
   εᵖ≤ιᵖ : εᵖ ≤ᵖ ιᵖ 
   εᵖ≤ιᵖ .*≤ᵖ* x εx .lower = trans (εx .lower) ε≲ι
 
   ∙ᵖ-▷ᵖ-isDuoidal : IsDuoidal _≈ᵖ_ _≤ᵖ_ _∙ᵖ_ _▷ᵖ_ εᵖ ιᵖ
   ∙ᵖ-▷ᵖ-isDuoidal = record
-    { ∙-isPomonoid   = ∙ᵖ-isPomonoid
-    ; ▷-isPomonoid   = ▷ᵖ-isPomonoid
-    ; ∙-▷-entropy   = ∙ᵖ-▷ᵖ-entropy
-    ; ∙-idempotent-ι = ∙ᵖ-idempotent-ιᵖ
-    ; ▷-idempotent-ε = ▷ᵖ-idempotent-εᵖ
-    ; ε≲ι            = εᵖ≤ιᵖ
+    { ∙-isPomonoid = ∙ᵖ-isPomonoid
+    ; ▷-isPomonoid = ▷ᵖ-isPomonoid
+    ; ∙-▷-entropy  = ∙ᵖ-▷ᵖ-entropy
+    ; ∙-idem-ι     = ∙ᵖ-idem-ιᵖ
+    ; ▷-idem-ε     = ▷ᵖ-idem-εᵖ
+    ; ε≲ι          = εᵖ≤ιᵖ
     }
