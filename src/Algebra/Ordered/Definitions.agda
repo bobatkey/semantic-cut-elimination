@@ -43,6 +43,18 @@ Residuated ∙ ⇦ ⇨ = LeftResidual ∙ ⇦ × RightResidual ∙ ⇨
 Entropy : Op₂ A → Op₂ A → Set _
 Entropy _∙_ _▷_ = ∀ w x y z → ((w ▷ x) ∙ (y ▷ z)) ≲ ((w ∙ y) ▷ (x ∙ z))
 
+LeftContract : Op₂ A → A → Op₁ A → Set _
+LeftContract _∙_ ε _ˡ = ∀ x → ((x ˡ) ∙ x) ≲ ε
+
+LeftExpand : Op₂ A → A → Op₁ A → Set _
+LeftExpand _∙_ ε _ˡ = ∀ x → ε ≲ (x ∙ (x ˡ))
+
+RightContract : Op₂ A → A → Op₁ A → Set _
+RightContract _∙_ ε _ʳ = ∀ x → (x ∙ (x ʳ)) ≲ ε
+
+RightExpand : Op₂ A → A → Op₁ A → Set _
+RightExpand _∙_ ε _ʳ = ∀ x → ε ≲ ((x ʳ) ∙ x)
+
 _SubidempotentOn_ : Op₂ A → A → Set _
 ∙ SubidempotentOn x = ∙ IdempotentOn x
   where open import Algebra.Definitions _≲_
