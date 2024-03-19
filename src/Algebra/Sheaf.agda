@@ -92,12 +92,11 @@ map-join : (f : ∀ x → X x → Y x) →
 map-join f (leaf _) = ≤-refl
 map-join f (node l r) = &-mono (map-join f l) (map-join f r)
 
-flatten : Tree (∃[ x ] (Σ[ t ∈ Tree (∃[ y ] X y) ] x ≤ join t)) →
-          Tree (∃[ y ] X y)
+flatten : Tree (∃[ x ] (Σ[ t ∈ Tree (∃ X) ] x ≤ join t)) → Tree (∃ X)
 flatten (leaf (x , t , ϕ)) = t
 flatten (node l r)         = node (flatten l) (flatten r)
 
-flatten-join : (t : Tree (∃[ x ] (Σ[ t ∈ Tree (∃[ y ] X y) ] x ≤ join t))) →
+flatten-join : (t : Tree (∃[ x ] (Σ[ t ∈ Tree (∃ X) ] x ≤ join t))) →
                 join t ≤ join (flatten t)
 flatten-join (leaf (x , t , ϕ)) = ϕ
 flatten-join (node l r) = &-mono (flatten-join l) (flatten-join r)
@@ -105,9 +104,9 @@ flatten-join (node l r) = &-mono (flatten-join l) (flatten-join r)
 record Sheaf : Set (suc (c ⊔ ℓ₂)) where
   no-eta-equality
   field
-    SCarrier  : Carrier → Set (c ⊔ ℓ₂)
-    ≤-closed : x ≤ y → SCarrier y → SCarrier x
-    closed   : (t : Tree (∃ SCarrier)) → SCarrier (join t)
+    ICarrier  : Carrier → Set (c ⊔ ℓ₂)
+    ≤-closed : x ≤ y → ICarrier y → ICarrier x
+    closed   : (t : Tree (∃ ICarrier)) → ICarrier (join t)
 open Sheaf
 
 private
@@ -121,7 +120,7 @@ infix 4 _≤ˢ_
 record _≤ˢ_ (𝓕 𝓖 : Sheaf) : Set (c ⊔ ℓ₂) where
   no-eta-equality
   field
-    *≤ˢ* : ∀ x → 𝓕 .SCarrier x → 𝓖 .SCarrier x
+    *≤ˢ* : ∀ x → 𝓕 .ICarrier x → 𝓖 .ICarrier x
 open _≤ˢ_
 
 infix 4 _≥ˢ_
@@ -154,7 +153,7 @@ _≈ˢ_ = SymCore _≤ˢ_
 -- Turn a presheaf into a sheaf by closing under imaginary joins
 
 α : PreSheaf → Sheaf
-α F .SCarrier x = Σ[ t ∈ Tree (∃[ x ] F .ICarrier x) ] (x ≤ join t)
+α F .ICarrier x = Σ[ t ∈ Tree (∃[ x ] F .ICarrier x) ] (x ≤ join t)
 α F .≤-closed x≤y (t , ψ) = t , ≤-trans x≤y ψ
 α F .closed t = flatten t , flatten-join t
 
@@ -168,7 +167,7 @@ _≈ˢ_ = SymCore _≤ˢ_
 -- Turn a sheaf into a presheaf
 
 U : Sheaf → PreSheaf
-U F .ICarrier  = F .SCarrier
+U F .ICarrier  = F .ICarrier
 U F .≤-closed = F .≤-closed
 
 U-mono : 𝓕 ≤ˢ 𝓖 → U 𝓕 ≤ᵖ U 𝓖
@@ -194,7 +193,7 @@ unit .*≤ᵖ* x ϕ = leaf (x , ϕ) , ≤-refl
 -- Construct a meet semilattice for presheaves
 
 _∧ˢ_ : Sheaf → Sheaf → Sheaf
-(𝓕 ∧ˢ 𝓖) .SCarrier x = 𝓕 .SCarrier x × 𝓖 .SCarrier x
+(𝓕 ∧ˢ 𝓖) .ICarrier x = 𝓕 .ICarrier x × 𝓖 .ICarrier x
 (𝓕 ∧ˢ 𝓖) .≤-closed x≤y (Ry , Sy) = (𝓕 .≤-closed x≤y Ry) , (𝓖 .≤-closed x≤y Sy)
 (𝓕 ∧ˢ 𝓖) .closed t =
   𝓕 .≤-closed (map-join _ t) (𝓕 .closed (map (λ _ → proj₁) t)) ,
@@ -255,7 +254,7 @@ module LiftSubidempotent
   joinʲ x (node l r) = ≤-trans (&-mono (joinʲ x l) (joinʲ x r)) (&-idem _)
 
   ηˢ : Carrier → Sheaf
-  ηˢ x .SCarrier y = Lift c (y ≤ x)
+  ηˢ x .ICarrier y = Lift c (y ≤ x)
   ηˢ x .≤-closed z≤y (lift y≤x) = lift (≤-trans z≤y y≤x)
   ηˢ x .closed t .lower = joinʲ _ t
 
@@ -283,8 +282,8 @@ module LiftIsPomonoid
       in node s₁ t₁ , node s₂ t₂ , ≤-trans (&-mono s≤s₁s₂ t≤t₁t₂) (&-entropy _ _ _ _)
 
     _▷ˢ_ : Sheaf → Sheaf → Sheaf
-    (𝓕 ▷ˢ 𝓖) .SCarrier x =
-      ∃[ y ] ∃[ z ] (x ≤ (y ∙ z) × 𝓕 .SCarrier y × 𝓖 .SCarrier z)
+    (𝓕 ▷ˢ 𝓖) .ICarrier x =
+      ∃[ y ] ∃[ z ] (x ≤ (y ∙ z) × 𝓕 .ICarrier y × 𝓖 .ICarrier z)
     (𝓕 ▷ˢ 𝓖) .≤-closed x≤w (y , z , w≤yz , 𝓕y , 𝓖z) =
       (y , z , ≤-trans x≤w w≤yz , 𝓕y , 𝓖z)
     (𝓕 ▷ˢ 𝓖) .closed t =
@@ -296,7 +295,7 @@ module LiftIsPomonoid
     collapse t = joinʲ ε t
 
     ιˢ : Sheaf
-    ιˢ .SCarrier x = Lift c (x ≤ ε)
+    ιˢ .ICarrier x = Lift c (x ≤ ε)
     ιˢ .≤-closed x≤y (lift y≤ε) = lift (≤-trans x≤y y≤ε)
     ιˢ .closed t = lift (collapse t)
 
@@ -462,9 +461,9 @@ module LiftIsPomonoid
 --     -- Residuals are automatically closed, relying on distributivity.
 --     -- Is this deducible from strong monoidality of α?
 --     ⊸-lemma : ∀ F G →
---               (t : Tree (Σ[ x ∈ A ] (∀ y → F .SCarrier y → G .SCarrier (x ∙ y)))) →
---               (y : A) → F .SCarrier y →
---               Σ[ t' ∈ Tree (Σ[ x ∈ A ] (G .SCarrier x)) ] (join t ∙ y) ≤ join t'
+--               (t : Tree (Σ[ x ∈ A ] (∀ y → F .ICarrier y → G .ICarrier (x ∙ y)))) →
+--               (y : A) → F .ICarrier y →
+--               Σ[ t' ∈ Tree (Σ[ x ∈ A ] (G .ICarrier x)) ] (join t ∙ y) ≤ join t'
 --     ⊸-lemma F G (lf (x , f)) y Fy = (lf (x ∙ y , f y Fy)) , refl
 --     ⊸-lemma F G (br s t)     y Fy =
 --       let (s' , sy≤s') = ⊸-lemma F G s y Fy
@@ -472,7 +471,7 @@ module LiftIsPomonoid
 --       in br s' t' , trans ∙-&-distrib (&-mono sy≤s' ty≤t')
 
 --     _⊸_ : Sheaf → Sheaf → Sheaf
---     (F ⊸ G) .SCarrier x = ∀ y → F .SCarrier y → G .SCarrier (x ∙ y)
+--     (F ⊸ G) .ICarrier x = ∀ y → F .ICarrier y → G .ICarrier (x ∙ y)
 --     (F ⊸ G) .≤-closed x≤x' f y Fy = G .≤-closed (mono x≤x' refl) (f y Fy)
 --     (F ⊸ G) .closed t y Fy =
 --       let t' , ty≤y' = ⊸-lemma F G t y Fy in
