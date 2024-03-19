@@ -374,15 +374,6 @@ module LiftIsCommutativePomonoid
 
   open IsCommutativePomonoid isCommutativePomonoid
   open P.LiftIsCommutativePomonoid isCommutativePomonoid
-  open IsCommutativePomonoid ∙ᵖ-isCommutativePomonoid
-    using
-      (
-      )
-    renaming
-      ( ∙-cong  to ∙ᵖ-cong
-      ; ∙-congˡ to ∙ᵖ-congˡ
-      ; ∙-congʳ to ∙ᵖ-congʳ
-      )
   
   distribˡ = distrib .proj₁
   distribʳ = distrib .proj₂
@@ -620,14 +611,6 @@ module LiftIsDuoidal
     }
 
   open LiftIsCommutativePomonoid ∙-isCommutativePomonoid distrib
-
-  open IsCommutativePomonoid ⊗ˢ-isCommutativePomonoid
-    using
-      (
-      )
-    renaming
-      ( isPomonoid to ⊗ˢ-isPomonoid
-      )
   open LiftIsPomonoid ▷-isPomonoid ∨-entropy ∨-idem
   open P.LiftIsDuoidal isDuoidal
 
@@ -639,23 +622,25 @@ module LiftIsDuoidal
   -- lf (x , x≤I) , refl
 
   ⊗ˢ-▷ˢ-entropy : Entropy _≤ˢ_ _⊗ˢ_ _▷ˢ_
-  ⊗ˢ-▷ˢ-entropy = {!   !}
-
---     ⊗-▷-isDuoidal : IsDuoidal ≤ˢ-isPreorder ⊗-isMonoid ▷-isMonoid
---     ⊗-▷-isDuoidal .IsDuoidal.entropy =
---       α-mono (⊛-mono (U-monoidal .proj₁) (U-monoidal .proj₁)) >>
---       (α-mono ∙-⍮-entropy >>
---       (α-mono (,--mono (unit _) (unit _)) >>
---       (α-mono (U-monoidal .proj₂)
---       >> counit)))
---       --   (w ▷ x) ⊗ (y ▷ z)
---       -- ≡ α (U (w ▷ x) ∙ U(y ▷ z))
---       -- ≃ α ((U w ⍮ U x) ∙ (U y ⍮ U z))
---       -- ≤ α ((U w ∙ U y) ⍮ (U x ∙ U z))
---       -- ≤ α (U (α (U w ∙ U y)) ⍮ U (α (U x ∙ U z)))
---       -- ≃ α (U ((w ⊗ y) ▷ (x ⊗ z))
---       -- ≡ (w ⊗ y) ▷ (x ⊗ z)
---     ⊗-▷-isDuoidal .IsDuoidal.mu = ⊗-mono (units-iso .proj₂) ≤ˢ-refl >> ⊗-lunit .proj₁
+  ⊗ˢ-▷ˢ-entropy 𝓕₁ 𝓖₁ 𝓕₂ 𝓖₂ = 
+    begin
+      (𝓕₁ ▷ˢ 𝓖₁) ⊗ˢ (𝓕₂ ▷ˢ 𝓖₂)
+    ≡⟨⟩
+      α (U (𝓕₁ ▷ˢ 𝓖₁) ∙ᵖ U (𝓕₂ ▷ˢ 𝓖₂))
+    ≈⟨ α-cong (∙ᵖ-cong U-monoidal U-monoidal) ⟩
+      α ((U 𝓕₁ ▷ᵖ U 𝓖₁) ∙ᵖ (U 𝓕₂ ▷ᵖ U 𝓖₂))
+    ≤⟨ α-mono (∙ᵖ-▷ᵖ-entropy (U 𝓕₁) (U 𝓖₁) (U 𝓕₂) (U 𝓖₂)) ⟩
+      α ((U 𝓕₁ ∙ᵖ U 𝓕₂) ▷ᵖ (U 𝓖₁ ∙ᵖ U 𝓖₂))
+    ≤⟨ α-mono (▷ᵖ-mono unit unit) ⟩
+      α (U (α (U 𝓕₁ ∙ᵖ U 𝓕₂)) ▷ᵖ U (α (U 𝓖₁ ∙ᵖ U 𝓖₂)))
+    ≈⟨ α-cong U-monoidal ⟨
+      α (U (α (U 𝓕₁ ∙ᵖ U 𝓕₂) ▷ˢ α (U 𝓖₁ ∙ᵖ U 𝓖₂)))
+    ≈⟨ counit-≈ˢ ⟨
+      α (U 𝓕₁ ∙ᵖ U 𝓕₂) ▷ˢ α (U 𝓖₁ ∙ᵖ U 𝓖₂)
+    ≡⟨⟩
+      (𝓕₁ ⊗ˢ 𝓕₂) ▷ˢ (𝓖₁ ⊗ˢ 𝓖₂)
+    ∎
+    where open PosetReasoning ≤ˢ-poset
 
   ⊗ˢ-idem-ιˢ : _SubidempotentOn_ _≤ˢ_ _⊗ˢ_ ιˢ
   ⊗ˢ-idem-ιˢ = {!   !}
@@ -668,7 +653,7 @@ module LiftIsDuoidal
 
   ⊗ˢ-▷ˢ-isDuoidal : IsDuoidal _≈ˢ_ _≤ˢ_ _⊗ˢ_ _▷ˢ_ εˢ ιˢ
   ⊗ˢ-▷ˢ-isDuoidal = record
-    { ∙-isPomonoid = ⊗ˢ-isPomonoid
+    { ∙-isPomonoid = IsCommutativePomonoid.isPomonoid ⊗ˢ-isCommutativePomonoid
     ; ▷-isPomonoid = ▷ˢ-isPomonoid
     ; ∙-▷-entropy = ⊗ˢ-▷ˢ-entropy
     ; ∙-idem-ι = ⊗ˢ-idem-ιˢ

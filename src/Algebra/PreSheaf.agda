@@ -299,6 +299,18 @@ module LiftIsPomonoid {_∙_} {ε} (isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε
       }
     ; identity = ∙ᵖ-identity 
     }
+  
+  open IsPomonoid ∙ᵖ-isPomonoid public
+    using
+      (
+      )
+    renaming 
+      ( monoˡ   to ∙ᵖ-monoˡ
+      ; monoʳ   to ∙ᵖ-monoʳ
+      ; ∙-cong  to ∙ᵖ-cong
+      ; ∙-congˡ to ∙ᵖ-congˡ
+      ; ∙-congʳ to ∙ᵖ-congʳ
+      )
 
 module LiftIsCommutativePomonoid {_∙_} {ε} (isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _∙_ ε) where
 
@@ -351,13 +363,18 @@ module LiftIsDuoidal {_∙_} {_▷_} {ε} {ι} (isDuoidal : IsDuoidal _≈_ _≤
   open LiftIsPomonoid ∙-isPomonoid public
   open LiftIsPomonoid ▷-isPomonoid public
     renaming
-      ( _∙ᵖ_ to _▷ᵖ_
-      ; εᵖ   to ιᵖ
-      ; ∙ᵖ-mono to ▷ᵖ-mono
-      ; ∙ᵖ-assoc to ▷ᵖ-assoc
-      ; ∙ᵖ-identity to ▷ᵖ-identity
-      ; ∙ᵖ-identityˡ to ▷ᵖ-identityˡ
-      ; ∙ᵖ-identityʳ to ▷ᵖ-identityʳ
+      ( _∙ᵖ_          to _▷ᵖ_
+      ; εᵖ            to ιᵖ
+      ; ∙ᵖ-mono       to ▷ᵖ-mono
+      ; ∙ᵖ-monoˡ      to ▷ᵖ-monoˡ
+      ; ∙ᵖ-monoʳ      to ▷ᵖ-monoʳ
+      ; ∙ᵖ-cong       to ▷ᵖ-cong
+      ; ∙ᵖ-congˡ      to ▷ᵖ-congˡ
+      ; ∙ᵖ-congʳ      to ▷ᵖ-congʳ
+      ; ∙ᵖ-assoc      to ▷ᵖ-assoc
+      ; ∙ᵖ-identity   to ▷ᵖ-identity
+      ; ∙ᵖ-identityˡ  to ▷ᵖ-identityˡ
+      ; ∙ᵖ-identityʳ  to ▷ᵖ-identityʳ
       ; ∙ᵖ-isPomonoid to ▷ᵖ-isPomonoid
       )
 
