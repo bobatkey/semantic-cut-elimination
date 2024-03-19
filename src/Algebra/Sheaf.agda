@@ -112,16 +112,16 @@ open Sheaf
 
 private
   variable
-    R R₁ R₂ : Sheaf
-    S S₁ S₂ : Sheaf
-    T T₁ T₂ : Sheaf
+    𝓕 𝓕₁ 𝓕₂ : Sheaf
+    𝓖 𝓖₁ 𝓖₂ : Sheaf
+    𝓗 𝓗₁ 𝓗₂ : Sheaf
 
 infix 4 _≤ˢ_
 
-record _≤ˢ_ (R S : Sheaf) : Set (c ⊔ ℓ₂) where
+record _≤ˢ_ (𝓕 𝓖 : Sheaf) : Set (c ⊔ ℓ₂) where
   no-eta-equality
   field
-    *≤ˢ* : ∀ x → R .SCarrier x → S .SCarrier x
+    *≤ˢ* : ∀ x → 𝓕 .SCarrier x → 𝓖 .SCarrier x
 open _≤ˢ_
 
 infix 4 _≥ˢ_
@@ -134,10 +134,10 @@ infix 4 _≈ˢ_
 _≈ˢ_ : Sheaf → Sheaf → Set (c ⊔ ℓ₂)
 _≈ˢ_ = SymCore _≤ˢ_
 
-≤ˢ-refl : R ≤ˢ R
+≤ˢ-refl : 𝓕 ≤ˢ 𝓕
 ≤ˢ-refl .*≤ˢ* x Sx = Sx
 
-≤ˢ-trans : R ≤ˢ S → S ≤ˢ T → R ≤ˢ T
+≤ˢ-trans : 𝓕 ≤ˢ 𝓖 → 𝓖 ≤ˢ 𝓗 → 𝓕 ≤ˢ 𝓗
 ≤ˢ-trans R≤S S≤T .*≤ˢ* x z = S≤T .*≤ˢ* x (R≤S .*≤ˢ* x z)
 
 ≤ˢ-isPartialOrder : IsPartialOrder _≈ˢ_ _≤ˢ_
@@ -171,20 +171,20 @@ U : Sheaf → PreSheaf
 U F .ICarrier  = F .SCarrier
 U F .≤-closed = F .≤-closed
 
-U-mono : R ≤ˢ S → U R ≤ᵖ U S
+U-mono : 𝓕 ≤ˢ 𝓖 → U 𝓕 ≤ᵖ U 𝓖
 U-mono R≤S .*≤ᵖ* = R≤S .*≤ˢ*
 
-U-cong : R ≈ˢ S → U R ≈ᵖ U S
+U-cong : 𝓕 ≈ˢ 𝓖 → U 𝓕 ≈ᵖ U 𝓖
 U-cong (ϕ , ψ) = (U-mono ϕ , U-mono ψ)
 
 -- We have a reflective sub order
-counit : α (U R) ≤ˢ R
-counit {R} .*≤ˢ* x (t , ψ) = R .≤-closed ψ (R .closed t)
+counit : α (U 𝓕) ≤ˢ 𝓕
+counit {𝓕} .*≤ˢ* x (t , ψ) = 𝓕 .≤-closed ψ (𝓕 .closed t)
 
-counit⁻¹ : R ≤ˢ α (U R)
-counit⁻¹ {R} .*≤ˢ* x ϕ = leaf (x , ϕ) , ≤-refl
+counit⁻¹ : 𝓕 ≤ˢ α (U 𝓕)
+counit⁻¹ {𝓕} .*≤ˢ* x ϕ = leaf (x , ϕ) , ≤-refl
 
-counit-≈ˢ : R ≈ˢ α (U R)
+counit-≈ˢ : 𝓕 ≈ˢ α (U 𝓕)
 counit-≈ˢ = counit⁻¹ , counit
 
 unit : F ≤ᵖ U (α F)
@@ -194,25 +194,25 @@ unit .*≤ᵖ* x ϕ = leaf (x , ϕ) , ≤-refl
 -- Construct a meet semilattice for presheaves
 
 _∧ˢ_ : Sheaf → Sheaf → Sheaf
-(R ∧ˢ S) .SCarrier x = R .SCarrier x × S .SCarrier x
-(R ∧ˢ S) .≤-closed x≤y (Ry , Sy) = (R .≤-closed x≤y Ry) , (S .≤-closed x≤y Sy)
-(R ∧ˢ S) .closed t =
-  R .≤-closed (map-join _ t) (R .closed (map-Tree (λ _ → proj₁) t)) ,
-  S .≤-closed (map-join _ t) (S .closed (map-Tree (λ _ → proj₂) t))
+(𝓕 ∧ˢ 𝓖) .SCarrier x = 𝓕 .SCarrier x × 𝓖 .SCarrier x
+(𝓕 ∧ˢ 𝓖) .≤-closed x≤y (Ry , Sy) = (𝓕 .≤-closed x≤y Ry) , (𝓖 .≤-closed x≤y Sy)
+(𝓕 ∧ˢ 𝓖) .closed t =
+  𝓕 .≤-closed (map-join _ t) (𝓕 .closed (map-Tree (λ _ → proj₁) t)) ,
+  𝓖 .≤-closed (map-join _ t) (𝓖 .closed (map-Tree (λ _ → proj₂) t))
 
-proj₁ˢ : (R ∧ˢ S) ≤ˢ R
+proj₁ˢ : (𝓕 ∧ˢ 𝓖) ≤ˢ 𝓕
 proj₁ˢ .*≤ˢ* x = proj₁
 
-proj₂ˢ : (R ∧ˢ S) ≤ˢ S
+proj₂ˢ : (𝓕 ∧ˢ 𝓖) ≤ˢ 𝓖
 proj₂ˢ .*≤ˢ* x = proj₂
 
-⟨_,_⟩ˢ : R ≤ˢ S → R ≤ˢ T → R ≤ˢ (S ∧ˢ T)
+⟨_,_⟩ˢ : 𝓕 ≤ˢ 𝓖 → 𝓕 ≤ˢ 𝓗 → 𝓕 ≤ˢ (𝓖 ∧ˢ 𝓗)
 ⟨ T≤R , T≤S ⟩ˢ .*≤ˢ* x = < T≤R .*≤ˢ* x , T≤S .*≤ˢ* x >
 
 ∧ˢ-isMeetSemilattice : IsMeetSemilattice _≈ˢ_ _≤ˢ_ _∧ˢ_
 ∧ˢ-isMeetSemilattice = record
   { isPartialOrder = ≤ˢ-isPartialOrder
-  ; infimum        = λ R S → (proj₁ˢ ,  proj₂ˢ , λ T → ⟨_,_⟩ˢ)
+  ; infimum        = λ 𝓕 𝓖 → (proj₁ˢ ,  proj₂ˢ , λ 𝓗 → ⟨_,_⟩ˢ)
   }
 
 --     -- FIXME: work out what is needed here; probably going to have to
@@ -225,23 +225,23 @@ proj₂ˢ .*≤ˢ* x = proj₂
 -- Construct a join semilattice for presheaves
 
 _∨ˢ_ : Sheaf → Sheaf → Sheaf
-R ∨ˢ S = α (U R ∨ᵖ U S)
+𝓕 ∨ˢ 𝓖 = α (U 𝓕 ∨ᵖ U 𝓖)
 
-inj₁ˢ : R ≤ˢ (R ∨ˢ S)
+inj₁ˢ : 𝓕 ≤ˢ (𝓕 ∨ˢ 𝓖)
 inj₁ˢ = ≤ˢ-trans counit⁻¹ (α-mono inj₁ᵖ)
 
-inj₂ˢ : S ≤ˢ (R ∨ˢ S)
+inj₂ˢ : 𝓖 ≤ˢ (𝓕 ∨ˢ 𝓖)
 inj₂ˢ = ≤ˢ-trans counit⁻¹ (α-mono inj₂ᵖ)
 
-[_,_]ˢ : R ≤ˢ T → S ≤ˢ T → (R ∨ˢ S) ≤ˢ T
-[_,_]ˢ {R} {T} {S} R≤T S≤T .*≤ˢ* x (t , x≤t) =
-  T .≤-closed (≤-trans x≤t (map-join _ t))
-    (T .closed (map-Tree (λ x → [ R≤T .*≤ˢ* x , S≤T .*≤ˢ* x ]) t))
+[_,_]ˢ : 𝓕 ≤ˢ 𝓗 → 𝓖 ≤ˢ 𝓗 → (𝓕 ∨ˢ 𝓖) ≤ˢ 𝓗
+[_,_]ˢ {𝓕} {𝓗} {𝓖} R≤T S≤T .*≤ˢ* x (t , x≤t) =
+  𝓗 .≤-closed (≤-trans x≤t (map-join _ t))
+    (𝓗 .closed (map-Tree (λ x → [ R≤T .*≤ˢ* x , S≤T .*≤ˢ* x ]) t))
 
 ∨ˢ-isJoinSemilattice : IsJoinSemilattice _≈ˢ_ _≤ˢ_ _∨ˢ_
 ∨ˢ-isJoinSemilattice = record
   { isPartialOrder = ≤ˢ-isPartialOrder
-  ; supremum       = λ R S → (inj₁ˢ , inj₂ˢ , λ T → [_,_]ˢ)
+  ; supremum       = λ 𝓕 𝓖 → (inj₁ˢ , inj₂ˢ , λ 𝓗 → [_,_]ˢ)
   }
 
 ------------------------------------------------------------------------------
