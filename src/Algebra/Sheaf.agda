@@ -270,6 +270,8 @@ module LiftIsPomonoid
     (&-idem : Subidempotent _≤_ _&_)
   where
 
+    open LiftSubidempotent &-idem
+
     split : (t : Tree (∃[ x ] ∃[ y ] ∃[ z ] (x ≤ (y ∙ z)) × Y y × Z z)) →
             Σ[ t₁ ∈ Tree (∃ Y) ]
             Σ[ t₂ ∈ Tree (∃ Z) ]
@@ -283,53 +285,58 @@ module LiftIsPomonoid
     _▷ˢ_ : Sheaf → Sheaf → Sheaf
     (𝓕 ▷ˢ 𝓖) .SCarrier x =
       ∃[ y ] ∃[ z ] (x ≤ (y ∙ z) × 𝓕 .SCarrier y × 𝓖 .SCarrier z)
-    (𝓕 ▷ˢ 𝓖) .≤-closed x≤x' (y , z , x'≤yz , 𝓕y , 𝓖z) =
-      (y , z , ≤-trans x≤x' x'≤yz , 𝓕y , 𝓖z)
+    (𝓕 ▷ˢ 𝓖) .≤-closed x≤w (y , z , w≤yz , 𝓕y , 𝓖z) =
+      (y , z , ≤-trans x≤w w≤yz , 𝓕y , 𝓖z)
     (𝓕 ▷ˢ 𝓖) .closed t =
       let ft , gt , t≤fg = split t in
       join ft , join gt , t≤fg , 𝓕 .closed ft , 𝓖 .closed gt
 
---     -- FIXME: this is the same as 'tidyup' in 'bv.agda', and is a
---     -- special case of joinJ above.
---     collapse : (t : Tree (Σ[ x ∈ A ] Lift a (x ≤ ε))) → join t ≤ ε
---     collapse (lf (x , lift x≤ε)) = x≤ε
---     collapse (br s t) = trans (&-mono (collapse s) (collapse t)) tidy
+    -- FIXME: This is the same as tidyup in MAV.Base
+    collapse : (t : Tree (∃[ x ] Lift c (x ≤ ε))) → join t ≤ ε
+    collapse t = joinʲ ε t
 
---     I : Sheaf
---     I .SCarrier x = Lift a (x ≤ ε)
---     I .≤-closed x≤y (lift y≤ε) = lift (trans x≤y y≤ε)
---     I .closed t = lift (collapse t)
+    ιˢ : Sheaf
+    ιˢ .SCarrier x = Lift c (x ≤ ε)
+    ιˢ .≤-closed x≤y (lift y≤ε) = lift (≤-trans x≤y y≤ε)
+    ιˢ .closed t = lift (collapse t)
 
---     -- Associativity etc. are now the same as before, because the
---     -- carrier is the same
---     open Monoid ∙-isMonoid renaming (I to J)
+    -- Associativity etc. are now the same as before, because the
+    -- carrier is the same
+    open P.LiftIsPomonoid isPomonoid
 
---     ▷-mono : ∀ {F₁ G₁ F₂ G₂} → F₁ ≤ˢ F₂ → G₁ ≤ˢ G₂ → (F₁ ▷ G₁) ≤ˢ (F₂ ▷ G₂)
---     ▷-mono {F₁}{G₁}{F₂}{G₂} m₁ m₂ .*≤ˢ* =
---       ∙-mono {U F₁}{U G₁}{U F₂}{U G₂}
---         (record { *≤ᵖ* = m₁ .*≤ˢ* }) (record { *≤ᵖ* = m₂ .*≤ˢ* }) .*≤ᵖ*
+    ▷ˢ-mono : Monotonic₂ _≤ˢ_ _≤ˢ_ _≤ˢ_ _▷ˢ_
+    ▷ˢ-mono 𝓕₁≤𝓖₁ 𝓕₂≤𝓖₂ .*≤ˢ* = ∙ᵖ-mono (U-mono 𝓕₁≤𝓖₁) (U-mono 𝓕₂≤𝓖₂) .*≤ᵖ*
 
---     ▷-assoc : ∀ {F G H} → ((F ▷ G) ▷ H) ≈ˢ (F ▷ (G ▷ H))
---     ▷-assoc {F}{G}{H} .proj₁ .*≤ˢ* = ∙-assoc {U F}{U G}{U H} .proj₁ .*≤ᵖ*
---     ▷-assoc {F}{G}{H} .proj₂ .*≤ˢ* = ∙-assoc {U F}{U G}{U H} .proj₂ .*≤ᵖ*
+    ▷ˢ-assoc : Associative _≈ˢ_ _▷ˢ_
+    ▷ˢ-assoc 𝓕 𝓖 𝓗 .proj₁ .*≤ˢ* = ∙ᵖ-assoc (U 𝓕) (U 𝓖) (U 𝓗) .proj₁ .*≤ᵖ*
+    ▷ˢ-assoc 𝓕 𝓖 𝓗 .proj₂ .*≤ˢ* = ∙ᵖ-assoc (U 𝓕) (U 𝓖) (U 𝓗) .proj₂ .*≤ᵖ*
 
---     ▷-lunit : ∀ {F} → (I ▷ F) ≈ˢ F
---     ▷-lunit {F} .proj₁ .*≤ˢ* = ∙-lunit {U F} .proj₁ .*≤ᵖ*
---     ▷-lunit {F} .proj₂ .*≤ˢ* = ∙-lunit {U F} .proj₂ .*≤ᵖ*
+    ▷ˢ-identityˡ : LeftIdentity _≈ˢ_ ιˢ _▷ˢ_
+    ▷ˢ-identityˡ 𝓕 .proj₁ .*≤ˢ* = ∙ᵖ-identityˡ (U 𝓕) .proj₁ .*≤ᵖ*
+    ▷ˢ-identityˡ 𝓕 .proj₂ .*≤ˢ* = ∙ᵖ-identityˡ (U 𝓕) .proj₂ .*≤ᵖ*
 
---     ▷-runit : ∀ {F} → (F ▷ I) ≈ˢ F
---     ▷-runit {F} .proj₁ .*≤ˢ* = ∙-runit {U F} .proj₁ .*≤ᵖ*
---     ▷-runit {F} .proj₂ .*≤ˢ* = ∙-runit {U F} .proj₂ .*≤ᵖ*
+    ▷ˢ-identityʳ : RightIdentity _≈ˢ_ ιˢ _▷ˢ_
+    ▷ˢ-identityʳ 𝓕 .proj₁ .*≤ˢ* = ∙ᵖ-identityʳ (U 𝓕) .proj₁ .*≤ᵖ*
+    ▷ˢ-identityʳ 𝓕 .proj₂ .*≤ˢ* = ∙ᵖ-identityʳ (U 𝓕) .proj₂ .*≤ᵖ*
 
---     ▷-isMonoid : IsMonoid ≤ˢ-isPreorder _▷_ I
---     ▷-isMonoid .IsMonoid.mono m₁ m₂ .*≤ˢ* = ∙-mono (U-mono m₁) (U-mono m₂) .*≤ᵖ*
---     ▷-isMonoid .IsMonoid.assoc = ▷-assoc
---     ▷-isMonoid .IsMonoid.lunit = ▷-lunit
---     ▷-isMonoid .IsMonoid.runit = ▷-runit
+    ▷ˢ-identity : Identity _≈ˢ_ ιˢ _▷ˢ_
+    ▷ˢ-identity = (▷ˢ-identityˡ , ▷ˢ-identityʳ)
 
---     U-monoidal : ∀ {F G} → U (F ▷ G) ≈ᵖ (U F ∙ U G)
---     U-monoidal .proj₁ .*≤ᵖ* x ϕ = ϕ
---     U-monoidal .proj₂ .*≤ᵖ* x ϕ = ϕ
+    ▷ˢ-isPomonoid : IsPomonoid _≈ˢ_ _≤ˢ_ _▷ˢ_ ιˢ
+    ▷ˢ-isPomonoid = record 
+      { isPosemigroup = record 
+        { isPomagma = record
+          { isPartialOrder = ≤ˢ-isPartialOrder 
+          ; mono = ▷ˢ-mono
+          } 
+        ; assoc = ▷ˢ-assoc 
+        }
+      ; identity = ▷ˢ-identity 
+      }
+
+    U-monoidal : U (𝓕 ▷ˢ 𝓖) ≈ᵖ (U 𝓕 ∙ᵖ U 𝓖)
+    U-monoidal .proj₁ .*≤ᵖ* x 𝓕x = 𝓕x
+    U-monoidal .proj₂ .*≤ᵖ* x 𝓕x = 𝓕x
 
 --   -- A commutative monoid that distributes over the 'join' also
 --   -- gives a monoid on sheaves.
@@ -520,4 +527,4 @@ module LiftIsPomonoid
 --       -- ≃ α (U ((w ⊗ y) ▷ (x ⊗ z))
 --       -- ≡ (w ⊗ y) ▷ (x ⊗ z)
 --     ⊗-▷-isDuoidal .IsDuoidal.mu = ⊗-mono (units-iso .proj₂) ≤ˢ-refl >> ⊗-lunit .proj₁
-    
+        
