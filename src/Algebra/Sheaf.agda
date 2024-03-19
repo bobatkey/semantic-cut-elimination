@@ -82,6 +82,7 @@ map : (∀ x → X x → Y x) → Tree (∃ X) → Tree (∃ Y)
 map f (leaf (x , Xx)) = leaf (x , f x Xx)
 map f (node l r)      = node (map f l) (map f r)
 
+-- WEN: Is this essentially "big &"?
 join : Tree (∃ X) → Carrier
 join (leaf (x , _)) = x
 join (node l r) = join l & join r
