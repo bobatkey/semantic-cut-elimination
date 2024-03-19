@@ -17,16 +17,14 @@ open import Relation.Binary.Lattice
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 import Relation.Binary.Construct.Flip.EqAndOrd as Flip
 
-module Algebra.PreSheaf
-    {c ℓ₁ ℓ₂}
-    {Carrier : Set c}      -- The underlying set
-    {_≈_ : Rel Carrier ℓ₁} -- The underlying equality relation
-    {_≤_ : Rel Carrier ℓ₂} -- The underlying order relationm
-    (isPartialOrder : IsPartialOrder _≈_ _≤_)
-    where
+module Algebra.PreSheaf {c ℓ₁ ℓ₂} (poset : Poset c ℓ₁ ℓ₂) where
 
-open IsPartialOrder isPartialOrder
-  using ()
+open Poset poset
+  using
+    ( Carrier
+    ; _≈_
+    ; _≤_
+    )
   renaming
     ( refl  to ≤-refl
     ; trans to ≤-trans

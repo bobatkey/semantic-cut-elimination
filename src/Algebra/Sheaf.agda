@@ -27,31 +27,23 @@ open import Relation.Unary using (Pred)
 --
 --     C X x = Σ[ t ∈ Tree (Σ[ x ∈ A ] X .ICarrier x) ] x ≤ join t
 
-module Algebra.Sheaf
-    {c ℓ₁ ℓ₂}
-    {Carrier : Set c}      -- The underlying set
-    {_≈_ : Rel Carrier ℓ₁} -- The underlying equality relation
-    {_≤_ : Rel Carrier ℓ₂} -- The underlying order relationm
-    {_&_ : Op₂ Carrier}
-    (isPomagma : IsPomagma _≈_ _≤_ _&_)
-  where
+module Algebra.Sheaf {c ℓ₁ ℓ₂} (pomagma : Pomagma c ℓ₁ ℓ₂) where
 
-open IsPomagma isPomagma
+open Pomagma pomagma
   using
-    ( isPartialOrder
+    ( Carrier
+    ; _≈_
+    ; _≤_
+    ; poset
     )
   renaming
-    ( mono  to &-mono
-    )
-
-open IsPartialOrder isPartialOrder
-  using ()
-  renaming
-    ( refl  to ≤-refl
+    ( _∙_   to _&_
+    ; mono  to &-mono
+    ; refl  to ≤-refl
     ; trans to ≤-trans
     )
 
-open import Algebra.PreSheaf isPartialOrder as P
+open import Algebra.PreSheaf poset as P
   using
     ( PreSheaf
     ; ICarrier
