@@ -270,26 +270,24 @@ module LiftIsPomonoid
     (&-idem : Subidempotent _≤_ _&_)
   where
 
---     split : ∀ {F G : A → Set (a ⊔ ℓ₂)} →
---             (t : Tree (Σ[ x ∈ A ] Σ[ y ∈ A ] Σ[ z ∈ A ] (x ≤ (y ∙ z)) × F y × G z)) →
---             Σ[ t₁ ∈ Tree (Σ[ x ∈ A ] F x) ]
---             Σ[ t₂ ∈ Tree (Σ[ x ∈ A ] G x) ]
---               (join t ≤ (join t₁ ∙ join t₂))
---     split (lf (x , y , z , x≤yz , Fy , Gz)) = lf (y , Fy) , lf (z , Gz) , x≤yz
---     split (br s t) =
---       let s₁ , s₂ , s≤s₁s₂ = split s
---           t₁ , t₂ , t≤t₁t₂ = split t
---       in
---       br s₁ t₁ , br s₂ t₂ , trans (&-mono s≤s₁s₂ t≤t₁t₂) medial
+    split : (t : Tree (∃[ x ] ∃[ y ] ∃[ z ] (x ≤ (y ∙ z)) × Y y × Z z)) →
+            Σ[ t₁ ∈ Tree (∃ Y) ]
+            Σ[ t₂ ∈ Tree (∃ Z) ]
+              (join t ≤ (join t₁ ∙ join t₂))
+    split (leaf (x , y , z , x≤yz , Fy , Gz)) = leaf (y , Fy) , leaf (z , Gz) , x≤yz
+    split (node s t) =
+      let s₁ , s₂ , s≤s₁s₂ = split s
+          t₁ , t₂ , t≤t₁t₂ = split t
+      in node s₁ t₁ , node s₂ t₂ , ≤-trans (&-mono s≤s₁s₂ t≤t₁t₂) (&-entropy _ _ _ _)
 
---     _▷_ : Sheaf → Sheaf → Sheaf
---     (F ▷ G) .SCarrier x =
---       Σ[ y ∈ A ] Σ[ z ∈ A ] (x ≤ (y ∙ z) × F .SCarrier y × G .SCarrier z)
---     (F ▷ G) .≤-closed x≤x' (y , z , x'≤yz , Fy , Gz) =
---       y , z , trans x≤x' x'≤yz , Fy , Gz
---     (F ▷ G) .closed t =
---       let ft , gt , t≤fg = split t in
---       join ft , join gt , t≤fg , F .closed ft , G .closed gt
+    _▷ˢ_ : Sheaf → Sheaf → Sheaf
+    (𝓕 ▷ˢ 𝓖) .SCarrier x =
+      ∃[ y ] ∃[ z ] (x ≤ (y ∙ z) × 𝓕 .SCarrier y × 𝓖 .SCarrier z)
+    (𝓕 ▷ˢ 𝓖) .≤-closed x≤x' (y , z , x'≤yz , 𝓕y , 𝓖z) =
+      (y , z , ≤-trans x≤x' x'≤yz , 𝓕y , 𝓖z)
+    (𝓕 ▷ˢ 𝓖) .closed t =
+      let ft , gt , t≤fg = split t in
+      join ft , join gt , t≤fg , 𝓕 .closed ft , 𝓖 .closed gt
 
 --     -- FIXME: this is the same as 'tidyup' in 'bv.agda', and is a
 --     -- special case of joinJ above.
