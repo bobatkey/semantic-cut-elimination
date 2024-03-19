@@ -27,7 +27,7 @@ open import Relation.Unary using (Pred)
 --
 --     C X x = Σ[ t ∈ Tree (Σ[ x ∈ A ] X .ICarrier x) ] x ≤ join t
 
-module Sheaf
+module Algebra.Sheaf
     {c ℓ₁ ℓ₂}
     {Carrier : Set c}      -- The underlying set
     {_≈_ : Rel Carrier ℓ₁} -- The underlying equality relation
@@ -50,7 +50,7 @@ open IsPomagma &-isPomagma
     ( mono  to &-mono
     )
 
-open import PreSheaf isPartialOrder as P
+open import Algebra.PreSheaf isPartialOrder as P
   using
     ( PreSheaf
     ; ICarrier
@@ -266,7 +266,7 @@ module LiftSubidempotent
 module LiftIsPomonoid 
     {_∙_} {ε} 
     (isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε)
-    (&-exchange : Exchange _≤_ _&_ _∙_) 
+    (&-entropy : Entropy _≤_ _&_ _∙_) 
     (&-idem : Subidempotent _≤_ _&_)
   where
   
@@ -509,9 +509,9 @@ module LiftIsPomonoid
 --     _>>_ = ≤ˢ-trans
 
 --     ⊗-▷-isDuoidal : IsDuoidal ≤ˢ-isPreorder ⊗-isMonoid ▷-isMonoid
---     ⊗-▷-isDuoidal .IsDuoidal.exchange =
+--     ⊗-▷-isDuoidal .IsDuoidal.entropy =
 --       α-mono (⊛-mono (U-monoidal .proj₁) (U-monoidal .proj₁)) >>
---       (α-mono ∙-⍮-exchange >>
+--       (α-mono ∙-⍮-entropy >>
 --       (α-mono (,--mono (unit _) (unit _)) >>
 --       (α-mono (U-monoidal .proj₂)
 --       >> counit)))

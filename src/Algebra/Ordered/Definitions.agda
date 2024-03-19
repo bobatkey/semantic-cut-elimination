@@ -40,8 +40,8 @@ RightEval _∙_ _⇨_ = ∀ {x y} → (x ∙ (x ⇨ y)) ≲ y
 Residuated : Op₂ A → Op₂ A → Op₂ A → Set _
 Residuated ∙ ⇦ ⇨ = LeftResidual ∙ ⇦ × RightResidual ∙ ⇨
 
-Exchange : Op₂ A → Op₂ A → Set _
-Exchange _∙_ _▷_ = ∀ w x y z → ((w ▷ x) ∙ (y ▷ z)) ≲ ((w ∙ y) ▷ (x ∙ z))
+Entropy : Op₂ A → Op₂ A → Set _
+Entropy _∙_ _▷_ = ∀ w x y z → ((w ▷ x) ∙ (y ▷ z)) ≲ ((w ∙ y) ▷ (x ∙ z))
 
 _SubidempotentOn_ : Op₂ A → A → Set _
 ∙ SubidempotentOn x = ∙ IdempotentOn x

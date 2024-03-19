@@ -268,7 +268,7 @@ module _
                    (⊗-isMonoid : IsMonoid _⊗_ ε)
                    (⍮-isMonoid : IsMonoid _⍮_ ι) : Set (a ⊔ b) where
     field
-      exchange : ∀ {w x y z} → ((w ⍮ x) ⊗ (y ⍮ z)) ≤ ((w ⊗ y) ⍮ (x ⊗ z))
+      entropy : ∀ {w x y z} → ((w ⍮ x) ⊗ (y ⍮ z)) ≤ ((w ⊗ y) ⍮ (x ⊗ z))
       mu       : (ι ⊗ ι) ≤ ι
       -- (Δ : ε ≤ (ε ▷ ε)) -- what is this needed for?
       -- (u : ε ≤ ι) -- what is this needed for?

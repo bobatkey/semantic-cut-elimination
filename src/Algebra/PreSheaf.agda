@@ -2,8 +2,11 @@
 
 open import Level
 open import Algebra
-open import Algebra.Ordered
 open import Algebra.Ordered.Consequences
+open import Algebra.Ordered.Definitions
+open import Algebra.Ordered.Structures
+open import Algebra.Ordered.Structures.Residuated
+open import Algebra.Ordered.Structures.Duoidal
 open import Function using (flip)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ-syntax; swap; <_,_>)
 open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
@@ -14,7 +17,7 @@ open import Relation.Binary.Lattice
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 import Relation.Binary.Construct.Flip.EqAndOrd as Flip
 
-module PreSheaf
+module Algebra.PreSheaf
     {c ℓ₁ ℓ₂}
     {Carrier : Set c}      -- The underlying set
     {_≈_ : Rel Carrier ℓ₁} -- The underlying equality relation
@@ -338,12 +341,12 @@ module LiftIsDuoidal {_∙_} {_▷_} {ε} {ι} (isDuoidal : IsDuoidal _≈_ _≤
       ; ∙ᵖ-isPomonoid to ▷ᵖ-isPomonoid
       )
 
-  ∙ᵖ-▷ᵖ-exchange : Exchange _≤ᵖ_ _∙ᵖ_ _▷ᵖ_
-  ∙ᵖ-▷ᵖ-exchange F₁ G₁ F₂ G₂ .*≤ᵖ* x 
+  ∙ᵖ-▷ᵖ-entropy : Entropy _≤ᵖ_ _∙ᵖ_ _▷ᵖ_
+  ∙ᵖ-▷ᵖ-entropy F₁ G₁ F₂ G₂ .*≤ᵖ* x 
     (y , z , x≤yz , 
       (y₁ , y₂ , y≤y₁y₂ , F₁y₁ , G₁y₂) , 
       (z₁ , z₂ , z≤z₁z₂ , F₂z₁ , G₂z₂)) = 
-    (y₁ ∙ z₁ , y₂ ∙ z₂ , trans x≤yz (trans (∙-mono y≤y₁y₂ z≤z₁z₂) (∙-▷-exchange y₁ y₂ z₁ z₂)) ,
+    (y₁ ∙ z₁ , y₂ ∙ z₂ , trans x≤yz (trans (∙-mono y≤y₁y₂ z≤z₁z₂) (∙-▷-entropy y₁ y₂ z₁ z₂)) ,
       (y₁ , z₁ , refl , F₁y₁ , F₂z₁) , 
       (y₂ , z₂ , refl , G₁y₂ , G₂z₂))
 
@@ -362,7 +365,7 @@ module LiftIsDuoidal {_∙_} {_▷_} {ε} {ι} (isDuoidal : IsDuoidal _≈_ _≤
   ∙ᵖ-▷ᵖ-isDuoidal = record
     { ∙-isPomonoid   = ∙ᵖ-isPomonoid
     ; ▷-isPomonoid   = ▷ᵖ-isPomonoid
-    ; ∙-▷-exchange   = ∙ᵖ-▷ᵖ-exchange
+    ; ∙-▷-entropy   = ∙ᵖ-▷ᵖ-entropy
     ; ∙-idempotent-ι = ∙ᵖ-idempotent-ιᵖ
     ; ▷-idempotent-ε = ▷ᵖ-idempotent-εᵖ
     ; ε≲ι            = εᵖ≤ιᵖ

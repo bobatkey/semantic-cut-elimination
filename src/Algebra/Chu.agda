@@ -1,6 +1,6 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-module Chu where
+module Algebra.Chu where
 
 -- If we have a preordered closed symmetric monoid with finite meets
 -- and chosen element K, then the Chu construction is a *-autonomous
@@ -205,7 +205,7 @@ module Construction {a b} {A : Set a}
     _⍮_ : Chu → Chu → Chu
     (X ⍮ Y) .pos = X .pos ▷ Y .pos
     (X ⍮ Y) .neg = X .neg ▷ Y .neg
-    (X ⍮ Y) .int = exchange >> (▷-mono (X .int) (Y .int) >> K-m)
+    (X ⍮ Y) .int = entropy >> (▷-mono (X .int) (Y .int) >> K-m)
 
     self-dual : ∀ {X Y} → ¬ (X ⍮ Y) ≅ (¬ X ⍮ ¬ Y)
     self-dual .proj₁ .fpos = refl
@@ -248,15 +248,15 @@ module Construction {a b} {A : Set a}
     ⍮-isMonoid .IsMonoid.runit = ⍮-runit
 
     -- transpose for any closed duoidal category
-    exchange' : ∀ {w x y z} → ((w -• x) ▷ (y -• z)) ≤ ((w ▷ y) -• (x ▷ z))
-    exchange' = lambda (exchange >> ▷-mono eval eval)
+    entropy' : ∀ {w x y z} → ((w -• x) ▷ (y -• z)) ≤ ((w ▷ y) -• (x ▷ z))
+    entropy' = lambda (entropy >> ▷-mono eval eval)
 
     ▷-medial : ∀ {A B C D} → ((A ∧ B) ▷ (C ∧ D)) ≤ ((A ▷ C) ∧ (B ▷ D))
     ▷-medial = ⟨ ▷-mono π₁ π₁ , ▷-mono π₂ π₂ ⟩
 
-    ⍮-exchange : ∀ {W X Y Z} → ((W ⍮ X) ⊗ (Y ⍮ Z)) ==> ((W ⊗ Y) ⍮ (X ⊗ Z))
-    ⍮-exchange .fpos = exchange
-    ⍮-exchange .fneg = ▷-medial >> ∧-mono exchange' exchange'
+    ⍮-entropy : ∀ {W X Y Z} → ((W ⍮ X) ⊗ (Y ⍮ Z)) ==> ((W ⊗ Y) ⍮ (X ⊗ Z))
+    ⍮-entropy .fpos = entropy
+    ⍮-entropy .fneg = ▷-medial >> ∧-mono entropy' entropy'
 
     ⍮-mu : (J ⊗ J) ==> J
     ⍮-mu .fpos = mu
@@ -264,5 +264,5 @@ module Construction {a b} {A : Set a}
 
     -- presumably Δ and eps are derivable too if we assume them
     ⊗-⍮-isDuoidal : IsDuoidal ==>-isPreorder ⊗-isMonoid ⍮-isMonoid
-    ⊗-⍮-isDuoidal .IsDuoidal.exchange = ⍮-exchange
+    ⊗-⍮-isDuoidal .IsDuoidal.entropy = ⍮-entropy
     ⊗-⍮-isDuoidal .IsDuoidal.mu = ⍮-mu

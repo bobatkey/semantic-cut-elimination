@@ -138,7 +138,7 @@ record Model (a ℓ : Level) : Set (suc (a ⊔ ℓ)) where
   sequence =
     trans (involution .proj₁)
           (¬-mono (trans (⊗-mono (▷-self-dual .proj₁) (▷-self-dual .proj₁))
-                  (trans exchange
+                  (trans entropy
                   (trans (▷-mono (involution .proj₁) (involution .proj₁))
                   (▷-self-dual .proj₂)))))
 

@@ -187,7 +187,7 @@ _`⟨▷*_ : P ⟶* P′ → (Q : Formula) → P `▷ Q ⟶* P′ `▷ Q
 `⅋-`▷-isDuoidal : IsDuoidal _⟷*_ _⟶*_ _`⅋_ _`▷_ `I `I
 `⅋-`▷-isDuoidal .IsDuoidal.∙-isPomonoid = `⅋-isPomonoid
 `⅋-`▷-isDuoidal .IsDuoidal.▷-isPomonoid = `▷-isPomonoid
-`⅋-`▷-isDuoidal .IsDuoidal.∙-▷-exchange w x y z = `sequence ◅ ε
+`⅋-`▷-isDuoidal .IsDuoidal.∙-▷-entropy w x y z = `sequence ◅ ε
 `⅋-`▷-isDuoidal .IsDuoidal.∙-idempotent-ι = `⅋-unit ◅ ε
 `⅋-`▷-isDuoidal .IsDuoidal.▷-idempotent-ε = `▷-lunit⁻¹ ◅ ε -- or `▷-runit⁻¹ ◅ ε
 `⅋-`▷-isDuoidal .IsDuoidal.ε≲ι = ε
