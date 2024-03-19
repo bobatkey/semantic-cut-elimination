@@ -78,9 +78,9 @@ data Tree {a} (A : Set a) : Set a where
   leaf : A → Tree A
   node : Tree A → Tree A → Tree A
 
-map-Tree : (∀ x → X x → Y x) → Tree (∃ X) → Tree (∃ Y)
-map-Tree f (leaf (x , Xx)) = leaf (x , f x Xx)
-map-Tree f (node l r)      = node (map-Tree f l) (map-Tree f r)
+map : (∀ x → X x → Y x) → Tree (∃ X) → Tree (∃ Y)
+map f (leaf (x , Xx)) = leaf (x , f x Xx)
+map f (node l r)      = node (map f l) (map f r)
 
 join : Tree (∃ X) → Carrier
 join (leaf (x , _)) = x
@@ -88,7 +88,7 @@ join (node l r) = join l & join r
 
 map-join : (f : ∀ x → X x → Y x) →
             (t : Tree (∃ X)) →
-            join t ≤ join (map-Tree f t)
+            join t ≤ join (map f t)
 map-join f (leaf _) = ≤-refl
 map-join f (node l r) = &-mono (map-join f l) (map-join f r)
 
@@ -159,7 +159,7 @@ _≈ˢ_ = SymCore _≤ˢ_
 α F .closed t = flatten t , flatten-join t
 
 α-mono : F ≤ᵖ G → α F ≤ˢ α G
-α-mono F≤G .*≤ˢ* x (t , ψ) = map-Tree (F≤G .*≤ᵖ*) t , ≤-trans ψ (map-join _ t)
+α-mono F≤G .*≤ˢ* x (t , ψ) = map (F≤G .*≤ᵖ*) t , ≤-trans ψ (map-join _ t)
 
 α-cong : ∀ {F G} → F ≈ᵖ G → α F ≈ˢ α G
 α-cong (ϕ , ψ) = α-mono ϕ , α-mono ψ
@@ -197,8 +197,8 @@ _∧ˢ_ : Sheaf → Sheaf → Sheaf
 (𝓕 ∧ˢ 𝓖) .SCarrier x = 𝓕 .SCarrier x × 𝓖 .SCarrier x
 (𝓕 ∧ˢ 𝓖) .≤-closed x≤y (Ry , Sy) = (𝓕 .≤-closed x≤y Ry) , (𝓖 .≤-closed x≤y Sy)
 (𝓕 ∧ˢ 𝓖) .closed t =
-  𝓕 .≤-closed (map-join _ t) (𝓕 .closed (map-Tree (λ _ → proj₁) t)) ,
-  𝓖 .≤-closed (map-join _ t) (𝓖 .closed (map-Tree (λ _ → proj₂) t))
+  𝓕 .≤-closed (map-join _ t) (𝓕 .closed (map (λ _ → proj₁) t)) ,
+  𝓖 .≤-closed (map-join _ t) (𝓖 .closed (map (λ _ → proj₂) t))
 
 proj₁ˢ : (𝓕 ∧ˢ 𝓖) ≤ˢ 𝓕
 proj₁ˢ .*≤ˢ* x = proj₁
@@ -236,7 +236,7 @@ inj₂ˢ = ≤ˢ-trans counit⁻¹ (α-mono inj₂ᵖ)
 [_,_]ˢ : 𝓕 ≤ˢ 𝓗 → 𝓖 ≤ˢ 𝓗 → (𝓕 ∨ˢ 𝓖) ≤ˢ 𝓗
 [_,_]ˢ {𝓕} {𝓗} {𝓖} R≤T S≤T .*≤ˢ* x (t , x≤t) =
   𝓗 .≤-closed (≤-trans x≤t (map-join _ t))
-    (𝓗 .closed (map-Tree (λ x → [ R≤T .*≤ˢ* x , S≤T .*≤ˢ* x ]) t))
+    (𝓗 .closed (map (λ x → [ R≤T .*≤ˢ* x , S≤T .*≤ˢ* x ]) t))
 
 ∨ˢ-isJoinSemilattice : IsJoinSemilattice _≈ˢ_ _≤ˢ_ _∨ˢ_
 ∨ˢ-isJoinSemilattice = record
