@@ -32,22 +32,23 @@ module Algebra.Sheaf
     {Carrier : Set c}      -- The underlying set
     {_≈_ : Rel Carrier ℓ₁} -- The underlying equality relation
     {_≤_ : Rel Carrier ℓ₂} -- The underlying order relationm
-    (isPartialOrder : IsPartialOrder _≈_ _≤_)
     {_&_ : Op₂ Carrier}
-    (&-isPomagma : IsPomagma _≈_ _≤_ _&_)
+    (isPomagma : IsPomagma _≈_ _≤_ _&_)
   where
+
+open IsPomagma isPomagma
+  using
+    ( isPartialOrder
+    )
+  renaming
+    ( mono  to &-mono
+    )
 
 open IsPartialOrder isPartialOrder
   using ()
   renaming
     ( refl  to ≤-refl
     ; trans to ≤-trans
-    )
-
-open IsPomagma &-isPomagma
-  using ()
-  renaming
-    ( mono  to &-mono
     )
 
 open import Algebra.PreSheaf isPartialOrder as P
@@ -337,6 +338,13 @@ module LiftIsPomonoid
     U-monoidal : U (𝓕 ▷ˢ 𝓖) ≈ᵖ (U 𝓕 ∙ᵖ U 𝓖)
     U-monoidal .proj₁ .*≤ᵖ* x 𝓕x = 𝓕x
     U-monoidal .proj₂ .*≤ᵖ* x 𝓕x = 𝓕x
+
+
+module LiftIsCommutativePomonoid 
+    {_∙_} {ε} 
+    (isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _∙_ ε)
+    (∙-&-distrib : Entropy _≤_ _&_ _∙_) 
+  where
 
 --   -- A commutative monoid that distributes over the 'join' also
 --   -- gives a monoid on sheaves.
