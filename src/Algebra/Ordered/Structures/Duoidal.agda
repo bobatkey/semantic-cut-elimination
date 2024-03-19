@@ -65,8 +65,8 @@ record IsDuoidal (∙ ▷ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂)
       ; identityˡ      to ∙-identityˡ
       ; identityʳ      to ∙-identityʳ
       ; mono           to ∙-mono
-      ; mono₁          to ∙-mono₁
-      ; mono₂          to ∙-mono₂
+      ; monoˡ          to ∙-monoˡ
+      ; monoʳ          to ∙-monoʳ
       )
   open IsPomonoid ▷-isPomonoid public
     hiding
@@ -88,8 +88,8 @@ record IsDuoidal (∙ ▷ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂)
       ; identityˡ      to ▷-identityˡ
       ; identityʳ      to ▷-identityʳ
       ; mono           to ▷-mono
-      ; mono₁          to ▷-mono₁
-      ; mono₂          to ▷-mono₂
+      ; monoˡ          to ▷-monoˡ
+      ; monoʳ          to ▷-monoʳ
       ; ∙-cong         to ▷-cong
       ; ∙-congˡ        to ▷-congˡ
       ; ∙-congʳ        to ▷-congʳ

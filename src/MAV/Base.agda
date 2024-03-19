@@ -2,6 +2,7 @@
 
 module MAV.Base (Atom : Set) where
 
+open import Algebra.Ordered.Structures.Duoidal
 open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ-syntax)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Level using (0ℓ; lift; lower; Lift; suc)
@@ -40,7 +41,7 @@ data _⟶_ : Formula → Formula → Set where
   _`⊗⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊗ Q ⟶ P `⊗ Q′
   -- `⊗-assoc   : P `⊗ (Q `⊗ R) ⟶ (P `⊗ Q) `⊗ R
   -- `⊗-assoc⁻¹ : (P `⊗ Q) `⊗ R ⟶ P `⊗ (Q `⊗ R)
-  -- `⊗-comm    : P `⊗ Q ⟶ Q `⊗ P
+  `⊗-comm    : P `⊗ Q ⟶ Q `⊗ P
   -- `⊗-unit    : P `⊗ `I ⟶ P
   -- `⊗-unit⁻¹  : P ⟶ (P `⊗ `I)
 
@@ -188,8 +189,8 @@ _`⟨▷*_ : P ⟶* P′ → (Q : Formula) → P `▷ Q ⟶* P′ `▷ Q
 `⅋-`▷-isDuoidal .IsDuoidal.∙-isPomonoid = `⅋-isPomonoid
 `⅋-`▷-isDuoidal .IsDuoidal.▷-isPomonoid = `▷-isPomonoid
 `⅋-`▷-isDuoidal .IsDuoidal.∙-▷-entropy w x y z = `sequence ◅ ε
-`⅋-`▷-isDuoidal .IsDuoidal.∙-idempotent-ι = `⅋-unit ◅ ε
-`⅋-`▷-isDuoidal .IsDuoidal.▷-idempotent-ε = `▷-lunit⁻¹ ◅ ε -- or `▷-runit⁻¹ ◅ ε
+`⅋-`▷-isDuoidal .IsDuoidal.∙-idem-ι = `⅋-unit ◅ ε
+`⅋-`▷-isDuoidal .IsDuoidal.▷-idem-ε = `▷-lunit⁻¹ ◅ ε -- or `▷-runit⁻¹ ◅ ε
 `⅋-`▷-isDuoidal .IsDuoidal.ε≲ι = ε
 
 ------------------------------------------------------------------------------

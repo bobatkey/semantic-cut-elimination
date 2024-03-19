@@ -42,11 +42,11 @@ record IsPromagma (∙ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
 
   open IsPreorder isPreorder public
 
-  mono₁ : ∀ {x} → Monotonic₁ _≲_ _≲_ (flip ∙ x)
-  mono₁ y≈z = mono y≈z refl
+  monoˡ : ∀ {x} → Monotonic₁ _≲_ _≲_ (flip ∙ x)
+  monoˡ y≈z = mono y≈z refl
 
-  mono₂ : ∀ {x} → Monotonic₁ _≲_ _≲_ (∙ x)
-  mono₂ y≈z = mono refl y≈z
+  monoʳ : ∀ {x} → Monotonic₁ _≲_ _≲_ (∙ x)
+  monoʳ y≈z = mono refl y≈z
 
   isMagma : IsMagma ∙
   isMagma = record { isEquivalence = isEquivalence ; ∙-cong = ∙-cong }
@@ -113,8 +113,8 @@ record IsProsemiring (+ * : Op₂ A) (0# 1# : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂)
     ; ∙-congˡ                to +-congˡ
     ; ∙-congʳ                to +-congʳ
     ; mono                   to +-mono
-    ; mono₁                  to +-mono₁
-    ; mono₂                  to +-mono₂
+    ; monoˡ                  to +-monoˡ
+    ; monoʳ                  to +-monoʳ
     ; identity               to +-identity
     ; identityˡ              to +-identityˡ
     ; identityʳ              to +-identityʳ
@@ -144,8 +144,8 @@ record IsProsemiring (+ * : Op₂ A) (0# 1# : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂)
     renaming
     ( ∙-congˡ     to *-congˡ
     ; ∙-congʳ     to *-congʳ
-    ; mono₁       to *-mono₁
-    ; mono₂       to *-mono₂
+    ; monoˡ       to *-monoˡ
+    ; monoʳ       to *-monoʳ
     ; identityˡ   to *-identityˡ
     ; identityʳ   to *-identityʳ
     ; isMagma     to *-isMagma
@@ -190,7 +190,7 @@ record IsPomagma (∙ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
     }
 
   open IsPromagma isPromagma public
-    using (setoid; ∙-congˡ; ∙-congʳ; mono₁; mono₂; isMagma)
+    using (setoid; ∙-congˡ; ∙-congʳ; monoˡ; monoʳ; isMagma)
 
 -- Partially ordered semigroups (posemigroups)
 
@@ -257,8 +257,8 @@ record IsPosemiring (+ * : Op₂ A) (0# 1# : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) 
     ; ∙-congˡ                to +-congˡ
     ; ∙-congʳ                to +-congʳ
     ; mono                   to +-mono
-    ; mono₁                  to +-mono₁
-    ; mono₂                  to +-mono₂
+    ; monoˡ                  to +-monoˡ
+    ; monoʳ                  to +-monoʳ
     ; identity               to +-identity
     ; identityˡ              to +-identityˡ
     ; identityʳ              to +-identityʳ
@@ -295,8 +295,8 @@ record IsPosemiring (+ * : Op₂ A) (0# 1# : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) 
     ( ∙-cong         to *-cong
     ; ∙-congˡ        to *-congˡ
     ; ∙-congʳ        to *-congʳ
-    ; mono₁          to *-mono₁
-    ; mono₂          to *-mono₂
+    ; monoˡ          to *-monoˡ
+    ; monoʳ          to *-monoʳ
     ; identityˡ      to *-identityˡ
     ; identityʳ      to *-identityʳ
     ; isMagma        to *-isMagma
