@@ -82,7 +82,7 @@ record Model (a ℓ : Level) : Set (suc (a ⊔ ℓ)) where
   infixr 10 _⊗_
   infixr 10 _&_
   infixr 10 _▷_
-  
+
   field
     ¬_      : Carrier → Carrier
     I       : Carrier
@@ -95,7 +95,7 @@ record Model (a ℓ : Level) : Set (suc (a ⊔ ℓ)) where
     ≤-isPreorder  : IsPreorder _≤_
 
   open IsPreorder ≤-isPreorder public
-  
+
   field
     ⊗-isMonoid    : IsMonoid ≤-isPreorder _⊗_ I
     ⊗-sym         : ∀ {x y} → (x ⊗ y) ≤ (y ⊗ x)

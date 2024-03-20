@@ -28,23 +28,30 @@ private
 -- coproducts in such A way that we can deduce cut-elimination is
 -- admissible.
 
-import PreSheaf
-import Chu
-module P = PreSheaf ⟶*-isPreorder
-module M = P.Monoid `⅋-isMonoid
-module S = P.Sheaf _`&_ `&-mono
-module MS = S.SMonoid2 `⅋-isMonoid `⅋-sym (`external ◅ ε)
-module M▷ = S.SMonoid1 `▷-isMonoid (`medial ◅ ε) (`tidy ◅ ε)
-module D = S.SDuoidal `⅋-isMonoid `⅋-sym (`external ◅ ε) `▷-isMonoid (`medial ◅ ε) (`tidy ◅ ε) ⅋-`▷-isDuoidal
+import Algebra.PreSheaf
+import Algebra.Sheaf
+import Algebra.Chu
 
-open S._≤S_
+module P = Algebra.PreSheaf MAV.⟶*-Poset
+module M = P.LiftIsCommutativePomonoid `⅋-isCommutativePomonoid
+module S = Algebra.Sheaf `&-Pomagma
+module MS = S.LiftIsCommutativePomonoid `⅋-isCommutativePomonoid {!!}
+module M▷ = S.LiftIsPomonoid `▷-isPomonoid (λ w x y z → `medial ◅ ε) (`tidy ◅ ε)
+module D = S.LiftIsDuoidal `⅋-`▷-isDuoidal
+                           (λ x y → `⅋-comm ◅ ε , `⅋-comm ◅ ε)
+                           {!!}
+                           (λ w x y z → `medial ◅ ε)
+                           (`tidy ◅ ε)
+
+open S._≤ˢ_
 open S.Sheaf
 
 -- The units of the two monoids are equal (thanks to the tidy rule)
-units-iso : MS.I S.≃S M▷.I
-units-iso .proj₁ .*≤S* x (t , x≤t) = M▷.I .S≤-closed x≤t (M▷.I .Sclosed t)
-units-iso .proj₂ .*≤S* x x≤I = S.lf (x , x≤I) , ε
+units-iso : MS.εˢ S.≈ˢ M▷.ιˢ
+units-iso .proj₁ .*≤ˢ* {x} (t , x≤t) = M▷.ιˢ .≤-closed x≤t (M▷.ιˢ .∨-closed t)
+units-iso .proj₂ .*≤ˢ* {x} x≤I = S.leaf (x , x≤I) , ε
 
+{-
 module CC = Chu.Construction
     S.≤S-isPreorder
     MS.⊗-isMonoid MS.⊗-sym MS.⊸-isClosure
@@ -151,3 +158,4 @@ sem-cut-elim P prf = tidyup (prf ._==>_.fneg .*≤S* P (okada P))
 
 cut-elim : (P : Formula) → (P SMAV.⟶* `I) → P ⟶* `I
 cut-elim P prf = sem-cut-elim P ⟦ prf ⟧steps
+-}

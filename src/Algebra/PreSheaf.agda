@@ -45,7 +45,7 @@ open PreSheaf public
 private
   variable
     F F₁ F₂ : PreSheaf
-    G G₁ G₂ : PreSheaf 
+    G G₁ G₂ : PreSheaf
     H H₁ H₂ : PreSheaf
 
 infix 4 _≤ᵖ_
@@ -77,9 +77,9 @@ _≈ᵖ_ = SymCore _≤ᵖ_
 ≤ᵖ-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _≤ᵖ_ ≡-≤ᵖ-isPreorder
   where
     ≡-≤ᵖ-isPreorder : IsPreorder _≡_ _≤ᵖ_
-    ≡-≤ᵖ-isPreorder = record 
-      { isEquivalence = PropEq.isEquivalence 
-      ; reflexive = λ { PropEq.refl → ≤ᵖ-refl } 
+    ≡-≤ᵖ-isPreorder = record
+      { isEquivalence = PropEq.isEquivalence
+      ; reflexive = λ { PropEq.refl → ≤ᵖ-refl }
       ; trans = ≤ᵖ-trans
       }
 
@@ -182,9 +182,9 @@ open import Relation.Binary.Lattice.Properties.BoundedMeetSemilattice ∧ᵖ-⊤
     )
 
 ∧ᵖ-⊤ᵖ-isCommutativePomonoid : IsCommutativePomonoid _≈ᵖ_ _≤ᵖ_ _∧ᵖ_ ⊤ᵖ
-∧ᵖ-⊤ᵖ-isCommutativePomonoid = record 
+∧ᵖ-⊤ᵖ-isCommutativePomonoid = record
   { isPomonoid = record
-    { isPosemigroup = ∧ᵖ-⊤ᵖ-isPosemigroup 
+    { isPosemigroup = ∧ᵖ-⊤ᵖ-isPosemigroup
     ; identity = ∧ᵖ-⊤ᵖ-identity
     }
   ; comm = ∧ᵖ-comm
@@ -240,7 +240,7 @@ _⇒ᵖ_ : PreSheaf → PreSheaf → PreSheaf
 
 ⇒ᵖ-∧ᵖ-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈ᵖ_ _≤ᵖ_ _∧ᵖ_ _⇒ᵖ_ ⊤ᵖ
 ⇒ᵖ-∧ᵖ-isResiduatedCommutativePomonoid = record
-  { isCommutativePomonoid = ∧ᵖ-⊤ᵖ-isCommutativePomonoid 
+  { isCommutativePomonoid = ∧ᵖ-⊤ᵖ-isCommutativePomonoid
   ; residuated            = comm∧residual⇒residuated ≤ᵖ-isPreorder ∧ᵖ-comm ⇒ᵖ-residualʳ
   }
 
@@ -252,7 +252,7 @@ module LiftIsPomonoid {_∙_} {ε} (isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε
   open IsPomonoid isPomonoid
 
   _∙ᵖ_ : PreSheaf → PreSheaf → PreSheaf
-  (F ∙ᵖ G) .ICarrier x = 
+  (F ∙ᵖ G) .ICarrier x =
     ∃[ y ] ∃[ z ] (x ≤ (y ∙ z) × F .ICarrier y × G .ICarrier z)
   (F ∙ᵖ G) .≤-closed x≤w (y , z , w≤yz , ϕ₁ , ϕ₂) =
     (-, -, ≤-trans x≤w w≤yz , ϕ₁ , ϕ₂)
@@ -281,30 +281,30 @@ module LiftIsPomonoid {_∙_} {ε} (isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε
 
   ∙ᵖ-assoc : Associative _≈ᵖ_ _∙ᵖ_
   ∙ᵖ-assoc F G H .proj₁ .*≤ᵖ* (y , z , x≤yz , (u , v , y≤uv , Fu , Gv) , Hz) =
-    let x≤u∙v∙z = ≤-trans x≤yz (≤-trans (mono y≤uv ≤-refl) (≤-respʳ-≈ (assoc u v z)  ≤-refl)) in 
+    let x≤u∙v∙z = ≤-trans x≤yz (≤-trans (mono y≤uv ≤-refl) (≤-respʳ-≈ (assoc u v z)  ≤-refl)) in
       (-, -, x≤u∙v∙z , Fu , (-, -, ≤-refl , Gv , Hz))
-      
-  ∙ᵖ-assoc F G H .proj₂ .*≤ᵖ* (y , z , x≤yz , Fy , (u , v , z≤uv , Gu , Hv)) = 
+
+  ∙ᵖ-assoc F G H .proj₂ .*≤ᵖ* (y , z , x≤yz , Fy , (u , v , z≤uv , Gu , Hv)) =
     let x≤y∙u∙v = ≤-trans x≤yz (≤-trans (mono ≤-refl z≤uv) (≤-respˡ-≈ (assoc y u v) ≤-refl)) in
       (-, -, x≤y∙u∙v , (-, -, ≤-refl , Fy , Gu) , Hv)
 
   ∙ᵖ-isPomonoid : IsPomonoid _≈ᵖ_ _≤ᵖ_ _∙ᵖ_ εᵖ
-  ∙ᵖ-isPomonoid = record 
-    { isPosemigroup = record 
+  ∙ᵖ-isPomonoid = record
+    { isPosemigroup = record
       { isPomagma = record
-        { isPartialOrder = ≤ᵖ-isPartialOrder 
+        { isPartialOrder = ≤ᵖ-isPartialOrder
         ; mono = ∙ᵖ-mono
-        } 
-      ; assoc = ∙ᵖ-assoc 
+        }
+      ; assoc = ∙ᵖ-assoc
       }
-    ; identity = ∙ᵖ-identity 
+    ; identity = ∙ᵖ-identity
     }
-  
+
   open IsPomonoid ∙ᵖ-isPomonoid public
     using
       (
       )
-    renaming 
+    renaming
       ( monoˡ   to ∙ᵖ-monoˡ
       ; monoʳ   to ∙ᵖ-monoʳ
       ; ∙-cong  to ∙ᵖ-cong
@@ -380,22 +380,22 @@ module LiftIsDuoidal {_∙_} {_▷_} {ε} {ι} (isDuoidal : IsDuoidal _≈_ _≤
 
   ∙ᵖ-▷ᵖ-entropy : Entropy _≤ᵖ_ _∙ᵖ_ _▷ᵖ_
   ∙ᵖ-▷ᵖ-entropy F₁ G₁ F₂ G₂ .*≤ᵖ*
-    (y , z , x≤yz , 
-      (y₁ , y₂ , y≤y₁y₂ , F₁y₁ , G₁y₂) , 
-      (z₁ , z₂ , z≤z₁z₂ , F₂z₁ , G₂z₂)) = 
+    (y , z , x≤yz ,
+      (y₁ , y₂ , y≤y₁y₂ , F₁y₁ , G₁y₂) ,
+      (z₁ , z₂ , z≤z₁z₂ , F₂z₁ , G₂z₂)) =
     (-, -, trans x≤yz (trans (∙-mono y≤y₁y₂ z≤z₁z₂) (∙-▷-entropy y₁ y₂ z₁ z₂)) ,
-      (-, -, refl , F₁y₁ , F₂z₁) , 
+      (-, -, refl , F₁y₁ , F₂z₁) ,
       (-, -, refl , G₁y₂ , G₂z₂))
 
   ∙ᵖ-idem-ιᵖ : _SubidempotentOn_ _≤ᵖ_ _∙ᵖ_ ιᵖ
-  ∙ᵖ-idem-ιᵖ .*≤ᵖ* (y , z , x≤y∙z , ιy , ιz) .lower = 
+  ∙ᵖ-idem-ιᵖ .*≤ᵖ* (y , z , x≤y∙z , ιy , ιz) .lower =
     trans x≤y∙z (trans (∙-mono (ιy .lower) (ιz .lower)) ∙-idem-ι)
 
   ▷ᵖ-idem-εᵖ : _SuperidempotentOn_ _≤ᵖ_ _▷ᵖ_ εᵖ
-  ▷ᵖ-idem-εᵖ .*≤ᵖ* εx = 
+  ▷ᵖ-idem-εᵖ .*≤ᵖ* εx =
     (-, -, trans (εx .lower) ▷-idem-ε , lift refl , lift refl)
 
-  εᵖ≤ιᵖ : εᵖ ≤ᵖ ιᵖ 
+  εᵖ≤ιᵖ : εᵖ ≤ᵖ ιᵖ
   εᵖ≤ιᵖ .*≤ᵖ* εx .lower = trans (εx .lower) ε≲ι
 
   ∙ᵖ-▷ᵖ-isDuoidal : IsDuoidal _≈ᵖ_ _≤ᵖ_ _∙ᵖ_ _▷ᵖ_ εᵖ ιᵖ

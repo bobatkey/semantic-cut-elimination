@@ -6,7 +6,7 @@ open import Algebra.Ordered.Structures.Duoidal
 open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ-syntax)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Level using (0ℓ; lift; lower; Lift; suc)
-open import Relation.Binary using (IsPartialOrder)
+open import Relation.Binary using (IsPartialOrder; Poset)
 open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 import Relation.Binary.Construct.Core.Symmetric as SymCore
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star)
@@ -90,6 +90,12 @@ open IsPartialOrder ⟶*-isPartialOrder
   using ()
   renaming (trans to ⟶*-trans)
 
+⟶*-Poset : Poset 0ℓ 0ℓ 0ℓ
+⟶*-Poset .Poset.Carrier = Formula
+⟶*-Poset .Poset._≈_ = _⟷*_
+⟶*-Poset .Poset._≤_ = _⟶*_
+⟶*-Poset .Poset.isPartialOrder = ⟶*-isPartialOrder
+
 ------------------------------------------------------------------------------
 -- Turning ⊗ into a commutative pomonoid
 
@@ -146,13 +152,15 @@ _`⟨⅋*_ : P ⟶* P′ → (Q : Formula) →  (P `⅋ Q) ⟶* (P′ `⅋ Q)
 
 `⅋-isPomonoid : IsPomonoid _⟷*_ _⟶*_ _`⅋_ `I
 `⅋-isPomonoid .IsPomonoid.isPosemigroup = `⅋-isPosemigroup
-`⅋-isPomonoid .IsPomonoid.identity = 
+`⅋-isPomonoid .IsPomonoid.identity =
   (λ P → (`⅋-comm ◅ `⅋-unit ◅ ε , `⅋-unit⁻¹ ◅ `⅋-comm ◅ ε)) ,
   (λ P → (`⅋-unit ◅ ε , `⅋-unit⁻¹ ◅ ε))
 
 `⅋-isCommutativePomonoid : IsCommutativePomonoid  _⟷*_ _⟶*_ _`⅋_ `I
 `⅋-isCommutativePomonoid .IsCommutativePomonoid.isPomonoid = `⅋-isPomonoid
 `⅋-isCommutativePomonoid .IsCommutativePomonoid.comm P Q = (`⅋-comm ◅ ε , `⅋-comm ◅ ε)
+
+
 
 ------------------------------------------------------------------------------
 -- Turning ▷ into a pomonoid
@@ -210,6 +218,9 @@ _`⟨&*_ : P ⟶* P′ → (Q : Formula) → (P `& Q) ⟶* (P′ `& Q)
 `&-isPomagma : IsPomagma _⟷*_ _⟶*_ _`&_
 `&-isPomagma .IsPomagma.isPartialOrder = ⟶*-isPartialOrder
 `&-isPomagma .IsPomagma.mono = `&-mono
+
+`&-Pomagma : Pomagma 0ℓ 0ℓ 0ℓ
+`&-Pomagma = record { isPomagma = `&-isPomagma }
 
 ------------------------------------------------------------------------------
 -- Turning ⊕ into a pomagma

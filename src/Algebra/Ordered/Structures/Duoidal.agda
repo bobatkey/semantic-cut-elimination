@@ -41,7 +41,7 @@ record IsDuoidal (∙ ▷ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂)
     ∙-idem-ι     : ∙ SubidempotentOn ι
     ▷-idem-ε     : ▷ SuperidempotentOn ε
     ε≲ι          : ε ≲ ι
- 
+
   open IsPomonoid ∙-isPomonoid public
     using
       ( isPreorder

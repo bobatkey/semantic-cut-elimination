@@ -39,7 +39,7 @@ module _
     congruent₂ : {∙ : Op₂ A} → Congruent₂ _≲_ ∙ → Congruent₂ (SymCore _≲_) ∙
     congruent₂ cong₂ x₁ x₂ = cong₂ (proj₁ x₁) (proj₁ x₂) , cong₂ (proj₂ x₁) (proj₂ x₂)
 
-    module _ 
+    module _
         {ℓ′} {_≈_ : Rel A ℓ′}
         (isPreorder : IsPreorder _≈_ _≲_)
       where
@@ -50,7 +50,7 @@ module _
       isPreorder⇒isEquivalence .IsEquivalence.trans = transitive (IsPreorder.trans isPreorder)
 
       isPreorder⇒setoid : Setoid a ℓ
-      isPreorder⇒setoid .Setoid.Carrier = A 
+      isPreorder⇒setoid .Setoid.Carrier = A
       isPreorder⇒setoid .Setoid._≈_ = SymCore _≲_
       isPreorder⇒setoid .Setoid.isEquivalence = isPreorder⇒isEquivalence
 
@@ -74,7 +74,7 @@ module _
       isPreorder⇒poset .Poset._≈_ = SymCore _≲_
       isPreorder⇒poset .Poset._≤_ = _≲_
       isPreorder⇒poset .Poset.isPartialOrder = isPreorder⇒isPartialOrder
-  
+
     module _
         (refl : Reflexive _≲_)
         (trans : Transitive _≲_)
@@ -84,10 +84,10 @@ module _
       refl,trans⇒≡-≲-isPreorder .IsPreorder.isEquivalence = PropEq.isEquivalence
       refl,trans⇒≡-≲-isPreorder .IsPreorder.reflexive PropEq.refl = refl
       refl,trans⇒≡-≲-isPreorder .IsPreorder.trans = trans
-   
+
       refl,trans⇒isEquivalence : IsEquivalence (SymCore _≲_)
       refl,trans⇒isEquivalence = isPreorder⇒isEquivalence refl,trans⇒≡-≲-isPreorder
-   
+
       refl,trans⇒setoid : Setoid a ℓ
       refl,trans⇒setoid = isPreorder⇒setoid refl,trans⇒≡-≲-isPreorder
 

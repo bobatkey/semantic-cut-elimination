@@ -157,9 +157,9 @@ _≈ˢ_ = SymCore _≤ˢ_
 ≤ˢ-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _≤ˢ_ ≡-≤ˢ-isPreorder
   where
     ≡-≤ˢ-isPreorder : IsPreorder _≡_ _≤ˢ_
-    ≡-≤ˢ-isPreorder = record 
-      { isEquivalence = PropEq.isEquivalence 
-      ; reflexive = λ { PropEq.refl → ≤ˢ-refl } 
+    ≡-≤ˢ-isPreorder = record
+      { isEquivalence = PropEq.isEquivalence
+      ; reflexive = λ { PropEq.refl → ≤ˢ-refl }
       ; trans = ≤ˢ-trans
       }
 
@@ -178,8 +178,8 @@ open IsPartialOrder ≤ˢ-isPartialOrder
   }
 
 ≈ˢ-setoid : Setoid _ _
-≈ˢ-setoid = record 
-  { isEquivalence = Poset.isEquivalence ≤ˢ-poset 
+≈ˢ-setoid = record
+  { isEquivalence = Poset.isEquivalence ≤ˢ-poset
   }
 
 ------------------------------------------------------------------------------
@@ -187,8 +187,8 @@ open IsPartialOrder ≤ˢ-isPartialOrder
 
 α : PreSheaf → Sheaf
 α F .ICarrier x = Σ[ t ∈ ∃ᵗᵖ F ] (x ≤ ⋁ᵗ t)
-α F .≤-closed x≤y (t , y≤⋁t) = (t , ≤-trans x≤y y≤⋁t) -- 
-α F .∨-closed t = (joinᵗ t , joinᵗ-⋁ᵗ t)
+α F .≤-closed x≤y (t , y≤⋁t) = t , ≤-trans x≤y y≤⋁t
+α F .∨-closed t = joinᵗ t , joinᵗ-⋁ᵗ t
 
 α-mono : F ≤ᵖ G → α F ≤ˢ α G
 α-mono F≤G .*≤ˢ* (t , x≤⋁t) = (mapᵗ (F≤G .*≤ᵖ*) t , ≤-trans x≤⋁t (mapᵗ-⋁ᵗ t))
@@ -297,18 +297,20 @@ module LiftSubidempotent (∨-idem : Subidempotent _≤_ _∨_) where
 --
 --   U (α (F ∙ᵖ G)) ≈ᵖ U (α F) ∙ᵖ U (α G)
 --
-module LiftIsPomonoid 
-    {_∙_} {ε} 
+module LiftIsPomonoid
+    {_∙_} {ε}
     (isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε)
-    (∨-entropy : Entropy _≤_ _∨_ _∙_) 
-    (∨-idem : Subidempotent _≤_ _∨_)
+    (∨-entropy : Entropy _≤_ _∨_ _∙_)
+    (∨-tidy    : ε ∨ ε ≤ ε)
   where
 
-    open LiftSubidempotent ∨-idem
+    ⋁ˢ : (t : ∃ᵗ[ y ] Lift c (y ≤ ε)) → ⋁ᵗ t ≤ ε
+    ⋁ˢ (leaf (y , lift y≤x)) = y≤x
+    ⋁ˢ (node l r)            = ≤-trans (∨-mono (⋁ˢ l) (⋁ˢ r)) ∨-tidy
 
     split : (t : ∃ᵗ[ x ] ∃[ y ] ∃[ z ] (x ≤ (y ∙ z)) × Y y × Z z) →
             Σ[ t₁ ∈ ∃ᵗ Y ] Σ[ t₂ ∈ ∃ᵗ Z ] (⋁ᵗ t ≤ (⋁ᵗ t₁ ∙ ⋁ᵗ t₂))
-    split (leaf (x , y , z , x≤yz , Fy , Gz)) = 
+    split (leaf (x , y , z , x≤yz , Fy , Gz)) =
       (leaf (-, Fy) , leaf (-, Gz) , x≤yz)
     split (node l r) =
       let (l₁ , l₂ , l≤l₁l₂) , (r₁ , r₂ , r≤r₁r₂) = split l , split r
@@ -326,7 +328,7 @@ module LiftIsPomonoid
     ιˢ : Sheaf
     ιˢ .ICarrier x              = Lift c (x ≤ ε)
     ιˢ .≤-closed x≤y (lift y≤ε) = lift (≤-trans x≤y y≤ε)
-    ιˢ .∨-closed t              = lift (⋁ˢ ε t)
+    ιˢ .∨-closed t              = lift (⋁ˢ t)
 
     open P.LiftIsPomonoid isPomonoid
 
@@ -349,35 +351,39 @@ module LiftIsPomonoid
     ▷ˢ-identity = (▷ˢ-identityˡ , ▷ˢ-identityʳ)
 
     ▷ˢ-isPomonoid : IsPomonoid _≈ˢ_ _≤ˢ_ _▷ˢ_ ιˢ
-    ▷ˢ-isPomonoid = record 
-      { isPosemigroup = record 
+    ▷ˢ-isPomonoid = record
+      { isPosemigroup = record
         { isPomagma = record
-          { isPartialOrder = ≤ˢ-isPartialOrder 
+          { isPartialOrder = ≤ˢ-isPartialOrder
           ; mono = ▷ˢ-mono
-          } 
-        ; assoc = ▷ˢ-assoc 
+          }
+        ; assoc = ▷ˢ-assoc
         }
-      ; identity = ▷ˢ-identity 
+      ; identity = ▷ˢ-identity
       }
 
     U-monoidal : U (𝓕 ▷ˢ 𝓖) ≈ᵖ (U 𝓕 ∙ᵖ U 𝓖)
     U-monoidal .proj₁ .*≤ᵖ* 𝓕x = 𝓕x
     U-monoidal .proj₂ .*≤ᵖ* 𝓕x = 𝓕x
 
+    U-monoidal-ι : U ιˢ ≈ᵖ εᵖ
+    U-monoidal-ι .proj₁ .*≤ᵖ* x≤ε = x≤ε
+    U-monoidal-ι .proj₂ .*≤ᵖ* x≤ε = x≤ε
+
 ------------------------------------------------------------------------------
 -- Lift commutative pomonoids that distribute with the join to presheaves
-module LiftIsCommutativePomonoid 
-    {_∙_} {ε} 
+module LiftIsCommutativePomonoid
+    {_∙_} {ε}
     (isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _∙_ ε)
     (distrib : _DistributesOver_ _≤_ _∙_ _∨_)
   where
 
   open IsCommutativePomonoid isCommutativePomonoid
   open P.LiftIsCommutativePomonoid isCommutativePomonoid
-  
+
   distribˡ = distrib .proj₁
   distribʳ = distrib .proj₂
-  
+
   _⊗ˢ_ : Sheaf → Sheaf → Sheaf
   𝓕 ⊗ˢ 𝓖 = α (U 𝓕 ∙ᵖ U 𝓖)
 
@@ -405,7 +411,7 @@ module LiftIsCommutativePomonoid
         ⋁ᵗ (leaf ∃F ∙ᵗ l) ∨ ⋁ᵗ (leaf ∃F ∙ᵗ r)
       ∎
       where open PosetReasoning poset
-    ∙ᵗ-⋁ᵗ-distrib (node l r) t = 
+    ∙ᵗ-⋁ᵗ-distrib (node l r) t =
       begin
         ⋁ᵗ (node l r) ∙ ⋁ᵗ t
       ≡⟨⟩
@@ -432,7 +438,7 @@ module LiftIsCommutativePomonoid
         go {x} (leaf (y , y₁ , y₂ , y≤y₁y₂ , (t₁ , y₁≤⋁t₁) , (t₂ , y₂≤⋁t₂))) x≤y =
           (t₁ ∙ᵗ t₂ , x≤⋁[t₁∙t₂])
           where
-            x≤⋁[t₁∙t₂] = 
+            x≤⋁[t₁∙t₂] =
               begin
                 x
               ≤⟨ x≤y ⟩
@@ -446,8 +452,8 @@ module LiftIsCommutativePomonoid
               ≤⟨ ∙ᵗ-⋁ᵗ-distrib t₁ t₂ ⟩
                 ⋁ᵗ (t₁ ∙ᵗ t₂)
               ∎
-              where open PosetReasoning poset 
-        go (node l r) x≤⋁l∨r = 
+              where open PosetReasoning poset
+        go (node l r) x≤⋁l∨r =
           let (t₁ , ⋁l≤⋁t₁) , (t₂ , ⋁l≤⋁t₂) = go l refl , go r refl
           in (node t₁ t₂ , trans x≤⋁l∨r (∨-mono ⋁l≤⋁t₁ ⋁l≤⋁t₂))
 
@@ -460,15 +466,15 @@ module LiftIsCommutativePomonoid
 
   ⊗ˢ-assoc : Associative _≈ˢ_ _⊗ˢ_
   ⊗ˢ-assoc 𝓕 𝓖 𝓗 =
-    begin 
+    begin
       (𝓕 ⊗ˢ 𝓖) ⊗ˢ 𝓗
     ≡⟨⟩
       α (U (α (U 𝓕 ∙ᵖ U 𝓖)) ∙ᵖ U 𝓗)
-    ≈⟨ α-cong (∙ᵖ-congˡ (U-cong counit-≈ˢ)) ⟩ 
+    ≈⟨ α-cong (∙ᵖ-congˡ (U-cong counit-≈ˢ)) ⟩
       α (U (α (U 𝓕 ∙ᵖ U 𝓖)) ∙ᵖ U (α (U 𝓗)))
-    ≈⟨ α-monoidal ⟩ 
+    ≈⟨ α-monoidal ⟩
       α ((U 𝓕 ∙ᵖ U 𝓖) ∙ᵖ U 𝓗)
-    ≈⟨ α-cong (∙ᵖ-assoc (U 𝓕) (U 𝓖) (U 𝓗)) ⟩ 
+    ≈⟨ α-cong (∙ᵖ-assoc (U 𝓕) (U 𝓖) (U 𝓗)) ⟩
       α (U 𝓕 ∙ᵖ (U 𝓖 ∙ᵖ U 𝓗))
     ≈⟨ α-monoidal ⟨
       α (U (α (U 𝓕)) ∙ᵖ U (α (U 𝓖 ∙ᵖ U 𝓗)))
@@ -515,16 +521,16 @@ module LiftIsCommutativePomonoid
 
   ⊗ˢ-comm : Commutative _≈ˢ_ _⊗ˢ_
   ⊗ˢ-comm 𝓕 𝓖 = α-cong (∙ᵖ-comm (U 𝓕) (U 𝓖))
-    
+
   ⊗ˢ-isCommutativePomonoid : IsCommutativePomonoid _≈ˢ_ _≤ˢ_ _⊗ˢ_ εˢ
-  ⊗ˢ-isCommutativePomonoid = record 
-    { isPomonoid = record 
-      { isPosemigroup = record 
+  ⊗ˢ-isCommutativePomonoid = record
+    { isPomonoid = record
+      { isPosemigroup = record
         { isPomagma = record
-          { isPartialOrder = ≤ˢ-isPartialOrder 
+          { isPartialOrder = ≤ˢ-isPartialOrder
           ; mono = ⊗ˢ-mono
-          } 
-        ; assoc = ⊗ˢ-assoc 
+          }
+        ; assoc = ⊗ˢ-assoc
         }
       ; identity = ⊗ˢ-identityˡ , ⊗ˢ-identityʳ
       }
@@ -539,7 +545,7 @@ module LiftIsCommutativePomonoid
               ∀ {y} → 𝓕 .ICarrier y →
               Σ[ t′ ∈ ∃ᵗˢ 𝓖 ] (⋁ᵗ t ∙ y) ≤ ⋁ᵗ t′
     ⊸ˢ-helper (leaf (x , f)) 𝓕y = leaf (-, f 𝓕y) , refl
-    ⊸ˢ-helper (node l r)     𝓕y = 
+    ⊸ˢ-helper (node l r)     𝓕y =
       let (l′ , ⋁l∙y≤⋁l′) , (r′ , ⋁r∙y≤⋁r′) = ⊸ˢ-helper l 𝓕y , ⊸ˢ-helper r 𝓕y
       in node l′ r′ , trans (distribʳ _ (⋁ᵗ l) (⋁ᵗ r)) (∨-mono ⋁l∙y≤⋁l′ ⋁r∙y≤⋁r′)
 
@@ -551,7 +557,7 @@ module LiftIsCommutativePomonoid
       𝓖 .≤-closed ⋁t∙y≤⋁t′ (𝓖 .∨-closed t′)
 
   U⊸ˢ : U (𝓕 ⊸ˢ 𝓖) ≤ᵖ (U 𝓕 ⇨ᵖ U 𝓖)
-  U⊸ˢ .*≤ᵖ* f = f 
+  U⊸ˢ .*≤ᵖ* f = f
 
   U⊸ˢ⁻¹ : (U 𝓕 ⇨ᵖ U 𝓖) ≤ᵖ U (𝓕 ⊸ˢ 𝓖)
   U⊸ˢ⁻¹ .*≤ᵖ* f = f
@@ -561,14 +567,14 @@ module LiftIsCommutativePomonoid
 
   -- FIXME: Find a more abstract way of doing this.
   ⊸ˢ-residual-to : (𝓕 ⊗ˢ 𝓖) ≤ˢ 𝓗 → 𝓖 ≤ˢ (𝓕 ⊸ˢ 𝓗)
-  ⊸ˢ-residual-to {𝓕} {𝓖} {𝓗} 𝓕∙𝓖≤𝓗 .*≤ˢ* 𝓖x 𝓕y = 
+  ⊸ˢ-residual-to {𝓕} {𝓖} {𝓗} 𝓕∙𝓖≤𝓗 .*≤ˢ* 𝓖x 𝓕y =
     𝓖∙𝓕≤𝓗 .*≤ˢ* (leaf (-, -, -, refl , 𝓖x , 𝓕y) , refl)
     where
       𝓖∙𝓕≤𝓗 = ≤ˢ-trans (≤ˢ-respˡ-≈ˢ (⊗ˢ-comm 𝓕 𝓖) ≤ˢ-refl) 𝓕∙𝓖≤𝓗
 
   ⊸ˢ-residual-from : 𝓖 ≤ˢ (𝓕 ⊸ˢ 𝓗) → (𝓕 ⊗ˢ 𝓖) ≤ˢ 𝓗
-  ⊸ˢ-residual-from {𝓖} {𝓕} {𝓗} 𝓖≤𝓕⇨𝓗 = 
-    begin 
+  ⊸ˢ-residual-from {𝓖} {𝓕} {𝓗} 𝓖≤𝓕⇨𝓗 =
+    begin
       𝓕 ⊗ˢ 𝓖
     ≡⟨⟩
       α (U 𝓕 ∙ᵖ U 𝓖)
@@ -578,7 +584,7 @@ module LiftIsCommutativePomonoid
       𝓗
     ∎
     where open PosetReasoning ≤ˢ-poset
-    
+
   ⊸ˢ-residual : RightResidual _≤ˢ_ _⊗ˢ_ _⊸ˢ_
   ⊸ˢ-residual .Function.Equivalence.to        = ⊸ˢ-residual-to
   ⊸ˢ-residual .Function.Equivalence.from      = ⊸ˢ-residual-from
@@ -586,43 +592,36 @@ module LiftIsCommutativePomonoid
   ⊸ˢ-residual .Function.Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
 
   ⊸ˢ-⊗ˢ-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈ˢ_ _≤ˢ_ _⊗ˢ_ _⊸ˢ_ εˢ
-  ⊸ˢ-⊗ˢ-isResiduatedCommutativePomonoid = record 
-    { isCommutativePomonoid = ⊗ˢ-isCommutativePomonoid 
-    ; residuated = comm∧residual⇒residuated ≤ˢ-isPreorder ⊗ˢ-comm ⊸ˢ-residual 
+  ⊸ˢ-⊗ˢ-isResiduatedCommutativePomonoid = record
+    { isCommutativePomonoid = ⊗ˢ-isCommutativePomonoid
+    ; residuated = comm∧residual⇒residuated ≤ˢ-isPreorder ⊗ˢ-comm ⊸ˢ-residual
     }
 
 ------------------------------------------------------------------------------
 -- Lift duoidals to sheaves
 module LiftIsDuoidal
-    {_∙_} {_▷_} {ε} {ι} 
+    {_∙_} {_▷_} {ε} {ι}
     (isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _▷_ ε ι)
     (comm : Commutative _≈_ _∙_)
     (distrib : _DistributesOver_ _≤_ _∙_ _∨_)
-    (∨-entropy : Entropy _≤_ _∨_ _▷_) 
-    (∨-idem : Subidempotent _≤_ _∨_)
+    (∨-entropy : Entropy _≤_ _∨_ _▷_)
+    (∨-tidy : ι ∨ ι ≤ ι)
   where
 
   open IsDuoidal isDuoidal
 
   ∙-isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _∙_ ε
   ∙-isCommutativePomonoid = record
-    { isPomonoid = ∙-isPomonoid 
+    { isPomonoid = ∙-isPomonoid
     ; comm       = comm
     }
 
   open LiftIsCommutativePomonoid ∙-isCommutativePomonoid distrib
-  open LiftIsPomonoid ▷-isPomonoid ∨-entropy ∨-idem
+  open LiftIsPomonoid ▷-isPomonoid ∨-entropy ∨-tidy
   open P.LiftIsDuoidal isDuoidal
 
-  -- WEN: Did I get my units crossed somewhere?
-  ε≈ι : εˢ ≈ˢ ιˢ
-  ε≈ι .proj₁ .*≤ˢ* (t , x≤⋁t) = {!   !}
-  -- J .≤-closed x≤t (J .∨-closed t)
-  ε≈ι .proj₂ .*≤ˢ* x≤ιx = {!   !}
-  -- lf (x , x≤I) , refl
-
   ⊗ˢ-▷ˢ-entropy : Entropy _≤ˢ_ _⊗ˢ_ _▷ˢ_
-  ⊗ˢ-▷ˢ-entropy 𝓕₁ 𝓖₁ 𝓕₂ 𝓖₂ = 
+  ⊗ˢ-▷ˢ-entropy 𝓕₁ 𝓖₁ 𝓕₂ 𝓖₂ =
     begin
       (𝓕₁ ▷ˢ 𝓖₁) ⊗ˢ (𝓕₂ ▷ˢ 𝓖₂)
     ≡⟨⟩
@@ -642,30 +641,24 @@ module LiftIsDuoidal
     ∎
     where open PosetReasoning ≤ˢ-poset
 
-  -- WEN: This could probably be simpler using joinᵗ.
-  --      Proving it abstractly requires properties of ηᵖ.
-  ⊗ˢ-idem-ιˢ : _SubidempotentOn_ _≤ˢ_ _⊗ˢ_ ιˢ
-  ⊗ˢ-idem-ιˢ .*≤ˢ* (t , x≤⋁t) .lower = trans x≤⋁t (helper t)
-    where
-      helper : (t : ∃ᵗᵖ ((U ιˢ) ∙ᵖ (U ιˢ))) → ⋁ᵗ t ≤ ι
-      helper (leaf (x , y , z , x≤y∙z , lift y≤ι , lift z≤ι)) = 
-        trans x≤y∙z (trans (∙-mono y≤ι z≤ι) ∙-idem-ι)
-      helper (node l r) = 
-        let (⋁l≤ι , ⋁r≤ι) = helper l , helper r
-        in  trans (∨-mono ⋁l≤ι ⋁r≤ι) (∨-idem ι)
-
-  ▷ˢ-idem-εˢ : _SuperidempotentOn_ _≤ˢ_ _▷ˢ_ εˢ
-  ▷ˢ-idem-εˢ .*≤ˢ* (t , x≤⋁t) = {!   !}
-
   εˢ≤ιˢ : εˢ ≤ˢ ιˢ
-  εˢ≤ιˢ = {!   !}
+  εˢ≤ιˢ .*≤ˢ* (t , x≤t) =
+    lift (≤-trans x≤t
+         (≤-trans (mapᵗ-⋁ᵗ t)
+                  (⋁ˢ (mapᵗ (λ (lift y≤ε) → lift (≤-trans y≤ε ε≲ι)) t))))
 
   ⊗ˢ-▷ˢ-isDuoidal : IsDuoidal _≈ˢ_ _≤ˢ_ _⊗ˢ_ _▷ˢ_ εˢ ιˢ
   ⊗ˢ-▷ˢ-isDuoidal = record
     { ∙-isPomonoid = IsCommutativePomonoid.isPomonoid ⊗ˢ-isCommutativePomonoid
     ; ▷-isPomonoid = ▷ˢ-isPomonoid
     ; ∙-▷-entropy = ⊗ˢ-▷ˢ-entropy
-    ; ∙-idem-ι = ⊗ˢ-idem-ιˢ
-    ; ▷-idem-ε = ▷ˢ-idem-εˢ
+    ; ∙-idem-ι = ≤ˢ-trans (α-mono (∙ᵖ-mono (U-monoidal-ι .proj₁) (U-monoidal-ι .proj₁)))
+                (≤ˢ-trans (α-mono ∙ᵖ-idem-ιᵖ)
+                (≤ˢ-trans (α-mono (U-monoidal-ι .proj₂))
+                          counit))
+    ; ▷-idem-ε = ≤ˢ-trans (α-mono ▷ᵖ-idem-εᵖ)
+                (≤ˢ-trans (α-mono (▷ᵖ-mono unit unit))
+                (≤ˢ-trans (α-mono (U-monoidal .proj₂))
+                counit))
     ; ε≲ι = εˢ≤ιˢ
     }
