@@ -35,11 +35,11 @@ import Algebra.Chu
 module P = Algebra.PreSheaf MAV.⟶*-Poset
 module M = P.LiftIsCommutativePomonoid `⅋-isCommutativePomonoid
 module S = Algebra.Sheaf `&-Pomagma
-module MS = S.LiftIsCommutativePomonoid `⅋-isCommutativePomonoid {!!}
+module MS = S.LiftIsCommutativePomonoid `⅋-isCommutativePomonoid `⅋-distrib-`&
 module M▷ = S.LiftIsPomonoid `▷-isPomonoid (λ w x y z → `medial ◅ ε) (`tidy ◅ ε)
 module D = S.LiftIsDuoidal `⅋-`▷-isDuoidal
                            (λ x y → `⅋-comm ◅ ε , `⅋-comm ◅ ε)
-                           {!!}
+                           `⅋-distrib-`&
                            (λ w x y z → `medial ◅ ε)
                            (`tidy ◅ ε)
 

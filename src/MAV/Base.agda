@@ -2,6 +2,7 @@
 
 module MAV.Base (Atom : Set) where
 
+open import Algebra using (_DistributesOver_)
 open import Algebra.Ordered.Structures.Duoidal
 open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ-syntax)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
@@ -160,8 +161,6 @@ _`⟨⅋*_ : P ⟶* P′ → (Q : Formula) →  (P `⅋ Q) ⟶* (P′ `⅋ Q)
 `⅋-isCommutativePomonoid .IsCommutativePomonoid.isPomonoid = `⅋-isPomonoid
 `⅋-isCommutativePomonoid .IsCommutativePomonoid.comm P Q = (`⅋-comm ◅ ε , `⅋-comm ◅ ε)
 
-
-
 ------------------------------------------------------------------------------
 -- Turning ▷ into a pomonoid
 
@@ -221,6 +220,11 @@ _`⟨&*_ : P ⟶* P′ → (Q : Formula) → (P `& Q) ⟶* (P′ `& Q)
 
 `&-Pomagma : Pomagma 0ℓ 0ℓ 0ℓ
 `&-Pomagma = record { isPomagma = `&-isPomagma }
+
+-- FIXME: should probably have a left-external and a right-external
+`⅋-distrib-`& : _DistributesOver_ _⟶*_ _`⅋_ _`&_
+`⅋-distrib-`& .proj₁ x y z = `⅋-comm ◅ (`external ◅ `&-mono (`⅋-comm ◅ ε) (`⅋-comm ◅ ε))
+`⅋-distrib-`& .proj₂ x y z = `external ◅ ε
 
 ------------------------------------------------------------------------------
 -- Turning ⊕ into a pomagma
