@@ -165,12 +165,14 @@ _≈ˢ_ = SymCore _≤ˢ_
 
 open IsPartialOrder ≤ˢ-isPartialOrder
   using
-    (
+    ( module Eq
     )
   renaming
     ( ≤-respˡ-≈  to ≤ˢ-respˡ-≈ˢ
+    ; reflexive to ≤ˢ-reflexive
     ; isPreorder to ≤ˢ-isPreorder
     )
+  public
 
 ≤ˢ-poset : Poset _ _ _
 ≤ˢ-poset = record

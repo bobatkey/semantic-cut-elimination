@@ -24,8 +24,8 @@ private
 
 ------------------------------------------------------------------------------
 -- Construct the syntactic model from presheaves and chu. We can turn
--- MAV into A *-autonomous category with finite products and
--- coproducts in such A way that we can deduce cut-elimination is
+-- MAV into a *-autonomous category with finite products and
+-- coproducts in such a way that we can deduce cut-elimination is
 -- admissible.
 
 import Algebra.PreSheaf
@@ -65,27 +65,27 @@ module CC = Algebra.Chu.Construction
               ¬ to ⟦¬⟧) -- hiding (⅋-mono; ⅋-sym)
 
 open CC
-open CC.Chu
-open CC.SelfDual D.⊗ˢ-▷ˢ-isDuoidal {!!} {!!}
-        -- M▷.▷-isMonoid
-        -- (S.≤S-trans (M▷.▷-mono (D.units-iso .proj₁) S.≤S-refl) (M▷.▷-lunit .proj₁))
-        -- (D.units-iso .proj₂)
-        -- D.⊗-▷-isDuoidal
-        {-
-open P._≤P_
+open Chu
+open _==>_
+open CC.SelfDual
+      D.⊗ˢ-▷ˢ-isDuoidal
+      (S.≤ˢ-trans (M▷.▷ˢ-mono (S.≤ˢ-reflexive units-iso) S.≤ˢ-refl) (S.≤ˢ-reflexive (M▷.▷ˢ-identityˡ _)))
+      (S.≤ˢ-reflexive (S.Eq.sym units-iso))
+-- open P._≤P_
 
 Chu-mix : ⟦I⟧ ≅ ⟦¬⟧ ⟦I⟧
-Chu-mix .proj₁ .Chu.Construction._==>_.fpos = S.≤S-refl
-Chu-mix .proj₁ .Chu.Construction._==>_.fneg = S.≤S-refl
-Chu-mix .proj₂ .Chu.Construction._==>_.fpos = S.≤S-refl
-Chu-mix .proj₂ .Chu.Construction._==>_.fneg = S.≤S-refl
+Chu-mix .proj₁ .fpos = S.≤ˢ-refl
+Chu-mix .proj₁ .fneg = S.≤ˢ-refl
+Chu-mix .proj₂ .fpos = S.≤ˢ-refl
+Chu-mix .proj₂ .fneg = S.≤ˢ-refl
 
 I-eq-J : ⟦I⟧ ≅ J
-I-eq-J .proj₁ .Chu.Construction._==>_.fpos = units-iso .proj₁
-I-eq-J .proj₁ .Chu.Construction._==>_.fneg = units-iso .proj₂
-I-eq-J .proj₂ .Chu.Construction._==>_.fpos = units-iso .proj₂
-I-eq-J .proj₂ .Chu.Construction._==>_.fneg = units-iso .proj₁
+I-eq-J .proj₁ .fpos = S.≤ˢ-reflexive units-iso
+I-eq-J .proj₁ .fneg = S.≤ˢ-reflexive (S.Eq.sym units-iso)
+I-eq-J .proj₂ .fpos = S.≤ˢ-reflexive (S.Eq.sym units-iso)
+I-eq-J .proj₂ .fneg = S.≤ˢ-reflexive units-iso
 
+{-
 ChuModel : SMAV.Model (suc (suc 0ℓ)) 0ℓ
 ChuModel .SMAV.Model.Carrier = Chu
 ChuModel .SMAV.Model._≤_ = _==>_
