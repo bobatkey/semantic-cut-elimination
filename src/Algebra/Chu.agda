@@ -195,7 +195,9 @@ module Construction {a b c}
   ⊗-isStarAutonomous .IsStarAuto.*-aut = *-aut
   ⊗-isStarAutonomous .IsStarAuto.*-aut⁻¹ = *-aut⁻¹
 
-  open IsStarAuto ⊗-isStarAutonomous hiding (¬-mono; involution; *-aut; *-aut⁻¹) public
+  open IsStarAuto ⊗-isStarAutonomous
+    using (_⅋_; ⅋-cong; ⅋-mono; ⅋-assoc; ⅋-comm; ⅋-identityˡ; ⅋-identityʳ)
+    public
 
   ------------------------------------------------------------------------------
   -- Additive structure

@@ -102,59 +102,57 @@ ChuModel .SMAV.Model.⊗-▷-isDuoidal = ⊗-⍮-isDuoidal
 ChuModel .SMAV.Model.I-eq-J = I-eq-J
 ChuModel .SMAV.Model.▷-self-dual = self-dual
 
-{-
 _>>>_ = ⟶*-trans
 
 -- The atom interaction law in PreSheaves
-atom-int : ∀ A → (P.η (`- A) M.• P.η (`+ A)) P.≤P P.η `I
-atom-int A .*≤P* P (p₁ , p₂ , p≤p₁p₂ , lift p₁≤a , lift p₂≤-A) .lower =
-   p≤p₁p₂ >>> (`⅋-mono p₁≤a p₂≤-A >>> (`⅋-comm ◅ `axiom ◅ ε))
+atom-int : ∀ A → (P.ηᵖ (`- A) M.∙ᵖ P.ηᵖ (`+ A)) P.≤ᵖ P.ηᵖ `I
+atom-int A .P.*≤ᵖ* {P} (p₁ , p₂ , p≤p₁p₂ , lift p₁≤a , lift p₂≤-A) .lower =
+    p≤p₁p₂ >>> (`⅋-mono p₁≤a p₂≤-A >>> (`⅋-comm ◅ `axiom ◅ ε))
 
 atom : Atom → Chu
-atom A .pos = S.α (P.η (`- A))
-atom A .neg = S.α (P.η (`+ A))
-atom A .int = S.≤S-trans (MS.α-monoidal .proj₁) (S.α-mono (atom-int A))
+atom A .pos = S.α (P.ηᵖ (`- A))
+atom A .neg = S.α (P.ηᵖ (`+ A))
+atom A .int = S.≤ˢ-trans (MS.α-monoidal .proj₁) (S.α-mono (atom-int A))
 
 open SMAV.Interpretation ChuModel atom
 
 tidyup-lem : (t : S.Tree (Σ[ P ∈ Formula ] (Lift 0ℓ (P ⟶* `I)))) →
-             S.join t ⟶* `I
-tidyup-lem (S.lf (P , lift p⟶*I)) = p⟶*I
-tidyup-lem (S.br S t) = `&-mono (tidyup-lem S) (tidyup-lem t) >>> (`tidy ◅ ε)
+             S.⋁ᵗ t ⟶* `I
+tidyup-lem (S.leaf (P , lift p⟶*I)) = p⟶*I
+tidyup-lem (S.node S t) = `&-mono (tidyup-lem S) (tidyup-lem t) >>> (`tidy ◅ ε)
 
-tidyup : ∀ {P} → MS.I .SCarrier P → P ⟶* `I
+tidyup : ∀ {P} → MS.εˢ .ICarrier P → P ⟶* `I
 tidyup (t , p⟶*t) = p⟶*t >>> tidyup-lem t
 
 mutual
-  okada : ∀ P → ⟦ P ⟧ .neg .SCarrier P
-  okada `I = S.lf (`I , lift ε) , ε
-  okada (`+ A) = S.lf (`+ A , lift ε) , ε
-  okada (`- A) = S.lf (`- A , lift ε) , ε
-  okada (P `⅋ Q) = S.lf (P `⅋ Q , P , Q , ε , okada P , okada Q) , ε
-  okada (P `⊗ Q) .proj₁ R x =
-    ⟦ P ⟧ .neg .S≤-closed
-      ((`switch ◅ ε) >>> ((P `⊗⟩* (`⅋-sym >>> okada2 Q R x)) >>> (`⊗-unit ◅ ε)))
+  okada : ∀ P → ⟦ P ⟧ .neg .ICarrier P
+  okada `I = S.leaf (`I , lift ε) , ε
+  okada (`+ A) = S.leaf (`+ A , lift ε) , ε
+  okada (`- A) = S.leaf (`- A , lift ε) , ε
+  okada (P `⅋ Q) = S.leaf (P `⅋ Q , P , Q , ε , okada P , okada Q) , ε
+  okada (P `⊗ Q) .proj₁ {R} x =
+    ⟦ P ⟧ .neg .≤-closed
+      ((`switch ◅ ε) >>> ((P `⊗⟩* ((`⅋-comm ◅ ε) >>> okada2 Q R x)) >>> (`⊗-unit ◅ ε)))
       (okada P)
-  okada (P `⊗ Q) .proj₂ R x =
-    ⟦ Q ⟧ .neg .S≤-closed
-      ((`⊗-comm `⟨⅋ R ◅ `switch ◅ ε) >>> ((Q `⊗⟩* (`⅋-sym >>> okada2 P R x)) >>> (`⊗-unit ◅ ε)))
+  okada (P `⊗ Q) .proj₂ {R} x =
+    ⟦ Q ⟧ .neg .≤-closed
+      ((`⊗-comm `⟨⅋ R ◅ `switch ◅ ε) >>> ((Q `⊗⟩* ((`⅋-comm ◅ ε) >>> okada2 P R x)) >>> (`⊗-unit ◅ ε)))
       (okada Q)
   okada (P `& Q) =
-    S.br (S.lf (P , inj₁ (okada P))) (S.lf (Q , inj₂ (okada Q))) , ε
+    S.node (S.leaf (P , inj₁ (okada P))) (S.leaf (Q , inj₂ (okada Q))) , ε
   okada (P `⊕ Q) =
-    ⟦ P ⟧ .neg .S≤-closed (`left ◅ ε) (okada P) ,
-    ⟦ Q ⟧ .neg .S≤-closed (`right ◅ ε) (okada Q)
+    ⟦ P ⟧ .neg .≤-closed (`left ◅ ε) (okada P) ,
+    ⟦ Q ⟧ .neg .≤-closed (`right ◅ ε) (okada Q)
   okada (P `▷ Q) =
     P , Q , ε , okada P , okada Q
 
-  okada2 : ∀ P R → ⟦ P ⟧ .pos .SCarrier R → (R `⅋ P) ⟶* `I
+  okada2 : ∀ P R → ⟦ P ⟧ .pos .ICarrier R → (R `⅋ P) ⟶* `I
   okada2 P R ϕ =
-    tidyup (⟦ P ⟧ .int .*≤S* (R `⅋ P) (S.lf (R `⅋ P , R , P , ε , ϕ , okada P) , ε))
+    tidyup (⟦ P ⟧ .int .*≤ˢ* {R `⅋ P} (S.leaf (R `⅋ P , R , P , ε , ϕ , okada P) , ε))
 
 -- if 'P′ is provable, then it has A cut-free proof
 sem-cut-elim : ∀ P → ⟦I⟧ ==> ⟦ P ⟧ → P ⟶* `I
-sem-cut-elim P prf = tidyup (prf ._==>_.fneg .*≤S* P (okada P))
+sem-cut-elim P prf = tidyup (prf ._==>_.fneg .*≤ˢ* {P} (okada P))
 
 cut-elim : (P : Formula) → (P SMAV.⟶* `I) → P ⟶* `I
 cut-elim P prf = sem-cut-elim P ⟦ prf ⟧steps
--}

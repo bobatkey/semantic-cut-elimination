@@ -43,8 +43,8 @@ data _⟶_ : Formula → Formula → Set where
   -- `⊗-assoc   : P `⊗ (Q `⊗ R) ⟶ (P `⊗ Q) `⊗ R
   -- `⊗-assoc⁻¹ : (P `⊗ Q) `⊗ R ⟶ P `⊗ (Q `⊗ R)
   `⊗-comm    : P `⊗ Q ⟶ Q `⊗ P
-  -- `⊗-unit    : P `⊗ `I ⟶ P
-  -- `⊗-unit⁻¹  : P ⟶ (P `⊗ `I)
+  `⊗-unit    : P `⊗ `I ⟶ P
+  `⊗-unit⁻¹  : P ⟶ (P `⊗ `I)
 
   _`⟨⅋_      : P ⟶ P′ → (Q : Formula) → (P `⅋ Q) ⟶ (P′ `⅋ Q)
   _`⅋⟩_      : (P : Formula) → Q ⟶ Q′ → (P `⅋ Q) ⟶ (P `⅋ Q′)
@@ -87,7 +87,7 @@ _⟷*_ = SymCore _⟶*_
 ⟶*-isPartialOrder : IsPartialOrder _⟷*_ _⟶*_
 ⟶*-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _⟶*_ (Star.isPreorder _⟶_)
 
-open IsPartialOrder ⟶*-isPartialOrder
+open IsPartialOrder ⟶*-isPartialOrder public
   using ()
   renaming (trans to ⟶*-trans)
 
