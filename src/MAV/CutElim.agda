@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --allow-unsolved-metas --without-K #-}
+{-# OPTIONS --postfix-projections --safe --without-K #-}
 
 module MAV.CutElim (Atom : Set) where
 
@@ -58,7 +58,7 @@ module CC = Algebra.Chu.Construction
               S.∨ˢ-isJoinSemilattice
               MS.εˢ
     renaming (_⊗_ to _⟦⊗⟧_;
-              -- _⅋_ to _⟦⅋⟧_;
+              _⅋_ to _⟦⅋⟧_;
               _&_ to _⟦&⟧_;
               -- _⊕_ to _⟦⊕⟧_;
               I to ⟦I⟧;
@@ -71,7 +71,6 @@ open CC.SelfDual
       D.⊗ˢ-▷ˢ-isDuoidal
       (S.≤ˢ-trans (M▷.▷ˢ-mono (S.≤ˢ-reflexive units-iso) S.≤ˢ-refl) (S.≤ˢ-reflexive (M▷.▷ˢ-identityˡ _)))
       (S.≤ˢ-reflexive (S.Eq.sym units-iso))
--- open P._≤P_
 
 Chu-mix : ⟦I⟧ ≅ ⟦¬⟧ ⟦I⟧
 Chu-mix .proj₁ .fpos = S.≤ˢ-refl
@@ -85,27 +84,25 @@ I-eq-J .proj₁ .fneg = S.≤ˢ-reflexive (S.Eq.sym units-iso)
 I-eq-J .proj₂ .fpos = S.≤ˢ-reflexive (S.Eq.sym units-iso)
 I-eq-J .proj₂ .fneg = S.≤ˢ-reflexive units-iso
 
-{-
-ChuModel : SMAV.Model (suc (suc 0ℓ)) 0ℓ
+ChuModel : SMAV.Model (suc (suc 0ℓ)) 0ℓ 0ℓ
 ChuModel .SMAV.Model.Carrier = Chu
-ChuModel .SMAV.Model._≤_ = _==>_
-ChuModel .SMAV.Model.¬_ = ⟦¬⟧
+ChuModel .SMAV.Model._≈_ = _≅_
+ChuModel .SMAV.Model._≲_ = _==>_
+ChuModel .SMAV.Model.¬ = ⟦¬⟧
 ChuModel .SMAV.Model.I = ⟦I⟧
 ChuModel .SMAV.Model.J = J
 ChuModel .SMAV.Model._⊗_ = _⟦⊗⟧_
 ChuModel .SMAV.Model._▷_ = _⍮_
 ChuModel .SMAV.Model._&_ = _⟦&⟧_
-ChuModel .SMAV.Model.≤-isPreorder = ==>-isPreorder
-ChuModel .SMAV.Model.⊗-isMonoid = ⊗-isMonoid
-ChuModel .SMAV.Model.⊗-sym = ⊗-sym
-ChuModel .SMAV.Model.⊗-*aut = ⊗-isStarAutonomous
+ChuModel .SMAV.Model.⊗-isCommutativePomonoid = ⊗-isCommutativePomonoid
+ChuModel .SMAV.Model.⊗-isStarAutonomous = ⊗-isStarAutonomous
 ChuModel .SMAV.Model.mix = Chu-mix
 ChuModel .SMAV.Model.&-isMeet = &-isMeet
-ChuModel .SMAV.Model.▷-isMonoid = ⍮-isMonoid
+ChuModel .SMAV.Model.⊗-▷-isDuoidal = ⊗-⍮-isDuoidal
 ChuModel .SMAV.Model.I-eq-J = I-eq-J
 ChuModel .SMAV.Model.▷-self-dual = self-dual
-ChuModel .SMAV.Model.⊗-▷-isDuoidal = ⊗-⍮-isDuoidal
 
+{-
 _>>>_ = ⟶*-trans
 
 -- The atom interaction law in PreSheaves

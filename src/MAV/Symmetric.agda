@@ -10,8 +10,9 @@ import Relation.Binary.Construct.Core.Symmetric as SymCore
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star)
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (ε; _◅_)
 import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as Star
+open import Relation.Binary.Lattice using (IsMeetSemilattice)
 
-open import Prelude
+-- open import Prelude
 
 open import MAV.Formula Atom
 
@@ -73,6 +74,32 @@ infix  5 _⟶*_
 _⟶*_ : Formula → Formula → Set
 _⟶*_ = Star _⟶_
 
+open import Algebra.Ordered
+open import Algebra.Ordered.Structures.Duoidal
+
+record Model (a ℓ₁ ℓ₂ : Level) : Set (suc (a ⊔ ℓ₁ ⊔ ℓ₂)) where
+  field
+    Carrier : Set a
+    _≈_     : Carrier → Carrier → Set ℓ₁
+    _≲_     : Carrier → Carrier → Set ℓ₂
+
+    ¬       : Carrier → Carrier
+    I       : Carrier
+    J       : Carrier
+    _⊗_     : Carrier → Carrier → Carrier
+    _▷_     : Carrier → Carrier → Carrier
+    _&_     : Carrier → Carrier → Carrier
+
+    ⊗-isCommutativePomonoid : IsCommutativePomonoid _≈_ _≲_ _⊗_ I
+    ⊗-isStarAutonomous      : IsStarAuto _≈_ _≲_ ⊗-isCommutativePomonoid ¬
+    mix                     : I ≈ ¬ I
+
+    &-isMeet                : IsMeetSemilattice _≈_ _≲_ _&_
+    ⊗-▷-isDuoidal          : IsDuoidal _≈_ _≲_ _⊗_ _▷_ I J
+    I-eq-J                 : I ≈ J
+    ▷-self-dual            : ∀ {x y} → (¬ (x ▷ y)) ≈ ((¬ x) ▷ (¬ y))
+
+{-
 record Model (a ℓ : Level) : Set (suc (a ⊔ ℓ)) where
   field
     Carrier : Set a
@@ -218,3 +245,4 @@ module Interpretation {a ℓ : Level} (M : Model a ℓ) (V : Atom → M .Model.C
   ⟦_⟧steps : P ⟶* Q → ⟦ Q ⟧ ≤ ⟦ P ⟧
   ⟦ ε     ⟧steps = refl
   ⟦ x ◅ S ⟧steps = trans ⟦ S ⟧steps ⟦ x ⟧step
+-}

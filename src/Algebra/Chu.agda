@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --allow-unsolved-metas --without-K #-}
+{-# OPTIONS --postfix-projections --safe --without-K #-}
 
 module Algebra.Chu where
 
@@ -11,6 +11,7 @@ open import Level
 open import Data.Product using (proj₁; proj₂; _,_; swap)
 open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 open import Function using (Equivalence)
+open import Algebra using (Associative; LeftIdentity; RightIdentity)
 open import Algebra.Ordered
 open import Algebra.Ordered.Consequences using (supremum∧residualʳ⇒distribˡ)
 open import Algebra.Ordered.Structures.Residuated
@@ -58,6 +59,12 @@ module Construction {a b c}
   infix 4 _==>_
 
   _≅_ = SymCore _==>_
+
+  mk-≅ : ∀ {X Y} → (X .pos ≈ Y .pos) → (X .neg ≈ Y .neg) → X ≅ Y
+  mk-≅ pos-eq neg-eq .proj₁ .fpos = reflexive pos-eq
+  mk-≅ pos-eq neg-eq .proj₁ .fneg = reflexive (Eq.sym neg-eq)
+  mk-≅ pos-eq neg-eq .proj₂ .fpos = reflexive (Eq.sym pos-eq)
+  mk-≅ pos-eq neg-eq .proj₂ .fneg = reflexive neg-eq
 
   ==>-refl : Reflexive _==>_
   ==>-refl .fpos = refl
@@ -188,9 +195,7 @@ module Construction {a b c}
   ⊗-isStarAutonomous .IsStarAuto.*-aut = *-aut
   ⊗-isStarAutonomous .IsStarAuto.*-aut⁻¹ = *-aut⁻¹
 
-{-
   open IsStarAuto ⊗-isStarAutonomous hiding (¬-mono; involution; *-aut; *-aut⁻¹) public
--}
 
   ------------------------------------------------------------------------------
   -- Additive structure
@@ -215,9 +220,9 @@ module Construction {a b c}
   pair f g .fpos = ∧-greatest (f .fpos) (g .fpos)
   pair f g .fneg = ∨-least (f .fneg) (g .fneg)
 
-  &-isMeetSemilattice : IsMeetSemilattice _≅_ _==>_ _&_
-  &-isMeetSemilattice .IsMeetSemilattice.isPartialOrder = ==>-isPartialOrder
-  &-isMeetSemilattice .IsMeetSemilattice.infimum x y = fst , snd , λ z → pair
+  &-isMeet : IsMeetSemilattice _≅_ _==>_ _&_
+  &-isMeet .IsMeetSemilattice.isPartialOrder = ==>-isPartialOrder
+  &-isMeet .IsMeetSemilattice.infimum x y = fst , snd , λ z → pair
 
   ------------------------------------------------------------------------------
   -- Self-dual operators on Chu, arising from duoidal structures on
@@ -227,7 +232,7 @@ module Construction {a b c}
                   (K-m : (K ▷ K) ≤ K) (K-u : ι ≤ K) -- K is a ▷-monoid
                 where
 
-    open IsDuoidal ∙-▷-isDuoidal hiding (refl)
+    open IsDuoidal ∙-▷-isDuoidal hiding (refl; module Eq)
 
     _⍮_ : Chu → Chu → Chu
     (X ⍮ Y) .pos = X .pos ▷ Y .pos
@@ -250,39 +255,23 @@ module Construction {a b c}
     ⍮-mono f g .fpos = ▷-mono (f .fpos) (g .fpos)
     ⍮-mono f g .fneg = ▷-mono (f .fneg) (g .fneg)
 
+    ⍮-assoc : Associative _≅_ _⍮_
+    ⍮-assoc x y z = mk-≅ (▷-assoc _ _ _) (▷-assoc _ _ _)
+
+    ⍮-identityˡ : LeftIdentity _≅_ J _⍮_
+    ⍮-identityˡ x = mk-≅ (▷-identityˡ _) (▷-identityˡ _)
+
+    ⍮-identityʳ : RightIdentity _≅_ J _⍮_
+    ⍮-identityʳ x = mk-≅ (▷-identityʳ _) (▷-identityʳ _)
+
     ⍮-isPomonoid : IsPomonoid _≅_ _==>_ _⍮_ J
     ⍮-isPomonoid =
       record { isPosemigroup = record {
         isPomagma = record {
           isPartialOrder = ==>-isPartialOrder ;
           mono = ⍮-mono }
-        ; assoc = {!!} }
-      ; identity = {!!} }
-{-
-    ⍮-lunit : ∀ {X} → (J ⍮ X) ≅ X
-    ⍮-lunit .proj₁ .fpos = ▷-lunit .proj₁
-    ⍮-lunit .proj₁ .fneg = ▷-lunit .proj₂
-    ⍮-lunit .proj₂ .fpos = ▷-lunit .proj₂
-    ⍮-lunit .proj₂ .fneg = ▷-lunit .proj₁
-
-    ⍮-runit : ∀ {X} → (X ⍮ J) ≅ X
-    ⍮-runit .proj₁ .fpos = ▷-runit .proj₁
-    ⍮-runit .proj₁ .fneg = ▷-runit .proj₂
-    ⍮-runit .proj₂ .fpos = ▷-runit .proj₂
-    ⍮-runit .proj₂ .fneg = ▷-runit .proj₁
-
-    ⍮-assoc : ∀ {X Y Z} → ((X ⍮ Y) ⍮ Z) ≅ (X ⍮ (Y ⍮ Z))
-    ⍮-assoc .proj₁ .fpos = ▷-assoc .proj₁
-    ⍮-assoc .proj₁ .fneg = ▷-assoc .proj₂
-    ⍮-assoc .proj₂ .fpos = ▷-assoc .proj₂
-    ⍮-assoc .proj₂ .fneg = ▷-assoc .proj₁
-
-    ⍮-isMonoid : IsMonoid ==>-isPreorder _⍮_ J
-    ⍮-isMonoid .IsMonoid.mono = ⍮-mono
-    ⍮-isMonoid .IsMonoid.assoc = ⍮-assoc
-    ⍮-isMonoid .IsMonoid.lunit = ⍮-lunit
-    ⍮-isMonoid .IsMonoid.runit = ⍮-runit
--}
+        ; assoc = ⍮-assoc }
+      ; identity = ⍮-identityˡ , ⍮-identityʳ }
 
     -- transpose for any closed duoidal category
     entropy' : ∀ {w x y z} → ((w -∙ x) ▷ (y -∙ z)) ≤ ((w ▷ y) -∙ (x ▷ z))
