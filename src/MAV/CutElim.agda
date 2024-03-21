@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --safe --without-K #-}
+{-# OPTIONS --postfix-projections --allow-unsolved-metas --without-K #-}
 
 module MAV.CutElim (Atom : Set) where
 
@@ -57,22 +57,21 @@ module CC = Algebra.Chu.Construction
               S.∧ˢ-isMeetSemilattice
               S.∨ˢ-isJoinSemilattice
               MS.εˢ
-{-
     renaming (_⊗_ to _⟦⊗⟧_;
-              _⅋_ to _⟦⅋⟧_;
+              -- _⅋_ to _⟦⅋⟧_;
               _&_ to _⟦&⟧_;
-              _⊕_ to _⟦⊕⟧_;
+              -- _⊕_ to _⟦⊕⟧_;
               I to ⟦I⟧;
-              ¬ to ⟦¬⟧) hiding (⅋-mono; ⅋-sym)
-              -}
+              ¬ to ⟦¬⟧) -- hiding (⅋-mono; ⅋-sym)
 
-{-
 open CC
 open CC.Chu
-open CC.SelfDual M▷.▷-isMonoid
-        (S.≤S-trans (M▷.▷-mono (D.units-iso .proj₁) S.≤S-refl) (M▷.▷-lunit .proj₁))
-        (D.units-iso .proj₂)
-        D.⊗-▷-isDuoidal
+open CC.SelfDual D.⊗ˢ-▷ˢ-isDuoidal {!!} {!!}
+        -- M▷.▷-isMonoid
+        -- (S.≤S-trans (M▷.▷-mono (D.units-iso .proj₁) S.≤S-refl) (M▷.▷-lunit .proj₁))
+        -- (D.units-iso .proj₂)
+        -- D.⊗-▷-isDuoidal
+        {-
 open P._≤P_
 
 Chu-mix : ⟦I⟧ ≅ ⟦¬⟧ ⟦I⟧

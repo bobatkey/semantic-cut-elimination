@@ -322,3 +322,26 @@ record IsPosemiring (+ * : Op₂ A) (0# 1# : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) 
 
   open IsProsemiring isProsemiring public
     using (isSemiring; distribˡ; distribʳ; zeroˡ; zeroʳ) 
+
+record IsStarAuto {_⊗_ ε} (⊗-isCommutativePomonoid : IsCommutativePomonoid _⊗_ ε) (¬ : A → A)
+   : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+  field
+    ¬-mono     : ∀ {x y} → x ≲ y → ¬ y ≲ ¬ x
+    involution : ∀ {x} → x ≈ ¬ (¬ x)
+
+    *-aut   : ∀ {x y z} → (x ⊗ y) ≲ ¬ z → x ≲ ¬ (y ⊗ z)
+    *-aut⁻¹ : ∀ {x y z} → x ≲ ¬ (y ⊗ z) → (x ⊗ y) ≲ ¬ z
+
+  open IsCommutativePomonoid ⊗-isCommutativePomonoid
+
+  ¬-cong : ∀ {x y} → x ≈ y → ¬ x ≈ ¬ y
+  ¬-cong x≈y = antisym (¬-mono (reflexive (Eq.sym x≈y))) (¬-mono (reflexive x≈y))
+
+  ⊥ : A
+  ⊥ = ¬ ε
+
+  _⅋_ : A → A → A
+  x ⅋ y = ¬ (¬ x ⊗ ¬ y)
+
+  -- ⅋-sym : ∀ {x y} → (x ⅋ y) ≲ (y ⅋ x)
+  -- ⅋-sym = {!!}
