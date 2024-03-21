@@ -22,13 +22,13 @@
       in rec {
         packages = {
           html-doc = pkgs.stdenvNoCC.mkDerivation rec {
-            name = "vehicle-formalisation";
+            name = "semantic-cut-elimination";
             src = self;
             buildInputs = [ agda ];
             phases = ["unpackPhase" "buildPhase" "installPhase"];
             buildPhase = ''
 mkdir -p html;
-agda --html --html-dir=html src/Everything.agda
+agda --html --html-dir=html src/MAV/Example.agda
 '';
             installPhase = ''
 mkdir -p $out;
