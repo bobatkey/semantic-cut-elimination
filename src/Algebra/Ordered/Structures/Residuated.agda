@@ -54,20 +54,20 @@ record IsResiduatedPromagma (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ�
 
   mono-antiˡ : MonotonicAntitonic _≲_ _≲_ _≲_ ⇦
   mono-antiˡ w≲x z≲y
-    = residualˡ .to 
+    = residualˡ .to
     $ flip trans w≲x
-    $ residualʳ .from 
+    $ residualʳ .from
     $ trans z≲y
-    $ residualʳ .to 
+    $ residualʳ .to
     $ residualˡ .from refl
     where open Function.Equivalence using (to; from)
 
   anti-monoʳ : AntitonicMonotonic _≲_ _≲_ _≲_ ⇨
   anti-monoʳ {w} {x} {y} {z} x≲w y≲z
-    = residualʳ .to 
+    = residualʳ .to
     $ flip trans y≲z
     $ residualˡ .from
-    $ trans x≲w 
+    $ trans x≲w
     $ residualˡ .to
     $ residualʳ .from refl
     where open Function.Equivalence using (to; from)

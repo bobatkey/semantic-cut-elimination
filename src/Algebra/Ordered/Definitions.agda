@@ -25,6 +25,9 @@ open import Function.Bundles using (_⇔_)
 ------------------------------------------------------------------------
 -- Properties of operations
 
+-- FIXME: the use of ⇔ here introduces noise. There is no need for the
+-- additional equality proofs.
+
 LeftResidual : Op₂ A → Op₂ A → Set _
 LeftResidual _∙_ _⇦_ = ∀ {x y z} → (x ∙ y) ≲ z ⇔ x ≲ (z ⇦ y)
 

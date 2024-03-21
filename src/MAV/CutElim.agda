@@ -51,19 +51,22 @@ units-iso : MS.εˢ S.≈ˢ M▷.ιˢ
 units-iso .proj₁ .*≤ˢ* {x} (t , x≤t) = M▷.ιˢ .≤-closed x≤t (M▷.ιˢ .∨-closed t)
 units-iso .proj₂ .*≤ˢ* {x} x≤I = S.leaf (x , x≤I) , ε
 
+
+module CC = Algebra.Chu.Construction
+              MS.⊸ˢ-⊗ˢ-isResiduatedCommutativePomonoid
+              S.∧ˢ-isMeetSemilattice
+              S.∨ˢ-isJoinSemilattice
+              MS.εˢ
 {-
-module CC = Chu.Construction
-    S.≤S-isPreorder
-    MS.⊗-isMonoid MS.⊗-sym MS.⊸-isClosure
-    S.∧S-isMeet S.∨S-isJoin
-    MS.I
     renaming (_⊗_ to _⟦⊗⟧_;
               _⅋_ to _⟦⅋⟧_;
               _&_ to _⟦&⟧_;
               _⊕_ to _⟦⊕⟧_;
               I to ⟦I⟧;
               ¬ to ⟦¬⟧) hiding (⅋-mono; ⅋-sym)
+              -}
 
+{-
 open CC
 open CC.Chu
 open CC.SelfDual M▷.▷-isMonoid

@@ -537,6 +537,10 @@ module LiftIsCommutativePomonoid
       ; comm = ⊗ˢ-comm
     }
 
+  commutativePomonoid : CommutativePomonoid (suc (c ⊔ ℓ₂)) (c ⊔ ℓ₂) (c ⊔ ℓ₂)
+  commutativePomonoid =
+    record { isCommutativePomonoid = ⊗ˢ-isCommutativePomonoid }
+
   module _ {𝓕 𝓖 : Sheaf} where
 
     -- Residuals are automatically closed, relying on distributivity.

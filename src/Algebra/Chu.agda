@@ -8,34 +8,45 @@ module Algebra.Chu where
 -- ▷-monoid, then Chu(A,K) is duoidal.
 
 open import Level
-open import Data.Product using (proj₁; proj₂)
+open import Data.Product using (proj₁; proj₂; _,_; swap)
 open import Prelude
 open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
+open import Function using (Equivalence)
+open import Algebra.Ordered
+open import Algebra.Ordered.Structures.Residuated
+open import Relation.Binary
+  using (Reflexive; Transitive; IsPartialOrder; IsPreorder; IsEquivalence)
+open import Relation.Binary.Lattice using (IsMeetSemilattice; IsJoinSemilattice)
 
-module Construction {a b} {A : Set a}
-          {_≤_ : A → A → Set b}
-          (≤-isPreorder : IsPreorder _≤_)
-          {_•_ : A → A → A} {ε : A}
-          (•-isMonoid : IsMonoid ≤-isPreorder _•_ ε)
-          (•-sym : ∀ {x y} → (x • y) ≤ (y • x))
-          {_-•_ : A → A → A}
-          (-•-isClosure : IsClosure ≤-isPreorder •-isMonoid _-•_)
-          {_∧_ : A → A → A}
-          (∧-isMeet : IsMeet ≤-isPreorder _∧_)
-          {_∨_ : A → A → A}
-          (∨-isJoin : IsJoin ≤-isPreorder _∨_)
-          (K : A)
+module Construction {a b c}
+           {A : Set a}
+           {_≈_ : A → A → Set b}
+           {_≤_ : A → A → Set c}
+           {_∙_ : A → A → A}
+           {ε : A}
+           {_-∙_ : A → A → A}
+           (isResiduatedCommutativePomonoid :
+              IsResiduatedCommutativePomonoid _≈_ _≤_ _∙_ _-∙_ ε)
+           {_∧_ : A → A → A}
+           (∧-isMeet : IsMeetSemilattice _≈_ _≤_ _∧_)
+           {_∨_ : A → A → A}
+           (∨-isJoin : IsJoinSemilattice _≈_ _≤_ _∨_)
+           (K : A)
         where
 
-  record Chu : Set (suc (a ⊔ b)) where
+  open IsResiduatedCommutativePomonoid isResiduatedCommutativePomonoid
+  open IsMeetSemilattice ∧-isMeet hiding (refl; reflexive; trans; module Eq) -- why on earth does this export refl?
+
+
+  record Chu : Set (suc (a ⊔ b ⊔ c)) where
     no-eta-equality
     field
       pos : A
       neg : A
-      int : (pos • neg) ≤ K
+      int : (pos ∙ neg) ≤ K
   open Chu
 
-  record _==>_ (X Y : Chu) : Set b where
+  record _==>_ (X Y : Chu) : Set c where
     no-eta-equality
     field
       fpos : X .pos ≤ Y .pos
@@ -45,23 +56,26 @@ module Construction {a b} {A : Set a}
 
   _≅_ = SymCore _==>_
 
-  open IsPreorder ≤-isPreorder using (refl; trans)
-  open IsMonoid •-isMonoid using (lunit; runit; mono; assoc)
-  open IsMeet ∧-isMeet renaming (mono to ∧-mono) hiding (assoc)
-  open IsJoin ∨-isJoin renaming (mono to ∨-mono) hiding (assoc)
-  open IsClosure -•-isClosure renaming (-∙-mono to -•-mono)
+  ==>-refl : Reflexive _==>_
+  ==>-refl .fpos = refl
+  ==>-refl .fneg = refl
+
+  ==>-trans : Transitive _==>_
+  ==>-trans x≤y y≤z .fpos = trans (x≤y .fpos) (y≤z .fpos)
+  ==>-trans x≤y y≤z .fneg = trans (y≤z .fneg) (x≤y .fneg)
+
+  ==>-isPartialOrder : IsPartialOrder _≅_ _==>_
+  ==>-isPartialOrder .IsPartialOrder.isPreorder .IsPreorder.isEquivalence .IsEquivalence.refl = ==>-refl , ==>-refl
+  ==>-isPartialOrder .IsPartialOrder.isPreorder .IsPreorder.isEquivalence .IsEquivalence.sym = swap
+  ==>-isPartialOrder .IsPartialOrder.isPreorder .IsPreorder.isEquivalence .IsEquivalence.trans (ϕ₁ , ϕ₂) (ψ₁ , ψ₂) = (==>-trans ϕ₁ ψ₁) , (==>-trans ψ₂ ϕ₂)
+  ==>-isPartialOrder .IsPartialOrder.isPreorder .IsPreorder.reflexive = proj₁
+  ==>-isPartialOrder .IsPartialOrder.isPreorder .IsPreorder.trans = ==>-trans
+  ==>-isPartialOrder .IsPartialOrder.antisym = _,_
 
   _>>_ : ∀ {x y z} → x ≤ y → y ≤ z → x ≤ z
   _>>_ = trans
-  infix 5 _>>_
+  infixr 5 _>>_
 
-  ==>-isPreorder : IsPreorder _==>_
-  ==>-isPreorder .IsPreorder.refl .fpos = refl
-  ==>-isPreorder .IsPreorder.refl .fneg = refl
-  ==>-isPreorder .IsPreorder.trans f g .fpos = f .fpos >> g . fpos
-  ==>-isPreorder .IsPreorder.trans f g .fneg = g .fneg >> f .fneg
-
-  open IsPreorder ==>-isPreorder renaming (refl to id; trans to ==>-trans)
   _∘_ : ∀ {X Y Z} → (Y ==> Z) → (X ==> Y) → X ==> Z
   f ∘ g = ==>-trans g f
 
@@ -69,7 +83,7 @@ module Construction {a b} {A : Set a}
   ¬ : Chu → Chu
   ¬ X .pos = X .neg
   ¬ X .neg = X .pos
-  ¬ X .int = trans •-sym (X .int)
+  ¬ X .int = trans (reflexive (comm _ _)) (X .int)
 
   involution : ∀ {X} → X ≅ ¬ (¬ X)
   involution .proj₁ .fpos = refl
@@ -85,67 +99,82 @@ module Construction {a b} {A : Set a}
   I : Chu
   I .pos = ε
   I .neg = K
-  I .int = lunit .proj₁
+  I .int = reflexive (identity .proj₁ _)
 
   _⊗_ : Chu → Chu → Chu
-  (X ⊗ Y) .pos = X .pos • Y .pos
-  (X ⊗ Y) .neg = (Y .pos -• X .neg) ∧ (X .pos -• Y .neg)
+  (X ⊗ Y) .pos = X .pos ∙ Y .pos
+  (X ⊗ Y) .neg = (Y .pos -∙ X .neg) ∧ (X .pos -∙ Y .neg)
   (X ⊗ Y) .int =
-    mono refl π₁ >> (assoc .proj₁ >> (mono refl •-sym >> (mono refl eval >> X .int)))
+    mono refl (x∧y≤x _ _) >>
+    reflexive (assoc _ _ _) >>
+    mono refl evalʳ >>
+    X .int
 
   ⊗-mono : ∀ {X₁ Y₁ X₂ Y₂} → X₁ ==> X₂ → Y₁ ==> Y₂ → (X₁ ⊗ Y₁) ==> (X₂ ⊗ Y₂)
   ⊗-mono f g .fpos = mono (f .fpos) (g .fpos)
-  ⊗-mono f g .fneg = ∧-mono (-•-mono (g .fpos) (f .fneg)) (-•-mono (f .fpos) (g .fneg))
+  ⊗-mono f g .fneg =
+    ∧-greatest (x∧y≤x _ _ >> anti-monoʳ (g .fpos) (f .fneg))
+               (x∧y≤y _ _ >> anti-monoʳ (f .fpos) (g .fneg))
+
 
   ⊗-sym : ∀ {X Y} → (X ⊗ Y) ==> (Y ⊗ X)
-  ⊗-sym .fpos = •-sym
-  ⊗-sym .fneg = ⟨ π₂ , π₁ ⟩
+  ⊗-sym .fpos = reflexive (comm _ _)
+  ⊗-sym .fneg = ∧-greatest (x∧y≤y _ _) (x∧y≤x _ _)
 
-  ⊗-lunit : ∀ {X} → (I ⊗ X) ≅ X
-  ⊗-lunit {X} .proj₁ .fpos = lunit .proj₁
-  ⊗-lunit {X} .proj₁ .fneg = ⟨ lambda (•-sym >> X .int) , lambda (runit .proj₁) ⟩
-  ⊗-lunit {X} .proj₂ .fpos = lunit .proj₂
-  ⊗-lunit {X} .proj₂ .fneg = π₂ >> (runit .proj₂ >> eval)
+  Λˡ : ∀ {x y z} → (x ∙ y) ≤ z → x ≤ (y -∙ z)
+  Λˡ = residualˡ .Equivalence.to
 
-  ⊗-runit : ∀ {X} → (X ⊗ I) ≅ X
-  ⊗-runit .proj₁ = ==>-trans ⊗-sym (⊗-lunit .proj₁)
-  ⊗-runit .proj₂ = ==>-trans (⊗-lunit .proj₂) ⊗-sym
+  Λʳ : ∀ {x y z} → (x ∙ y) ≤ z → y ≤ (x -∙ z)
+  Λʳ = residualʳ .Equivalence.to
 
-  ⊗-assoc : ∀ {X Y Z} → ((X ⊗ Y) ⊗ Z) ≅ (X ⊗ (Y ⊗ Z))
-  ⊗-assoc .proj₁ .fpos = assoc .proj₁
-  ⊗-assoc .proj₁ .fneg =
-    ⟨ lambda
-        ⟨ lambda (mono (mono π₁ refl) refl >> (assoc .proj₁ >> (mono refl •-sym >> eval)))
-        , lambda (mono (mono (π₂ >> -•-mono refl π₁) refl) refl >> (assoc .proj₁ >> (mono refl •-sym >> (assoc .proj₂ >> (mono eval refl >> eval)))))
-        ⟩
-    , lambda (mono (π₂ >> -•-mono refl π₂) refl >> (assoc .proj₂ >> (mono eval refl >> eval)))
-    ⟩
-  ⊗-assoc .proj₂ .fpos = assoc .proj₂
-  ⊗-assoc .proj₂ .fneg =
-    ⟨ lambda (mono (π₁ >> -•-mono refl π₁) refl >> (mono refl •-sym >> (assoc .proj₂ >> (mono eval refl >> eval))))
-    , lambda ⟨ lambda (mono (mono (π₁ >> -•-mono refl π₂) refl) refl >> (assoc .proj₁ >> (mono refl •-sym >> (assoc .proj₂ >> (mono eval refl >> eval)))))
-             , lambda (mono (mono π₂ refl) refl >> (assoc .proj₁ >> eval))
-             ⟩
-    ⟩
+  ⊗-lunit : ∀ X → (I ⊗ X) ≅ X
+  ⊗-lunit X .proj₁ .fpos = reflexive (identityˡ _)
+  ⊗-lunit X .proj₁ .fneg =
+    ∧-greatest (residualʳ .Equivalence.to (X .int))
+               (residualʳ .Equivalence.to (reflexive (identityˡ _)))
+  ⊗-lunit X .proj₂ .fpos = reflexive (Eq.sym (identityˡ (X .pos)))
+  ⊗-lunit X .proj₂ .fneg = x∧y≤y _ _ >> reflexive (Eq.sym (identityʳ _)) >> evalˡ
 
-  ⊗-isMonoid : IsMonoid ==>-isPreorder _⊗_ I
-  ⊗-isMonoid .IsMonoid.mono {X₁}{Y₁}{X₂}{Y₂} = ⊗-mono {X₁}{Y₁}{X₂}{Y₂}
-  ⊗-isMonoid .IsMonoid.assoc {X}{Y}{Z} = ⊗-assoc {X}{Y}{Z}
-  ⊗-isMonoid .IsMonoid.lunit {X} = ⊗-lunit {X}
-  ⊗-isMonoid .IsMonoid.runit {X} = ⊗-runit {X}
+  ⊗-runit : ∀ X → (X ⊗ I) ≅ X
+  ⊗-runit X .proj₁ = ==>-trans ⊗-sym (⊗-lunit X .proj₁)
+  ⊗-runit X .proj₂ = ==>-trans (⊗-lunit X .proj₂) ⊗-sym
+
+  ⊗-assoc : ∀ X Y Z → ((X ⊗ Y) ⊗ Z) ≅ (X ⊗ (Y ⊗ Z))
+  ⊗-assoc X Y Z .proj₁ .fpos = reflexive (assoc _ _ _)
+  ⊗-assoc X Y Z .proj₁ .fneg =
+    ∧-greatest (Λˡ (∧-greatest
+                     (Λˡ (mono (mono (x∧y≤x _ _) refl) refl >> reflexive (assoc _ _ _) >> mono refl (reflexive (comm _ _)) >> evalˡ))
+                     (Λˡ (mono (mono (x∧y≤y _ _ >> anti-monoʳ refl (x∧y≤x _ _)) refl) refl >> reflexive (assoc _ _ _) >> mono refl (reflexive (comm _ _)) >> reflexive (Eq.sym (assoc _ _ _)) >> mono evalˡ refl >> evalˡ))))
+               (Λˡ (mono (x∧y≤y _ _ >> anti-monoʳ refl (x∧y≤y _ _)) refl >> (reflexive (Eq.sym (assoc _ _ _)) >> (mono evalˡ refl >> evalˡ))))
+  ⊗-assoc X Y Z .proj₂ .fpos = reflexive (Eq.sym (assoc _ _ _))
+  ⊗-assoc X Y Z .proj₂ .fneg =
+    ∧-greatest
+      (Λˡ (mono (x∧y≤x _ _ >> anti-monoʳ refl (x∧y≤x _ _)) refl >> (mono refl (reflexive (comm _ _)) >> (reflexive (Eq.sym (assoc _ _ _)) >> (mono evalˡ refl >> evalˡ)))))
+      (Λˡ (∧-greatest
+            (Λˡ (mono (mono (x∧y≤x _ _ >> anti-monoʳ refl (x∧y≤y _ _)) refl) refl >> reflexive (assoc _ _ _) >> mono refl (reflexive (comm _ _)) >> reflexive (Eq.sym (assoc _ _ _)) >> (mono evalˡ refl >> evalˡ)))
+            (Λˡ (mono (mono (x∧y≤y _ _) refl) refl >> reflexive (assoc _ _ _) >> evalˡ))))
+
+  ⊗-isCommutativePomonoid : IsCommutativePomonoid _≅_ _==>_ _⊗_ I
+  ⊗-isCommutativePomonoid .IsCommutativePomonoid.isPomonoid .IsPomonoid.isPosemigroup .IsPosemigroup.isPomagma .IsPomagma.isPartialOrder = ==>-isPartialOrder
+  ⊗-isCommutativePomonoid .IsCommutativePomonoid.isPomonoid .IsPomonoid.isPosemigroup .IsPosemigroup.isPomagma .IsPomagma.mono = ⊗-mono
+  ⊗-isCommutativePomonoid .IsCommutativePomonoid.isPomonoid .IsPomonoid.isPosemigroup .IsPosemigroup.assoc = ⊗-assoc
+  ⊗-isCommutativePomonoid .IsCommutativePomonoid.isPomonoid .IsPomonoid.identity = ⊗-lunit , ⊗-runit
+  ⊗-isCommutativePomonoid .IsCommutativePomonoid.comm = λ x y → ⊗-sym , ⊗-sym
+
 
   ------------------------------------------------------------------------------
   -- We have a *-autonomous preorder:
 
   *-aut : ∀ {X Y Z} → (X ⊗ Y) ==> ¬ Z → X ==> ¬ (Y ⊗ Z)
-  *-aut m .fpos = ⟨ lambda (•-sym >> (mono (m .fneg >> π₂) refl >> eval)) , lambda (m .fpos) ⟩
-  *-aut m .fneg = •-sym >> (mono (m .fneg >> π₁) refl >> eval)
+  *-aut m .fpos = ∧-greatest (Λʳ (mono (m .fneg >> x∧y≤y _ _) refl >> evalˡ)) (Λˡ (m .fpos))
+  *-aut m .fneg = reflexive (comm _ _) >> mono (m .fneg >> x∧y≤x _ _) refl >> evalˡ
 
   *-aut⁻¹ : ∀ {X Y Z} → X ==> ¬ (Y ⊗ Z) → (X ⊗ Y) ==> ¬ Z
-  *-aut⁻¹ m .fpos = mono (m .fpos >> π₂) refl >> eval
+  *-aut⁻¹ m .fpos = mono (m .fpos >> x∧y≤y _ _) refl >> evalˡ
   *-aut⁻¹ m .fneg =
-    ⟨ lambda (•-sym >> m .fneg) , lambda (•-sym >> (mono (m .fpos >> π₁) refl >> eval)) ⟩
+    ∧-greatest (Λʳ (m .fneg)) (Λʳ (mono (m .fpos >> x∧y≤x _ _) refl >> evalˡ))
 
+{-
   ⊗-isStarAutonomous : IsStarAuto ==>-isPreorder ⊗-isMonoid ⊗-sym ¬
   ⊗-isStarAutonomous .IsStarAuto.¬-mono = ¬-mono
   ⊗-isStarAutonomous .IsStarAuto.involution = involution
@@ -266,3 +295,4 @@ module Construction {a b} {A : Set a}
     ⊗-⍮-isDuoidal : IsDuoidal ==>-isPreorder ⊗-isMonoid ⍮-isMonoid
     ⊗-⍮-isDuoidal .IsDuoidal.entropy = ⍮-entropy
     ⊗-⍮-isDuoidal .IsDuoidal.mu = ⍮-mu
+-}
