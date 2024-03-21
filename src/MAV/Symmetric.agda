@@ -4,15 +4,16 @@ module MAV.Symmetric (Atom : Set) where
 
 open import Level
 open import Data.Product using (proj₁; proj₂)
-open import Relation.Binary using (IsEquivalence)
+open import Algebra.Ordered
+open import Algebra.Ordered.Consequences using (supremum∧residualʳ⇒distribˡ)
+open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
+open import Relation.Binary using (IsEquivalence; IsPartialOrder)
 open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 import Relation.Binary.Construct.Core.Symmetric as SymCore
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star)
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (ε; _◅_)
 import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as Star
-open import Relation.Binary.Lattice using (IsMeetSemilattice)
-
--- open import Prelude
+open import Relation.Binary.Lattice using (IsMeetSemilattice; IsJoinSemilattice)
 
 open import MAV.Formula Atom
 
@@ -74,9 +75,6 @@ infix  5 _⟶*_
 _⟶*_ : Formula → Formula → Set
 _⟶*_ = Star _⟶_
 
-open import Algebra.Ordered
-open import Algebra.Ordered.Structures.Duoidal
-
 record Model (a ℓ₁ ℓ₂ : Level) : Set (suc (a ⊔ ℓ₁ ⊔ ℓ₂)) where
   field
     Carrier : Set a
@@ -99,88 +97,69 @@ record Model (a ℓ₁ ℓ₂ : Level) : Set (suc (a ⊔ ℓ₁ ⊔ ℓ₂)) whe
     I-eq-J                 : I ≈ J
     ▷-self-dual            : ∀ {x y} → (¬ (x ▷ y)) ≈ ((¬ x) ▷ (¬ y))
 
-{-
-record Model (a ℓ : Level) : Set (suc (a ⊔ ℓ)) where
-  field
-    Carrier : Set a
-    _≤_     : Carrier → Carrier → Set ℓ
-
-  infixr 15 ¬_
-  infixr 10 _⊗_
-  infixr 10 _&_
-  infixr 10 _▷_
-
-  field
-    ¬_      : Carrier → Carrier
-    I       : Carrier
-    J       : Carrier
-    _⊗_     : Carrier → Carrier → Carrier
-    _▷_     : Carrier → Carrier → Carrier
-    _&_     : Carrier → Carrier → Carrier
-
-  field
-    ≤-isPreorder  : IsPreorder _≤_
-
-  open IsPreorder ≤-isPreorder public
-
-  field
-    ⊗-isMonoid    : IsMonoid ≤-isPreorder _⊗_ I
-    ⊗-sym         : ∀ {x y} → (x ⊗ y) ≤ (y ⊗ x)
-    ⊗-*aut        : IsStarAuto ≤-isPreorder ⊗-isMonoid ⊗-sym ¬_
-    mix           : I ≃ (¬ I)
-
-    &-isMeet      : IsMeet ≤-isPreorder _&_
-
-    ▷-isMonoid    : IsMonoid ≤-isPreorder _▷_ J
-    I-eq-J        : I ≃ J
-    ▷-self-dual   : ∀ {x y} → (¬ (x ▷ y)) ≃ ((¬ x) ▷ (¬ y))
-    ⊗-▷-isDuoidal : IsDuoidal ≤-isPreorder ⊗-isMonoid ▷-isMonoid
-
-  open IsEquivalence ≃-isEquivalence public
-    renaming (refl to ≃-refl; sym to ≃-sym; trans to ≃-trans)
-  open IsMonoid ⊗-isMonoid public
-    renaming (mono to ⊗-mono; assoc to ⊗-assoc; lunit to ⊗-lunit; runit to ⊗-runit; cong to ⊗-cong)
-  open IsMonoid ▷-isMonoid public
-    renaming (mono to ▷-mono; assoc to ▷-assoc; lunit to ▷-lunit; runit to ▷-runit; cong to ▷-cong)
-  open IsStarAuto ⊗-*aut public
-  open IsMeet &-isMeet public
-    renaming (mono to &-mono; cong to &-cong)
-    hiding (assoc; idem)
+  open IsStarAuto ⊗-isStarAutonomous public
+  open IsMeetSemilattice &-isMeet public
+    using ()
+    renaming (x∧y≤x to x&y≲x ; x∧y≤y to x&y≲y ; ∧-greatest to &-greatest)
   open IsDuoidal ⊗-▷-isDuoidal
+    using (▷-cong; ▷-mono; ▷-assoc; ▷-identityʳ; ▷-identityˡ)
+    renaming (∙-▷-entropy to ⊗-▷-entropy) public
 
-  -- Some derived facts, used in the interpretation
   _⊕_ : Carrier → Carrier → Carrier
   x ⊕ y = ¬ (¬ x & ¬ y)
 
-  ⊕-isJoin : IsJoin ≤-isPreorder _⊕_
-  ⊕-isJoin .IsJoin.inl = trans (involution .proj₁) (¬-mono π₁)
-  ⊕-isJoin .IsJoin.inr = trans (involution .proj₁) (¬-mono π₂)
-  ⊕-isJoin .IsJoin.[_,_] m₁ m₂ = trans (¬-mono ⟨ ¬-mono m₁ , ¬-mono m₂ ⟩) (involution .proj₂)
+  ⊕-isJoin : IsJoinSemilattice _≈_ _≲_ _⊕_
+  ⊕-isJoin .IsJoinSemilattice.isPartialOrder = isPartialOrder
+  ⊕-isJoin .IsJoinSemilattice.supremum x y .proj₁ =
+    trans (reflexive involution) (¬-mono (x&y≲x _ _))
+  ⊕-isJoin .IsJoinSemilattice.supremum x y .proj₂ .proj₁ =
+    trans (reflexive involution) (¬-mono (x&y≲y _ _))
+  ⊕-isJoin .IsJoinSemilattice.supremum x y .proj₂ .proj₂ z x≲z y≲z =
+    trans (¬-mono (&-greatest (¬-mono x≲z) (¬-mono y≲z))) (reflexive (Eq.sym involution))
 
-  open IsJoin ⊕-isJoin public
-    renaming (mono to ⊕-mono; cong to ⊕-cong)
-    hiding (assoc; idem)
+  open IsJoinSemilattice ⊕-isJoin public
+    using ()
+    renaming (x≤x∨y to x≲x⊕y ; y≤x∨y to y≲x⊕y; ∨-least to ⊕-least)
 
-  sequence : ∀ {w x y z} → ((w ⅋ x) ▷ (y ⅋ z)) ≤ ((w ▷ y) ⅋ (x ▷ z))
+  ⊕-mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≲ x₂ → y₁ ≲ y₂ → (x₁ ⊕ y₁) ≲ (x₂ ⊕ y₂)
+  ⊕-mono x₁≲x₂ y₁≲y₂ = ⊕-least (trans x₁≲x₂ (x≲x⊕y _ _)) (trans y₁≲y₂ (y≲x⊕y _ _))
+
+  &-mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≲ x₂ → y₁ ≲ y₂ → (x₁ & y₁) ≲ (x₂ & y₂)
+  &-mono x₁≲x₂ y₁≲y₂ = &-greatest (trans (x&y≲x _ _) x₁≲x₂) (trans (x&y≲y _ _) y₁≲y₂)
+
+  ⊕-cong : ∀ {x₁ y₁ x₂ y₂} → x₁ ≈ x₂ → y₁ ≈ y₂ → (x₁ ⊕ y₁) ≈ (x₂ ⊕ y₂)
+  ⊕-cong x₁≈x₂ y₁≈y₂ =
+    antisym (⊕-mono (reflexive x₁≈x₂) (reflexive y₁≈y₂)) (⊕-mono (reflexive (Eq.sym x₁≈x₂)) (reflexive (Eq.sym y₁≈y₂)))
+
+  &-cong : ∀ {x₁ y₁ x₂ y₂} → x₁ ≈ x₂ → y₁ ≈ y₂ → (x₁ & y₁) ≈ (x₂ & y₂)
+  &-cong x₁≈x₂ y₁≈y₂ =
+    antisym (&-mono (reflexive x₁≈x₂) (reflexive y₁≈y₂)) (&-mono (reflexive (Eq.sym x₁≈x₂)) (reflexive (Eq.sym y₁≈y₂)))
+
+  sequence : ∀ {w x y z} → ((w ⅋ x) ▷ (y ⅋ z)) ≲ ((w ▷ y) ⅋ (x ▷ z))
   sequence =
-    trans (involution .proj₁)
-          (¬-mono (trans (⊗-mono (▷-self-dual .proj₁) (▷-self-dual .proj₁))
-                  (trans entropy
-                  (trans (▷-mono (involution .proj₁) (involution .proj₁))
-                  (▷-self-dual .proj₂)))))
+    trans (reflexive involution)
+          (¬-mono (trans (⊗-mono (reflexive ▷-self-dual) (reflexive ▷-self-dual))
+                  (trans (⊗-▷-entropy _ _ _ _)
+                  (trans (▷-mono (reflexive involution) (reflexive involution))
+                         (reflexive (Eq.sym ▷-self-dual))))))
 
-  ⊕-⊗-distrib : ∀ {x y z} → (x ⊗ (y ⊕ z)) ≤ ((x ⊗ y) ⊕ (x ⊗ z))
-  ⊕-⊗-distrib = ∙-∨-distrib ≤-isPreorder ⊗-isMonoid ⊗-sym ⊸-isClosure ⊕-isJoin
+  ⊕-⊗-distrib : ∀ {x y z} → (x ⊗ (y ⊕ z)) ≲ ((x ⊗ y) ⊕ (x ⊗ z))
+  ⊕-⊗-distrib =
+   supremum∧residualʳ⇒distribˡ (isPartialOrder .IsPartialOrder.isPreorder)
+                                {_⊕_} {_⊗_} {_⊸_}
+                                (⊕-isJoin .IsJoinSemilattice.supremum)
+                                ⊸-residualʳ _ _ _
 
-  &-⅋-distrib : ∀ {x y z} → ((x ⅋ z) & (y ⅋ z)) ≤ ((x & y) ⅋ z)
+  &-⅋-distrib : ∀ {x y z} → ((x ⅋ z) & (y ⅋ z)) ≲ ((x & y) ⅋ z)
   &-⅋-distrib =
-    trans (involution .proj₁)
-          (¬-mono (trans ⊗-sym
-                  (trans (⊗-mono refl (¬-mono (&-mono (involution .proj₂) (involution .proj₂))))
+    trans (reflexive involution)
+          (¬-mono (trans (reflexive (⊗-comm _ _))
+                  (trans (⊗-mono refl (¬-mono (&-mono (reflexive (Eq.sym involution))
+                                                      (reflexive (Eq.sym involution)))))
                   (trans ⊕-⊗-distrib
-                         (¬-mono (&-mono ⅋-sym ⅋-sym))))))
+                         (¬-mono (&-mono (reflexive (⅋-comm _ _)) (reflexive (⅋-comm _ _))))))))
 
-module Interpretation {a ℓ : Level} (M : Model a ℓ) (V : Atom → M .Model.Carrier) where
+module Interpretation {a ℓ₁ ℓ₂ : Level} (M : Model a ℓ₁ ℓ₂) (V : Atom → M .Model.Carrier) where
 
   open Model M
 
@@ -194,55 +173,54 @@ module Interpretation {a ℓ : Level} (M : Model a ℓ) (V : Atom → M .Model.C
   ⟦ P `⊕ Q ⟧ = ⟦ P ⟧ ⊕ ⟦ Q ⟧
   ⟦ P `▷ Q ⟧ = ⟦ P ⟧ ▷ ⟦ Q ⟧
 
-  dual-ok : ∀ P → ⟦ `¬ P ⟧ ≃ ¬ ⟦ P ⟧
+  dual-ok : ∀ P → ⟦ `¬ P ⟧ ≈ ¬ ⟦ P ⟧
   dual-ok `I = mix
-  dual-ok (`+ x) = ≃-refl
+  dual-ok (`+ x) = Eq.refl
   dual-ok (`- x) = involution
-  dual-ok (P `⅋ Q) = ≃-trans (⊗-cong (dual-ok P) (dual-ok Q)) involution
+  dual-ok (P `⅋ Q) = Eq.trans (⊗-cong (dual-ok P) (dual-ok Q)) involution
   dual-ok (P `⊗ Q) =
-    ≃-trans (⅋-cong (dual-ok P) (dual-ok Q)) (¬-cong (⊗-cong (≃-sym involution) (≃-sym involution)))
-  dual-ok (P `& Q) = ≃-trans (⊕-cong (dual-ok P) (dual-ok Q)) (¬-cong (&-cong (≃-sym involution) (≃-sym involution)))
-  dual-ok (P `⊕ Q) = ≃-trans (&-cong (dual-ok P) (dual-ok Q)) involution
-  dual-ok (P `▷ Q) = ≃-trans (▷-cong (dual-ok P) (dual-ok Q)) (≃-sym ▷-self-dual)
+    Eq.trans (⅋-cong (dual-ok P) (dual-ok Q)) (¬-cong (⊗-cong (Eq.sym involution) (Eq.sym involution)))
+  dual-ok (P `& Q) = Eq.trans (⊕-cong (dual-ok P) (dual-ok Q)) (¬-cong (&-cong (Eq.sym involution) (Eq.sym involution)))
+  dual-ok (P `⊕ Q) = Eq.trans (&-cong (dual-ok P) (dual-ok Q)) involution
+  dual-ok (P `▷ Q) = Eq.trans (▷-cong (dual-ok P) (dual-ok Q)) (Eq.sym ▷-self-dual)
 
-  ⟦_⟧step : P ⟶ Q → ⟦ Q ⟧ ≤ ⟦ P ⟧
-  ⟦ `axiom P   ⟧step = trans coev (⅋-mono refl (dual-ok P .proj₂))
-  ⟦ `cut P     ⟧step = trans (⊗-mono refl (dual-ok P .proj₁)) (trans ev (mix .proj₂))
-  ⟦ `tidy      ⟧step = ⟨ refl , refl ⟩
+  ⟦_⟧step : P ⟶ Q → ⟦ Q ⟧ ≲ ⟦ P ⟧
+  ⟦ `axiom P   ⟧step = trans coev (⅋-mono refl (reflexive (Eq.sym (dual-ok P))))
+  ⟦ `cut P     ⟧step = trans (⊗-mono refl (reflexive (dual-ok P))) (trans ev (reflexive (Eq.sym mix)))
+  ⟦ `tidy      ⟧step = &-greatest refl refl
   ⟦ `switch    ⟧step = linear-distrib
   ⟦ `sequence  ⟧step = sequence
-  ⟦ `left      ⟧step = inl
-  ⟦ `right     ⟧step = inr
+  ⟦ `left      ⟧step = x≲x⊕y _ _
+  ⟦ `right     ⟧step = y≲x⊕y _ _
   ⟦ `external  ⟧step = &-⅋-distrib
-  ⟦ `medial    ⟧step = ⟨ ▷-mono π₁ π₁ , ▷-mono π₂ π₂ ⟩
+  ⟦ `medial    ⟧step = &-greatest (▷-mono (x&y≲x _ _) (x&y≲x _ _)) (▷-mono (x&y≲y _ _) (x&y≲y _ _))
   ⟦ S `⟨⊗ Q    ⟧step = ⊗-mono ⟦ S ⟧step refl
   ⟦ P `⊗⟩ S    ⟧step = ⊗-mono refl ⟦ S ⟧step
-  ⟦ `⊗-assoc   ⟧step = ⊗-assoc .proj₁
-  ⟦ `⊗-assoc⁻¹ ⟧step = ⊗-assoc .proj₂
-  ⟦ `⊗-comm    ⟧step = ⊗-sym
-  ⟦ `⊗-unit    ⟧step = ⊗-runit .proj₂
-  ⟦ `⊗-unit⁻¹  ⟧step = ⊗-runit .proj₁
+  ⟦ `⊗-assoc   ⟧step = reflexive (⊗-assoc _ _ _)
+  ⟦ `⊗-assoc⁻¹ ⟧step = reflexive (Eq.sym (⊗-assoc _ _ _))
+  ⟦ `⊗-comm    ⟧step = reflexive (⊗-comm _ _)
+  ⟦ `⊗-unit    ⟧step = reflexive (Eq.sym (⊗-identityʳ _))
+  ⟦ `⊗-unit⁻¹  ⟧step = reflexive (⊗-identityʳ _)
   ⟦ S `⟨⅋ Q    ⟧step = ⅋-mono ⟦ S ⟧step refl
   ⟦ P `⅋⟩ S    ⟧step = ⅋-mono refl ⟦ S ⟧step
-  ⟦ `⅋-assoc   ⟧step = ⅋-assoc .proj₁
-  ⟦ `⅋-assoc⁻¹ ⟧step = ⅋-assoc .proj₂
-  ⟦ `⅋-comm    ⟧step = ⅋-sym
-  ⟦ `⅋-unit    ⟧step = trans (⅋-runit .proj₂) (⅋-mono refl (mix .proj₂))
-  ⟦ `⅋-unit⁻¹  ⟧step = trans (⅋-mono refl (mix .proj₁)) (⅋-runit .proj₁)
+  ⟦ `⅋-assoc   ⟧step = reflexive (⅋-assoc _ _ _)
+  ⟦ `⅋-assoc⁻¹ ⟧step = reflexive (Eq.sym (⅋-assoc _ _ _))
+  ⟦ `⅋-comm    ⟧step = reflexive (⅋-comm _ _)
+  ⟦ `⅋-unit    ⟧step = reflexive (Eq.trans (Eq.sym (⅋-identityʳ _)) (⅋-cong Eq.refl (Eq.sym mix)))
+  ⟦ `⅋-unit⁻¹  ⟧step = reflexive (Eq.trans (⅋-cong Eq.refl mix) (⅋-identityʳ _))
   ⟦ S `⟨▷ Q    ⟧step = ▷-mono ⟦ S ⟧step refl
   ⟦ P `▷⟩ S    ⟧step = ▷-mono refl ⟦ S ⟧step
-  ⟦ `▷-assoc   ⟧step = ▷-assoc .proj₁
-  ⟦ `▷-assoc⁻¹ ⟧step = ▷-assoc .proj₂
-  ⟦ `▷-runit   ⟧step = trans (▷-runit .proj₂) (▷-mono refl (I-eq-J .proj₂))
-  ⟦ `▷-runit⁻¹ ⟧step = trans (▷-mono refl (I-eq-J .proj₁)) (▷-runit .proj₁)
-  ⟦ `▷-lunit   ⟧step = trans (▷-lunit .proj₂) (▷-mono (I-eq-J .proj₂) refl)
-  ⟦ `▷-lunit⁻¹ ⟧step = trans  (▷-mono (I-eq-J .proj₁) refl) (▷-lunit .proj₁)
+  ⟦ `▷-assoc   ⟧step = reflexive (▷-assoc _ _ _)
+  ⟦ `▷-assoc⁻¹ ⟧step = reflexive (Eq.sym (▷-assoc _ _ _))
+  ⟦ `▷-runit   ⟧step = reflexive (Eq.sym (Eq.trans (▷-cong Eq.refl I-eq-J) (▷-identityʳ _)))
+  ⟦ `▷-runit⁻¹ ⟧step = reflexive (Eq.trans (▷-cong Eq.refl I-eq-J) (▷-identityʳ _))
+  ⟦ `▷-lunit   ⟧step = reflexive (Eq.sym (Eq.trans (▷-cong I-eq-J Eq.refl) (▷-identityˡ _)))
+  ⟦ `▷-lunit⁻¹ ⟧step = reflexive (Eq.trans (▷-cong I-eq-J Eq.refl) (▷-identityˡ _))
   ⟦ S `⟨& Q    ⟧step = &-mono ⟦ S ⟧step refl
   ⟦ P `&⟩ S    ⟧step = &-mono refl ⟦ S ⟧step
   ⟦ S `⟨⊕ Q    ⟧step = ⊕-mono ⟦ S ⟧step refl
   ⟦ P `⊕⟩ S    ⟧step = ⊕-mono refl ⟦ S ⟧step
 
-  ⟦_⟧steps : P ⟶* Q → ⟦ Q ⟧ ≤ ⟦ P ⟧
+  ⟦_⟧steps : P ⟶* Q → ⟦ Q ⟧ ≲ ⟦ P ⟧
   ⟦ ε     ⟧steps = refl
   ⟦ x ◅ S ⟧steps = trans ⟦ S ⟧steps ⟦ x ⟧step
--}

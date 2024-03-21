@@ -333,7 +333,7 @@ record IsStarAuto {_⊗_ ε} (⊗-isCommutativePomonoid : IsCommutativePomonoid 
     *-aut   : ∀ {x y z} → (x ⊗ y) ≲ ¬ z → x ≲ ¬ (y ⊗ z)
     *-aut⁻¹ : ∀ {x y z} → x ≲ ¬ (y ⊗ z) → (x ⊗ y) ≲ ¬ z
 
-  open IsCommutativePomonoid ⊗-isCommutativePomonoid
+  open IsCommutativePomonoid ⊗-isCommutativePomonoid public
     using (refl; trans; reflexive; antisym; module Eq; setoid; isPartialOrder)
     renaming (mono to ⊗-mono; assoc to ⊗-assoc; comm to ⊗-comm;
               ∙-cong to ⊗-cong;
@@ -396,6 +396,9 @@ record IsStarAuto {_⊗_ ε} (⊗-isCommutativePomonoid : IsCommutativePomonoid 
           assoc = ⅋-assoc } ;
         identity = ⅋-identityˡ , ⅋-identityʳ } ;
       comm = ⅋-comm }
+
+  open IsCommutativePomonoid ⅋-isCommutativePomonoid public
+    using () renaming (∙-cong to ⅋-cong)
 
   ev : ∀ {x} → (x ⊗ ¬ x) ≲ ⊥
   ev = *-aut⁻¹ (trans (reflexive involution) (¬-mono (reflexive (⊗-identityʳ _))))

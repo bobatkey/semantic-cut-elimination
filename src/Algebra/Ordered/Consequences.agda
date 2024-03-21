@@ -32,9 +32,9 @@ module _
   open Function.Equivalence
 
   comm∧residual⇒residuated : ∀ {∙ ⇨} → Commutative _≈_ ∙ → RightResidual ∙ ⇨ → Residuated ∙ (flip ⇨) ⇨
-  comm∧residual⇒residuated comm residual .proj₁ .to x∙y≲z = 
+  comm∧residual⇒residuated comm residual .proj₁ .to x∙y≲z =
     residual .to (trans (≲-respˡ-≈ (comm _ _) refl) x∙y≲z)
-  comm∧residual⇒residuated comm residual .proj₁ .from x≲z⇦y = 
+  comm∧residual⇒residuated comm residual .proj₁ .from x≲z⇦y =
     trans (≲-respˡ-≈ (comm _ _) refl) (residual .from x≲z⇦y)
   comm∧residual⇒residuated comm residual .proj₁ .to-cong PropEq.refl = PropEq.refl
   comm∧residual⇒residuated comm residual .proj₁ .from-cong PropEq.refl = PropEq.refl
