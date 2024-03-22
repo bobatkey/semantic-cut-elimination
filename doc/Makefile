@@ -53,16 +53,16 @@ GEN_AGDA_BUILD := $(wildcard _build)
 clean:
 	$(LATEXMK) -C $(MAIN).tex
 ifneq (,$(GEN_LAGDA_TEX))
-	rm $(addprefix ./,$(GEN_LAGDA_TEX))
+	rm -f $(addprefix ./,$(GEN_LAGDA_TEX))
 endif
 ifneq (,$(GEN_MAIN_PTB))
-	rm $(addprefix ./,$(GEN_MAIN_PTB))
+	rm -f $(addprefix ./,$(GEN_MAIN_PTB))
 endif
 ifneq (,$(GEN_AGDA_STY))
-	rm $(addprefix ./,$(GEN_AGDA_STY))
+	rm -f $(addprefix ./,$(GEN_AGDA_STY))
 endif
 ifneq (,$(GEN_AGDA_BUILD))
-	rm -r $(addprefix ./,$(GEN_AGDA_BUILD))
+	rm -rf $(addprefix ./,$(GEN_AGDA_BUILD))
 endif
 
 ###########
