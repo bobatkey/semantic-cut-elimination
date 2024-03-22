@@ -5,7 +5,6 @@ module MAV.CutElim (Atom : Set) where
 open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ-syntax)
 open import Data.Sum using (_⊎_; inj₁; inj₂)
 open import Level using (0ℓ; lift; lower; Lift; suc)
-open import Prelude
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star)
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (ε; _◅_)
 import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as Star
