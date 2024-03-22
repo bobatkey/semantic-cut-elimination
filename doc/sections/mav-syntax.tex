@@ -1,80 +1,30 @@
-\begin{code}[hide]
-  module mav-syntax (Atom : Set) where
-\end{code}
 \section{Multiplicative-Additive System Virtual}\label{sec:mav-syntax}
 
 TODO: introduce MAV and Deep Inference.
 
 Formulas:
-\begin{code}[hide]
-  infix 20 _⁺
-  infix 20 _⁻
-  infix 10 _⅋_
-  infix 10 _⊗_
-  infix 10 _&_
-  infix 10 _⊕_
-  infix 10 _▷_
-\end{code}
-
-\begin{code}
-  data Formula : Set where
-    I    : Formula
-    _⁺   : Atom → Formula
-    _⁻   : Atom → Formula
-    _⅋_  : Formula → Formula → Formula
-    _⊗_  : Formula → Formula → Formula
-    _&_  : Formula → Formula → Formula
-    _⊕_  : Formula → Formula → Formula
-    _▷_  : Formula → Formula → Formula
-\end{code}
-
 \begin{displaymath}
   P, Q
   \Coloneq A^{+}
   \mid     A^{-}
-  \mid     I
-  \mid     P \bvtens Q
-  \mid     P \bvparr Q
-  \mid     P \bvwith Q
-  \mid     P \bvplus Q
-  \mid     P \bvseq  Q
+  \mid     \Unit
+  \mid     P \Tens Q
+  \mid     P \Parr Q
+  \mid     P \With Q
+  \mid     P \Plus Q
+  \mid     P \Seq  Q
 \end{displaymath}
 
-\begin{code}[hide]
-  variable
-    A A′ A₁ A₂ : Atom
-    P P′ P₁ P₂ : Formula
-    Q Q′ Q₁ Q₂ : Formula
-    R R′ R₁ R₂ : Formula
-    S S′ S₁ S₂ : Formula
-\end{code}
-
 Negation:
-% \begin{displaymath}
-%   \begin{array}{lcl}
-%     (a)^\perp           & = & a^\perp                     \\
-%     (a^\perp)^\perp     & = & a                           \\
-%     (I)^\perp           & = & I                           \\
-%     (P \otimes Q)^\perp & = & (P)^\perp \parr   (Q)^\perp \\
-%     (P \parr   Q)^\perp & = & (P)^\perp \otimes (Q)^\perp \\
-%     (P \with   Q)^\perp & = & (P)^\perp \oplus  (Q)^\perp \\
-%     (P \oplus  Q)^\perp & = & (P)^\perp \with   (Q)^\perp \\
-%     (P ; Q)^\perp       & = & (P)^\perp ; (Q)^\perp
-%   \end{array}
-% \end{displaymath}
-
-\begin{code}[hide]
-  infix 15 ¬_
-\end{code}
-
-\begin{code}
-  ¬_ : Formula → Formula
-  ¬ I          = I
-  ¬ A ⁺        = A ⁻
-  ¬ A ⁻        = A ⁺
-  ¬ (P  ⅋  Q)  = ¬ P  ⊗  ¬ Q
-  ¬ (P  ⊗  Q)  = ¬ P  ⅋  ¬ Q
-  ¬ (P  &  Q)  = ¬ P  ⊕  ¬ Q
-  ¬ (P  ⊕  Q)  = ¬ P  &  ¬ Q
-  ¬ (P  ▷  Q)  = ¬ P  ▷  ¬ Q
-\end{code}
+\begin{displaymath}
+  \begin{array}{lcl}
+    \Dual(\Pos(A))   & = & \Neg(A)                 \\
+    \Dual(\Neg(A))   & = & \Pos(A)                 \\
+    \Dual(\Unit)     & = & \Unit                   \\
+    \Dual(P \Tens Q) & = & \Dual(P) \Parr \Dual(Q) \\
+    \Dual(P \Parr Q) & = & \Dual(P) \Tens \Dual(Q) \\
+    \Dual(P \With Q) & = & \Dual(P) \Plus \Dual(Q) \\
+    \Dual(P \Plus Q) & = & \Dual(P) \With \Dual(Q) \\
+    \Dual(P \Seq  Q) & = & \Dual(P) \Seq  \Dual(Q)
+  \end{array}
+\end{displaymath}

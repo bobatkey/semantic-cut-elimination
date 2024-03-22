@@ -56,23 +56,32 @@
 %% Preamble:                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\def\bvunit{%
-  \ensuremath{\mathbb{I}}}
-\def\bvparr{%
+% `\IfSingleTF`: Does the element consist of a single token?
+\ExplSyntaxOn
+\cs_new_eq:NN \IfSingleTF \tl_if_single:nTF
+\ExplSyntaxOff
+
+\NewDocumentCommand{\Dual}{d()}{%
+  \IfSingleTF{#1}{#1}{(#1)}^\perp}
+\NewDocumentCommand{\Pos}{d()}{#1^{+}}
+\NewDocumentCommand{\Neg}{d()}{#1^{-}}
+\def\Unit{%
+  \ensuremath{\circ}}
+\def\Parr{%
   \ensuremath{\parr}}
-\def\bvtens{%
+\def\Tens{%
   \ensuremath{%
     \mathbin{%
       \makebox[\parrlength][c]{\ensuremath{\mathnormal\otimes}}}}}
-\def\bvplus{%
+\def\Plus{%
   \ensuremath{%
     \mathbin{%
       \makebox[\parrlength][c]{\ensuremath{\mathnormal\oplus}}}}}
-\def\bvwith{%
+\def\With{%
   \ensuremath{%
     \mathbin{%
       \makebox[\parrlength][c]{\ensuremath{\mathnormal\with}}}}}
-\def\bvseq{%
+\def\Seq{%
   \ensuremath{%
     \mathbin{%
       \makebox[\parrlength][c]{\ensuremath{\mathnormal\,\,\!\triangleright}}}}}
@@ -83,10 +92,10 @@
 
 \DeclareRobustCommand{\AgdaFormat}[2]{%
   \ifthenelse{\equal{#1}{\&}}%
-  {\bvwith}%
+  {\With}%
   {%
     \ifthenelse{\equal{#1}{I}}%
-    {\bvunit}%
+    {\Unit}%
     {#2}%
   }%
   }
@@ -106,10 +115,10 @@
 \settowidth{\parrlength}{$\parr$}
 \newunicodechar{−}{\ensuremath{\mathnormal-}}
 \newunicodechar{α}{\ensuremath{\alpha}}
-\newunicodechar{⊗}{\bvtens}
-\newunicodechar{⅋}{\bvparr}
-\newunicodechar{⊕}{\bvplus}
-\newunicodechar{▷}{\bvseq}
+\newunicodechar{⊗}{\Tens}
+\newunicodechar{⅋}{\Parr}
+\newunicodechar{⊕}{\Plus}
+\newunicodechar{▷}{\Seq}
 \newunicodechar{∼}{\ensuremath{\mathnormal\sim}}
 \newunicodechar{≡}{\ensuremath{\mathnormal\equiv}}
 \newunicodechar{⟶}{\ensuremath{\mathnormal\longrightarrow}}
