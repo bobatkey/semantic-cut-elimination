@@ -7,6 +7,7 @@ open import Data.Product using (proj₁; proj₂)
 open import Algebra.Ordered
 open import Algebra.Ordered.Consequences using (supremum∧residualʳ⇒distribˡ)
 open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
+open import Algebra.Ordered.Structures.StarAuto using (IsStarAuto)
 open import Relation.Binary using (IsEquivalence; IsPartialOrder)
 open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 import Relation.Binary.Construct.Core.Symmetric as SymCore

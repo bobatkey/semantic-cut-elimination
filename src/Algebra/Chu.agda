@@ -16,6 +16,7 @@ open import Algebra.Ordered
 open import Algebra.Ordered.Consequences using (supremum∧residualʳ⇒distribˡ)
 open import Algebra.Ordered.Structures.Residuated
 open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
+open import Algebra.Ordered.Structures.StarAuto using (IsStarAuto)
 open import Relation.Binary
   using (Reflexive; Transitive; IsPartialOrder; IsPreorder; IsEquivalence)
 open import Relation.Binary.Lattice using (IsMeetSemilattice; IsJoinSemilattice)
