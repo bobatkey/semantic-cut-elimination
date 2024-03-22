@@ -1,6 +1,7 @@
 *~
 *.agdai
 _build/
+doc/.latexmk-cache
 doc/paper.pdf
 doc/.latexmkrc
 doc/agda.sty
