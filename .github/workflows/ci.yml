@@ -23,6 +23,8 @@ jobs:
           path: html
 
   pages:
+    needs: build
+
     permissions:
       contents: read
       pages: write
