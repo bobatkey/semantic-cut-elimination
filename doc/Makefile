@@ -73,12 +73,12 @@ ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 .PHONY: docker-nix-shell
 docker-nix-shell: shell.nix
-	docker run -v "$(ROOT):/doc" -w "/doc" -ti nixos/nix nix-shell
+	docker run -v "$(ROOT):/doc" -w "/doc" --rm -ti nixos/nix nix-shell
 
 .PHONY: docker-nix-build
 docker-nix-build: shell.nix
-	docker run -v "$(ROOT):/doc" -w "/doc" -ti nixos/nix nix-shell --run "make build"
+	docker run -v "$(ROOT):/doc" -w "/doc" --rm -ti nixos/nix nix-shell --run "make build"
 
 .PHONY: docker-nix-watch
 docker-nix-watch: shell.nix
-	docker run -v "$(ROOT):/doc" -w "/doc" -ti nixos/nix nix-shell --run "make watch"
+	docker run -v "$(ROOT):/doc" -w "/doc" --rm -ti nixos/nix nix-shell --run "make watch"
