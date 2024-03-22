@@ -3,17 +3,16 @@
 module MAV.Base (Atom : Set) where
 
 open import Algebra using (_DistributesOver_)
-open import Algebra.Ordered.Structures.Duoidal
-open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ-syntax)
-open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
+open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Level using (0ℓ; lift; lower; Lift; suc)
 open import Relation.Binary using (IsPartialOrder; Poset)
 open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 import Relation.Binary.Construct.Core.Symmetric as SymCore
-open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star)
-open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (ε; _◅_)
+open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star; ε; _◅_)
 import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as Star
 
+open import MAV.Frame
 open import MAV.Formula Atom
 
 private
@@ -226,6 +225,9 @@ _`⟨&*_ : P ⟶* P′ → (Q : Formula) → (P `& Q) ⟶* (P′ `& Q)
 `⅋-distrib-`& .proj₁ x y z = `⅋-comm ◅ (`external ◅ `&-mono (`⅋-comm ◅ ε) (`⅋-comm ◅ ε))
 `⅋-distrib-`& .proj₂ x y z = `external ◅ ε
 
+`&-`▷-entropy : Entropy _⟶*_ _`&_ _`▷_
+`&-`▷-entropy w x y z = `medial ◅ ε
+
 ------------------------------------------------------------------------------
 -- Turning ⊕ into a pomagma
 
@@ -243,3 +245,19 @@ _`⟨&*_ : P ⟶* P′ → (Q : Formula) → (P `& Q) ⟶* (P′ `& Q)
 -- `⊕-isPomagma : IsPomagma _⟷*_ _⟶*_ _`⊕_
 -- `⊕-isPomagma .IsPomagma.isPartialOrder = ⟶*-isPartialOrder
 -- `⊕-isPomagma .IsPomagma.mono = `⊕-mono
+
+------------------------------------------------------------------------------
+frame : Frame 0ℓ 0ℓ 0ℓ
+frame .Frame.Carrier = Formula
+frame .Frame._≈_ = _⟷*_
+frame .Frame._≲_ = _⟶*_
+frame .Frame.I = `I
+frame .Frame._⅋_ = _`⅋_
+frame .Frame._▷_ = _`▷_
+frame .Frame._&_ = _`&_
+frame .Frame.⅋-isCommutativePomonoid = `⅋-isCommutativePomonoid
+frame .Frame.&-mono = `&-mono
+frame .Frame.⅋-▷-isDuoidal = `⅋-`▷-isDuoidal
+frame .Frame.⅋-distrib-& = `⅋-distrib-`&
+frame .Frame.&-▷-entropy = `&-`▷-entropy
+frame .Frame.&-tidy = `tidy ◅ ε
