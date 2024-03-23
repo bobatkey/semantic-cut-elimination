@@ -9,6 +9,7 @@ open import Relation.Binary using (IsPartialOrder; Poset)
 open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 import Relation.Binary.Construct.Core.Symmetric as SymCore
 open import Relation.Binary.Construct.Closure.Equivalence using (EqClosure)
+open import Relation.Binary.Construct.Closure.Symmetric using (fwd; bwd)
 import Relation.Binary.Construct.Closure.Equivalence as EqClosure
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star; ε; _◅_; _◅◅_)
 import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star
@@ -30,37 +31,37 @@ private
     R R′ : Formula
     S S′ : Formula
 
--- infix 5 _∼_
+infix 5 _∼_
 
--- data _∼_ : Formula → Formula → Set a where
+data _∼_ : Formula → Formula → Set a where
 
---   -- _`⟨⊗_      : P ∼ P′ → (Q : Formula) → P `⊗ Q ∼ P′ `⊗ Q
---   _`⊗⟩_      : (P : Formula) → Q ∼ Q′ → P `⊗ Q ∼ P `⊗ Q′
---   `⊗-comm    : P `⊗ Q ∼ Q `⊗ P
---   `⊗-unit    : P `⊗ `I ∼ P
+  _`⟨⊗_      : P ∼ P′ → (Q : Formula) → P `⊗ Q ∼ P′ `⊗ Q
+  _`⊗⟩_      : (P : Formula) → Q ∼ Q′ → P `⊗ Q ∼ P `⊗ Q′
+  `⊗-comm    : P `⊗ Q ∼ Q `⊗ P
+  `⊗-unit    : P `⊗ `I ∼ P
   
---   _`⟨⅋_      : P ∼ P′ → (Q : Formula) → (P `⅋ Q) ∼ (P′ `⅋ Q)
---   _`⅋⟩_      : (P : Formula) → Q ∼ Q′ → (P `⅋ Q) ∼ (P `⅋ Q′)
---   `⅋-assoc   : (P `⅋ (Q `⅋ R)) ∼ ((P `⅋ Q) `⅋ R)
---   `⅋-comm    : (P `⅋ Q) ∼ (Q `⅋ P)
---   `⅋-unit    : (P `⅋ `I) ∼ P
+  _`⟨⅋_      : P ∼ P′ → (Q : Formula) → (P `⅋ Q) ∼ (P′ `⅋ Q)
+  _`⅋⟩_      : (P : Formula) → Q ∼ Q′ → (P `⅋ Q) ∼ (P `⅋ Q′)
+  `⅋-assoc   : (P `⅋ (Q `⅋ R)) ∼ ((P `⅋ Q) `⅋ R)
+  `⅋-comm    : (P `⅋ Q) ∼ (Q `⅋ P)
+  `⅋-unit    : (P `⅋ `I) ∼ P
   
---   _`⟨▷_      : P ∼ P′ → (Q : Formula) → (P `▷ Q) ∼ (P′ `▷ Q)
---   _`▷⟩_      : (P : Formula) → Q ∼ Q′ → (P `▷ Q) ∼ (P `▷ Q′)
---   `▷-assoc   : (P `▷ (Q `▷ R)) ∼ ((P `▷ Q) `▷ R)
---   `▷-runit   : (P `▷ `I) ∼ P
---   `▷-lunit   : (`I `▷ P) ∼ P
+  _`⟨▷_      : P ∼ P′ → (Q : Formula) → (P `▷ Q) ∼ (P′ `▷ Q)
+  _`▷⟩_      : (P : Formula) → Q ∼ Q′ → (P `▷ Q) ∼ (P `▷ Q′)
+  `▷-assoc   : (P `▷ (Q `▷ R)) ∼ ((P `▷ Q) `▷ R)
+  `▷-runit   : (P `▷ `I) ∼ P
+  `▷-lunit   : (`I `▷ P) ∼ P
 
---   _`⟨&_      : P ∼ P′ → (Q : Formula) → (P `& Q) ∼ (P′ `& Q)
---   _`&⟩_      : (P : Formula) → Q ∼ Q′ → (P `& Q) ∼ (P `& Q′)
+  _`⟨&_      : P ∼ P′ → (Q : Formula) → (P `& Q) ∼ (P′ `& Q)
+  _`&⟩_      : (P : Formula) → Q ∼ Q′ → (P `& Q) ∼ (P `& Q′)
 
---   -- _`⟨⊕_      : P ∼ P′ → (Q : Formula) → (P `⊕ Q) ∼ (P′ `⊕ Q)
---   -- _`⊕⟩_      : (P : Formula) → Q ∼ Q′ → (P `⊕ Q) ∼ (P `⊕ Q′)
+  -- _`⟨⊕_      : P ∼ P′ → (Q : Formula) → (P `⊕ Q) ∼ (P′ `⊕ Q)
+  -- _`⊕⟩_      : (P : Formula) → Q ∼ Q′ → (P `⊕ Q) ∼ (P `⊕ Q′)
 
--- infix 5 _≅_
+infix 5 _≅_
 
--- _≅_ : Formula → Formula → Set a
--- _≅_ = EqClosure _∼_
+_≅_ : Formula → Formula → Set a
+_≅_ = EqClosure _∼_
   
 infix 5 _⟶_
 
@@ -80,13 +81,13 @@ data _⟶_ : Formula → Formula → Set a where
   `medial   : -- .{{NonUnit P ⊎ NonUnit R}} → .{{NonUnit Q ⊎ NonUnit S}} →
               (P `▷ Q) `& (R `▷ S) ⟶ (P `& R) `▷ (Q `& S)
 
-  -- `rewr     : P ≅ P′ → P′ ⟶ Q′ → Q′ ≅ Q → P ⟶ Q
+  `rewr     : P ≅ P′ → P′ ⟶ Q′ → Q′ ≅ Q → P ⟶ Q
 
-  -- _`⟨⊗_      : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
+  _`⟨⊗_      : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
   _`⊗⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊗ Q ⟶ P `⊗ Q′
   -- `⊗-assoc   : P `⊗ (Q `⊗ R) ⟶ (P `⊗ Q) `⊗ R
   -- `⊗-assoc⁻¹ : (P `⊗ Q) `⊗ R ⟶ P `⊗ (Q `⊗ R)
-  `⊗-comm    : P `⊗ Q ⟶ Q `⊗ P
+  -- `⊗-comm    : P `⊗ Q ⟶ Q `⊗ P
   `⊗-unit    : P `⊗ `I ⟶ P
   `⊗-unit⁻¹  : P ⟶ (P `⊗ `I)
 
@@ -140,55 +141,46 @@ open IsPartialOrder ⟶⋆-isPartialOrder public
 ⟶⋆-Poset .Poset.isPartialOrder = ⟶⋆-isPartialOrder
 
 ------------------------------------------------------------------------------
+-- Derived congruence rules via commutativity
+
+-- _`⟨⊗_ : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
+-- f `⟨⊗ Q = `rewr (fwd `⊗-comm ◅ ε) (Q `⊗⟩ f) (bwd `⊗-comm ◅ ε) 
+
+-- _`⟨⅋_ : P ⟶ P′ → (Q : Formula) → P `⅋ Q ⟶ P′ `⅋ Q
+-- f `⟨⅋ Q = `rewr (fwd `⅋-comm ◅ ε) (Q `⅋⟩ f) (bwd `⅋-comm ◅ ε) 
+
+------------------------------------------------------------------------------
 -- Lift congruence rules to the preorder
 
 _`⊗⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `⊗ Q) ⟶⋆ (P `⊗ Q′)
-P `⊗⟩⋆ ε       = ε
-P `⊗⟩⋆ (x ◅ ϕ) = (P `⊗⟩ x) ◅ (P `⊗⟩⋆ ϕ)
+P `⊗⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `⊗⟩_) Q⟶⋆Q′
 
--- Derived via commutativity
 _`⟨⊗⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⊗ Q ⟶⋆ P′ `⊗ Q
-P⟶⋆P′ `⟨⊗⋆ Q = `⊗-comm ◅ Q `⊗⟩⋆ P⟶⋆P′ ◅◅ `⊗-comm ◅ ε
-
--- _`⟨⊗⋆_ : P ⟶⋆ P′ → (Q : Formula) →  (P `⊗ Q) ⟶⋆ (P′ `⊗ Q)
--- ε       `⟨⊗⋆ Q = ε
--- (x ◅ ϕ) `⟨⊗⋆ Q = (x `⟨⊗ Q) ◅ (ϕ `⟨⊗⋆ Q)
+P⟶⋆P′ `⟨⊗⋆ Q = Star.gmap _ (_`⟨⊗ Q) P⟶⋆P′
 
 _`⅋⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `⅋ Q) ⟶⋆ (P `⅋ Q′)
-P `⅋⟩⋆ ε = ε
-P `⅋⟩⋆ (x ◅ ϕ) = (P `⅋⟩ x) ◅ (P `⅋⟩⋆ ϕ)
+P `⅋⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `⅋⟩_) Q⟶⋆Q′
 
--- Derived via commutativity
 _`⟨⅋⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⅋ Q ⟶⋆ P′ `⅋ Q
-P⟶⋆P′ `⟨⅋⋆ Q = `⅋-comm ◅ Q `⅋⟩⋆ P⟶⋆P′ ◅◅ `⅋-comm ◅ ε
+P⟶⋆P′ `⟨⅋⋆ Q = Star.gmap _ (_`⟨⅋ Q) P⟶⋆P′
 
--- _`⟨⅋⋆_ : P ⟶⋆ P′ → (Q : Formula) →  (P `⅋ Q) ⟶⋆ (P′ `⅋ Q)
--- ε       `⟨⅋⋆ Q = ε
--- (x ◅ ϕ) `⟨⅋⋆ Q = (x `⟨⅋ Q) ◅ (ϕ `⟨⅋⋆ Q)
-
-_`▷⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → P `▷ Q ⟶⋆ P `▷ Q′
-P `▷⟩⋆ ε = ε
-P `▷⟩⋆ (x ◅ ϕ) = (P `▷⟩ x) ◅ (P `▷⟩⋆ ϕ)
+_`▷⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `▷ Q) ⟶⋆ (P `▷ Q′)
+P `▷⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `▷⟩_) Q⟶⋆Q′
 
 _`⟨▷⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `▷ Q ⟶⋆ P′ `▷ Q
-ε       `⟨▷⋆ Q = ε
-(x ◅ ϕ) `⟨▷⋆ Q = (x `⟨▷ Q) ◅ (ϕ `⟨▷⋆ Q)
+P⟶⋆P′ `⟨▷⋆ Q = Star.gmap _ (_`⟨▷ Q) P⟶⋆P′
 
-_`&⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → P `& Q ⟶⋆ P `& Q′
-P `&⟩⋆ ε = ε
-P `&⟩⋆ (x ◅ ϕ) = (P `&⟩ x) ◅ (P `&⟩⋆ ϕ)
+_`&⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `& Q) ⟶⋆ (P `& Q′)
+P `&⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `&⟩_) Q⟶⋆Q′
 
-_`⟨&⋆_ : P ⟶⋆ P′ → (Q : Formula) → (P `& Q) ⟶⋆ (P′ `& Q)
-ε       `⟨&⋆ Q = ε
-(x ◅ ϕ) `⟨&⋆ Q = (x `⟨& Q) ◅ (ϕ `⟨&⋆ Q)
+_`⟨&⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `& Q ⟶⋆ P′ `& Q
+P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 
--- _`⊕⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → P `⊕ Q ⟶⋆ P `⊕ Q′
--- P `⊕⟩⋆ ε = ε
--- P `⊕⟩⋆ (x ◅ ϕ) = (P `⊕⟩ x) ◅ (P `⊕⟩⋆ ϕ)
+-- _`⊕⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `⊕ Q) ⟶⋆ (P `⊕ Q′)
+-- P `⊕⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `⊕⟩_) Q⟶⋆Q′
 
--- _`⟨⊕⋆_ : P ⟶⋆ P′ → (Q : Formula) → (P `⊕ Q) ⟶⋆ (P′ `⊕ Q)
--- ε       `⟨⊕⋆ Q = ε
--- (x ◅ ϕ) `⟨⊕⋆ Q = (x `⟨⊕ Q) ◅ (ϕ `⟨⊕⋆ Q)
+-- _`⟨⊕⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⊕ Q ⟶⋆ P′ `⊕ Q
+-- P⟶⋆P′ `⟨⊕⋆ Q = Star.gmap _ (_`⟨⊕ Q) P⟶⋆P′
 
 ------------------------------------------------------------------------------
 -- Deriving full versions of switch and sequence
@@ -196,7 +188,8 @@ _`⟨&⋆_ : P ⟶⋆ P′ → (Q : Formula) → (P `& Q) ⟶⋆ (P′ `& Q)
 `switch⋆ : (P `⊗ Q) `⅋ R ⟶⋆ P `⊗ (Q `⅋ R)
 `switch⋆ {P} {Q} {R} with P ≟`I | R ≟`I 
 ... |     P≟`I | yes refl = `⅋-unit ◅ P `⊗⟩ `⅋-unit⁻¹ ◅ ε
-... | yes refl | no  R≢`I = `⊗-comm `⟨⅋ R ◅ `⊗-unit `⟨⅋ R ◅ `⊗-unit⁻¹ ◅ `⊗-comm ◅ ε
+... | yes refl | no  R≢`I = {!   !}
+  --  `⊗-comm `⟨⅋ R ◅ `⊗-unit `⟨⅋ R ◅ `⊗-unit⁻¹ ◅ `⊗-comm ◅ ε
 ... | no  P≢`I | no  R≢`I = `switch {{≢-nonUnit P≢`I}} {{≢-nonUnit R≢`I}} ◅ ε
 
 `sequence⋆ : (P `▷ Q) `⅋ (R `▷ S) ⟶⋆ (P `⅋ R) `▷ (Q `⅋ S)
@@ -331,4 +324,4 @@ frame .Frame.⅋-▷-isDuoidal = `⅋-`▷-isDuoidal
 frame .Frame.⅋-distrib-& = `⅋-distrib-`&
 frame .Frame.&-▷-entropy = `&-`▷-entropy
 frame .Frame.&-tidy = `tidy ◅ ε
- 
+  
