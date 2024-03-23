@@ -82,7 +82,7 @@ data _⟶_ : Formula → Formula → Set a where
 
   -- `rewr     : P ≅ P′ → P′ ⟶ Q′ → Q′ ≅ Q → P ⟶ Q
 
-  -- _`⟨⊗_      : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
+  _`⟨⊗_      : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
   _`⊗⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊗ Q ⟶ P `⊗ Q′
   -- `⊗-assoc   : P `⊗ (Q `⊗ R) ⟶ (P `⊗ Q) `⊗ R
   -- `⊗-assoc⁻¹ : (P `⊗ Q) `⊗ R ⟶ P `⊗ (Q `⊗ R)
@@ -143,52 +143,34 @@ open IsPartialOrder ⟶⋆-isPartialOrder public
 -- Lift congruence rules to the preorder
 
 _`⊗⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `⊗ Q) ⟶⋆ (P `⊗ Q′)
-P `⊗⟩⋆ ε       = ε
-P `⊗⟩⋆ (x ◅ ϕ) = (P `⊗⟩ x) ◅ (P `⊗⟩⋆ ϕ)
+P `⊗⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `⊗⟩_) Q⟶⋆Q′
 
--- Derived via commutativity
 _`⟨⊗⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⊗ Q ⟶⋆ P′ `⊗ Q
-P⟶⋆P′ `⟨⊗⋆ Q = `⊗-comm ◅ Q `⊗⟩⋆ P⟶⋆P′ ◅◅ `⊗-comm ◅ ε
+P⟶⋆P′ `⟨⊗⋆ Q = Star.gmap _ (_`⟨⊗ Q) P⟶⋆P′
 
--- _`⟨⊗⋆_ : P ⟶⋆ P′ → (Q : Formula) →  (P `⊗ Q) ⟶⋆ (P′ `⊗ Q)
--- ε       `⟨⊗⋆ Q = ε
--- (x ◅ ϕ) `⟨⊗⋆ Q = (x `⟨⊗ Q) ◅ (ϕ `⟨⊗⋆ Q)
+-- _`⟨⊗⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⊗ Q ⟶⋆ P′ `⊗ Q
+-- f `⟨⊗⋆ Q = `⊗-comm ◅ Q `⊗⟩⋆ f ◅◅ `⊗-comm ◅ ε
 
 _`⅋⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `⅋ Q) ⟶⋆ (P `⅋ Q′)
-P `⅋⟩⋆ ε = ε
-P `⅋⟩⋆ (x ◅ ϕ) = (P `⅋⟩ x) ◅ (P `⅋⟩⋆ ϕ)
+P `⅋⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `⅋⟩_) Q⟶⋆Q′
 
--- Derived via commutativity
 _`⟨⅋⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⅋ Q ⟶⋆ P′ `⅋ Q
-P⟶⋆P′ `⟨⅋⋆ Q = `⅋-comm ◅ Q `⅋⟩⋆ P⟶⋆P′ ◅◅ `⅋-comm ◅ ε
+P⟶⋆P′ `⟨⅋⋆ Q = Star.gmap _ (_`⟨⅋ Q) P⟶⋆P′
 
--- _`⟨⅋⋆_ : P ⟶⋆ P′ → (Q : Formula) →  (P `⅋ Q) ⟶⋆ (P′ `⅋ Q)
--- ε       `⟨⅋⋆ Q = ε
--- (x ◅ ϕ) `⟨⅋⋆ Q = (x `⟨⅋ Q) ◅ (ϕ `⟨⅋⋆ Q)
+-- _`⟨⅋⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⅋ Q ⟶⋆ P′ `⅋ Q
+-- f `⟨⅋⋆ Q = `⅋-comm ◅ Q `⅋⟩⋆ f ◅◅ `⅋-comm ◅ ε
 
-_`▷⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → P `▷ Q ⟶⋆ P `▷ Q′
-P `▷⟩⋆ ε = ε
-P `▷⟩⋆ (x ◅ ϕ) = (P `▷⟩ x) ◅ (P `▷⟩⋆ ϕ)
+_`▷⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `▷ Q) ⟶⋆ (P `▷ Q′)
+P `▷⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `▷⟩_) Q⟶⋆Q′
 
 _`⟨▷⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `▷ Q ⟶⋆ P′ `▷ Q
-ε       `⟨▷⋆ Q = ε
-(x ◅ ϕ) `⟨▷⋆ Q = (x `⟨▷ Q) ◅ (ϕ `⟨▷⋆ Q)
+P⟶⋆P′ `⟨▷⋆ Q = Star.gmap _ (_`⟨▷ Q) P⟶⋆P′
 
-_`&⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → P `& Q ⟶⋆ P `& Q′
-P `&⟩⋆ ε = ε
-P `&⟩⋆ (x ◅ ϕ) = (P `&⟩ x) ◅ (P `&⟩⋆ ϕ)
+_`&⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `& Q) ⟶⋆ (P `& Q′)
+P `&⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `&⟩_) Q⟶⋆Q′
 
-_`⟨&⋆_ : P ⟶⋆ P′ → (Q : Formula) → (P `& Q) ⟶⋆ (P′ `& Q)
-ε       `⟨&⋆ Q = ε
-(x ◅ ϕ) `⟨&⋆ Q = (x `⟨& Q) ◅ (ϕ `⟨&⋆ Q)
-
--- _`⊕⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → P `⊕ Q ⟶⋆ P `⊕ Q′
--- P `⊕⟩⋆ ε = ε
--- P `⊕⟩⋆ (x ◅ ϕ) = (P `⊕⟩ x) ◅ (P `⊕⟩⋆ ϕ)
-
--- _`⟨⊕⋆_ : P ⟶⋆ P′ → (Q : Formula) → (P `⊕ Q) ⟶⋆ (P′ `⊕ Q)
--- ε       `⟨⊕⋆ Q = ε
--- (x ◅ ϕ) `⟨⊕⋆ Q = (x `⟨⊕ Q) ◅ (ϕ `⟨⊕⋆ Q)
+_`⟨&⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `& Q ⟶⋆ P′ `& Q
+P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 
 ------------------------------------------------------------------------------
 -- Deriving full versions of switch and sequence
