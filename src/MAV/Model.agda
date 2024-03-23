@@ -7,7 +7,7 @@ open import Algebra.Ordered using (IsCommutativePomonoid)
 open import Algebra.Ordered.Consequences using (supremum∧residualʳ⇒distribˡ)
 open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
 open import Algebra.Ordered.Structures.StarAuto using (IsStarAuto)
-open import Data.Product using (proj₁; proj₂)
+open import Data.Product using (_,_; proj₁; proj₂)
 open import Relation.Binary using (IsEquivalence; IsPartialOrder)
 open import Relation.Binary.Lattice using (IsMeetSemilattice; IsJoinSemilattice)
 
@@ -29,9 +29,9 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
     mix                     : I ≈ ¬ I
 
     &-isMeet                : IsMeetSemilattice _≈_ _≲_ _&_
-    ⊗-▷-isDuoidal          : IsDuoidal _≈_ _≲_ _⊗_ _▷_ I J
-    I-eq-J                 : I ≈ J
-    ▷-self-dual            : ∀ {x y} → (¬ (x ▷ y)) ≈ ((¬ x) ▷ (¬ y))
+    ⊗-▷-isDuoidal           : IsDuoidal _≈_ _≲_ _⊗_ _▷_ I J
+    I-eq-J                  : I ≈ J
+    ▷-self-dual             : ∀ {x y} → (¬ (x ▷ y)) ≈ ((¬ x) ▷ (¬ y))
 
   open IsStarAuto ⊗-isStarAutonomous public
   open IsMeetSemilattice &-isMeet public
@@ -44,18 +44,23 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
   _⊕_ : Carrier → Carrier → Carrier
   x ⊕ y = ¬ (¬ x & ¬ y)
 
-  ⊕-isJoin : IsJoinSemilattice _≈_ _≲_ _⊕_
-  ⊕-isJoin .IsJoinSemilattice.isPartialOrder = isPartialOrder
-  ⊕-isJoin .IsJoinSemilattice.supremum x y .proj₁ =
+  x≲x⊕y : ∀ x y → x ≲ (x ⊕ y)
+  x≲x⊕y x y = 
     trans (reflexive involution) (¬-mono (x&y≲x _ _))
-  ⊕-isJoin .IsJoinSemilattice.supremum x y .proj₂ .proj₁ =
+
+  y≲x⊕y : ∀ x y → y ≲ (x ⊕ y)
+  y≲x⊕y x y = 
     trans (reflexive involution) (¬-mono (x&y≲y _ _))
-  ⊕-isJoin .IsJoinSemilattice.supremum x y .proj₂ .proj₂ z x≲z y≲z =
+
+  ⊕-least : ∀ {x y z} → x ≲ z → y ≲ z → (x ⊕ y) ≲ z
+  ⊕-least x≲z y≲z =
     trans (¬-mono (&-greatest (¬-mono x≲z) (¬-mono y≲z))) (reflexive (Eq.sym involution))
 
-  open IsJoinSemilattice ⊕-isJoin public
-    using ()
-    renaming (x≤x∨y to x≲x⊕y ; y≤x∨y to y≲x⊕y; ∨-least to ⊕-least)
+  ⊕-isJoinSemilattice : IsJoinSemilattice _≈_ _≲_ _⊕_
+  ⊕-isJoinSemilattice = record
+    { isPartialOrder = isPartialOrder 
+    ; supremum       = λ x y →  x≲x⊕y x y , y≲x⊕y x y , λ z → ⊕-least
+    }
 
   ⊕-mono : ∀ {x₁ y₁ x₂ y₂} → x₁ ≲ x₂ → y₁ ≲ y₂ → (x₁ ⊕ y₁) ≲ (x₂ ⊕ y₂)
   ⊕-mono x₁≲x₂ y₁≲y₂ = ⊕-least (trans x₁≲x₂ (x≲x⊕y _ _)) (trans y₁≲y₂ (y≲x⊕y _ _))
@@ -83,7 +88,7 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
   ⊕-⊗-distrib =
    supremum∧residualʳ⇒distribˡ (isPartialOrder .IsPartialOrder.isPreorder)
                                 {_⊕_} {_⊗_} {_⊸_}
-                                (⊕-isJoin .IsJoinSemilattice.supremum)
+                                (⊕-isJoinSemilattice .IsJoinSemilattice.supremum)
                                 ⊸-residualʳ _ _ _
 
   &-⅋-distrib : ∀ {x y z} → ((x ⅋ z) & (y ⅋ z)) ≲ ((x & y) ⅋ z)
