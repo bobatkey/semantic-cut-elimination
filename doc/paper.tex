@@ -7,6 +7,7 @@
 \usepackage{cmll}
 \usepackage{mathpartir}
 \usepackage[all]{xy}
+\usepackage[UKenglish,all]{foreign}
 %\usepackage{url}
 \sloppy
 % The following is enclosed to allow easy detection of differences in
@@ -142,8 +143,8 @@
 \NewDocumentCommand{\vEquiv}{s}{%
   \ensuremath{%
     \mathrel{%
-      \equiv\IfBooleanTF{#1}{^\star}{}}}}
-      % \longleftrightarrow\IfBooleanTF{#1}{^\star}{}}}}
+      % \equiv\IfBooleanTF{#1}{^\star}{}}}}
+      \longleftrightarrow\IfBooleanTF{#1}{^\star}{}}}}
 \NewDocumentCommand{\vInfer}{s}{%
   \ensuremath{%
     \mathrel{%

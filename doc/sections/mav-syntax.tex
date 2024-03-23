@@ -3,6 +3,9 @@
 \begin{itemize}
   \item Structural equivalences are explicit.
   \item Inference is a congruence.
+  \item Inference rules are unary.
+  \item Relate to usual presentation of MALL.
+  \item Relate to usual presentation of BV.
 \end{itemize}
 
 Formulas:
@@ -40,6 +43,47 @@ Negation:
     \vDual{\vP\vWith\vQ} & \vDual\vP \vPlus \vDual\vQ
                          &
     \vDual{\vP\vPlus\vQ} & \vDual\vP \vWith \vDual\vQ
+  \end{array}
+\end{displaymath}
+
+Inference rules:
+\begin{displaymath}
+  \begin{array}{l@{\;\vInfer\;}l@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
+    \vP\vParr\vDual\vP
+     & \vUnit
+     & \RuleLabel{axiom}
+    \\
+    \vUnit
+     & \vP\vTens\vDual\vP
+     & \RuleLabel{cut}
+    \\
+    \vUnit\vWith\vUnit
+     & \vUnit
+     & \RuleLabel{tidy}
+    \\
+    (\vP\vTens\vQ)\vParr\vR
+     & \vP\vTens(\vQ\vParr\vR)
+     & \RuleLabel{switch}
+    \\
+    (\vP\vSeq\vQ)\vParr(\vR\vSeq\vS)
+     & (\vP\vParr\vR)\vSeq(\vQ\vParr\vS)
+     & \RuleLabel{sequence}
+    \\
+    \vP\vPlus\vQ
+     & \vP
+     & \RuleLabel{left}
+    \\
+    \vP\vPlus\vQ
+     & \vQ
+     & \RuleLabel{right}
+    \\
+    (\vP\vWith\vQ)\vParr\vR
+     & (\vP\vParr\vR)\vWith(\vQ\vParr\vR)
+     & \RuleLabel{external}
+    \\
+    (\vP\vSeq\vQ)\vWith(\vR\vSeq\vS)
+     & (\vP\vWith\vR)\vSeq(\vQ\vWith\vS)
+     & \RuleLabel{medial}
   \end{array}
 \end{displaymath}
 
@@ -87,45 +131,6 @@ Equivalence rules:
   \end{array}
 \end{displaymath}
 
-Inference rules:
-\begin{displaymath}
-  \begin{array}{l@{\;\vInfer\;}l@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
-    \vP\vParr\vDual\vP
-     & \vUnit
-     & \RuleLabel{axiom}
-    \\
-    \vUnit
-     & \vP\vTens\vDual\vP
-     & \RuleLabel{cut}
-    \\
-    \vUnit\vWith\vUnit
-     & \vUnit
-     & \RuleLabel{tidy}
-    \\
-    (\vP\vTens\vQ)\vParr\vR
-     & \vP\vTens(\vQ\vParr\vR)
-     & \RuleLabel{switch}
-    \\
-    (\vP\vSeq\vQ)\vParr(\vR\vSeq\vS)
-     & (\vP\vParr\vR)\vSeq(\vQ\vParr\vS)
-     & \RuleLabel{sequence}
-    \\
-    \vP\vPlus\vQ
-     & \vP
-     & \RuleLabel{left}
-    \\
-    \vP\vPlus\vQ
-     & \vQ
-     & \RuleLabel{right}
-    \\
-    (\vP\vWith\vQ)\vParr\vR
-     & (\vP\vParr\vR)\vWith(\vQ\vParr\vR)
-     & \RuleLabel{external}
-    \\
-    (\vP\vSeq\vQ)\vWith(\vR\vSeq\vS)
-     & (\vP\vWith\vR)\vSeq(\vQ\vWith\vS)
-     & \RuleLabel{medial}
-  \end{array}
-\end{displaymath}
+We write $\vEquiv$ for invertible inference rules, \ie $\vP\vEquiv\vQ$ means $\vP\vInfer\vQ$ and $\vQ\vInfer\vP$.
 
 We write $\vInfer*$ for the reflexive, transitive closure of $\vInfer$.
