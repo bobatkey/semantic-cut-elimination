@@ -29,44 +29,12 @@ private
     Q Q′ : Formula
     R R′ : Formula
     S S′ : Formula
-
--- infix 5 _∼_
-
--- data _∼_ : Formula → Formula → Set a where
-
---   -- _`⟨⊗_      : P ∼ P′ → (Q : Formula) → P `⊗ Q ∼ P′ `⊗ Q
---   _`⊗⟩_      : (P : Formula) → Q ∼ Q′ → P `⊗ Q ∼ P `⊗ Q′
---   `⊗-comm    : P `⊗ Q ∼ Q `⊗ P
---   `⊗-unit    : P `⊗ `I ∼ P
-  
---   _`⟨⅋_      : P ∼ P′ → (Q : Formula) → (P `⅋ Q) ∼ (P′ `⅋ Q)
---   _`⅋⟩_      : (P : Formula) → Q ∼ Q′ → (P `⅋ Q) ∼ (P `⅋ Q′)
---   `⅋-assoc   : (P `⅋ (Q `⅋ R)) ∼ ((P `⅋ Q) `⅋ R)
---   `⅋-comm    : (P `⅋ Q) ∼ (Q `⅋ P)
---   `⅋-unit    : (P `⅋ `I) ∼ P
-  
---   _`⟨▷_      : P ∼ P′ → (Q : Formula) → (P `▷ Q) ∼ (P′ `▷ Q)
---   _`▷⟩_      : (P : Formula) → Q ∼ Q′ → (P `▷ Q) ∼ (P `▷ Q′)
---   `▷-assoc   : (P `▷ (Q `▷ R)) ∼ ((P `▷ Q) `▷ R)
---   `▷-runit   : (P `▷ `I) ∼ P
---   `▷-lunit   : (`I `▷ P) ∼ P
-
---   _`⟨&_      : P ∼ P′ → (Q : Formula) → (P `& Q) ∼ (P′ `& Q)
---   _`&⟩_      : (P : Formula) → Q ∼ Q′ → (P `& Q) ∼ (P `& Q′)
-
---   -- _`⟨⊕_      : P ∼ P′ → (Q : Formula) → (P `⊕ Q) ∼ (P′ `⊕ Q)
---   -- _`⊕⟩_      : (P : Formula) → Q ∼ Q′ → (P `⊕ Q) ∼ (P `⊕ Q′)
-
--- infix 5 _≅_
-
--- _≅_ : Formula → Formula → Set a
--- _≅_ = EqClosure _∼_
   
 infix 5 _⟶_
 
 -- One step of the “analytic” proof system
 data _⟶_ : Formula → Formula → Set a where
-  `axiom    : `+ A `⅋ `- A ⟶ `I
+  `axiom    : `- A `⅋ `+ A ⟶ `I
 
   `tidy     : `I `& `I ⟶ `I
   `switch   : .{{NonUnit P}} → .{{NonUnit R}} → 
@@ -128,10 +96,6 @@ _⟷⋆_ = SymCore _⟶⋆_
 
 ⟶⋆-isPartialOrder : IsPartialOrder _⟷⋆_ _⟶⋆_
 ⟶⋆-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _⟶⋆_ (StarProps.isPreorder _⟶_)
-
-open IsPartialOrder ⟶⋆-isPartialOrder public
-  using ()
-  renaming (trans to ⟶⋆-trans)
 
 ⟶⋆-Poset : Poset a a a
 ⟶⋆-Poset .Poset.Carrier = Formula
@@ -216,7 +180,7 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 -- Turning ⅋ into a commutative pomonoid
 
 `⅋-mono : (P ⟶⋆ P′) → (Q ⟶⋆ Q′) → (P `⅋ Q) ⟶⋆ (P′ `⅋ Q′)
-`⅋-mono {P = P} {Q′ = Q′} f g = ⟶⋆-trans (P `⅋⟩⋆ g) (f `⟨⅋⋆ Q′)
+`⅋-mono {P = P} {Q′ = Q′} f g = P `⅋⟩⋆ g ◅◅ f `⟨⅋⋆ Q′
 
 `⅋-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`⅋_
 `⅋-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
@@ -240,7 +204,7 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 -- Turning ▷ into a pomonoid
 
 `▷-mono : (P ⟶⋆ P′) → (Q ⟶⋆ Q′) → (P `▷ Q) ⟶⋆ (P′ `▷ Q′)
-`▷-mono {P = P} {Q′ = Q′} f g = ⟶⋆-trans (P `▷⟩⋆ g) (f `⟨▷⋆ Q′)
+`▷-mono {P = P} {Q′ = Q′} f g = P `▷⟩⋆ g ◅◅ f `⟨▷⋆ Q′
 
 `▷-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`▷_
 `▷-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
@@ -271,7 +235,7 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 -- Turning & into a pomagma
 
 `&-mono : P ⟶⋆ P′ → Q ⟶⋆ Q′ → P `& Q ⟶⋆ P′ `& Q′
-`&-mono {P = P} {Q′ = Q′} f g = ⟶⋆-trans (P `&⟩⋆ g) (f `⟨&⋆ Q′)
+`&-mono {P = P} {Q′ = Q′} f g = P `&⟩⋆ g ◅◅ f `⟨&⋆ Q′
 
 `&-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`&_
 `&-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
@@ -282,7 +246,7 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 
 -- FIXME: should probably have a left-external and a right-external
 `⅋-distrib-`& : _DistributesOver_ _⟶⋆_ _`⅋_ _`&_
-`⅋-distrib-`& .proj₁ x y z = `⅋-comm ◅ (`external ◅ `&-mono (`⅋-comm ◅ ε) (`⅋-comm ◅ ε))
+`⅋-distrib-`& .proj₁ x y z = `⅋-comm ◅ `external ◅ `&-mono (`⅋-comm ◅ ε) (`⅋-comm ◅ ε)
 `⅋-distrib-`& .proj₂ x y z = `external ◅ ε
 
 `&-`▷-entropy : Entropy _⟶⋆_ _`&_ _`▷_
@@ -292,7 +256,7 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 -- Turning ⊕ into a pomagma
 
 -- `⊕-mono : P ⟶⋆ P′ → Q ⟶⋆ Q′ → P `⊕ Q ⟶⋆ P′ `⊕ Q′
--- `⊕-mono {P = P} {Q′ = Q′} f g = ⟶⋆-trans (P `⊕⟩⋆ g) (f `⟨⊕⋆ Q′)
+-- `⊕-mono {P = P} {Q′ = Q′} f g = P `⊕⟩⋆ g ◅◅ f `⟨⊕⋆ Q′
 
 -- `⊕-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`⊕_
 -- `⊕-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
