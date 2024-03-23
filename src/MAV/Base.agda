@@ -48,8 +48,6 @@ data _⟶_ : Formula → Formula → Set a where
   `medial   : -- .{{NonUnit P ⊎ NonUnit R}} → .{{NonUnit Q ⊎ NonUnit S}} →
               (P `▷ Q) `& (R `▷ S) ⟶ (P `& R) `▷ (Q `& S)
 
-  -- `rewr     : P ≅ P′ → P′ ⟶ Q′ → Q′ ≅ Q → P ⟶ Q
-
   _`⟨⊗_      : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
   _`⊗⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊗ Q ⟶ P `⊗ Q′
   -- `⊗-assoc   : P `⊗ (Q `⊗ R) ⟶ (P `⊗ Q) `⊗ R
