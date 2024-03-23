@@ -1,6 +1,6 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-open import Level using (0ℓ; lift; lower; Lift; suc)
+open import Level using (lift)
 open import Data.Product using (_,_; proj₁; proj₂)
 open import Data.Sum using (inj₁; inj₂)
 open import Relation.Binary using (Preorder)
