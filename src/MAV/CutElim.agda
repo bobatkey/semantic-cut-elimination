@@ -1,11 +1,12 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-module MAV.CutElim (Atom : Set) where
-
 open import Level using (0ℓ; lift; lower; Lift; suc)
 open import Data.Product using (_,_; proj₁; proj₂)
 open import Data.Sum using (inj₁; inj₂)
+open import Relation.Binary using (Preorder)
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (ε; _◅_; _◅◅_)
+
+module MAV.CutElim {a} (Atom : Set a) where
 
 open import MAV.Formula Atom
 open import MAV.Base Atom as MAV

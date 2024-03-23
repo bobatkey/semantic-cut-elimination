@@ -5,7 +5,7 @@ open import Relation.Nullary using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality.Core using (_≡_; _≢_; refl)
 open import Relation.Nullary.Negation.Core using (¬_; contradiction)
 
-module MAV.Formula (At : Set) where
+module MAV.Formula {a} (Atom : Set a) where
 
 infix 20 `+_ 
 infix 20 `-_ 
@@ -16,10 +16,10 @@ infix 10 _`&_
 infix 10 _`⊕_
 infix 10 _`▷_
 
-data Formula : Set where
+data Formula : Set a where
   `I   : Formula
-  `+_  : At → Formula
-  `-_  : At → Formula
+  `+_  : Atom → Formula
+  `-_  : Atom → Formula
   _`⅋_ : Formula → Formula → Formula
   _`⊗_ : Formula → Formula → Formula
   _`&_ : Formula → Formula → Formula

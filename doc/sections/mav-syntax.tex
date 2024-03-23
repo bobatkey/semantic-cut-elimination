@@ -1,6 +1,9 @@
 \section{Multiplicative-Additive System Virtual}\label{sec:mav-syntax}
 
-TODO: introduce MAV and Deep Inference.
+\begin{itemize}
+  \item Structural equivalences are explicit.
+  \item Inference is a congruence.
+\end{itemize}
 
 Formulas:
 \begin{displaymath}
@@ -17,28 +20,76 @@ Formulas:
 
 Negation:
 \begin{displaymath}
-  \begin{array}{lcl @{\hspace{1cm}} lcl}
-    \vDual{\vPos\vA}     & = & \vNeg\vA
+  \begin{array}{
+      l@{\;=\;}l @{\hspace{1cm}}
+      l@{\;=\;}l @{\hspace{1cm}}
+      l@{\;=\;}l @{\hspace{1cm}}
+      l@{\;=\;}l}
+    \vDual{\vPos\vA}     & \vNeg\vA
                          &
-    \vDual{\vNeg\vA}     & = & \vPos\vA
+    \vDual{\vUnit}       & \vUnit
+                         &
+    \vDual{\vP\vTens\vQ} & \vDual\vP \vParr \vDual\vQ
+                         &
+    \vDual{\vP\vParr\vQ} & \vDual\vP \vTens \vDual\vQ
     \\
-    \vDual{\vUnit}       & = & \vUnit
+    \vDual{\vNeg\vA}     & \vPos\vA
                          &
-    \vDual{\vP\vSeq \vQ} & = & \vDual\vP \vSeq  \vDual\vQ
+    \vDual{\vP\vSeq \vQ} & \vDual\vP \vSeq  \vDual\vQ
+                         &
+    \vDual{\vP\vWith\vQ} & \vDual\vP \vPlus \vDual\vQ
+                         &
+    \vDual{\vP\vPlus\vQ} & \vDual\vP \vWith \vDual\vQ
+  \end{array}
+\end{displaymath}
+
+Equivalence rules:
+\begin{displaymath}
+  \begin{array}{
+      l@{\;\vEquiv\;}ll @{\hspace{1cm}}
+      l@{\;\vEquiv\;}ll @{\hspace{1cm}}
+      l@{\;\vEquiv\;}ll}
+    \vP\vSeq\vUnit
+     & \vP
+     & \RuleLabel*[seq-runit]{\vSeq-Unit\textsuperscript{R}}
+     &
+    \vUnit\vSeq\vP
+     & \vP
+     & \RuleLabel*[seq-lunit]{\vSeq-Unit\textsuperscript{L}}
+     &
+    \vP\vSeq(\vQ\vSeq\vR)
+     & (\vP\vSeq\vQ)\vSeq\vP
+     & \RuleLabel*[seq-assoc]{\vSeq-Assoc}
     \\
-    \vDual{\vP\vTens\vQ} & = & \vDual\vP \vParr \vDual\vQ
-                         &
-    \vDual{\vP\vParr\vQ} & = & \vDual\vP \vTens \vDual\vQ
+    \vP\vTens\vUnit
+     & \vP
+     & \RuleLabel*[tens-unit]{\vTens-Unit}
+     &
+    \vP\vTens\vQ
+     & \vQ\vTens\vP
+     & \RuleLabel*[tens-comm]{\vTens-Comm}
+     &
+    \vP\vTens(\vQ\vTens\vR)
+     & (\vP\vTens\vQ)\vTens\vP
+     & \RuleLabel*[tens-assoc]{\vTens-Assoc}
     \\
-    \vDual{\vP\vWith\vQ} & = & \vDual\vP \vPlus \vDual\vQ
-                         &
-    \vDual{\vP\vPlus\vQ} & = & \vDual\vP \vWith \vDual\vQ
+    \vP\vParr\vUnit
+     & \vP
+     & \RuleLabel*[parr-unit]{\vParr-Unit}
+     &
+    \vP\vParr\vQ
+     & \vQ\vParr\vP
+     & \RuleLabel*[parr-comm]{\vParr-Comm}
+     &
+    \vP\vParr(\vQ\vParr\vR)
+     & (\vP\vParr\vQ)\vParr\vP
+     & \RuleLabel*[parr-assoc]{\vParr-Assoc}
   \end{array}
 \end{displaymath}
 
 Inference rules:
 \begin{displaymath}
-  \begin{array}{l @{\;\Infer\;}l l}
+  \begin{array}{l@{\;\vInfer\;}l@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
     \vP\vParr\vDual\vP
      & \vUnit
      & \RuleLabel{axiom}
@@ -77,46 +128,4 @@ Inference rules:
   \end{array}
 \end{displaymath}
 
-\cref{rule:axiom} is the axiom rule.
-
-% `axiom    : ∀ P → P `⅋ `¬ P ⟶ `I
-% `cut      : ∀ P → `I ⟶ P `⊗ `¬ P
-
-% `tidy     : `I `& `I ⟶ `I
-% `switch   : (P `⊗ Q) `⅋ R ⟶ P `⊗ (Q `⅋ R)
-% `sequence : (P `▷ Q) `⅋ (R `▷ S) ⟶ (P `⅋ R) `▷ (Q `⅋ S)
-% `left     : P `⊕ Q ⟶ P
-% `right    : P `⊕ Q ⟶ Q
-% `external : (P `& Q) `⅋ R ⟶ (P `⅋ R) `& (Q `⅋ R)
-% `medial   : (P `▷ Q) `& (R `▷ S) ⟶ (P `& R) `▷ (Q `& S)
-
-% _`⟨⊗_      : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
-% _`⊗⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊗ Q ⟶ P `⊗ Q′
-% `⊗-assoc   : P `⊗ (Q `⊗ R) ⟶ (P `⊗ Q) `⊗ R
-% `⊗-assoc⁻¹ : (P `⊗ Q) `⊗ R ⟶ P `⊗ (Q `⊗ R)
-% `⊗-comm    : P `⊗ Q ⟶ Q `⊗ P
-% `⊗-unit    : P `⊗ `I ⟶ P
-% `⊗-unit⁻¹  : P ⟶ P `⊗ `I
-
-% _`⟨⅋_      : P ⟶ P′ → (Q : Formula) → P `⅋ Q ⟶ P′ `⅋ Q
-% _`⅋���_      : (P : Formula) → Q ⟶ Q′ → P `⅋ Q ⟶ P `⅋ Q′
-% `⅋-assoc   : P `⅋ (Q `⅋ R) ⟶ (P `⅋ Q) `⅋ R
-% `⅋-assoc⁻¹ : (P `⅋ Q) `⅋ R ⟶ P `⅋ (Q `⅋ R)
-% `⅋-comm    : P `⅋ Q ⟶ Q `⅋ P
-% `⅋-unit    : P `⅋ `I ⟶ P
-% `⅋-unit⁻¹  : P ⟶ P `⅋ `I
-
-% _`���▷_      : P ⟶ P′ → (Q : Formula) → P `▷ Q ⟶ P′ `�� Q
-% _`▷⟩_      : (P : Formula) → Q ⟶ Q′ → P `▷ Q ⟶ P `▷ Q′
-% `▷-assoc   : P `▷ (Q `▷ R) ⟶ (P `▷ Q) `▷ R
-% `▷-assoc⁻¹ : (P `▷ Q) `▷ R ⟶ P `▷ (Q `▷ R)
-% `▷-runit   : P `▷ `I ⟶ P
-% `▷-runit⁻¹ : P ⟶ P `▷ `I
-% `▷-lunit   : `I `▷ P ⟶ P
-% `▷-lunit⁻¹ : P ⟶ `I `▷ P
-
-% _`⟨&_      : P ⟶ P′ → (Q : Formula) → P `& Q ⟶ P′ `& Q
-% _`&⟩_      : (P : Formula) → Q ⟶ Q′ → P `& Q ⟶ P `& Q′
-
-% _`��⊕_      : P ⟶ P′ → (Q : Formula) → P `⊕ Q ⟶ P′ `⊕ Q
-% _`⊕⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊕ Q ⟶ P `�� Q��
+We write $\vInfer*$ for the reflexive, transitive closure of $\vInfer$.

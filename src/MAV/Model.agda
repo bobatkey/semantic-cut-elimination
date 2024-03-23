@@ -11,9 +11,9 @@ open import Data.Product using (proj₁; proj₂)
 open import Relation.Binary using (IsEquivalence; IsPartialOrder)
 open import Relation.Binary.Lattice using (IsMeetSemilattice; IsJoinSemilattice)
 
-record Model a ℓ₁ ℓ₂ : Set (suc (a ⊔ ℓ₁ ⊔ ℓ₂)) where
+record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
   field
-    Carrier : Set a
+    Carrier : Set c
     _≈_     : Carrier → Carrier → Set ℓ₁
     _≲_     : Carrier → Carrier → Set ℓ₂
 

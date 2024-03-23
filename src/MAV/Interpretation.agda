@@ -3,8 +3,12 @@
 open import MAV.Model
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star; ε; _◅_)
 
-module MAV.Interpretation {a ℓ₁ ℓ₂}
-         (Atom : Set) (M : Model a ℓ₁ ℓ₂) (V : Atom → M .Model.Carrier) where
+module MAV.Interpretation 
+    {a c ℓ₁ ℓ₂}
+    (Atom : Set a)
+    (M : Model c ℓ₁ ℓ₂) 
+    (V : Atom → M .Model.Carrier)
+  where
 
 open import MAV.Formula Atom
 open import MAV.Symmetric Atom

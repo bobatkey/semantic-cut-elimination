@@ -11,9 +11,9 @@ open import Relation.Binary
 
 open import MAV.Model
 
-record Frame a ℓ₁ ℓ₂ : Set (suc (a ⊔ ℓ₁ ⊔ ℓ₂)) where
+record Frame c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
   field
-    Carrier : Set a
+    Carrier : Set c
     _≈_     : Carrier → Carrier → Set ℓ₁
     _≲_     : Carrier → Carrier → Set ℓ₂
 

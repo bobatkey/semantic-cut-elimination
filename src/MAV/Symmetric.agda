@@ -1,14 +1,16 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-module MAV.Symmetric (Atom : Set) where
-
+open import Relation.Binary using (Preorder)
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star)
+
+module MAV.Symmetric {a} (Atom : Set a) where
 
 open import MAV.Formula Atom
 
 private
   variable
     A A′ : Atom
+    B B′ : Atom
     P P′ : Formula
     Q Q′ : Formula
     R R′ : Formula
@@ -16,7 +18,7 @@ private
 
 infix 5 _⟶_
 
-data _⟶_ : Formula → Formula → Set where
+data _⟶_ : Formula → Formula → Set a where
   `axiom    : ∀ P → P `⅋ `¬ P ⟶ `I
   `cut      : ∀ P → `I ⟶ P `⊗ `¬ P
 
@@ -61,5 +63,5 @@ data _⟶_ : Formula → Formula → Set where
 
 infix  5 _⟶⋆_
 
-_⟶⋆_ : Formula → Formula → Set
+_⟶⋆_ : Formula → Formula → Set a
 _⟶⋆_ = Star _⟶_

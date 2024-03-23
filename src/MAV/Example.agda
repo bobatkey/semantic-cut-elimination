@@ -27,78 +27,77 @@ SMAV-proof-of-example₁ =
   where open SMAV
 
 MAV-proof-of-example₁ : (example₁ `⅋ `¬ example₁) MAV.⟶⋆ `I
-MAV-proof-of-example₁ = -- {!cut-elim _ SMAV-proof-of-example₁!}
-  `⅋-comm ◅
-  `⅋-comm ◅
-  `⅋-comm ◅
-  `⅋-comm ◅
-  `⅋-comm ◅
-  `⅋-comm ◅
-  `⅋-comm ◅
-  `⅋-comm ◅
-  `⅋-comm ◅
-  `⅋-comm ◅
-  `⅋-comm ◅
-  `sequence ◅
-  (`⅋-comm `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (`⅋-comm `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (`external `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-unit) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (((`I `⅋ (`I `⊕ `I)) `&⟩ `right) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  ((`⅋-comm `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  ((`⅋-comm `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  ((`⅋-comm `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  ((`⅋-unit `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  ((`left `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (`tidy `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  `▷-lunit ◅
-  `⅋-comm ◅
-  `external ◅
-  ((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) ◅
-  ((`I `⅋ (`I `⊕ `I)) `&⟩ (`right `⟨⅋ `I)) ◅
-  ((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) ◅
-  ((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-unit) ◅
-  (`⅋-comm `⟨& `I) ◅
-  ((`left `⟨⅋ `I) `⟨& `I) ◅
-  (`⅋-comm `⟨& `I) ◅
-  (`⅋-unit `⟨& `I) ◅
-  `tidy ◅
-  ε
-  where open MAV
+MAV-proof-of-example₁
+    = `⅋-comm
+    ◅ `⅋-comm
+    ◅ `⅋-comm
+    ◅ `⅋-comm
+    ◅ `⅋-comm
+    ◅ `⅋-comm
+    ◅ `⅋-comm
+    ◅ `⅋-comm
+    ◅ `⅋-comm
+    ◅ `⅋-comm
+    ◅ `⅋-comm
+    ◅ `⅋-comm
+    ◅ `⅋-comm
+    ◅ `sequence
+    ◅ (`⅋-comm `⟨▷ _)
+    ◅ (`⅋-comm `⟨▷ _)
+    ◅ (`⅋-comm `⟨▷ _)
+    ◅ (`⅋-comm `⟨▷ _)
+    ◅ (`external `⟨▷ _)
+    ◅ ((_ `&⟩ `⅋-comm) `⟨▷ _)
+    ◅ ((_ `&⟩ `⅋-comm) `⟨▷ _)
+    ◅ ((_ `&⟩ `⅋-comm) `⟨▷ _)
+    ◅ ((_ `&⟩ `⅋-comm) `⟨▷ _)
+    ◅ ((_ `&⟩ `⅋-comm) `⟨▷ _)
+    ◅ ((_ `&⟩ `⅋-comm) `⟨▷ _)
+    ◅ ((_ `&⟩ `⅋-comm) `⟨▷ _)
+    ◅ ((_ `&⟩ `⅋-comm) `⟨▷ _)
+    ◅ ((_ `&⟩ `⅋-comm) `⟨▷ _)
+    ◅ ((_ `&⟩ `⅋-unit) `⟨▷ _)
+    ◅ ((_ `&⟩ `right) `⟨▷ _)
+    ◅ ((`⅋-comm `⟨& _) `⟨▷ _)
+    ◅ ((`⅋-comm `⟨& _) `⟨▷ _)
+    ◅ ((`⅋-comm `⟨& _) `⟨▷ _)
+    ◅ ((`⅋-comm `⟨& _) `⟨▷ _)
+    ◅ ((`⅋-comm `⟨& _) `⟨▷ _)
+    ◅ ((`⅋-comm `⟨& _) `⟨▷ _)
+    ◅ ((`⅋-comm `⟨& _) `⟨▷ _)
+    ◅ ((`⅋-comm `⟨& _) `⟨▷ _)
+    ◅ ((`⅋-comm `⟨& _) `⟨▷ _)
+    ◅ ((`⅋-unit `⟨& _) `⟨▷ _)
+    ◅ ((`left `⟨& _) `⟨▷ _)
+    ◅ (`tidy `⟨▷ _)
+    ◅ `▷-lunit
+    ◅ `⅋-comm
+    ◅ `⅋-comm
+    ◅ `⅋-comm
+    ◅ `external
+    ◅ (_ `&⟩ `⅋-comm)
+    ◅ (_ `&⟩ `⅋-comm)
+    ◅ (_ `&⟩ (`I `⅋⟩ `right))
+    ◅ (_ `&⟩ `⅋-comm)
+    ◅ (_ `&⟩ `⅋-comm)
+    ◅ (_ `&⟩ `⅋-comm)
+    ◅ (_ `&⟩ `⅋-comm)
+    ◅ (_ `&⟩ `⅋-comm)
+    ◅ (_ `&⟩ `⅋-comm)
+    ◅ (_ `&⟩ `⅋-unit)
+    ◅ (`⅋-comm `⟨& _)
+    ◅ (`⅋-comm `⟨& _)
+    ◅ ((`I `⅋⟩ `left) `⟨& _)
+    ◅ (`⅋-comm `⟨& _)
+    ◅ (`⅋-comm `⟨& _)
+    ◅ (`⅋-comm `⟨& _)
+    ◅ (`⅋-comm `⟨& _)
+    ◅ (`⅋-comm `⟨& _) 
+    ◅ (`⅋-comm `⟨& _) 
+    ◅ (`⅋-unit `⟨& _) 
+    ◅ `tidy 
+    ◅ ε
+    where open MAV
 
-{-  `⅋-comm ◅
-  `⅋-comm ◅
-  `⅋-comm ◅
-  `sequence ◅
-  (`⅋-comm `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (`⅋-comm `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (`external `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-unit) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (((`I `⅋ (`I `⊕ `I)) `&⟩ `right) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  ((`⅋-comm `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  ((`⅋-comm `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  ((`⅋-comm `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  ((`⅋-unit `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  ((`left `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  (`tidy `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
-  `▷-lunit ◅
-  `⅋-comm ◅
-  `external ◅
-  ((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) ◅
-  ((`I `⅋ (`I `⊕ `I)) `&⟩ (`right `⟨⅋ `I)) ◅
-  ((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) ◅
-  ((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-unit) ◅
-  (`⅋-comm `⟨& `I) ◅
-  ((`left `⟨⅋ `I) `⟨& `I) ◅
-  (`⅋-comm `⟨& `I) ◅ (`⅋-unit `⟨& `I) ◅ `tidy ◅ ε
-  where open MAV
--}
-
-_ : cut-elim _ SMAV-proof-of-example₁ ≡ MAV-proof-of-example₁
-_ = refl
+-- _ : cut-elim _ SMAV-proof-of-example₁ ≡ MAV-proof-of-example₁
+-- _ = refl

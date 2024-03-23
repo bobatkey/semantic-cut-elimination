@@ -1,19 +1,22 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-module MAV.Base (Atom : Set) where
-
 open import Algebra using (_DistributesOver_)
+open import Algebra.Ordered
 open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Level using (0ℓ; lift; lower; Lift; suc)
 open import Relation.Binary using (IsPartialOrder; Poset)
 open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 import Relation.Binary.Construct.Core.Symmetric as SymCore
+open import Relation.Binary.Construct.Closure.Equivalence using (EqClosure)
+import Relation.Binary.Construct.Closure.Equivalence as EqClosure
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star; ε; _◅_; _◅◅_)
 import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star
 import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as StarProps
 open import Relation.Nullary using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality.Core using (_≡_; _≢_; refl)
+
+module MAV.Base {a} (Atom : Set a) where
 
 open import MAV.Frame
 open import MAV.Formula Atom
@@ -21,15 +24,48 @@ open import MAV.Formula Atom
 private
   variable
     A A′ : Atom
+    B B′ : Atom
     P P′ : Formula
     Q Q′ : Formula
     R R′ : Formula
     S S′ : Formula
 
+-- infix 5 _∼_
+
+-- data _∼_ : Formula → Formula → Set a where
+
+--   -- _`⟨⊗_      : P ∼ P′ → (Q : Formula) → P `⊗ Q ∼ P′ `⊗ Q
+--   _`⊗⟩_      : (P : Formula) → Q ∼ Q′ → P `⊗ Q ∼ P `⊗ Q′
+--   `⊗-comm    : P `⊗ Q ∼ Q `⊗ P
+--   `⊗-unit    : P `⊗ `I ∼ P
+  
+--   _`⟨⅋_      : P ∼ P′ → (Q : Formula) → (P `⅋ Q) ∼ (P′ `⅋ Q)
+--   _`⅋⟩_      : (P : Formula) → Q ∼ Q′ → (P `⅋ Q) ∼ (P `⅋ Q′)
+--   `⅋-assoc   : (P `⅋ (Q `⅋ R)) ∼ ((P `⅋ Q) `⅋ R)
+--   `⅋-comm    : (P `⅋ Q) ∼ (Q `⅋ P)
+--   `⅋-unit    : (P `⅋ `I) ∼ P
+  
+--   _`⟨▷_      : P ∼ P′ → (Q : Formula) → (P `▷ Q) ∼ (P′ `▷ Q)
+--   _`▷⟩_      : (P : Formula) → Q ∼ Q′ → (P `▷ Q) ∼ (P `▷ Q′)
+--   `▷-assoc   : (P `▷ (Q `▷ R)) ∼ ((P `▷ Q) `▷ R)
+--   `▷-runit   : (P `▷ `I) ∼ P
+--   `▷-lunit   : (`I `▷ P) ∼ P
+
+--   _`⟨&_      : P ∼ P′ → (Q : Formula) → (P `& Q) ∼ (P′ `& Q)
+--   _`&⟩_      : (P : Formula) → Q ∼ Q′ → (P `& Q) ∼ (P `& Q′)
+
+--   -- _`⟨⊕_      : P ∼ P′ → (Q : Formula) → (P `⊕ Q) ∼ (P′ `⊕ Q)
+--   -- _`⊕⟩_      : (P : Formula) → Q ∼ Q′ → (P `⊕ Q) ∼ (P `⊕ Q′)
+
+-- infix 5 _≅_
+
+-- _≅_ : Formula → Formula → Set a
+-- _≅_ = EqClosure _∼_
+  
 infix 5 _⟶_
 
 -- One step of the “analytic” proof system
-data _⟶_ : Formula → Formula → Set where
+data _⟶_ : Formula → Formula → Set a where
   `axiom    : `+ A `⅋ `- A ⟶ `I
 
   `tidy     : `I `& `I ⟶ `I
@@ -39,8 +75,12 @@ data _⟶_ : Formula → Formula → Set where
               (P `▷ Q) `⅋ (R `▷ S) ⟶ (P `⅋ R) `▷ (Q `⅋ S)
   `left     : P `⊕ Q ⟶ P
   `right    : P `⊕ Q ⟶ Q
-  `external : (P `& Q) `⅋ R ⟶ (P `⅋ R) `& (Q `⅋ R)
-  `medial   : (P `▷ Q) `& (R `▷ S) ⟶ (P `& R) `▷ (Q `& S)
+  `external : -- .{{NonUnit R}} →
+              (P `& Q) `⅋ R ⟶ (P `⅋ R) `& (Q `⅋ R)
+  `medial   : -- .{{NonUnit P ⊎ NonUnit R}} → .{{NonUnit Q ⊎ NonUnit S}} →
+              (P `▷ Q) `& (R `▷ S) ⟶ (P `& R) `▷ (Q `& S)
+
+  -- `rewr     : P ≅ P′ → P′ ⟶ Q′ → Q′ ≅ Q → P ⟶ Q
 
   -- _`⟨⊗_      : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
   _`⊗⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊗ Q ⟶ P `⊗ Q′
@@ -76,16 +116,14 @@ data _⟶_ : Formula → Formula → Set where
 ------------------------------------------------------------------------------
 -- Turning the proof system into a pre-order
 
-open import Algebra.Ordered
-
 infix 5 _⟶⋆_
 
-_⟶⋆_ : Formula → Formula → Set
+_⟶⋆_ : Formula → Formula → Set a
 _⟶⋆_ = Star _⟶_
 
 infix 5 _⟷⋆_
 
-_⟷⋆_ : Formula → Formula → Set
+_⟷⋆_ : Formula → Formula → Set a
 _⟷⋆_ = SymCore _⟶⋆_
 
 ⟶⋆-isPartialOrder : IsPartialOrder _⟷⋆_ _⟶⋆_
@@ -95,7 +133,7 @@ open IsPartialOrder ⟶⋆-isPartialOrder public
   using ()
   renaming (trans to ⟶⋆-trans)
 
-⟶⋆-Poset : Poset 0ℓ 0ℓ 0ℓ
+⟶⋆-Poset : Poset a a a
 ⟶⋆-Poset .Poset.Carrier = Formula
 ⟶⋆-Poset .Poset._≈_ = _⟷⋆_
 ⟶⋆-Poset .Poset._≤_ = _⟶⋆_
@@ -157,8 +195,8 @@ _`⟨&⋆_ : P ⟶⋆ P′ → (Q : Formula) → (P `& Q) ⟶⋆ (P′ `& Q)
 
 `switch⋆ : (P `⊗ Q) `⅋ R ⟶⋆ P `⊗ (Q `⅋ R)
 `switch⋆ {P} {Q} {R} with P ≟`I | R ≟`I 
-... | yes refl |     R≟`I = `⊗-comm `⟨⅋ R ◅ `⊗-unit `⟨⅋ R ◅ `⊗-unit⁻¹ ◅ `⊗-comm ◅ ε
-... | no  P≢`I | yes refl = `⅋-unit ◅ P `⊗⟩ `⅋-unit⁻¹ ◅ ε
+... |     P≟`I | yes refl = `⅋-unit ◅ P `⊗⟩ `⅋-unit⁻¹ ◅ ε
+... | yes refl | no  R≢`I = `⊗-comm `⟨⅋ R ◅ `⊗-unit `⟨⅋ R ◅ `⊗-unit⁻¹ ◅ `⊗-comm ◅ ε
 ... | no  P≢`I | no  R≢`I = `switch {{≢-nonUnit P≢`I}} {{≢-nonUnit R≢`I}} ◅ ε
 
 `sequence⋆ : (P `▷ Q) `⅋ (R `▷ S) ⟶⋆ (P `⅋ R) `▷ (Q `⅋ S)
@@ -257,7 +295,7 @@ _`⟨&⋆_ : P ⟶⋆ P′ → (Q : Formula) → (P `& Q) ⟶⋆ (P′ `& Q)
 `&-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
 `&-isPomagma .IsPomagma.mono = `&-mono
 
-`&-Pomagma : Pomagma 0ℓ 0ℓ 0ℓ
+`&-Pomagma : Pomagma a a a
 `&-Pomagma = record { isPomagma = `&-isPomagma }
 
 -- FIXME: should probably have a left-external and a right-external
@@ -279,7 +317,7 @@ _`⟨&⋆_ : P ⟶⋆ P′ → (Q : Formula) → (P `& Q) ⟶⋆ (P′ `& Q)
 -- `⊕-isPomagma .IsPomagma.mono = `⊕-mono
 
 ------------------------------------------------------------------------------
-frame : Frame 0ℓ 0ℓ 0ℓ
+frame : Frame a a a
 frame .Frame.Carrier = Formula
 frame .Frame._≈_ = _⟷⋆_
 frame .Frame._≲_ = _⟶⋆_
