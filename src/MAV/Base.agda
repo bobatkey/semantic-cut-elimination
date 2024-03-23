@@ -275,4 +275,3 @@ frame .Frame.⅋-▷-isDuoidal = `⅋-`▷-isDuoidal
 frame .Frame.⅋-distrib-& = `⅋-distrib-`&
 frame .Frame.&-▷-entropy = `&-`▷-entropy
 frame .Frame.&-tidy = `tidy ◅ ε
- 

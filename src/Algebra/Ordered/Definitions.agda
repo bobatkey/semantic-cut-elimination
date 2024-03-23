@@ -71,3 +71,6 @@ Subidempotent ∙ = ∀ x → ∙ SubidempotentOn x
 
 Superidempotent : Op₂ A → Set _
 Superidempotent ∙ = ∀ x → ∙ SuperidempotentOn x
+
+LinearDistribution : Op₂ A → Op₂ A → Set _
+LinearDistribution _⊗_ _⅋_ = ∀ x y z → (x ⊗ (y ⅋ z)) ≲ ((x ⊗ y) ⅋ z)

@@ -86,10 +86,8 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
 
   ⊕-⊗-distrib : ∀ {x y z} → (x ⊗ (y ⊕ z)) ≲ ((x ⊗ y) ⊕ (x ⊗ z))
   ⊕-⊗-distrib =
-   supremum∧residualʳ⇒distribˡ (isPartialOrder .IsPartialOrder.isPreorder)
-                                {_⊕_} {_⊗_} {_⊸_}
-                                (⊕-isJoinSemilattice .IsJoinSemilattice.supremum)
-                                ⊸-residualʳ _ _ _
+    supremum∧residualʳ⇒distribˡ isPreorder {_⊕_} {_⊗_} {_⊸_} supremum residualʳ _ _ _
+    where open IsJoinSemilattice ⊕-isJoinSemilattice using (supremum)
 
   &-⅋-distrib : ∀ {x y z} → ((x ⅋ z) & (y ⅋ z)) ≲ ((x & y) ⅋ z)
   &-⅋-distrib =

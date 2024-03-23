@@ -21,14 +21,17 @@ module Algebra.Ordered.Structures.StarAuto
 open import Algebra.Core
 open import Algebra.Definitions _≈_
 open import Algebra.Structures _≈_
+open import Algebra.Ordered.Consequences
 open import Algebra.Ordered.Definitions _≲_
 open import Algebra.Ordered.Structures _≈_ _≲_
+open import Algebra.Ordered.Structures.Residuated _≈_ _≲_
 open import Data.Product using (_,_; proj₁; proj₂)
 open import Function using (flip; _$_)
 open import Level using (_⊔_)
 open import Relation.Binary
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 import Relation.Binary.Reasoning.Setoid as SetoidReasoning
+import Relation.Binary.Reasoning.PartialOrder as PosetReasoning
 
 record IsStarAuto {_⊗_ ε} (⊗-isCommutativePomonoid : IsCommutativePomonoid _⊗_ ε) (¬ : A → A)
    : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
@@ -40,11 +43,27 @@ record IsStarAuto {_⊗_ ε} (⊗-isCommutativePomonoid : IsCommutativePomonoid 
     *-aut⁻¹ : ∀ {x y z} → x ≲ ¬ (y ⊗ z) → (x ⊗ y) ≲ ¬ z
 
   open IsCommutativePomonoid ⊗-isCommutativePomonoid public
-    using (refl; trans; reflexive; antisym; module Eq; setoid; isPartialOrder)
-    renaming (mono to ⊗-mono; assoc to ⊗-assoc; comm to ⊗-comm;
-              ∙-cong to ⊗-cong;
-              identityˡ to ⊗-identityˡ;
-              identityʳ to ⊗-identityʳ)
+    using
+      ( refl
+      ; trans
+      ; reflexive
+      ; antisym
+      ; module Eq
+      ; setoid
+      ; isPreorder
+      ; isPartialOrder
+      )
+    renaming
+      ( mono      to ⊗-mono
+      ; assoc     to ⊗-assoc
+      ; comm      to ⊗-comm
+      ; ∙-cong    to ⊗-cong
+      ; identityˡ to ⊗-identityˡ
+      ; identityʳ to ⊗-identityʳ
+      )
+  
+  poset : Poset _ _ _
+  poset = record { isPartialOrder = isPartialOrder }
 
   ¬-cong : ∀ {x y} → x ≈ y → ¬ x ≈ ¬ y
   ¬-cong x≈y = antisym (¬-mono (reflexive (Eq.sym x≈y))) (¬-mono (reflexive x≈y))
@@ -104,7 +123,12 @@ record IsStarAuto {_⊗_ ε} (⊗-isCommutativePomonoid : IsCommutativePomonoid 
       comm = ⅋-comm }
 
   open IsCommutativePomonoid ⅋-isCommutativePomonoid public
-    using () renaming (∙-cong to ⅋-cong)
+    using
+      (
+      )
+    renaming
+      ( ∙-cong to ⅋-cong
+      )
 
   ev : ∀ {x} → (x ⊗ ¬ x) ≲ ⊥
   ev = *-aut⁻¹ (trans (reflexive involution) (¬-mono (reflexive (⊗-identityʳ _))))
@@ -112,29 +136,50 @@ record IsStarAuto {_⊗_ ε} (⊗-isCommutativePomonoid : IsCommutativePomonoid 
   _⊸_ : A → A → A
   x ⊸ y = ¬ x ⅋ y
 
-  ⊸-residualʳ-to : ∀ {x y z} → (x ⊗ y) ≲ z → y ≲ (x ⊸ z)
-  ⊸-residualʳ-to xy≲z =
+  residualʳ-to : ∀ {x y z} → (x ⊗ y) ≲ z → y ≲ (x ⊸ z)
+  residualʳ-to xy≲z =
     *-aut (trans (reflexive (⊗-comm _ _)) (trans (⊗-mono (reflexive (Eq.sym involution)) refl) (trans xy≲z (reflexive involution))))
 
-  ⊸-residualʳ-from : ∀ {x y z} → y ≲ (x ⊸ z) → (x ⊗ y) ≲ z
-  ⊸-residualʳ-from y≲x⊸z =
+  residualʳ-from : ∀ {x y z} → y ≲ (x ⊸ z) → (x ⊗ y) ≲ z
+  residualʳ-from y≲x⊸z =
     trans (reflexive (⊗-comm _ _))
           (trans (*-aut⁻¹ (trans y≲x⊸z (¬-mono (⊗-mono (reflexive involution) refl)))) (reflexive (Eq.sym involution)))
 
-  ⊸-residualʳ : RightResidual _⊗_ _⊸_
-  ⊸-residualʳ .Function.Equivalence.to = ⊸-residualʳ-to
-  ⊸-residualʳ .Function.Equivalence.from = ⊸-residualʳ-from
-  ⊸-residualʳ .Function.Equivalence.to-cong PropEq.refl = PropEq.refl
-  ⊸-residualʳ .Function.Equivalence.from-cong PropEq.refl = PropEq.refl
+  residualʳ : RightResidual _⊗_ _⊸_
+  residualʳ .Function.Equivalence.to = residualʳ-to
+  residualʳ .Function.Equivalence.from = residualʳ-from
+  residualʳ .Function.Equivalence.to-cong PropEq.refl = PropEq.refl
+  residualʳ .Function.Equivalence.from-cong PropEq.refl = PropEq.refl
 
+  ⊗-⊸-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _⊗_ _⊸_ ε
+  ⊗-⊸-isResiduatedCommutativePomonoid = record
+    { isCommutativePomonoid = ⊗-isCommutativePomonoid
+    ; residuated            = comm∧residual⇒residuated isPreorder ⊗-comm residualʳ 
+    }
+
+  open IsResiduatedCommutativePomonoid ⊗-⊸-isResiduatedCommutativePomonoid public
+    using
+      ( residualˡ
+      ; evalˡ
+      ; evalʳ
+      ; mono-antiˡ
+      ; anti-monoʳ
+      )
+    renaming
+      ( residuated to ⊗-⊸-residuated
+      )
+
+  -- FIXME: This is related to evalˡ and evalʳ, but contains an additional involution.
   eval : ∀ {x y} → ((x ⅋ y) ⊗ ¬ y) ≲ x
   eval = trans (reflexive (⊗-comm _ _))
-               (⊸-residualʳ-from (trans (reflexive (⅋-comm _ _))
+               (residualʳ-from (trans (reflexive (⅋-comm _ _))
                                          (⅋-mono (reflexive involution) refl)))
 
+  -- FIXME: This is expansion.
   coev : ∀ {x} → ε ≲ (x ⅋ ¬ x)
-  coev {x} = trans (⊸-residualʳ-to (reflexive (⊗-identityʳ x))) (reflexive (⅋-comm _ _))
+  coev {x} = trans (residualʳ-to (reflexive (⊗-identityʳ x))) (reflexive (⅋-comm _ _))
 
+  -- FIXME: There must be a shorter proof of this?
   linear-distrib : ∀ {x y z} → (x ⊗ (y ⅋ z)) ≲ ((x ⊗ y) ⅋ z)
   linear-distrib =
     trans (*-aut (trans (reflexive (⊗-assoc _ _ _))
