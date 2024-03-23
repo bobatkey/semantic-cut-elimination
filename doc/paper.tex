@@ -2,6 +2,7 @@
 \documentclass[twoside,11pt]{entics}
 \usepackage{enticsmacro}
 \usepackage[fixamsmath]{mathtools}
+\usepackage{mathcommand}
 \usepackage{graphicx}
 \usepackage{cmll}
 \usepackage{mathpartir}
@@ -61,82 +62,106 @@
 \cs_new_eq:NN \IfSingleTF \tl_if_single:nTF
 \ExplSyntaxOff
 
-\NewDocumentCommand{\Dual}{d()}{%
-  \IfSingleTF{#1}{#1}{(#1)}^\perp}
-\NewDocumentCommand{\Pos}{d()}{#1^{+}}
-\NewDocumentCommand{\Neg}{d()}{#1^{-}}
-\def\Unit{%
+% Cleveref with custom labels (via Fabrizio Montesi)
+\usepackage[nameinlink]{cleveref}
+\makeatletter
+\newcommand{\customlabel}[4][0]{%
+	\protected@write\@auxout{}{\string\newlabel{#3}{{#4}{\thepage}{#4}{#3}{}}}%
+	\protected@write\@auxout{}{\string\newlabel{#3@cref}{{[#2][#1][#1]#4}{\thepage}}}}
+\makeatother
+
+% Custom labels for rules
+\NewDocumentCommand{\RuleLabel}{o m}{%
+  \IfValueTF{#1}{%
+    \customlabel{Rule}{#1}{\textsc{#2}}%
+    \hypertarget{#1}{\textsc{#2}}
+  }{%
+    \customlabel{Rule}{rule:#2}{\textsc{\MakeTitlecase{#2}}}%
+    \hypertarget{rule:#2}{\textsc{\MakeTitlecase{#2}}}
+  }}
+\crefformat{Rule}{#2(#1)#3}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Syntax:                                                                    %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Metavariables
+\newcommandPIE\vA[0]{A#1#2#3}
+\newcommandPIE\vP[0]{P#1#2#3}
+\newcommandPIE\vQ[0]{Q#1#2#3}
+\newcommandPIE\vR[0]{R#1#2#3}
+\newcommandPIE\vS[0]{S#1#2#3}
+
+% Connectives
+\NewDocumentCommand{\vDual}{m}{%
+  % \IfSingleTF{#1}{#1}{(#1)}^\perp}
+  \overline{#1}}
+\NewDocumentCommand{\vPos}{m}{#1^{+}}
+\NewDocumentCommand{\vNeg}{m}{%
+  #1^{-}}
+\def\vUnit{%
   \ensuremath{\circ}}
-\def\Parr{%
+% NOTE: Binary connectives are defined to match `\vParr' in width.
+\def\vParr{%
   \ensuremath{\parr}}
-\def\Tens{%
+\newlength{\ParrWidth}
+\settowidth{\ParrWidth}{$\vParr$}
+\def\vTens{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\parrlength][c]{\ensuremath{\mathnormal\otimes}}}}}
-\def\Plus{%
+      \makebox[\ParrWidth][c]{\ensuremath{\mathnormal\otimes}}}}}
+\def\vPlus{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\parrlength][c]{\ensuremath{\mathnormal\oplus}}}}}
-\def\With{%
+      \makebox[\ParrWidth][c]{\ensuremath{\mathnormal\oplus}}}}}
+\def\vWith{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\parrlength][c]{\ensuremath{\mathnormal\with}}}}}
-\def\Seq{%
+      \makebox[\ParrWidth][c]{\ensuremath{\mathnormal\with}}}}}
+\def\vSeq{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\parrlength][c]{\ensuremath{\mathnormal\,\,\!\triangleright}}}}}
+      \makebox[\ParrWidth][c]{\ensuremath{\mathnormal\,\,\!\triangleright}}}}}
+
+% Relations
+\NewDocumentCommand{\Infer}{s}{%
+  \ensuremath{%
+    \mathrel{%
+      \longrightarrow\IfBooleanTF{#1}{^\star}{}}}}
 
 % Include agda.sty
-\usepackage[bw]{agda}
-\usepackage{ifthen}
-
-\DeclareRobustCommand{\AgdaFormat}[2]{%
-  \ifthenelse{\equal{#1}{\&}}%
-  {\With}%
-  {%
-    \ifthenelse{\equal{#1}{I}}%
-    {\Unit}%
-    {#2}%
-  }%
-  }
+% \usepackage[bw]{agda}
+% \usepackage{ifthen}
 
 % Set up unicode support
-\usepackage{iftex}
-\ifPDFTeX
-  \usepackage{fontenc}
-  \usepackage[utf8]{inputenc}
-  \usepackage{newunicodechar}
-\else % if luatex or xetex
-  \usepackage{unicode-math} % this also loads fontspec
-  \usepackage{newunicodechar}
-\fi
-\usepackage{textcomp} % provide euro and other symbols
-\newlength{\parrlength}
-\settowidth{\parrlength}{$\parr$}
-\newunicodechar{−}{\ensuremath{\mathnormal-}}
-\newunicodechar{α}{\ensuremath{\alpha}}
-\newunicodechar{⊗}{\Tens}
-\newunicodechar{⅋}{\Parr}
-\newunicodechar{⊕}{\Plus}
-\newunicodechar{▷}{\Seq}
-\newunicodechar{∼}{\ensuremath{\mathnormal\sim}}
-\newunicodechar{≡}{\ensuremath{\mathnormal\equiv}}
-\newunicodechar{⟶}{\ensuremath{\mathnormal\longrightarrow}}
-\newunicodechar{⋆}{\ensuremath{\mathnormal\star}}
-\newunicodechar{⁺}{\ensuremath{^{+}}}
-\newunicodechar{⁻}{\ensuremath{^{-}}}
-\newunicodechar{¹}{\ensuremath{^{1}}}
-\newunicodechar{′}{\ensuremath{^{\prime}}}
-\newunicodechar{∀}{\ensuremath{\mathnormal\forall}}
+% \usepackage{iftex}
+% \ifPDFTeX
+%   \usepackage{fontenc}
+%   \usepackage[utf8]{inputenc}
+%   \usepackage{newunicodechar}
+% \else % if luatex or xetex
+%   \usepackage{unicode-math} % this also loads fontspec
+%   \usepackage{newunicodechar}
+% \fi
+% \usepackage{textcomp} % provide euro and other symbols
+% \newunicodechar{−}{\ensuremath{\mathnormal-}}
+% \newunicodechar{α}{\ensuremath{\alpha}}
+% \newunicodechar{⊗}{\vTens}
+% \newunicodechar{⅋}{\vParr}
+% \newunicodechar{⊕}{\vPlus}
+% \newunicodechar{▷}{\vSeq}
+% \newunicodechar{∼}{\ensuremath{\mathnormal\sim}}
+% \newunicodechar{≡}{\ensuremath{\mathnormal\equiv}}
+% \newunicodechar{⟶}{\ensuremath{\mathnormal\longrightarrow}}
+% \newunicodechar{⋆}{\ensuremath{\mathnormal\star}}
+% \newunicodechar{⁺}{\ensuremath{^{+}}}
+% \newunicodechar{⁻}{\ensuremath{^{-}}}
+% \newunicodechar{¹}{\ensuremath{^{1}}}
+% \newunicodechar{′}{\ensuremath{^{\prime}}}
+% \newunicodechar{∀}{\ensuremath{\mathnormal\forall}}
 
 % Set up TODO macros
 \usepackage{todonotes}
-% \usepackage{regexpatch}
-% \makeatletter
-% \xpatchcmd{\@todo}{%
-%   \setkeys{todonotes}{#1}}{%
-%   \setkeys{todonotes}{inline,#1}}{}{}
-% \makeatother
 \presetkeys{todonotes}{inline}{}
 \newcommand{\wen}[2][]{\todo[%
   author=Wen,%

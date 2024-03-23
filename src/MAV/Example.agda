@@ -21,12 +21,12 @@ import MAV.Symmetric Atom as SMAV
 example₁ : Formula
 example₁ = (`I `⊕ `I) `▷ (`I `& `I)
 
-SMAV-proof-of-example₁ : (example₁ `⅋ `¬ example₁) SMAV.⟶* `I
+SMAV-proof-of-example₁ : (example₁ `⅋ `¬ example₁) SMAV.⟶⋆ `I
 SMAV-proof-of-example₁ =
   `axiom example₁ ◅ ε
   where open SMAV
 
-MAV-proof-of-example₁ : (example₁ `⅋ `¬ example₁) MAV.⟶* `I
+MAV-proof-of-example₁ : (example₁ `⅋ `¬ example₁) MAV.⟶⋆ `I
 MAV-proof-of-example₁ = -- {!cut-elim _ SMAV-proof-of-example₁!}
   `⅋-comm ◅
   `⅋-comm ◅

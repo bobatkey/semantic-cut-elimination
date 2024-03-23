@@ -102,11 +102,11 @@ module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
 
   tidyup-lem : (t : S.Tree (Σ[ P ∈ Carrier ] (Lift a (P ≲ I)))) →
                S.⋁ᵗ t ≲ I
-  tidyup-lem (S.leaf (P , lift p⟶*I)) = p⟶*I
+  tidyup-lem (S.leaf (P , lift p⟶⋆I)) = p⟶⋆I
   tidyup-lem (S.node S t) = trans (&-mono (tidyup-lem S) (tidyup-lem t)) &-tidy
 
   tidyup : ∀ {P} → MS.εˢ .ICarrier P → P ≲ I
-  tidyup (t , p⟶*t) = trans p⟶*t (tidyup-lem t)
+  tidyup (t , p⟶⋆t) = trans p⟶⋆t (tidyup-lem t)
 
   model : Model (suc (suc (a ⊔ ℓ₂))) (a ⊔ ℓ₂) (a ⊔ ℓ₂)
   model .Model.Carrier = Chu

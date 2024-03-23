@@ -74,6 +74,6 @@ dual-ok (P `▷ Q) = Eq.trans (▷-cong (dual-ok P) (dual-ok Q)) (Eq.sym ▷-sel
 ⟦ S `⟨⊕ Q    ⟧step = ⊕-mono ⟦ S ⟧step refl
 ⟦ P `⊕⟩ S    ⟧step = ⊕-mono refl ⟦ S ⟧step
 
-⟦_⟧steps : P ⟶* Q → ⟦ Q ⟧ ≲ ⟦ P ⟧
+⟦_⟧steps : P ⟶⋆ Q → ⟦ Q ⟧ ≲ ⟦ P ⟧
 ⟦ ε     ⟧steps = refl
 ⟦ x ◅ S ⟧steps = trans ⟦ S ⟧steps ⟦ x ⟧step

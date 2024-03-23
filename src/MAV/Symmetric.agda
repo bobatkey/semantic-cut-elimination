@@ -59,7 +59,7 @@ data _⟶_ : Formula → Formula → Set where
   _`⟨⊕_      : P ⟶ P′ → (Q : Formula) → P `⊕ Q ⟶ P′ `⊕ Q
   _`⊕⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊕ Q ⟶ P `⊕ Q′
 
-infix  5 _⟶*_
+infix  5 _⟶⋆_
 
-_⟶*_ : Formula → Formula → Set
-_⟶*_ = Star _⟶_
+_⟶⋆_ : Formula → Formula → Set
+_⟶⋆_ = Star _⟶_

@@ -4,27 +4,119 @@ TODO: introduce MAV and Deep Inference.
 
 Formulas:
 \begin{displaymath}
-  P, Q
-  \Coloneq A^{+}
-  \mid     A^{-}
-  \mid     \Unit
-  \mid     P \Tens Q
-  \mid     P \Parr Q
-  \mid     P \With Q
-  \mid     P \Plus Q
-  \mid     P \Seq  Q
+  \vP,\vQ
+  \Coloneq \vPos\vA
+  \mid     \vNeg\vA
+  \mid     \vUnit
+  \mid     \vP\vSeq \vQ
+  \mid     \vP\vTens\vQ
+  \mid     \vP\vParr\vQ
+  \mid     \vP\vWith\vQ
+  \mid     \vP\vPlus\vQ
 \end{displaymath}
 
 Negation:
 \begin{displaymath}
-  \begin{array}{lcl}
-    \Dual(\Pos(A))   & = & \Neg(A)                 \\
-    \Dual(\Neg(A))   & = & \Pos(A)                 \\
-    \Dual(\Unit)     & = & \Unit                   \\
-    \Dual(P \Tens Q) & = & \Dual(P) \Parr \Dual(Q) \\
-    \Dual(P \Parr Q) & = & \Dual(P) \Tens \Dual(Q) \\
-    \Dual(P \With Q) & = & \Dual(P) \Plus \Dual(Q) \\
-    \Dual(P \Plus Q) & = & \Dual(P) \With \Dual(Q) \\
-    \Dual(P \Seq  Q) & = & \Dual(P) \Seq  \Dual(Q)
+  \begin{array}{lcl @{\hspace{1cm}} lcl}
+    \vDual{\vPos\vA}     & = & \vNeg\vA
+                         &
+    \vDual{\vNeg\vA}     & = & \vPos\vA
+    \\
+    \vDual{\vUnit}       & = & \vUnit
+                         &
+    \vDual{\vP\vSeq \vQ} & = & \vDual\vP \vSeq  \vDual\vQ
+    \\
+    \vDual{\vP\vTens\vQ} & = & \vDual\vP \vParr \vDual\vQ
+                         &
+    \vDual{\vP\vParr\vQ} & = & \vDual\vP \vTens \vDual\vQ
+    \\
+    \vDual{\vP\vWith\vQ} & = & \vDual\vP \vPlus \vDual\vQ
+                         &
+    \vDual{\vP\vPlus\vQ} & = & \vDual\vP \vWith \vDual\vQ
   \end{array}
 \end{displaymath}
+
+Inference rules:
+\begin{displaymath}
+  \begin{array}{l @{\;\Infer\;}l l}
+    \vP\vParr\vDual\vP
+     & \vUnit
+     & \RuleLabel{axiom}
+    \\
+    \vUnit
+     & \vP\vTens\vDual\vP
+     & \RuleLabel{cut}
+    \\
+    \vUnit\vWith\vUnit
+     & \vUnit
+     & \RuleLabel{tidy}
+    \\
+    (\vP\vTens\vQ)\vParr\vR
+     & \vP\vTens(\vQ\vParr\vR)
+     & \RuleLabel{switch}
+    \\
+    (\vP\vSeq\vQ)\vParr(\vR\vSeq\vS)
+     & (\vP\vParr\vR)\vSeq(\vQ\vParr\vS)
+     & \RuleLabel{sequence}
+    \\
+    \vP\vPlus\vQ
+     & \vP
+     & \RuleLabel{left}
+    \\
+    \vP\vPlus\vQ
+     & \vQ
+     & \RuleLabel{right}
+    \\
+    (\vP\vWith\vQ)\vParr\vR
+     & (\vP\vParr\vR)\vWith(\vQ\vParr\vR)
+     & \RuleLabel{external}
+    \\
+    (\vP\vSeq\vQ)\vWith(\vR\vSeq\vS)
+     & (\vP\vWith\vR)\vSeq(\vQ\vWith\vS)
+     & \RuleLabel{medial}
+  \end{array}
+\end{displaymath}
+
+\cref{rule:axiom} is the axiom rule.
+
+% `axiom    : ∀ P → P `⅋ `¬ P ⟶ `I
+% `cut      : ∀ P → `I ⟶ P `⊗ `¬ P
+
+% `tidy     : `I `& `I ⟶ `I
+% `switch   : (P `⊗ Q) `⅋ R ⟶ P `⊗ (Q `⅋ R)
+% `sequence : (P `▷ Q) `⅋ (R `▷ S) ⟶ (P `⅋ R) `▷ (Q `⅋ S)
+% `left     : P `⊕ Q ⟶ P
+% `right    : P `⊕ Q ⟶ Q
+% `external : (P `& Q) `⅋ R ⟶ (P `⅋ R) `& (Q `⅋ R)
+% `medial   : (P `▷ Q) `& (R `▷ S) ⟶ (P `& R) `▷ (Q `& S)
+
+% _`⟨⊗_      : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
+% _`⊗⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊗ Q ⟶ P `⊗ Q′
+% `⊗-assoc   : P `⊗ (Q `⊗ R) ⟶ (P `⊗ Q) `⊗ R
+% `⊗-assoc⁻¹ : (P `⊗ Q) `⊗ R ⟶ P `⊗ (Q `⊗ R)
+% `⊗-comm    : P `⊗ Q ⟶ Q `⊗ P
+% `⊗-unit    : P `⊗ `I ⟶ P
+% `⊗-unit⁻¹  : P ⟶ P `⊗ `I
+
+% _`⟨⅋_      : P ⟶ P′ → (Q : Formula) → P `⅋ Q ⟶ P′ `⅋ Q
+% _`⅋���_      : (P : Formula) → Q ⟶ Q′ → P `⅋ Q ⟶ P `⅋ Q′
+% `⅋-assoc   : P `⅋ (Q `⅋ R) ⟶ (P `⅋ Q) `⅋ R
+% `⅋-assoc⁻¹ : (P `⅋ Q) `⅋ R ⟶ P `⅋ (Q `⅋ R)
+% `⅋-comm    : P `⅋ Q ⟶ Q `⅋ P
+% `⅋-unit    : P `⅋ `I ⟶ P
+% `⅋-unit⁻¹  : P ⟶ P `⅋ `I
+
+% _`���▷_      : P ⟶ P′ → (Q : Formula) → P `▷ Q ⟶ P′ `�� Q
+% _`▷⟩_      : (P : Formula) → Q ⟶ Q′ → P `▷ Q ⟶ P `▷ Q′
+% `▷-assoc   : P `▷ (Q `▷ R) ⟶ (P `▷ Q) `▷ R
+% `▷-assoc⁻¹ : (P `▷ Q) `▷ R ⟶ P `▷ (Q `▷ R)
+% `▷-runit   : P `▷ `I ⟶ P
+% `▷-runit⁻¹ : P ⟶ P `▷ `I
+% `▷-lunit   : `I `▷ P ⟶ P
+% `▷-lunit⁻¹ : P ⟶ `I `▷ P
+
+% _`⟨&_      : P ⟶ P′ → (Q : Formula) → P `& Q ⟶ P′ `& Q
+% _`&⟩_      : (P : Formula) → Q ⟶ Q′ → P `& Q ⟶ P `& Q′
+
+% _`��⊕_      : P ⟶ P′ → (Q : Formula) → P `⊕ Q ⟶ P′ `⊕ Q
+% _`⊕⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊕ Q ⟶ P `�� Q��

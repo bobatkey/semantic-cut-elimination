@@ -65,3 +65,23 @@ instance
   `⊕-nonUnit = _
   `▷-nonUnit : ∀ {P Q} → NonUnit (P `▷ Q)
   `▷-nonUnit = _
+
+_≟`I : (P : Formula) → Dec (P ≡ `I)
+`I       ≟`I = yes refl
+(`+ A)   ≟`I = no (λ ())
+(`- A)   ≟`I = no (λ ())
+(P `⅋ Q) ≟`I = no (λ ())
+(P `⊗ Q) ≟`I = no (λ ())
+(P `& Q) ≟`I = no (λ ())
+(P `⊕ Q) ≟`I = no (λ ())
+(P `▷ Q) ≟`I = no (λ ())
+
+≢-nonUnit : ∀ {P} → P ≢ `I → NonUnit P
+≢-nonUnit {`I}     P≢`I = contradiction refl P≢`I 
+≢-nonUnit {`+ A}   P≢`I = _
+≢-nonUnit {`- A}   P≢`I = _
+≢-nonUnit {P `⅋ Q} P≢`I = _
+≢-nonUnit {P `⊗ Q} P≢`I = _
+≢-nonUnit {P `& Q} P≢`I = _
+≢-nonUnit {P `⊕ Q} P≢`I = _
+≢-nonUnit {P `▷ Q} P≢`I = _
