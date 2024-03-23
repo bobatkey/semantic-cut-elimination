@@ -154,7 +154,7 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 -- Turning ⊗ into a commutative pomonoid
 
 -- `⊗-mono : (P ⟶⋆ P′) → (Q ⟶⋆ Q′) → (P `⊗ Q) ⟶⋆ (P′ `⊗ Q′)
--- `⊗-mono {P = P} {Q′ = Q′} f g = ⟶⋆-trans (P `⊗⟩⋆ g) (f `⟨⊗⋆ Q′)
+-- `⊗-mono {P = P} {Q′ = Q′} f g = P `⊗⟩⋆ g ◅◅ f `⟨⊗⋆ Q′
 
 -- `⊗-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`⊗_
 -- `⊗-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
