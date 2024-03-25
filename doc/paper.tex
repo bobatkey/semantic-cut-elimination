@@ -7,10 +7,11 @@
 \usepackage{cmll}
 \usepackage{mathpartir}
 \usepackage[all]{xy}
+\usepackage[inline]{enumitem}
 \usepackage{fdsymbol}
 \usepackage{stmaryrd}
 \usepackage[UKenglish,all]{foreign}
-\usepackage{virginialake}
+\usepackage[goodsyntax]{virginialake}
 %\usepackage{url}
 \sloppy
 % The following is enclosed to allow easy detection of differences in
@@ -94,13 +95,14 @@
 \makeatother
 
 % Custom labels for rules
+\NewDocumentCommand{\RuleName}{m}{\textsc{#1}}
 \NewDocumentCommand{\RuleLabel}{s o m}{%
   \IfValueTF{#2}{%
-    \customlabel{Rule}{#2}{\textsc{#3}}%
-    \IfBooleanF{#1}{\hypertarget{#2}{\textsc{#3}}}
+    \customlabel{Rule}{#2}{\RuleName{#3}}%
+    \IfBooleanF{#1}{\hypertarget{#2}{\RuleName{#3}}}
   }{%
-    \customlabel{Rule}{rule:#3}{\textsc{\MakeTitlecase{#3}}}%
-    \IfBooleanF{#1}{\hypertarget{rule:#3}{\textsc{\MakeTitlecase{#3}}}}
+    \customlabel{Rule}{rule:#3}{\RuleName{\MakeTitlecase{#3}}}%
+    \IfBooleanF{#1}{\hypertarget{rule:#3}{\RuleName{\MakeTitlecase{#3}}}}
   }}
 \crefformat{Rule}{#2(#1)#3}
 

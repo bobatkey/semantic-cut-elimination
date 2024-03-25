@@ -1,14 +1,6 @@
-\section{The deep inference calculus MAV}\label{sec:mav-syntax}
+\section{The system MAV}\label{sec:mav-syntax}
 
-\begin{itemize}
-  \item Structural equivalences are explicit.
-  \item Inference is a congruence.
-  \item Inference rules are unary.
-  \item Relate to usual presentation of MALL.
-  \item Relate to usual presentation of BV.
-\end{itemize}
-
-Formulas:
+The structures of MAV are formed from positive and negative atoms ($\vPos\vA$ and $\vNeg\vA$), units ($\vUnit$), the non-commutative connective \emph{seq} ($\vSeq$), the multiplicative connectives \emph{tensor} and \emph{par} ($\vTens$ and $\vParr$) and additive connectives \emph{with} and \emph{plus} ($\vWith$ and $\vPlus$).
 \begin{displaymath}
   \vP,\vQ,\vR,\vS
   \Coloneq \vPos\vA
@@ -20,8 +12,7 @@ Formulas:
   \mid     \vP\vWith\vQ
   \mid     \vP\vPlus\vQ
 \end{displaymath}
-
-Negation:
+Duality ($\vDual\vP$) is an involutive function on structures that obeys the De Morgan laws for the multiplicative and additive connectives and preserves the self-dual connective seq.
 \begin{displaymath}
   \begin{array}{
       l@{\;=\;}l @{\hspace{1cm}}
@@ -45,6 +36,14 @@ Negation:
     \vDual{\vP\vPlus\vQ} & \vDual\vP \vWith \vDual\vQ
   \end{array}
 \end{displaymath}
+
+\begin{itemize}
+  \item Structural equivalences are explicit.
+  \item Inference is a congruence.
+  \item Inference rules are unary.
+  \item Relate to usual presentation of MALL.
+  \item Relate to usual presentation of BV.
+\end{itemize}
 
 Inference rules:
 \begin{displaymath}
@@ -134,3 +133,7 @@ Equivalence rules:
 We write $\vEquiv$ for invertible inference rules, \ie $\vP\vEquiv\vQ$ means $\vP\vInfer\vQ$ and $\vQ\vInfer\vP$.
 
 We write $\vInfer*$ for the reflexive, transitive closure of $\vInfer$.
+
+\begin{remark}
+  In the usual presentation of BV, the structure connectives are written as lists of structures, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
+\end{remark}
