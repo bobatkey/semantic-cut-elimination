@@ -20,7 +20,7 @@ endif
 
 AGDA_DIR := $(shell $(AGDA) --print-agda-dir)
 SOURCES_LAGDA := $(wildcard sections/*.lagda.tex)
-SOURCES := .latexmkrc agda.sty $(MAIN).tex $(MAIN).bib $(SOURCES_LAGDA)
+SOURCES := .latexmkrc agda.sty $(MAIN).tex $(MAIN).bib $(wildcard sections/*.tex)
 
 .PHONY: build
 build: $(MAIN).pdf

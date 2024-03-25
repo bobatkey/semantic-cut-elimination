@@ -1,17 +1,85 @@
 \section{Semantics}\label{sec:mav-semantics}
 
-\subsection{$*$-autonomous and Duoidal Preorders}
+\subsection{$*$-autonomous and Duoidal Partial Orders}
+
+\begin{definition}
+  A \emph{partial order monoid (pomonoid)} $(\bullet, i)$ on a poset
+  $(A, \leq)$ comprises a binary operator $\bullet : A \times A \to A$
+  that is monotone in both arguments and an element $i \in A$ such
+  that the usual monoid laws hold. A \emph{commutative pomonoid} is a
+  pomonoid where additionally $x \bullet y = y \bullet x$.
+\end{definition}
+
+\begin{definition}
+  A \emph{$*$-autonomous partial order} is ... TODO
+\end{definition}
+
+FIXME: cite that combinatorics book.
+\begin{definition}
+  Two pomonoids $(\bullet, i)$ and $(\rhd, j)$ on a partial order
+  $(A, \leq)$ are in a \emph{duoidal} relationship if the following
+  inequalities hold:
+  \begin{enumerate}
+  \item $(w \rhd x) \bullet (y \rhd z) \leq (w \bullet y) \rhd (x \bullet z)$
+  \item $j \bullet j \leq j$
+  \item $i \leq i \rhd i$
+  \item $i \leq j$
+  \end{enumerate}
+\end{definition}
+
+\begin{remark}
+  In the case when the two pomonoids share a common unit (as in MAV),
+  the last three conditions for a duoidal relationship are
+  automatically satisfied.
+\end{remark}
 
 \subsection{MAV Algebras}
 
+\begin{definition}
+  An \emph{MAV Algebra} is a structure $(A, \leq, ...)$
+  \begin{enumerate}
+  \item 
+  \end{enumerate}
+\end{definition}
+
+\bob{Consequences of the definition, as listed in the Agda}
+
 \subsection{Interpretation}
+
+\begin{theorem}
+  The interpretation of SMAV proofs in an MAV Algebra is sound. \bob{elaborate...}
+\end{theorem}
+
+\subsection{MAV Frames}
+
+\begin{definition}
+  An \emph{MAV Frame} is a structure
+  $(F, \leq, I, \parallel, \rhd, +)$ where $(F, \leq)$ is a partial
+  order, $(F, \leq, I, \parallel)$ is a commutative pomonoid,
+  $(F, \leq, I, \rhd)$ is a pomonoid, $+$ is a binary monotone
+  function on $(F, \leq)$, and these structures satisfy the following:
+  \begin{enumerate}
+  \item $(w \rhd x) \parallel (y \rhd z) \leq (w \parallel y) \rhd (x \parallel z)$
+  \item $(x + y) \parallel z \leq (x \parallel z) + (y \parallel z)$
+  \item $(w \rhd x) + (y \rhd z) \leq (w + y) \rhd (x + z)$
+  \item $I + I \leq I$
+  \end{enumerate}
+\end{definition}
+
+\begin{remark}
+  \bob{Connection to process algebras}
+\end{remark}
+
+\begin{proposition}
+  \bob{The Cut-free system forms an MAV Frame}
+\end{proposition}
 
 \subsection{Chu Construction and Self-Dual Monoids}
 
 \newcommand{\Chu}{\mathrm{Chu}}
 \newcommand{\op}{\mathrm{op}}
 
-To construct suitable MAV Algebras, we use the preorder version of the
+To construct suitable MAV Algebras, we use the poset version of the
 Chu construction \cite{barr}. The Chu construction builds
 $*$-autonomous categories from symmetric monoidal closed categories
 with pullbacks. In the preorder case, the requirement for preorders
