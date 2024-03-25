@@ -1,5 +1,12 @@
 \section{Semantics}\label{sec:mav-semantics}
 
+\newcommand{\LowerSet}[1]{\widehat{#1}}
+\newcommand{\Day}[1]{\mathop{\widehat{#1}}}
+\newcommand{\ClosedLowerSet}[1]{\widehat{#1}^+}
+\newcommand{\ClosedDay}[1]{\mathop{\widehat{#1}^+}}
+\newcommand{\Chu}{\mathrm{Chu}}
+\newcommand{\op}{\mathrm{op}}
+
 \subsection{$*$-autonomous and Duoidal Partial Orders}
 
 \begin{definition}
@@ -11,13 +18,18 @@
 \end{definition}
 
 \begin{definition}
-  A \emph{$*$-autonomous partial order} is ... TODO
+  A \emph{$*$-autonomous partial order} is a structure
+  $(A, \leq, \otimes, I, \lnot)$ where $(\otimes, I)$ is a pomonoid on
+  $(A, \leq)$ and $\lnot : A^\op \to A$ is an anti-monotone and
+  involutive operator on $A$, together satisfying
+  $x \otimes y \leq \lnot z$ iff $x \leq \lnot (y \otimes z)$.  A
+  $*$-autonomous partial order satisfies \emph{mix} if $\lnot I = I$.
 \end{definition}
 
 \begin{remark}
   The structure of a $*$-autonomous partial order has a number of
   immediate consequences, but we leave description of these until
-  after the definition of MAV algebra below. \bob{because there are
+  after the definition of MAV-algebra below. \bob{because there are
     even more consequences in the presence of additive and duoidal
     structure}
 \end{remark}
@@ -45,8 +57,13 @@ FIXME: cite that combinatorics book.
 \end{remark}
 
 \begin{remark}
-  If $\bullet$ is a join, or $\rhd$ is a meet, then these conditions
-  are automatically met.
+  If $\bullet$ is a join, or $\rhd$ is a meet, then all the conditions
+  for a duoidal relationship are automatically met for any other
+  monoid. \bob{fwd ref to where we use this.}
+\end{remark}
+
+\begin{remark}
+  The duoidal relationship is not symmetric.
 \end{remark}
 
 \subsection{MAV-algebras}
@@ -63,23 +80,52 @@ FIXME: cite that combinatorics book.
 \end{definition}
 
 \begin{proposition}\label{prop:mav-algebra-consequences}
-  \bob{Consequences of the definition, as listed in the Agda}
+  Let $(A, \leq, \otimes, ;, I, \lnot)$ be a MAV-algebra.
+  \begin{enumerate}
+  \item There is another pomonoid structure $(\parr, I)$ on
+    $(A, \leq)$, defined as
+    $x \parr y = \lnot(\lnot x \otimes \lnot y)$.
+  \item $(\otimes, I)$ and $(\parr, I)$ are linearly distributive
+    \cite{cockett}:
+    $x \otimes (y \parr z) \leq (x \otimes y) \parr z$.
+  \item $(A, \leq)$ has binary joins, given by
+    $x \oplus y = \lnot (\lnot x \with \lnot y)$.
+  \item $\oplus$ distributes over $\otimes$:
+    $x \otimes (y \oplus z) = ((x \otimes y) \oplus (x \otimes z)$.
+  \item $\with$ distributes over $\parr$:
+    $(x \parr z) \with (y \parr z) = (x \with y) \parr z$.
+  \item $;$ is entropic over $\parr$:
+    $(w \parr x); (y \parr z) \leq (w;y) \parr (x;z)$.
+  \item $;$ is entropic over $\with$:
+    $(w \with x); (y \with z) \leq (w ; y) \with (x; z)$.
+  \item $\oplus$ is entropic over $;$:
+    $(w ; x) \oplus (y ; z) \leq (x \oplus y) ; (x \oplus z)$.
+  \end{enumerate}
 \end{proposition}
+
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
 
 \begin{definition}\label{defn:mav-interpretation}
   Let $\mathit{At}$ be a set of atomic propositions. Given an
   MAV-algebra $(A, \leq, \otimes, \rhd, I, \lnot)$ and valuation
   $V : \mathit{At} \to A$, define the interpretation of MAV Formulas
-  as follows:
-  \begin{mathpar}
-    FIXME
-  \end{mathpar}
+  as follows: $\sem{\vUnit} = I$, $\sem{a} = V(a)$,
+  $\sem{\vDual a} = \lnot V(a)$,
+  $\sem{\vP\vTens\vQ} = \sem{\vP} \otimes \sem{\vQ}$,
+  $\sem{\vP\vParr\vQ} = \sem{\vP} \parr \sem{\vQ}$,
+  $\sem{\vP\vSeq\vQ} = \sem{\vP};\sem{\vQ}$,
+  $\sem{\vP\vWith\vQ} = \sem{\vP} \with \sem{\vQ}$, and
+  $\sem{\vP\vPlus\vQ} = \sem{\vP} \oplus \sem{\vQ}$.
 \end{definition}
+
+\begin{lemma}
+  For all $\vP$, $\sem{\vDual{\vP}} = \lnot \sem{\vP}$.
+\end{lemma}
 
 \begin{theorem}\label{thm:soundness}
   The interpretation defined in Definition
   \ref{defn:mav-interpretation} is sound: for all formulas $P$, if
-  $P \longrightarrow^* I$, then $I \leq \llbracket P \rrbracket$.
+  $P \longrightarrow^* I$, then $I \leq \sem{P}$.
 \end{theorem}
 
 \begin{proof}
@@ -139,13 +185,9 @@ all proofs in SMAV have cut-free normal forms.
 
 \subsection{Constructing MAV-algebras from MAV-frames}
 
-\newcommand{\LowerSet}[1]{\widehat{#1}}
-\newcommand{\Day}[1]{\mathop{\widehat{#1}}}
-
-
 \bob{Some introductory text here: explain the steps in the construction and what each one adds.}
 
-\subsubsection{Lower Sets}
+\subsubsection{Lower Sets and Day pomonoids}
 
 \begin{definition}
   Given a partial order $(A, \leq)$, the set of lower sets
@@ -199,11 +241,6 @@ all proofs in SMAV have cut-free normal forms.
 \end{proposition}
 
 \subsubsection{Closed Lower Sets}
-
-\newcommand{\ClosedLowerSet}[1]{\widehat{#1}^+}
-\newcommand{\ClosedDay}[1]{\mathop{\widehat{#1}^+}}
-\newcommand{\Chu}{\mathrm{Chu}}
-\newcommand{\op}{\mathrm{op}}
 
 The Lower Set adds residuals to the pomonoids of an MAV-frame, so the
 Chu construction below will allow us to add duals to interpret all of
