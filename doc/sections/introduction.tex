@@ -2,11 +2,13 @@
 
 We present an algebraic semantics and semantic proof of cut-elimination for the multiplicative-additive deep inference calculus MAV~\cite{Horne15:mav}, an extension of multiplicative-additive linear logic~\cite[MALL]{Girard87:ll} with a self-dual non-commutative connective.
 
-Deep Inference~\cite{Guglielmi14:di} is generalisation of Gentzen's methodology for designing proof systems which arose from Guglielmi's attempts to relate process algebras~\cite[CCS]{Milner89:CC,Milner80:CCS} to linear logic~\cite{Girard87:ll}.
+Deep Inference~\cite{Guglielmi14:di} is generalisation of Gentzen's methodology for designing proof systems, which arose from Guglielmi's attempts to relate process algebras~\cite[CCS]{Milner80:CCS,Milner89:CC} to linear logic~\cite{Girard87:ll}.
 The problem is that, while the connectives of linear logic capture parallel composition, no connective captures \emph{sequential composition}.
-Eventually, Guglielmi's attempts yielded the basic deep inference calculus, BV~\cite{Guglielmi99:bv,Guglielmi07:sis}, which extends multiplicative linear logic~\cite[MLL]{Girard87:ll} with a self-dual non-commutative connective that does capture sequential composition.
+Eventually, Guglielmi's attempts yielded the basic deep inference calculus, BV\footnote{
+      BV stands for \underline{B}asic System \underline{V}irtual, owing to an early interpretation of CCS interaction as the pair production and annihilation of virtual particles in physics~\cite[\Fn2]{Horne15:mav}.
+}~\cite{Guglielmi99:bv,Guglielmi07:sis}, which extends multiplicative linear logic~\cite[MLL]{Girard87:ll} with a self-dual non-commutative connective that captures sequential composition.
 Such a connective was already present in Pomset logic~\cite{Retore97:pomset}, where it arose from the study of coherence spaces~\cite[\C8]{GirardTL89:proofs}, which are a semantic model of linear logic.
-While BV is similar to Pomset logic, the two are not the same. Recently, Nguyễn and Stra{\ss}burger~\cite{NguyenS22:bvisnotpl} showed that the theorems of BV are a proper subset of the theorems of Pomset logic.
+Recently, Nguyễn and Stra{\ss}burger~\cite{NguyenS22:bvisnotpl} showed that, while BV is similar to Pomset logic, the two are not the same, as the theorems of BV form a proper subset of the theorems of Pomset logic.
 Neither BV nor Pomset logic has a sequent calculus. In fact, Tiu~\cite{Tiu06:sisii} showed that sequent calculus cannot capture BV, and it is assumed that this result extends to Pomset logic.
 
 MAV extends BV with the additives of MALL. Horne~\cite{Horne15:mav} gave a syntactic proof of cut-elimination. We present an alternative proof of cut-elimination via a semantic model. This proof avoids some of the intrincate syntactic reasoning in Horne's proof and is more modular, as shown by the extensions we present in \cref{sec:mav-extensions}.

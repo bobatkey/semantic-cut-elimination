@@ -63,6 +63,8 @@
 
 % Abbreviation for `Chapter'
 \def\C{Ch.\ }
+% Abbreviation for `Footnote'
+\def\Fn{Fn.\ }
 
 % Set up unicode support
 \usepackage{iftex}
@@ -129,29 +131,35 @@
     \mathord{%
       \makebox[\vPWidth][c]{\ensuremath{\mathnormal\circ}}}}}
 
-\def\vParr{%
-  \ensuremath{\parr}}
-
-% NOTE: Binary connectives are defined to match `\vParr' in width.
+% NOTE: Binary connectives are defined to be the same width.
+\usepackage{tikz}
 \newlength{\vParrWidth}
-\settowidth{\vParrWidth}{$\vParr$}
+\settowidth{\vParrWidth}{$\parr$}
+\newlength{\vSeqWidth}
+\settowidth{\vSeqWidth}{$\triangleleft$}
+\newlength{\vOpWidth}
+\pgfmathsetlength{\vOpWidth}{max(\vParrWidth,\vSeqWidth)}
 
 \def\vTens{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\vParrWidth][c]{\ensuremath{\mathnormal\otimes}}}}}
+      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\otimes}}}}}
+\def\vParr{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\parr}}}}}
 \def\vPlus{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\vParrWidth][c]{\ensuremath{\mathnormal\oplus}}}}}
+      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\oplus}}}}}
 \def\vWith{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\vParrWidth][c]{\ensuremath{\mathnormal\with}}}}}
+      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\with}}}}}
 \def\vSeq{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\vParrWidth][c]{\ensuremath{\mathnormal\,\,\!\triangleleft}}}}}
+      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\triangleleft}}}}}
 
 % Contexts
 \newcommand{\vEmpty}[0]{\ensuremath{\Box}}
