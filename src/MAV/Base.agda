@@ -15,6 +15,7 @@ import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star
 import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as StarProps
 open import Relation.Nullary using (Dec; yes; no)
 open import Relation.Binary.PropositionalEquality.Core using (_≡_; _≢_; refl)
+import Relation.Binary.Reasoning.PartialOrder as PartialOrderReasoning
 
 module MAV.Base {a} (Atom : Set a) where
 
@@ -37,16 +38,12 @@ data _⟶_ : Formula → Formula → Set a where
   `axiom    : `- A `⅋ `+ A ⟶ `I
 
   `tidy     : `I `& `I ⟶ `I
-  `switch   : .{{NonUnit P}} → .{{NonUnit R}} → 
-              (P `⊗ Q) `⅋ R ⟶ P `⊗ (Q `⅋ R)
-  `sequence : -- .{{NonUnit P}} → .{{NonUnit S}} → 
-              (P `▷ Q) `⅋ (R `▷ S) ⟶ (P `⅋ R) `▷ (Q `⅋ S)
+  `switch   : (P `⊗ Q) `⅋ R ⟶ P `⊗ (Q `⅋ R)
+  `sequence : (P `▷ Q) `⅋ (R `▷ S) ⟶ (P `⅋ R) `▷ (Q `⅋ S)
   `left     : P `⊕ Q ⟶ P
   `right    : P `⊕ Q ⟶ Q
-  `external : -- .{{NonUnit R}} →
-              (P `& Q) `⅋ R ⟶ (P `⅋ R) `& (Q `⅋ R)
-  `medial   : -- .{{NonUnit P ⊎ NonUnit R}} → .{{NonUnit Q ⊎ NonUnit S}} →
-              (P `▷ Q) `& (R `▷ S) ⟶ (P `& R) `▷ (Q `& S)
+  `external : (P `& Q) `⅋ R ⟶ (P `⅋ R) `& (Q `⅋ R)
+  `medial   : (P `▷ Q) `& (R `▷ S) ⟶ (P `& R) `▷ (Q `& S)
 
   _`⟨⊗_      : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
   _`⊗⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊗ Q ⟶ P `⊗ Q′
@@ -137,14 +134,14 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 ------------------------------------------------------------------------------
 -- Deriving full versions of switch and sequence
 
-`switch⋆ : (P `⊗ Q) `⅋ R ⟶⋆ P `⊗ (Q `⅋ R)
-`switch⋆ {P} {Q} {R} with P ≟`I | R ≟`I 
-... |     P≟`I | yes refl = `⅋-unit ◅ P `⊗⟩ `⅋-unit⁻¹ ◅ ε
-... | yes refl | no  R≢`I = `⊗-comm `⟨⅋ R ◅ `⊗-unit `⟨⅋ R ◅ `⊗-unit⁻¹ ◅ `⊗-comm ◅ ε
-... | no  P≢`I | no  R≢`I = `switch {{≢-nonUnit P≢`I}} {{≢-nonUnit R≢`I}} ◅ ε
+-- `switch⋆ : (P `⊗ Q) `⅋ R ⟶⋆ P `⊗ (Q `⅋ R)
+-- `switch⋆ {P} {Q} {R} with P ≟`I | R ≟`I 
+-- ... |     P≟`I | yes refl = `⅋-unit ◅ P `⊗⟩ `⅋-unit⁻¹ ◅ ε
+-- ... | yes refl | no  R≢`I = `⊗-comm `⟨⅋ R ◅ `⊗-unit `⟨⅋ R ◅ `⊗-unit⁻¹ ◅ `⊗-comm ◅ ε
+-- ... | no  P≢`I | no  R≢`I = `switch {{≢-nonUnit P≢`I}} {{≢-nonUnit R≢`I}} ◅ ε
 
-`sequence⋆ : (P `▷ Q) `⅋ (R `▷ S) ⟶⋆ (P `⅋ R) `▷ (Q `⅋ S)
-`sequence⋆ = `sequence ◅ ε
+-- `sequence⋆ : (P `▷ Q) `⅋ (R `▷ S) ⟶⋆ (P `⅋ R) `▷ (Q `⅋ S)
+-- `sequence⋆ = `sequence ◅ ε
 -- `sequence⋆ {P} {Q} {R} {S} with P ≟`I | S ≟`I
 -- ... | yes refl |     S≟`I = `▷-lunit `⟨⅋ (R `▷ S) ◅ {!   !} ◅ ε
 -- ... | no  P≢`I | yes refl = {!   !}
@@ -224,7 +221,7 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 `⅋-`▷-isDuoidal : IsDuoidal _⟷⋆_ _⟶⋆_ _`⅋_ _`▷_ `I `I
 `⅋-`▷-isDuoidal .IsDuoidal.∙-isPomonoid = `⅋-isPomonoid
 `⅋-`▷-isDuoidal .IsDuoidal.▷-isPomonoid = `▷-isPomonoid
-`⅋-`▷-isDuoidal .IsDuoidal.∙-▷-entropy w x y z = `sequence⋆
+`⅋-`▷-isDuoidal .IsDuoidal.∙-▷-entropy w x y z = `sequence ◅ ε
 `⅋-`▷-isDuoidal .IsDuoidal.∙-idem-ι = `⅋-unit ◅ ε
 `⅋-`▷-isDuoidal .IsDuoidal.▷-idem-ε = `▷-lunit⁻¹ ◅ ε -- or `▷-runit⁻¹ ◅ ε
 `⅋-`▷-isDuoidal .IsDuoidal.ε≲ι = ε
@@ -275,3 +272,4 @@ frame .Frame.⅋-▷-isDuoidal = `⅋-`▷-isDuoidal
 frame .Frame.⅋-distrib-& = `⅋-distrib-`&
 frame .Frame.&-▷-entropy = `&-`▷-entropy
 frame .Frame.&-tidy = `tidy ◅ ε
+ 

@@ -32,11 +32,11 @@ mutual
   okada (P `⅋ Q) = S.leaf (P `⅋ Q , P , Q , ε , okada P , okada Q) , ε
   okada (P `⊗ Q) .proj₁ {R} x =
     ⟦ P ⟧ .neg .≤-closed
-      (`switch⋆ ◅◅ (P `⊗⟩⋆ (`⅋-comm ◅ okada⁺ Q R x) ◅◅ `⊗-unit ◅ ε))
+      (`switch ◅ (P `⊗⟩⋆ (`⅋-comm ◅ okada⁺ Q R x) ◅◅ `⊗-unit ◅ ε))
       (okada P)
   okada (P `⊗ Q) .proj₂ {R} x =
     ⟦ Q ⟧ .neg .≤-closed
-      (`⊗-comm `⟨⅋ R ◅ `switch⋆ ◅◅ Q `⊗⟩⋆ (`⅋-comm ◅ okada⁺ P R x) ◅◅ `⊗-unit ◅ ε)
+      (`⊗-comm `⟨⅋ R ◅ `switch ◅ Q `⊗⟩⋆ (`⅋-comm ◅ okada⁺ P R x) ◅◅ `⊗-unit ◅ ε)
       (okada Q)
   okada (P `& Q) =
     S.node (S.leaf (P , inj₁ (okada P))) (S.leaf (Q , inj₂ (okada Q))) , ε
