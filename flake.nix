@@ -17,6 +17,7 @@
             newunicodechar
             mathcommand foreign xpunctuate cleveref
             fdsymbol stmaryrd
+            vntex
             # latex-bin latexmk
             # etoolbox xcolor geometry stmaryrd
             # mathpartir hyperref pdftexcmds infwarerr
