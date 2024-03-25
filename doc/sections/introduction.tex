@@ -1,41 +1,18 @@
 \section{Introduction}\label{sec:introduction}
 
-We present an algebraic semantics and semantic proof of cut elimination for the multiplicative-additive deep inference calculus MAV~\cite{Horne15:mav}, an extension of multiplicative-additive linear logic~\cite[MALL]{Girard87:ll} with a self-dual non-commutative connective.
+We present an algebraic semantics and semantic proof of cut-elimination for the multiplicative-additive deep inference calculus MAV~\cite{Horne15:mav}, an extension of multiplicative-additive linear logic~\cite[MALL]{Girard87:ll} with a self-dual non-commutative connective.
 
 Deep Inference~\cite{Guglielmi14:di} is generalisation of Gentzen's methodology for designing proof systems which arose from Guglielmi's attempts to relate process algebras~\cite[CCS]{Milner89:CC,Milner80:CCS} to linear logic~\cite{Girard87:ll}.
 The problem is that, while the connectives of linear logic capture parallel composition, no connective captures \emph{sequential composition}.
 Eventually, Guglielmi's attempts yielded the basic deep inference calculus, BV~\cite{Guglielmi99:bv,Guglielmi07:sis}, which extends multiplicative linear logic~\cite[MLL]{Girard87:ll} with a self-dual non-commutative connective that does capture sequential composition.
-Such a connective was already present in Pomset logic~\cite{Retore97:pomset}, where it arose from the study of coherence spaces~\cite[Chapter 8]{GirardTL89:proofs}, which are a semantics for proofs of linear logic.
+Such a connective was already present in Pomset logic~\cite{Retore97:pomset}, where it arose from the study of coherence spaces~\cite[\C8]{GirardTL89:proofs}, which are a semantic model of linear logic.
 While BV is similar to Pomset logic, the two are not the same. Recently, Nguyễn and Stra{\ss}burger~\cite{NguyenS22:bvisnotpl} showed that the theorems of BV are a proper subset of the theorems of Pomset logic.
+Neither BV nor Pomset logic has a sequent calculus. In fact, Tiu~\cite{Tiu06:sisii} showed that sequent calculus cannot capture BV, and it is assumed that this result extends to Pomset logic.
 
-% Neither BV nor Pomset logic has a sequent calculus.
-% ~\cite{Tiu06:sisii}
+MAV extends BV with the additives of MALL. Horne~\cite{Horne15:mav} gave a syntactic proof of cut-elimination. We present an alternative proof of cut-elimination via a semantic model. This proof avoids some of the intrincate syntactic reasoning in Horne's proof and is more modular, as shown by the extensions we present in \cref{sec:mav-extensions}.
 
-\begin{itemize}
-      \item BV~\cite{Guglielmi07:sis} by Guglielmi is an extension of MLL inspired by process algebras such as CCSand Pomset Logic~\cite{Retore97:pomset}.
-      \item MAV by Hornes~\cite{Horne15:mav} extends BV with the additives.
-      \item BV adds a non-commutative connective to MLL. Such a connective can be motivated by coherence spaces, or by session types.
-      \item A shallow sequent calculus cannot capture BV~\cite{Tiu06:sisii}.
-      \item To make sure that a proof system makes sense, we need some kind
-            of Cut-elimination theorem that ensures that all proofs can be
-            placed into a normal form where it is evident that it is not
-            possible to derive all results.
-\end{itemize}
+The technique of cut-elimination by construction of a semantic model for MALL is due to Okada~\cite{Okada99:psc}, who shows that the phase space model of MALL, described by Girard~\cite[\S4.1]{Girard87:ll} and Troelstra~\cite[\C8]{Troelstra92:lll}, can be constructed from cut-free proofs.
+The completeness of this model directly yields the existence of a cut-free proof for every proof constructible in the MALL sequent calculus.
+The same technique was used by Abrusci~\cite{Abrusci91:psc} for non-commutative linear logic, by De, Jafarrahmani, and Saurin~\cite{De22:psc} for MALL with fixed points, and by Frumin~\cite{Frumin22:psc} for bunched implications.
 
-MAV is defined by Horne \cite{Horne15:mav}, who gave a syntactic proof
-of cut-elimination and the admissibility of several other rules. We
-provide an alternative proof of cut-elimination via a semantic
-model. This proof avoids some of the intrincate syntactic reasoning in
-Horne's proof and is more modular, as evidenced by the extensions we
-present in \autoref{sec:mav-extensions}.
-
-Cut-elimination for MALL by construction of a semantic model is due to
-Okada \cite{Okada99:psc}, who shows that the a Phase Space model of
-MALL (described by Girard \cite{Girard87:ll} and Troelstra
-\cite{TroelstraXX:lnll}) can be constructed from cut-proof proofs. The
-completeness of this model directly yields the existence of a cut-free
-proof for every proof constructible in the MALL sequent calculus. For
-MAV, we cannot use Phase Spaces due to the
-
-The same technique has been used for MALL with fixpoints (CITE:
-Saurin) and for Bunched Implications with extensions (CITE: Frumin).
+For MAV, we cannot use the phase space model, due to the presence of the self-dual connective.
