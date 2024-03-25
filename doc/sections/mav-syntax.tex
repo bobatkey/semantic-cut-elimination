@@ -37,6 +37,51 @@ Duality ($\vDual\vP$) is an involutive function on structures that obeys the De 
   \end{array}
 \end{displaymath}
 
+Equivalences:
+\begin{displaymath}
+  \begin{array}{
+      l@{\;\vEquiv\;}ll @{\hspace{1cm}}
+      l@{\;\vEquiv\;}ll @{\hspace{1cm}}
+      l@{\;\vEquiv\;}ll}
+    \vP\vSeq\vUnit
+     & \vP
+     & \RuleLabel*[seq-runit]{\vSeq-Unit\textsuperscript{R}}
+     &
+    \vUnit\vSeq\vP
+     & \vP
+     & \RuleLabel*[seq-lunit]{\vSeq-Unit\textsuperscript{L}}
+     &
+    \vP\vSeq(\vQ\vSeq\vR)
+     & (\vP\vSeq\vQ)\vSeq\vP
+     & \RuleLabel*[seq-assoc]{\vSeq-Assoc}
+    \\
+    \vP\vTens\vUnit
+     & \vP
+     & \RuleLabel*[tens-unit]{\vTens-Unit}
+     &
+    \vP\vTens\vQ
+     & \vQ\vTens\vP
+     & \RuleLabel*[tens-comm]{\vTens-Comm}
+     &
+    \vP\vTens(\vQ\vTens\vR)
+     & (\vP\vTens\vQ)\vTens\vP
+     & \RuleLabel*[tens-assoc]{\vTens-Assoc}
+    \\
+    \vP\vParr\vUnit
+     & \vP
+     & \RuleLabel*[parr-unit]{\vParr-Unit}
+     &
+    \vP\vParr\vQ
+     & \vQ\vParr\vP
+     & \RuleLabel*[parr-comm]{\vParr-Comm}
+     &
+    \vP\vParr(\vQ\vParr\vR)
+     & (\vP\vParr\vQ)\vParr\vP
+     & \RuleLabel*[parr-assoc]{\vParr-Assoc}
+  \end{array}
+\end{displaymath}
+
+
 \begin{itemize}
   \item Structural equivalences are explicit.
   \item Inference is a congruence.
@@ -86,54 +131,10 @@ Inference rules:
   \end{array}
 \end{displaymath}
 
-Equivalence rules:
-\begin{displaymath}
-  \begin{array}{
-      l@{\;\vEquiv\;}ll @{\hspace{1cm}}
-      l@{\;\vEquiv\;}ll @{\hspace{1cm}}
-      l@{\;\vEquiv\;}ll}
-    \vP\vSeq\vUnit
-     & \vP
-     & \RuleLabel*[seq-runit]{\vSeq-Unit\textsuperscript{R}}
-     &
-    \vUnit\vSeq\vP
-     & \vP
-     & \RuleLabel*[seq-lunit]{\vSeq-Unit\textsuperscript{L}}
-     &
-    \vP\vSeq(\vQ\vSeq\vR)
-     & (\vP\vSeq\vQ)\vSeq\vP
-     & \RuleLabel*[seq-assoc]{\vSeq-Assoc}
-    \\
-    \vP\vTens\vUnit
-     & \vP
-     & \RuleLabel*[tens-unit]{\vTens-Unit}
-     &
-    \vP\vTens\vQ
-     & \vQ\vTens\vP
-     & \RuleLabel*[tens-comm]{\vTens-Comm}
-     &
-    \vP\vTens(\vQ\vTens\vR)
-     & (\vP\vTens\vQ)\vTens\vP
-     & \RuleLabel*[tens-assoc]{\vTens-Assoc}
-    \\
-    \vP\vParr\vUnit
-     & \vP
-     & \RuleLabel*[parr-unit]{\vParr-Unit}
-     &
-    \vP\vParr\vQ
-     & \vQ\vParr\vP
-     & \RuleLabel*[parr-comm]{\vParr-Comm}
-     &
-    \vP\vParr(\vQ\vParr\vR)
-     & (\vP\vParr\vQ)\vParr\vP
-     & \RuleLabel*[parr-assoc]{\vParr-Assoc}
-  \end{array}
-\end{displaymath}
-
 We write $\vEquiv$ for invertible inference rules, \ie $\vP\vEquiv\vQ$ means $\vP\vInfer\vQ$ and $\vQ\vInfer\vP$.
 
 We write $\vInfer*$ for the reflexive, transitive closure of $\vInfer$.
 
 \begin{remark}
-  In the usual presentation of BV, the structure connectives are written as lists of structures, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
+  The usual presentation of BV writes the structure connectives as lists, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
 \end{remark}
