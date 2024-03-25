@@ -47,11 +47,11 @@ FIXME: cite that combinatorics book.
 
 \begin{definition}
   An \emph{MAV Algebra} is a structure
-  $(A, \leq, \otimes, \rhd, I, \lnot)$ with the following properties:
+  $(A, \leq, \otimes, ;, I, \lnot)$ with the following properties:
   \begin{enumerate}
   \item $(A, \leq, \otimes, I, \lnot)$ is $*$-autonomous and satisfies \emph{mix}.
-  \item $(A, \leq, \rhd, I)$ is a pomonoid.
-  \item $(\otimes, I)$ and $(\rhd, I)$ are in a duoidal relationship.
+  \item $(A, \leq, ;, I)$ is a pomonoid.
+  \item $(\otimes, I)$ and $(;, I)$ are in a duoidal relationship.
   \item $(A, \leq)$ has binary meets, which we write as $x \with y$.
   \end{enumerate}
 \end{definition}
@@ -241,12 +241,24 @@ Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
   There is a monotone function
   $\alpha : \LowerSet{A} \to \ClosedLowerSet{A}$ with the following
   properties. It is a Galois reflection. FIXME
+
+  \begin{displaymath}
+    \alpha(F) = \{ x \mid c \in \mathrm{ctxt}(F), x \leq \mathit{sum}(c) \}
+  \end{displaymath}
 \end{proposition}
 
 \begin{proof}
   Explain the Agda, this relies on the fact that $\mathrm{ctxt}$ is a
   (relative) monad.
 \end{proof}
+
+\begin{remark}
+  By this proposition, $U \circ \alpha$ is a closure operator on
+  $\LowerSet{A}$ \cite{davey-priestley}, and the closed elements are
+  those of $\ClosedLowerSet{A}$. The next proposition is standard for
+  showing that meets and joins exist on the closed elements for some
+  closure operator.
+\end{remark}
 
 \begin{proposition}
   $(\ClosedLowerSet{A}, \subseteq)$ has all meets and joins. In the
@@ -266,7 +278,7 @@ Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
   $\alpha$ preserves the monoidal structure, so we can use it to prove
   the monoid laws for the constructed monoid.
 
-  Sketch why this works: we can multiply together the contexts.
+  \bob{Sketch why this works: we can multiply together the contexts.}
 \end{proof}
 
 \begin{proposition}\label{prop:closed-monoid-duoidal}
@@ -284,8 +296,6 @@ Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
 \end{proposition}
 
 \begin{proof}
-  In this case, the Day pomonoid is already closed, by use of the duoidal property.
-
   \bob{Explain the Agda here}
 \end{proof}
 
@@ -300,7 +310,18 @@ Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
   We have used the same decoration $\ClosedDay{\bullet}$ and
   $\ClosedDay{\rhd}$ for two separate constructions of pomonoids on
   $+$-closed lower sets. We will be careful to distinguish which we
-  mean: a symmetric operator like $\bullet$ 
+  mean: a symmetric operator like $\bullet$ will distribute over $+$
+  and so $\ClosedDay{\bullet}$ will be constructed by Proposition
+  \ref{prop:closed-monoid-distrib}; and a non-symmetric operator like
+  $\rhd$ will be entropic with respect to $+$ and so
+  $\ClosedDay{\rhd}$ will be constructed by Proposition
+  \ref{prop:closed-monoid-duoidal}.
+\end{remark}
+
+\begin{remark}
+  If we have two $(A, \leq)$ pomonoids with the same unit, then the
+  two constructions will yield the same closed lower set.
+  \bob{elaborate a bit...}
 \end{remark}
 
 \begin{proposition}
@@ -372,22 +393,36 @@ for this to work, we need to assume duoidality.
 And that the dualising object $k$ is a
 satisfies $k \rhd k \leq k$. If $\rhd$ has a unit $j$, then $(j, j)$ is a unit if
 
-
-The Chu construction allows us to state
-directly that any operator we define on $\Chu(A, k)$ is self dual by
-defining as the same
-
-\begin{proposition}
-  \bob{self dual operators from pomonoids with $k \rhd k \leq k$ and $j \leq k$.}
+\begin{proposition}\label{prop:chu-self-dual}
+  Let $(\rhd, j)$ be a pomonoid on $(A, \leq)$ such that
+  $k \rhd k \leq k$ and $j \leq k$, then
+  $x ; y = (x^+ \rhd y^+, x^- \rhd y^-)$ and $J = (j, j)$ form a
+  self-dual pomonoid on $\Chu(A, k)$.
 \end{proposition}
 
+\begin{proof}
+  \bob{show that that two extra bits are needed.}
+\end{proof}
+
+\begin{remark}
+  When $k = j$, the two conditions in the proposition are
+  automatically satisfied. Moreover, if $k = i = j$, then not only
+  does the $*$-autonomous structure satisfy \emph{mix}, but we also
+  have $I =J$.
+\end{remark}
+
 \begin{proposition}
-  \bob{duoidality is preserved.}
+  If $(\bullet, i)$ and $(\rhd, j)$ are in a duoidal relationship on
+  $(A, \leq)$, and $(\rhd, j)$ satisfies the conditions of Proposition
+  \ref{prop:chu-self-dual}, then $(\otimes, I)$ and $(;, J)$ are in a
+  duoidal relationship on $\Chu(A, k)$.
 \end{proposition}
 
-\subsubsection{Complete Construction}
+\begin{proof}
+  \bob{Explain the Agda}
+\end{proof}
 
-We can now state the second main theorem of this section:
+\subsection{Construction of MAV-algebras}
 
 \begin{theorem}
   If $(F, \leq, \parallel, \rhd, I, +)$ is an MAV Frame, then
@@ -395,5 +430,6 @@ We can now state the second main theorem of this section:
 \end{theorem}
 
 \begin{proof}
-  Combining all the propositions above.
+  Combining all the propositions above, in the special case when some
+  of the units collapse.
 \end{proof}
