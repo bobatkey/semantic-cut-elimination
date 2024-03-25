@@ -137,33 +137,33 @@
 
 % NOTE: Binary connectives are defined to be the same width.
 \usepackage{tikz}
-\newlength{\vParrWidth}
-\settowidth{\vParrWidth}{$\parr$}
-\newlength{\vSeqWidth}
-\settowidth{\vSeqWidth}{$\triangleleft$}
+\newlength{\vlpaWidth}
+\settowidth{\vlpaWidth}{$\vlpa$}
+\newlength{\vlseWidth}
+\settowidth{\vlseWidth}{$\vlse$}
 \newlength{\vOpWidth}
-\pgfmathsetlength{\vOpWidth}{max(\vParrWidth,\vSeqWidth)}
+\pgfmathsetlength{\vOpWidth}{max(\vlpaWidth,\vlseWidth)}
 
 \def\vTens{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\otimes}}}}}
+      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\vlte}}}}}
 \def\vParr{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\parr}}}}}
+      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\vlpa}}}}}
 \def\vPlus{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\oplus}}}}}
+      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\vlor}}}}}
 \def\vWith{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\with}}}}}
+      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\vlan}}}}}
 \def\vSeq{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\triangleleft}}}}}
+      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\vlse}}}}}
 
 % Contexts
 \newcommand{\vEmpty}[0]{\ensuremath{\Box}}
@@ -173,8 +173,8 @@
 \NewDocumentCommand{\vEquiv}{s}{%
   \ensuremath{%
     \mathrel{%
-      % \equiv\IfBooleanTF{#1}{^\star}{}}}}
-      \longleftrightarrow\IfBooleanTF{#1}{^\star}{}}}}
+      \equiv\IfBooleanTF{#1}{^\star}{}}}}
+      % \longleftrightarrow\IfBooleanTF{#1}{^\star}{}}}}
 \NewDocumentCommand{\vInfer}{s}{%
   \ensuremath{%
     \mathrel{%
