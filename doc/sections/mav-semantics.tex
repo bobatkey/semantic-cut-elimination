@@ -38,15 +38,17 @@ FIXME: cite that combinatorics book.
 \end{definition}
 
 \begin{remark}
-  In the case when the two pomonoids share a common unit (as in MAV),
-  the last three conditions for a duoidal relationship are
-  automatically satisfied.
+  In the case when the two pomonoids share a common unit the last
+  three conditions for a duoidal relationship are automatically
+  satisfied.
 \end{remark}
 
-\subsection{MAV Algebras}
+\bob{need to define \emph{entropy} and \emph{entropic} somewhere}
+
+\subsection{MAV-algebras}
 
 \begin{definition}
-  An \emph{MAV Algebra} is a structure
+  An \emph{MAV-algebra} is a structure
   $(A, \leq, \otimes, ;, I, \lnot)$ with the following properties:
   \begin{enumerate}
   \item $(A, \leq, \otimes, I, \lnot)$ is $*$-autonomous and satisfies \emph{mix}.
@@ -61,9 +63,10 @@ FIXME: cite that combinatorics book.
 \end{proposition}
 
 \begin{definition}\label{defn:mav-interpretation}
-  Let $\mathit{At}$ be a set of atomic propositions. Given an MAV
-  Algebra $(A, \leq, \otimes, \rhd, I, \lnot)$ and valuation
-  $V : \mathit{At} \to A$, define the interpretation of MAV Formulas as follows:
+  Let $\mathit{At}$ be a set of atomic propositions. Given an
+  MAV-algebra $(A, \leq, \otimes, \rhd, I, \lnot)$ and valuation
+  $V : \mathit{At} \to A$, define the interpretation of MAV Formulas
+  as follows:
   \begin{mathpar}
     FIXME
   \end{mathpar}
@@ -80,22 +83,22 @@ FIXME: cite that combinatorics book.
   Proposition \ref{prop:mav-algebra-consequences}.
 \end{proof}
 
-\subsection{MAV Frames}
+\subsection{MAV-frames}
 
 To prove completeness of the cut-free fragment of SMAV, we will
-construct a particular MAV Algebra from the syntax and cut-free
+construct a particular MAV-algebra from the syntax and cut-free
 proofs. Since cut-free proofs do not a priori have all the necessary
-structure for an MAV Algebra, we develop a procedure to construct MAV
-Algebra from the lighter requirements of an MAV Frame, defined in this
-section. MAV Frames have an intuitive reading as a kind of process
-algebra, so we use process algebra-like notation. In the following
-sections, we show how every MAV Frame induces an MAV Algebra, and in
-Section XXX we will show that the MAV Algebra constructed from the
-cut-free proof MAV Frame allows us to prove that all proofs in SMAV
-have cut-free normal forms.
+structure for an MAV-algebra, we develop a procedure to construct
+MAV-algebra from the lighter requirements of an MAV-frame, defined in
+this section. MAV-frames have an intuitive reading as a kind of
+process algebra, so we use process algebra-like notation. In the
+following sections, we show how every MAV-frame induces an
+MAV-algebra, and in Section XXX we will show that the MAV-algebra
+constructed from the cut-free proof MAV-frame allows us to prove that
+all proofs in SMAV have cut-free normal forms.
 
 \begin{definition}
-  An \emph{MAV Frame} is a structure
+  An \emph{MAV-frame} is a structure
   $(F, \leq, I, \parallel, \rhd, +)$ where $(F, \leq)$ is a partial
   order, $(F, \leq, I, \parallel)$ is a commutative pomonoid,
   $(F, \leq, I, \rhd)$ is a pomonoid, $+$ is a binary monotone
@@ -111,7 +114,10 @@ have cut-free normal forms.
 
 \begin{remark}
   \bob{A frame is nearly two duoidal structures, except that we don't
-    assume that $+$ is a monoid, nor is there a unit element for it.}
+    assume that $+$ is a monoid, nor is there a unit element for
+    it. If we assumed that $+$ was a lattice join, then (iii) and (iv)
+    would automatically be true. We do not include this because these
+    facts are not true for the cut-free MAV system.}
 \end{remark}
 
 \begin{remark}
@@ -124,12 +130,14 @@ have cut-free normal forms.
 \end{remark}
 
 \begin{proposition}
-  \bob{The Cut-free system forms an MAV Frame; fwd ref to next section}
+  \bob{The Cut-free system forms an MAV-frame; fwd ref to next section}
 \end{proposition}
 
-\subsection{Constructing MAV Algebras from MAV Frames}
+\subsection{Constructing MAV-algebras from MAV-frames}
 
 \newcommand{\LowerSet}[1]{\widehat{#1}}
+\newcommand{\Day}[1]{\mathop{\widehat{#1}}}
+
 
 \bob{Some introductory text here: explain the steps in the construction and what each one adds.}
 
@@ -150,8 +158,6 @@ have cut-free normal forms.
 
   \bob{and $\eta$ preserves any meets that exist}
 \end{proposition}
-
-\newcommand{\Day}[1]{\mathop{\widehat{#1}}}
 
 \begin{proposition}\label{prop:day-construction}
   If $(\bullet, i)$ is a pomonoid on $(A, \leq)$, then there is a
@@ -176,7 +182,7 @@ have cut-free normal forms.
 \end{remark}
 
 \begin{remark}
-  When $(A, \leq)$ is an MAV Frame, by \ref{prop:day-construction} we
+  When $(A, \leq)$ is an MAV-frame, by \ref{prop:day-construction} we
   obtain two pomonoids $(\Day{\parallel}, \Day{I})$ and
   $(\Day{\rhd}, \Day{I})$ on $\LowerSet{A}$. Moreover, the next
   proposition states that the duoidal relationship between these
@@ -195,7 +201,7 @@ have cut-free normal forms.
 \newcommand{\Chu}{\mathrm{Chu}}
 \newcommand{\op}{\mathrm{op}}
 
-The Lower Set adds residuals to the pomonoids of an MAV Frame, so the
+The Lower Set adds residuals to the pomonoids of an MAV-frame, so the
 Chu construction below will allow us to add duals to interpret all of
 the multiplicative subsystem of MAV. To incorporate the additives in
 such a way that we will be able to derive the proof normalisation
@@ -271,7 +277,8 @@ Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
 \end{remark}
 
 \begin{proposition}\label{prop:closed-monoid-distrib}
-  Monoid construction 1, for monoids that distribute over $+$.
+  \bob{Monoid construction 1, for monoids that distribute over
+    $+$. This also has a residual.}
 \end{proposition}
 
 \begin{proof}
@@ -341,7 +348,7 @@ Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
 
 \subsubsection{Chu Construction}
 
-To construct suitable MAV Algebras, we use the poset version of the
+To construct suitable MAV-algebras, we use the poset version of the
 Chu construction \cite{barr}. The Chu construction builds
 $*$-autonomous categories from symmetric monoidal closed categories
 with pullbacks. In the preorder case, the requirement for preorders
@@ -425,8 +432,8 @@ satisfies $k \rhd k \leq k$. If $\rhd$ has a unit $j$, then $(j, j)$ is a unit i
 \subsection{Construction of MAV-algebras}
 
 \begin{theorem}
-  If $(F, \leq, \parallel, \rhd, I, +)$ is an MAV Frame, then
-  $\Chu(\ClosedLowerSet{F}, I)$ has the structure of an MAV Algebra.
+  If $(F, \leq, \parallel, \rhd, I, +)$ is an MAV-frame, then
+  $\Chu(\ClosedLowerSet{F}, I)$ has the structure of an MAV-algebra.
 \end{theorem}
 
 \begin{proof}
