@@ -43,7 +43,7 @@ mutual
   okada (P `⊕ Q) =
     ⟦ P ⟧ .neg .≤-closed (`left ◅ ε) (okada P) ,
     ⟦ Q ⟧ .neg .≤-closed (`right ◅ ε) (okada Q)
-  okada (P `▷ Q) =
+  okada (P `◁ Q) =
     P , Q , ε , okada P , okada Q
 
   okada⁺ : ∀ P R → ⟦ P ⟧ .pos .ICarrier R → (R `⅋ P) MAV.⟶⋆ `I

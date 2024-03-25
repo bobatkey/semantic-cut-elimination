@@ -39,11 +39,11 @@ data _⟶_ : Formula → Formula → Set a where
 
   `tidy     : `I `& `I ⟶ `I
   `switch   : (P `⊗ Q) `⅋ R ⟶ P `⊗ (Q `⅋ R)
-  `sequence : (P `▷ Q) `⅋ (R `▷ S) ⟶ (P `⅋ R) `▷ (Q `⅋ S)
+  `sequence : (P `◁ Q) `⅋ (R `◁ S) ⟶ (P `⅋ R) `◁ (Q `⅋ S)
   `left     : P `⊕ Q ⟶ P
   `right    : P `⊕ Q ⟶ Q
   `external : (P `& Q) `⅋ R ⟶ (P `⅋ R) `& (Q `⅋ R)
-  `medial   : (P `▷ Q) `& (R `▷ S) ⟶ (P `& R) `▷ (Q `& S)
+  `medial   : (P `◁ Q) `& (R `◁ S) ⟶ (P `& R) `◁ (Q `& S)
 
   _`⟨⊗_      : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
   _`⊗⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊗ Q ⟶ P `⊗ Q′
@@ -61,14 +61,14 @@ data _⟶_ : Formula → Formula → Set a where
   `⅋-unit    : (P `⅋ `I) ⟶ P
   `⅋-unit⁻¹  : P ⟶ (P `⅋ `I)
 
-  _`⟨▷_      : P ⟶ P′ → (Q : Formula) → (P `▷ Q) ⟶ (P′ `▷ Q)
-  _`▷⟩_      : (P : Formula) → Q ⟶ Q′ → (P `▷ Q) ⟶ (P `▷ Q′)
-  `▷-assoc   : (P `▷ (Q `▷ R)) ⟶ ((P `▷ Q) `▷ R)
-  `▷-assoc⁻¹ : ((P `▷ Q) `▷ R) ⟶ (P `▷ (Q `▷ R))
-  `▷-runit   : (P `▷ `I) ⟶ P
-  `▷-runit⁻¹ : P ⟶ (P `▷ `I)
-  `▷-lunit   : (`I `▷ P) ⟶ P
-  `▷-lunit⁻¹ : P ⟶ (`I `▷ P)
+  _`⟨◁_      : P ⟶ P′ → (Q : Formula) → (P `◁ Q) ⟶ (P′ `◁ Q)
+  _`◁⟩_      : (P : Formula) → Q ⟶ Q′ → (P `◁ Q) ⟶ (P `◁ Q′)
+  `◁-assoc   : (P `◁ (Q `◁ R)) ⟶ ((P `◁ Q) `◁ R)
+  `◁-assoc⁻¹ : ((P `◁ Q) `◁ R) ⟶ (P `◁ (Q `◁ R))
+  `◁-runit   : (P `◁ `I) ⟶ P
+  `◁-runit⁻¹ : P ⟶ (P `◁ `I)
+  `◁-lunit   : (`I `◁ P) ⟶ P
+  `◁-lunit⁻¹ : P ⟶ (`I `◁ P)
 
   _`⟨&_      : P ⟶ P′ → (Q : Formula) → (P `& Q) ⟶ (P′ `& Q)
   _`&⟩_      : (P : Formula) → Q ⟶ Q′ → (P `& Q) ⟶ (P `& Q′)
@@ -119,11 +119,11 @@ P⟶⋆P′ `⟨⅋⋆ Q = Star.gmap _ (_`⟨⅋ Q) P⟶⋆P′
 -- _`⟨⅋⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⅋ Q ⟶⋆ P′ `⅋ Q
 -- f `⟨⅋⋆ Q = `⅋-comm ◅ Q `⅋⟩⋆ f ◅◅ `⅋-comm ◅ ε
 
-_`▷⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `▷ Q) ⟶⋆ (P `▷ Q′)
-P `▷⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `▷⟩_) Q⟶⋆Q′
+_`◁⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `◁ Q) ⟶⋆ (P `◁ Q′)
+P `◁⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `◁⟩_) Q⟶⋆Q′
 
-_`⟨▷⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `▷ Q ⟶⋆ P′ `▷ Q
-P⟶⋆P′ `⟨▷⋆ Q = Star.gmap _ (_`⟨▷ Q) P⟶⋆P′
+_`⟨◁⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `◁ Q ⟶⋆ P′ `◁ Q
+P⟶⋆P′ `⟨◁⋆ Q = Star.gmap _ (_`⟨◁ Q) P⟶⋆P′
 
 _`&⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `& Q) ⟶⋆ (P `& Q′)
 P `&⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `&⟩_) Q⟶⋆Q′
@@ -140,10 +140,10 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 -- ... | yes refl | no  R≢`I = `⊗-comm `⟨⅋ R ◅ `⊗-unit `⟨⅋ R ◅ `⊗-unit⁻¹ ◅ `⊗-comm ◅ ε
 -- ... | no  P≢`I | no  R≢`I = `switch {{≢-nonUnit P≢`I}} {{≢-nonUnit R≢`I}} ◅ ε
 
--- `sequence⋆ : (P `▷ Q) `⅋ (R `▷ S) ⟶⋆ (P `⅋ R) `▷ (Q `⅋ S)
+-- `sequence⋆ : (P `◁ Q) `⅋ (R `◁ S) ⟶⋆ (P `⅋ R) `◁ (Q `⅋ S)
 -- `sequence⋆ = `sequence ◅ ε
 -- `sequence⋆ {P} {Q} {R} {S} with P ≟`I | S ≟`I
--- ... | yes refl |     S≟`I = `▷-lunit `⟨⅋ (R `▷ S) ◅ {!   !} ◅ ε
+-- ... | yes refl |     S≟`I = `◁-lunit `⟨⅋ (R `◁ S) ◅ {!   !} ◅ ε
 -- ... | no  P≢`I | yes refl = {!   !}
 -- ... | no  P≢`I | no  S≢`I = `sequence {{≢-nonUnit P≢`I}} {{≢-nonUnit S≢`I}} ◅ ε
 
@@ -196,35 +196,35 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 `⅋-isCommutativePomonoid .IsCommutativePomonoid.comm P Q = (`⅋-comm ◅ ε , `⅋-comm ◅ ε)
 
 ------------------------------------------------------------------------------
--- Turning ▷ into a pomonoid
+-- Turning ◁ into a pomonoid
 
-`▷-mono : (P ⟶⋆ P′) → (Q ⟶⋆ Q′) → (P `▷ Q) ⟶⋆ (P′ `▷ Q′)
-`▷-mono {P = P} {Q′ = Q′} f g = P `▷⟩⋆ g ◅◅ f `⟨▷⋆ Q′
+`◁-mono : (P ⟶⋆ P′) → (Q ⟶⋆ Q′) → (P `◁ Q) ⟶⋆ (P′ `◁ Q′)
+`◁-mono {P = P} {Q′ = Q′} f g = P `◁⟩⋆ g ◅◅ f `⟨◁⋆ Q′
 
-`▷-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`▷_
-`▷-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
-`▷-isPomagma .IsPomagma.mono = `▷-mono
+`◁-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`◁_
+`◁-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
+`◁-isPomagma .IsPomagma.mono = `◁-mono
 
-`▷-isPosemigroup : IsPosemigroup  _⟷⋆_ _⟶⋆_ _`▷_
-`▷-isPosemigroup .IsPosemigroup.isPomagma = `▷-isPomagma
-`▷-isPosemigroup .IsPosemigroup.assoc P Q R = (`▷-assoc⁻¹ ◅ ε , `▷-assoc ◅ ε)
+`◁-isPosemigroup : IsPosemigroup  _⟷⋆_ _⟶⋆_ _`◁_
+`◁-isPosemigroup .IsPosemigroup.isPomagma = `◁-isPomagma
+`◁-isPosemigroup .IsPosemigroup.assoc P Q R = (`◁-assoc⁻¹ ◅ ε , `◁-assoc ◅ ε)
 
-`▷-isPomonoid : IsPomonoid _⟷⋆_ _⟶⋆_ _`▷_ `I
-`▷-isPomonoid .IsPomonoid.isPosemigroup = `▷-isPosemigroup
-`▷-isPomonoid .IsPomonoid.identity = 
-  (λ P → (`▷-lunit ◅ ε , `▷-lunit⁻¹ ◅ ε)) ,
-  (λ P → (`▷-runit ◅ ε , `▷-runit⁻¹ ◅ ε))
+`◁-isPomonoid : IsPomonoid _⟷⋆_ _⟶⋆_ _`◁_ `I
+`◁-isPomonoid .IsPomonoid.isPosemigroup = `◁-isPosemigroup
+`◁-isPomonoid .IsPomonoid.identity = 
+  (λ P → (`◁-lunit ◅ ε , `◁-lunit⁻¹ ◅ ε)) ,
+  (λ P → (`◁-runit ◅ ε , `◁-runit⁻¹ ◅ ε))
 
 ------------------------------------------------------------------------------
--- Turning ⅋ and ▷ into a duoid
+-- Turning ⅋ and ◁ into a duoid
 
-`⅋-`▷-isDuoidal : IsDuoidal _⟷⋆_ _⟶⋆_ _`⅋_ _`▷_ `I `I
-`⅋-`▷-isDuoidal .IsDuoidal.∙-isPomonoid = `⅋-isPomonoid
-`⅋-`▷-isDuoidal .IsDuoidal.▷-isPomonoid = `▷-isPomonoid
-`⅋-`▷-isDuoidal .IsDuoidal.∙-▷-entropy w x y z = `sequence ◅ ε
-`⅋-`▷-isDuoidal .IsDuoidal.∙-idem-ι = `⅋-unit ◅ ε
-`⅋-`▷-isDuoidal .IsDuoidal.▷-idem-ε = `▷-lunit⁻¹ ◅ ε -- or `▷-runit⁻¹ ◅ ε
-`⅋-`▷-isDuoidal .IsDuoidal.ε≲ι = ε
+`⅋-`◁-isDuoidal : IsDuoidal _⟷⋆_ _⟶⋆_ _`⅋_ _`◁_ `I `I
+`⅋-`◁-isDuoidal .IsDuoidal.∙-isPomonoid = `⅋-isPomonoid
+`⅋-`◁-isDuoidal .IsDuoidal.◁-isPomonoid = `◁-isPomonoid
+`⅋-`◁-isDuoidal .IsDuoidal.∙-◁-entropy w x y z = `sequence ◅ ε
+`⅋-`◁-isDuoidal .IsDuoidal.∙-idem-ι = `⅋-unit ◅ ε
+`⅋-`◁-isDuoidal .IsDuoidal.◁-idem-ε = `◁-lunit⁻¹ ◅ ε -- or `◁-runit⁻¹ ◅ ε
+`⅋-`◁-isDuoidal .IsDuoidal.ε≲ι = ε
 
 ------------------------------------------------------------------------------
 -- Turning & into a pomagma
@@ -244,8 +244,8 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 `⅋-distrib-`& .proj₁ x y z = `⅋-comm ◅ `external ◅ `&-mono (`⅋-comm ◅ ε) (`⅋-comm ◅ ε)
 `⅋-distrib-`& .proj₂ x y z = `external ◅ ε
 
-`&-`▷-entropy : Entropy _⟶⋆_ _`&_ _`▷_
-`&-`▷-entropy w x y z = `medial ◅ ε
+`&-`◁-entropy : Entropy _⟶⋆_ _`&_ _`◁_
+`&-`◁-entropy w x y z = `medial ◅ ε
 
 ------------------------------------------------------------------------------
 -- Turning ⊕ into a pomagma
@@ -264,12 +264,12 @@ frame .Frame._≈_ = _⟷⋆_
 frame .Frame._≲_ = _⟶⋆_
 frame .Frame.I = `I
 frame .Frame._⅋_ = _`⅋_
-frame .Frame._▷_ = _`▷_
+frame .Frame._◁_ = _`◁_
 frame .Frame._&_ = _`&_
 frame .Frame.⅋-isCommutativePomonoid = `⅋-isCommutativePomonoid
 frame .Frame.&-mono = `&-mono
-frame .Frame.⅋-▷-isDuoidal = `⅋-`▷-isDuoidal
+frame .Frame.⅋-◁-isDuoidal = `⅋-`◁-isDuoidal
 frame .Frame.⅋-distrib-& = `⅋-distrib-`&
-frame .Frame.&-▷-entropy = `&-`▷-entropy
+frame .Frame.&-◁-entropy = `&-`◁-entropy
 frame .Frame.&-tidy = `tidy ◅ ε
  

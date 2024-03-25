@@ -19,22 +19,22 @@ record Frame c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
 
     I       : Carrier
     _⅋_     : Carrier → Carrier → Carrier
-    _▷_     : Carrier → Carrier → Carrier
+    _◁_     : Carrier → Carrier → Carrier
     _&_     : Carrier → Carrier → Carrier
 
     ⅋-isCommutativePomonoid : IsCommutativePomonoid _≈_ _≲_ _⅋_ I
     &-mono                  : Monotonic₂ _≲_ _≲_ _≲_ _&_
-    ⅋-▷-isDuoidal           : IsDuoidal _≈_ _≲_ _⅋_ _▷_ I I
+    ⅋-◁-isDuoidal           : IsDuoidal _≈_ _≲_ _⅋_ _◁_ I I
     ⅋-distrib-&             : _DistributesOver_ _≲_ _⅋_ _&_
 
     -- FIXME: this is half of IsDuoidal when the first operation is only a semigroup
-    &-▷-entropy             : Entropy _≲_ _&_ _▷_
+    &-◁-entropy             : Entropy _≲_ _&_ _◁_
     &-tidy                  : (I & I) ≲ I
 
   open IsCommutativePomonoid ⅋-isCommutativePomonoid public
-  open IsDuoidal ⅋-▷-isDuoidal public
-    using (▷-isPomonoid)
-    renaming (∙-▷-entropy to ⅋-▷-entropy)
+  open IsDuoidal ⅋-◁-isDuoidal public
+    using (◁-isPomonoid)
+    renaming (∙-◁-entropy to ⅋-◁-entropy)
 
 
 module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
@@ -54,15 +54,15 @@ module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
 
   module MS = S.LiftIsCommutativePomonoid ⅋-isCommutativePomonoid ⅋-distrib-&
 
-  module M▷ = S.LiftIsPomonoid ▷-isPomonoid &-▷-entropy &-tidy
+  module M◁ = S.LiftIsPomonoid ◁-isPomonoid &-◁-entropy &-tidy
 
-  module D = S.LiftIsDuoidal ⅋-▷-isDuoidal comm ⅋-distrib-& &-▷-entropy &-tidy
+  module D = S.LiftIsDuoidal ⅋-◁-isDuoidal comm ⅋-distrib-& &-◁-entropy &-tidy
 
   open S._≤ˢ_
   open S.Sheaf
 
-  units-iso : MS.εˢ S.≈ˢ M▷.ιˢ
-  units-iso .proj₁ .*≤ˢ* {x} (t , x≤t) = M▷.ιˢ .≤-closed x≤t (M▷.ιˢ .∨-closed t)
+  units-iso : MS.εˢ S.≈ˢ M◁.ιˢ
+  units-iso .proj₁ .*≤ˢ* {x} (t , x≤t) = M◁.ιˢ .≤-closed x≤t (M◁.ιˢ .∨-closed t)
   units-iso .proj₂ .*≤ˢ* {x} x≤I = S.leaf (x , x≤I) , refl
 
   open Algebra.Chu.Construction
@@ -83,9 +83,9 @@ module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
   open Chu
   open _==>_
   open SelfDual
-      D.⊗ˢ-▷ˢ-isDuoidal
-      (S.≤ˢ-trans (M▷.▷ˢ-mono (S.≤ˢ-reflexive units-iso) S.≤ˢ-refl)
-                  (S.≤ˢ-reflexive (M▷.▷ˢ-identityˡ _)))
+      D.⊗ˢ-◁ˢ-isDuoidal
+      (S.≤ˢ-trans (M◁.◁ˢ-mono (S.≤ˢ-reflexive units-iso) S.≤ˢ-refl)
+                  (S.≤ˢ-reflexive (M◁.◁ˢ-identityˡ _)))
       (S.≤ˢ-reflexive (S.Eq.sym units-iso))
 
   Chu-mix : ⟦I⟧ ≅ ⟦¬⟧ ⟦I⟧
@@ -116,15 +116,15 @@ module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
   model .Model.I = ⟦I⟧
   model .Model.J = J
   model .Model._⊗_ = _⟦⊗⟧_
-  model .Model._▷_ = _⍮_
+  model .Model._◁_ = _⍮_
   model .Model._&_ = _⟦&⟧_
   model .Model.⊗-isCommutativePomonoid = ⊗-isCommutativePomonoid
   model .Model.⊗-isStarAutonomous = ⊗-isStarAutonomous
   model .Model.mix = Chu-mix
   model .Model.&-isMeet = &-isMeet
-  model .Model.⊗-▷-isDuoidal = ⊗-⍮-isDuoidal
+  model .Model.⊗-◁-isDuoidal = ⊗-⍮-isDuoidal
   model .Model.I-eq-J = I-eq-J
-  model .Model.▷-self-dual = self-dual
+  model .Model.◁-self-dual = self-dual
 
   -- FIXME: move this to Algebra.Chu
   embed : Carrier → Chu

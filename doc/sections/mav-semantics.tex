@@ -39,14 +39,14 @@ FIXME: cite that combinatorics book.
 \bob{need to define \emph{entropy} and \emph{entropic} somewhere}
 
 \begin{definition}
-  Two pomonoids $(\bullet, i)$ and $(\rhd, j)$ on a partial order
+  Two pomonoids $(\bullet, i)$ and $(\lhd, j)$ on a partial order
   $(A, \leq)$ are in a \emph{duoidal} relationship if the following
   inequalities hold:
   \begin{enumerate}
-  \item $(w \rhd x) \bullet (y \rhd z) \leq (w \bullet y) \rhd (x \bullet z)$
-  \item $j \bullet j \leq j$
-  \item $i \leq i \rhd i$
-  \item $i \leq j$
+    \item $(w \lhd x) \bullet (y \lhd z) \leq (w \bullet y) \lhd (x \bullet z)$
+    \item $j \bullet j \leq j$
+    \item $i \leq i \lhd i$
+    \item $i \leq j$
   \end{enumerate}
 \end{definition}
 
@@ -57,7 +57,7 @@ FIXME: cite that combinatorics book.
 \end{remark}
 
 \begin{remark}
-  If $\bullet$ is a join, or $\rhd$ is a meet, then all the conditions
+  If $\bullet$ is a join, or $\lhd$ is a meet, then all the conditions
   for a duoidal relationship are automatically met for any other
   monoid. \bob{fwd ref to where we use this.}
 \end{remark}
@@ -72,34 +72,34 @@ FIXME: cite that combinatorics book.
   An \emph{MAV-algebra} is a structure
   $(A, \leq, \otimes, ;, I, \lnot)$ with the following properties:
   \begin{enumerate}
-  \item $(A, \leq, \otimes, I, \lnot)$ is $*$-autonomous and satisfies \emph{mix}.
-  \item $(A, \leq, ;, I)$ is a pomonoid.
-  \item $(\otimes, I)$ and $(;, I)$ are in a duoidal relationship.
-  \item $(A, \leq)$ has binary meets, which we write as $x \with y$.
+    \item $(A, \leq, \otimes, I, \lnot)$ is $*$-autonomous and satisfies \emph{mix}.
+    \item $(A, \leq, ;, I)$ is a pomonoid.
+    \item $(\otimes, I)$ and $(;, I)$ are in a duoidal relationship.
+    \item $(A, \leq)$ has binary meets, which we write as $x \with y$.
   \end{enumerate}
 \end{definition}
 
 \begin{proposition}\label{prop:mav-algebra-consequences}
   Let $(A, \leq, \otimes, ;, I, \lnot)$ be a MAV-algebra.
   \begin{enumerate}
-  \item There is another pomonoid structure $(\parr, I)$ on
-    $(A, \leq)$, defined as
-    $x \parr y = \lnot(\lnot x \otimes \lnot y)$.
-  \item $(\otimes, I)$ and $(\parr, I)$ are linearly distributive
-    \cite{cockett}:
-    $x \otimes (y \parr z) \leq (x \otimes y) \parr z$.
-  \item $(A, \leq)$ has binary joins, given by
-    $x \oplus y = \lnot (\lnot x \with \lnot y)$.
-  \item $\oplus$ distributes over $\otimes$:
-    $x \otimes (y \oplus z) = ((x \otimes y) \oplus (x \otimes z)$.
-  \item $\with$ distributes over $\parr$:
-    $(x \parr z) \with (y \parr z) = (x \with y) \parr z$.
-  \item $;$ is entropic over $\parr$:
-    $(w \parr x); (y \parr z) \leq (w;y) \parr (x;z)$.
-  \item $;$ is entropic over $\with$:
-    $(w \with x); (y \with z) \leq (w ; y) \with (x; z)$.
-  \item $\oplus$ is entropic over $;$:
-    $(w ; x) \oplus (y ; z) \leq (x \oplus y) ; (x \oplus z)$.
+    \item There is another pomonoid structure $(\parr, I)$ on
+          $(A, \leq)$, defined as
+          $x \parr y = \lnot(\lnot x \otimes \lnot y)$.
+    \item $(\otimes, I)$ and $(\parr, I)$ are linearly distributive
+          \cite{cockett}:
+          $x \otimes (y \parr z) \leq (x \otimes y) \parr z$.
+    \item $(A, \leq)$ has binary joins, given by
+          $x \oplus y = \lnot (\lnot x \with \lnot y)$.
+    \item $\oplus$ distributes over $\otimes$:
+          $x \otimes (y \oplus z) = ((x \otimes y) \oplus (x \otimes z)$.
+    \item $\with$ distributes over $\parr$:
+          $(x \parr z) \with (y \parr z) = (x \with y) \parr z$.
+    \item $;$ is entropic over $\parr$:
+          $(w \parr x); (y \parr z) \leq (w;y) \parr (x;z)$.
+    \item $;$ is entropic over $\with$:
+          $(w \with x); (y \with z) \leq (w ; y) \with (x; z)$.
+    \item $\oplus$ is entropic over $;$:
+          $(w ; x) \oplus (y ; z) \leq (x \oplus y) ; (x \oplus z)$.
   \end{enumerate}
 \end{proposition}
 
@@ -107,7 +107,7 @@ FIXME: cite that combinatorics book.
 
 \begin{definition}\label{defn:mav-interpretation}
   Let $\mathit{At}$ be a set of atomic propositions. Given an
-  MAV-algebra $(A, \leq, \otimes, \rhd, I, \lnot)$ and valuation
+  MAV-algebra $(A, \leq, \otimes, \lhd, I, \lnot)$ and valuation
   $V : \mathit{At} \to A$, define the interpretation of MAV Formulas
   as follows: $\sem{\vUnit} = I$, $\sem{a} = V(a)$,
   $\sem{\vDual a} = \lnot V(a)$,
@@ -149,16 +149,16 @@ all proofs in SMAV have cut-free normal forms.
 
 \begin{definition}
   An \emph{MAV-frame} is a structure
-  $(F, \leq, I, \parallel, \rhd, +)$ where $(F, \leq)$ is a partial
+  $(F, \leq, I, \parallel, \lhd, +)$ where $(F, \leq)$ is a partial
   order, $(F, \leq, I, \parallel)$ is a commutative pomonoid,
-  $(F, \leq, I, \rhd)$ is a pomonoid, $+$ is a binary monotone
+  $(F, \leq, I, \lhd)$ is a pomonoid, $+$ is a binary monotone
   function on $(F, \leq)$, and these structures satisfy the following
   inequalities:
   \begin{enumerate}
-  \item $(w \rhd x) \parallel (y \rhd z) \leq (w \parallel y) \rhd (x \parallel z)$
-  \item $(x + y) \parallel z \leq (x \parallel z) + (y \parallel z)$
-  \item $(w \rhd x) + (y \rhd z) \leq (w + y) \rhd (x + z)$
-  \item $I + I \leq I$
+    \item $(w \lhd x) \parallel (y \lhd z) \leq (w \parallel y) \lhd (x \parallel z)$
+    \item $(x + y) \parallel z \leq (x \parallel z) + (y \parallel z)$
+    \item $(w \lhd x) + (y \lhd z) \leq (w + y) \lhd (x + z)$
+    \item $I + I \leq I$
   \end{enumerate}
 \end{definition}
 
@@ -210,14 +210,14 @@ all proofs in SMAV have cut-free normal forms.
   corresponding \emph{Day pomonoid} $(\Day{\bullet}, \Day{i})$ on
   $\LowerSet{A}$ defined as
   $F \Day\bullet G = \{ z \mid z \leq x \bullet y, x \in F, y \in G
-  \}$ and $\Day{i} = \eta(i)$. Moreover:
+    \}$ and $\Day{i} = \eta(i)$. Moreover:
   \begin{enumerate}
-  \item $(\Day{\bullet}, \Day{i})$ is left and right residuated: there
-    exists a function
-    $\Day{\rightblackspoon} : \LowerSet{A} \times \LowerSet{A} \to
-    \LowerSet{A}$ such that ... FIXME
-  \item If $(\bullet, i)$ is a commutative pomonoid, then so is
-    $(\Day{\bullet}, \Day{i})$. In this case, the residuals coincide.
+    \item $(\Day{\bullet}, \Day{i})$ is left and right residuated: there
+          exists a function
+          $\Day{\rightblackspoon} : \LowerSet{A} \times \LowerSet{A} \to
+            \LowerSet{A}$ such that ... FIXME
+    \item If $(\bullet, i)$ is a commutative pomonoid, then so is
+          $(\Day{\bullet}, \Day{i})$. In this case, the residuals coincide.
   \end{enumerate}
   \bob{Could also say that $\eta$ preserves the monoids}
 \end{proposition}
@@ -230,14 +230,14 @@ all proofs in SMAV have cut-free normal forms.
 \begin{remark}
   When $(A, \leq)$ is an MAV-frame, by \ref{prop:day-construction} we
   obtain two pomonoids $(\Day{\parallel}, \Day{I})$ and
-  $(\Day{\rhd}, \Day{I})$ on $\LowerSet{A}$. Moreover, the next
+  $(\Day{\lhd}, \Day{I})$ on $\LowerSet{A}$. Moreover, the next
   proposition states that the duoidal relationship between these
   monoids is preserved by the Day construction:
 \end{remark}
 
 \begin{proposition}\label{prop:lower-set-duoidal}
-  If $(\bullet, i)$ and $(\rhd, j)$ are in a duoidal relationship then
-  so are $(\Day{\bullet}, \Day{i})$ and $(\Day{\rhd}, \Day{j})$.
+  If $(\bullet, i)$ and $(\lhd, j)$ are in a duoidal relationship then
+  so are $(\Day{\bullet}, \Day{i})$ and $(\Day{\lhd}, \Day{j})$.
 \end{proposition}
 
 \subsubsection{Closed Lower Sets}
@@ -263,10 +263,10 @@ Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
     $+$-context} over $F$ is a binary tree built from constructors
   $\mathsf{leaf} : F \to \mathrm{ctxt}(F)$ and
   $\mathsf{node} : \mathrm{ctxt}(F) \times \mathrm{ctxt}(F) \to
-  \mathrm{ctxt}(F)$. We define the \emph{sum} of a context as
+    \mathrm{ctxt}(F)$. We define the \emph{sum} of a context as
   $\mathit{sum}(\mathsf{leaf}~x) = x$ and
   $\mathit{sum}(\mathsf{node}(c,d)) = \mathit{sum}(c) +
-  \mathit{sum}(d)$.
+    \mathit{sum}(d)$.
 \end{definition}
 
 \begin{remark}
@@ -330,16 +330,16 @@ Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
 \end{proof}
 
 \begin{proposition}\label{prop:closed-monoid-duoidal}
-  For a pomonoid $(\rhd, j)$ on $(A, \leq)$, if this satisfies
-  $(w \rhd x) + (y \rhd z) \leq (w + y) \rhd (x + z)$ then the Day
+  For a pomonoid $(\lhd, j)$ on $(A, \leq)$, if this satisfies
+  $(w \lhd x) + (y \lhd z) \leq (w + y) \lhd (x + z)$ then the Day
   construction
-  $F \Day{\rhd} G = \{ z \mid z \leq x \rhd y, x \in F, y \in G \}$ on
+  $F \Day{\lhd} G = \{ z \mid z \leq x \lhd y, x \in F, y \in G \}$ on
   lower sets is $+$-closed when $F$ and $G$ are. We write
-  $F \ClosedDay{\rhd} G$ to indicate when we mean this construction as
+  $F \ClosedDay{\lhd} G$ to indicate when we mean this construction as
   an operation on $+$-closed lower sets. If $j + j \leq j$, then the
   Day unit $\Day{j} = \eta(j)$ is also closed and we write it as
   $\ClosedDay{j} \in \ClosedLowerSet{A}$. Together
-  $(\ClosedDay{\rhd}, \ClosedDay{j})$ form a pomonoid on
+  $(\ClosedDay{\lhd}, \ClosedDay{j})$ form a pomonoid on
   $(\ClosedLowerSet{A}, \subseteq)$.
 \end{proposition}
 
@@ -356,13 +356,13 @@ Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
 
 \begin{remark}
   We have used the same decoration $\ClosedDay{\bullet}$ and
-  $\ClosedDay{\rhd}$ for two separate constructions of pomonoids on
+  $\ClosedDay{\lhd}$ for two separate constructions of pomonoids on
   $+$-closed lower sets. We will be careful to distinguish which we
   mean: a symmetric operator like $\bullet$ will distribute over $+$
   and so $\ClosedDay{\bullet}$ will be constructed by Proposition
   \ref{prop:closed-monoid-distrib}; and a non-symmetric operator like
-  $\rhd$ will be entropic with respect to $+$ and so
-  $\ClosedDay{\rhd}$ will be constructed by Proposition
+  $\lhd$ will be entropic with respect to $+$ and so
+  $\ClosedDay{\lhd}$ will be constructed by Proposition
   \ref{prop:closed-monoid-duoidal}.
 \end{remark}
 
@@ -373,13 +373,13 @@ Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
 \end{remark}
 
 \begin{proposition}
-  Let $(\bullet, i)$ and $(\rhd, j)$ be pomonoids on $(A, \leq)$ in a
+  Let $(\bullet, i)$ and $(\lhd, j)$ be pomonoids on $(A, \leq)$ in a
   duoidal relationship, and assume that $(\bullet, i)$ distributes
   over $+$ (as in Proposition \ref{prop:closed-monoid-distrib}) and
-  $(\rhd, j)$ is entropic with respect to $+$ (as in Proposition
+  $(\lhd, j)$ is entropic with respect to $+$ (as in Proposition
   \ref{prop:closed-monoid-duoidal}). Then
   $(\ClosedDay{\bullet}, \ClosedDay{i})$ and
-  $(\ClosedDay{\rhd}, \ClosedDay{j})$ are in a duoidal relationship on
+  $(\ClosedDay{\lhd}, \ClosedDay{j})$ are in a duoidal relationship on
   $(\ClosedLowerSet{A}, \subseteq)$.
 \end{proposition}
 
@@ -430,21 +430,21 @@ closed preorder with all binary meets.
 These two theorems give us enough structure to interpret the
 multiplicative and additive constructs of MAV. We need to also
 interpret the self-dual $P; Q$ connective. Let us assume that we have
-an operation $-\rhd- : A \times A \to A$ that we want to induce
+an operation $-\lhd- : A \times A \to A$ that we want to induce
 self-dual operator on $\Chu(A, k)$. By the way the Chu construction is
 defined, we can make an operator that is self-dual by definition:
 \begin{displaymath}
-  (a^+, a^-) ; (b^+, b^-) = (a^+ \rhd b^+, a^- \rhd b^-)
+  (a^+, a^-) ; (b^+, b^-) = (a^+ \lhd b^+, a^- \lhd b^-)
 \end{displaymath}
 for this to work, we need to assume duoidality.
 
 And that the dualising object $k$ is a
-satisfies $k \rhd k \leq k$. If $\rhd$ has a unit $j$, then $(j, j)$ is a unit if
+satisfies $k \lhd k \leq k$. If $\lhd$ has a unit $j$, then $(j, j)$ is a unit if
 
 \begin{proposition}\label{prop:chu-self-dual}
-  Let $(\rhd, j)$ be a pomonoid on $(A, \leq)$ such that
-  $k \rhd k \leq k$ and $j \leq k$, then
-  $x ; y = (x^+ \rhd y^+, x^- \rhd y^-)$ and $J = (j, j)$ form a
+  Let $(\lhd, j)$ be a pomonoid on $(A, \leq)$ such that
+  $k \lhd k \leq k$ and $j \leq k$, then
+  $x ; y = (x^+ \lhd y^+, x^- \lhd y^-)$ and $J = (j, j)$ form a
   self-dual pomonoid on $\Chu(A, k)$.
 \end{proposition}
 
@@ -464,8 +464,8 @@ satisfies $k \rhd k \leq k$. If $\rhd$ has a unit $j$, then $(j, j)$ is a unit i
 \end{lemma}
 
 \begin{proposition}
-  If $(\bullet, i)$ and $(\rhd, j)$ are in a duoidal relationship on
-  $(A, \leq)$, and $(\rhd, j)$ satisfies the conditions of Proposition
+  If $(\bullet, i)$ and $(\lhd, j)$ are in a duoidal relationship on
+  $(A, \leq)$, and $(\lhd, j)$ satisfies the conditions of Proposition
   \ref{prop:chu-self-dual}, then $(\otimes, I)$ and $(;, J)$ are in a
   duoidal relationship on $\Chu(A, k)$.
 \end{proposition}
@@ -477,7 +477,7 @@ satisfies $k \rhd k \leq k$. If $\rhd$ has a unit $j$, then $(j, j)$ is a unit i
 \subsection{Construction of MAV-algebras}
 
 \begin{theorem}
-  If $(F, \leq, \parallel, \rhd, I, +)$ is an MAV-frame, then
+  If $(F, \leq, \parallel, \lhd, I, +)$ is an MAV-frame, then
   $\Chu(\ClosedLowerSet{F}, I)$ has the structure of an MAV-algebra.
 \end{theorem}
 

@@ -5,7 +5,7 @@ module Algebra.Chu where
 -- If we have a preordered closed symmetric monoid with finite meets
 -- and chosen element K, then the Chu construction is a *-autonomous
 -- preorder. Moreover, if the preorder is duoidal, and K is a
--- ▷-monoid, then Chu(A,K) is duoidal.
+-- ◁-monoid, then Chu(A,K) is duoidal.
 
 open import Level
 open import Data.Product using (proj₁; proj₂; _,_; swap)
@@ -230,17 +230,17 @@ module Construction {a b c}
   ------------------------------------------------------------------------------
   -- Self-dual operators on Chu, arising from duoidal structures on
   -- the underlying order.
-  module SelfDual {_▷_ : A → A → A} {ι : A}
-                  (∙-▷-isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _▷_ ε ι)
-                  (K-m : (K ▷ K) ≤ K) (K-u : ι ≤ K) -- K is a ▷-monoid
+  module SelfDual {_◁_ : A → A → A} {ι : A}
+                  (∙-◁-isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _◁_ ε ι)
+                  (K-m : (K ◁ K) ≤ K) (K-u : ι ≤ K) -- K is a ◁-monoid
                 where
 
-    open IsDuoidal ∙-▷-isDuoidal hiding (refl; module Eq)
+    open IsDuoidal ∙-◁-isDuoidal hiding (refl; module Eq)
 
     _⍮_ : Chu → Chu → Chu
-    (X ⍮ Y) .pos = X .pos ▷ Y .pos
-    (X ⍮ Y) .neg = X .neg ▷ Y .neg
-    (X ⍮ Y) .int = ∙-▷-entropy _ _ _ _ >> (▷-mono (X .int) (Y .int) >> K-m)
+    (X ⍮ Y) .pos = X .pos ◁ Y .pos
+    (X ⍮ Y) .neg = X .neg ◁ Y .neg
+    (X ⍮ Y) .int = ∙-◁-entropy _ _ _ _ >> (◁-mono (X .int) (Y .int) >> K-m)
 
     self-dual : ∀ {X Y} → ¬ (X ⍮ Y) ≅ (¬ X ⍮ ¬ Y)
     self-dual .proj₁ .fpos = refl
@@ -255,17 +255,17 @@ module Construction {a b c}
 
     -- ⍮ is self-dual, so the structure is quite repetitive...
     ⍮-mono : ∀ {X₁ Y₁ X₂ Y₂} → X₁ ==> X₂ → Y₁ ==> Y₂ → (X₁ ⍮ Y₁) ==> (X₂ ⍮ Y₂)
-    ⍮-mono f g .fpos = ▷-mono (f .fpos) (g .fpos)
-    ⍮-mono f g .fneg = ▷-mono (f .fneg) (g .fneg)
+    ⍮-mono f g .fpos = ◁-mono (f .fpos) (g .fpos)
+    ⍮-mono f g .fneg = ◁-mono (f .fneg) (g .fneg)
 
     ⍮-assoc : Associative _≅_ _⍮_
-    ⍮-assoc x y z = mk-≅ (▷-assoc _ _ _) (▷-assoc _ _ _)
+    ⍮-assoc x y z = mk-≅ (◁-assoc _ _ _) (◁-assoc _ _ _)
 
     ⍮-identityˡ : LeftIdentity _≅_ J _⍮_
-    ⍮-identityˡ x = mk-≅ (▷-identityˡ _) (▷-identityˡ _)
+    ⍮-identityˡ x = mk-≅ (◁-identityˡ _) (◁-identityˡ _)
 
     ⍮-identityʳ : RightIdentity _≅_ J _⍮_
-    ⍮-identityʳ x = mk-≅ (▷-identityʳ _) (▷-identityʳ _)
+    ⍮-identityʳ x = mk-≅ (◁-identityʳ _) (◁-identityʳ _)
 
     ⍮-isPomonoid : IsPomonoid _≅_ _==>_ _⍮_ J
     ⍮-isPomonoid =
@@ -277,23 +277,23 @@ module Construction {a b c}
       ; identity = ⍮-identityˡ , ⍮-identityʳ }
 
     -- transpose for any closed duoidal category
-    entropy' : ∀ {w x y z} → ((w -∙ x) ▷ (y -∙ z)) ≤ ((w ▷ y) -∙ (x ▷ z))
-    entropy' = Λˡ (∙-▷-entropy _ _ _ _ >> ▷-mono evalˡ evalˡ)
+    entropy' : ∀ {w x y z} → ((w -∙ x) ◁ (y -∙ z)) ≤ ((w ◁ y) -∙ (x ◁ z))
+    entropy' = Λˡ (∙-◁-entropy _ _ _ _ >> ◁-mono evalˡ evalˡ)
 
-    ▷-medial : ∀ {A B C D} → ((A ∧ B) ▷ (C ∧ D)) ≤ ((A ▷ C) ∧ (B ▷ D))
-    ▷-medial = ∧-greatest (▷-mono (x∧y≤x _ _) (x∧y≤x _ _)) (▷-mono (x∧y≤y _ _) (x∧y≤y _ _))
+    ◁-medial : ∀ {A B C D} → ((A ∧ B) ◁ (C ∧ D)) ≤ ((A ◁ C) ∧ (B ◁ D))
+    ◁-medial = ∧-greatest (◁-mono (x∧y≤x _ _) (x∧y≤x _ _)) (◁-mono (x∧y≤y _ _) (x∧y≤y _ _))
 
     ⍮-entropy : ∀ W X Y Z → ((W ⍮ X) ⊗ (Y ⍮ Z)) ==> ((W ⊗ Y) ⍮ (X ⊗ Z))
-    ⍮-entropy W X Y Z .fpos = ∙-▷-entropy _ _ _ _
+    ⍮-entropy W X Y Z .fpos = ∙-◁-entropy _ _ _ _
     ⍮-entropy W X Y Z .fneg =
-      ▷-medial >> ∧-greatest (x∧y≤x _ _ >> entropy') (x∧y≤y _ _ >> entropy')
+      ◁-medial >> ∧-greatest (x∧y≤x _ _ >> entropy') (x∧y≤y _ _ >> entropy')
 
     ⍮-mu : (J ⊗ J) ==> J
     ⍮-mu .fpos = ∙-idem-ι
     ⍮-mu .fneg = ∧-greatest (Λˡ ∙-idem-ι) (Λˡ ∙-idem-ι)
 
     ⍮-idem-I : I ==> (I ⍮ I)
-    ⍮-idem-I .fpos = ▷-idem-ε
+    ⍮-idem-I .fpos = ◁-idem-ε
     ⍮-idem-I .fneg = K-m
 
     I==>J : I ==> J
@@ -302,8 +302,8 @@ module Construction {a b c}
 
     ⊗-⍮-isDuoidal : IsDuoidal _≅_ _==>_ _⊗_ _⍮_ I J
     ⊗-⍮-isDuoidal .IsDuoidal.∙-isPomonoid = ⊗-isPomonoid
-    ⊗-⍮-isDuoidal .IsDuoidal.▷-isPomonoid = ⍮-isPomonoid
-    ⊗-⍮-isDuoidal .IsDuoidal.∙-▷-entropy = ⍮-entropy
+    ⊗-⍮-isDuoidal .IsDuoidal.◁-isPomonoid = ⍮-isPomonoid
+    ⊗-⍮-isDuoidal .IsDuoidal.∙-◁-entropy = ⍮-entropy
     ⊗-⍮-isDuoidal .IsDuoidal.∙-idem-ι = ⍮-mu
-    ⊗-⍮-isDuoidal .IsDuoidal.▷-idem-ε = ⍮-idem-I
+    ⊗-⍮-isDuoidal .IsDuoidal.◁-idem-ε = ⍮-idem-I
     ⊗-⍮-isDuoidal .IsDuoidal.ε≲ι = I==>J

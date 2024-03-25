@@ -24,11 +24,11 @@ data _⟶_ : Formula → Formula → Set a where
 
   `tidy     : `I `& `I ⟶ `I
   `switch   : (P `⊗ Q) `⅋ R ⟶ P `⊗ (Q `⅋ R)
-  `sequence : (P `▷ Q) `⅋ (R `▷ S) ⟶ (P `⅋ R) `▷ (Q `⅋ S)
+  `sequence : (P `◁ Q) `⅋ (R `◁ S) ⟶ (P `⅋ R) `◁ (Q `⅋ S)
   `left     : P `⊕ Q ⟶ P
   `right    : P `⊕ Q ⟶ Q
   `external : (P `& Q) `⅋ R ⟶ (P `⅋ R) `& (Q `⅋ R)
-  `medial   : (P `▷ Q) `& (R `▷ S) ⟶ (P `& R) `▷ (Q `& S)
+  `medial   : (P `◁ Q) `& (R `◁ S) ⟶ (P `& R) `◁ (Q `& S)
 
   _`⟨⊗_      : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
   _`⊗⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊗ Q ⟶ P `⊗ Q′
@@ -46,14 +46,14 @@ data _⟶_ : Formula → Formula → Set a where
   `⅋-unit    : P `⅋ `I ⟶ P
   `⅋-unit⁻¹  : P ⟶ P `⅋ `I
 
-  _`⟨▷_      : P ⟶ P′ → (Q : Formula) → P `▷ Q ⟶ P′ `▷ Q
-  _`▷⟩_      : (P : Formula) → Q ⟶ Q′ → P `▷ Q ⟶ P `▷ Q′
-  `▷-assoc   : P `▷ (Q `▷ R) ⟶ (P `▷ Q) `▷ R
-  `▷-assoc⁻¹ : (P `▷ Q) `▷ R ⟶ P `▷ (Q `▷ R)
-  `▷-runit   : P `▷ `I ⟶ P
-  `▷-runit⁻¹ : P ⟶ P `▷ `I
-  `▷-lunit   : `I `▷ P ⟶ P
-  `▷-lunit⁻¹ : P ⟶ `I `▷ P
+  _`⟨◁_      : P ⟶ P′ → (Q : Formula) → P `◁ Q ⟶ P′ `◁ Q
+  _`◁⟩_      : (P : Formula) → Q ⟶ Q′ → P `◁ Q ⟶ P `◁ Q′
+  `◁-assoc   : P `◁ (Q `◁ R) ⟶ (P `◁ Q) `◁ R
+  `◁-assoc⁻¹ : (P `◁ Q) `◁ R ⟶ P `◁ (Q `◁ R)
+  `◁-runit   : P `◁ `I ⟶ P
+  `◁-runit⁻¹ : P ⟶ P `◁ `I
+  `◁-lunit   : `I `◁ P ⟶ P
+  `◁-lunit⁻¹ : P ⟶ `I `◁ P
 
   _`⟨&_      : P ⟶ P′ → (Q : Formula) → P `& Q ⟶ P′ `& Q
   _`&⟩_      : (P : Formula) → Q ⟶ Q′ → P `& Q ⟶ P `& Q′

@@ -318,12 +318,12 @@ module LiftIsPomonoid
       let (l₁ , l₂ , l≤l₁l₂) , (r₁ , r₂ , r≤r₁r₂) = split l , split r
       in  (node l₁ r₁ , node l₂ r₂ , ≤-trans (∨-mono l≤l₁l₂ r≤r₁r₂) (∨-entropy _ _ _ _))
 
-    _▷ˢ_ : Sheaf → Sheaf → Sheaf
-    (𝓕 ▷ˢ 𝓖) .ICarrier x =
+    _◁ˢ_ : Sheaf → Sheaf → Sheaf
+    (𝓕 ◁ˢ 𝓖) .ICarrier x =
       ∃[ y ] ∃[ z ] (x ≤ (y ∙ z) × 𝓕 .ICarrier y × 𝓖 .ICarrier z)
-    (𝓕 ▷ˢ 𝓖) .≤-closed x≤w (y , z , w≤yz , 𝓕y , 𝓖z) =
+    (𝓕 ◁ˢ 𝓖) .≤-closed x≤w (y , z , w≤yz , 𝓕y , 𝓖z) =
       (-, -, ≤-trans x≤w w≤yz , 𝓕y , 𝓖z)
-    (𝓕 ▷ˢ 𝓖) .∨-closed t =
+    (𝓕 ◁ˢ 𝓖) .∨-closed t =
       let (t𝓕 , t𝓖 , ⋁t≤⋁t𝓕∙⋁t𝓖) = split t
       in  (⋁ᵗ t𝓕 , ⋁ᵗ t𝓖 , ⋁t≤⋁t𝓕∙⋁t𝓖 , 𝓕 .∨-closed t𝓕 , 𝓖 .∨-closed t𝓖)
 
@@ -334,37 +334,37 @@ module LiftIsPomonoid
 
     open P.LiftIsPomonoid isPomonoid
 
-    ▷ˢ-mono : Monotonic₂ _≤ˢ_ _≤ˢ_ _≤ˢ_ _▷ˢ_
-    ▷ˢ-mono 𝓕₁≤𝓖₁ 𝓕₂≤𝓖₂ .*≤ˢ* = ∙ᵖ-mono (U-mono 𝓕₁≤𝓖₁) (U-mono 𝓕₂≤𝓖₂) .*≤ᵖ*
+    ◁ˢ-mono : Monotonic₂ _≤ˢ_ _≤ˢ_ _≤ˢ_ _◁ˢ_
+    ◁ˢ-mono 𝓕₁≤𝓖₁ 𝓕₂≤𝓖₂ .*≤ˢ* = ∙ᵖ-mono (U-mono 𝓕₁≤𝓖₁) (U-mono 𝓕₂≤𝓖₂) .*≤ᵖ*
 
-    ▷ˢ-assoc : Associative _≈ˢ_ _▷ˢ_
-    ▷ˢ-assoc 𝓕 𝓖 𝓗 .proj₁ .*≤ˢ* = ∙ᵖ-assoc (U 𝓕) (U 𝓖) (U 𝓗) .proj₁ .*≤ᵖ*
-    ▷ˢ-assoc 𝓕 𝓖 𝓗 .proj₂ .*≤ˢ* = ∙ᵖ-assoc (U 𝓕) (U 𝓖) (U 𝓗) .proj₂ .*≤ᵖ*
+    ◁ˢ-assoc : Associative _≈ˢ_ _◁ˢ_
+    ◁ˢ-assoc 𝓕 𝓖 𝓗 .proj₁ .*≤ˢ* = ∙ᵖ-assoc (U 𝓕) (U 𝓖) (U 𝓗) .proj₁ .*≤ᵖ*
+    ◁ˢ-assoc 𝓕 𝓖 𝓗 .proj₂ .*≤ˢ* = ∙ᵖ-assoc (U 𝓕) (U 𝓖) (U 𝓗) .proj₂ .*≤ᵖ*
 
-    ▷ˢ-identityˡ : LeftIdentity _≈ˢ_ ιˢ _▷ˢ_
-    ▷ˢ-identityˡ 𝓕 .proj₁ .*≤ˢ* = ∙ᵖ-identityˡ (U 𝓕) .proj₁ .*≤ᵖ*
-    ▷ˢ-identityˡ 𝓕 .proj₂ .*≤ˢ* = ∙ᵖ-identityˡ (U 𝓕) .proj₂ .*≤ᵖ*
+    ◁ˢ-identityˡ : LeftIdentity _≈ˢ_ ιˢ _◁ˢ_
+    ◁ˢ-identityˡ 𝓕 .proj₁ .*≤ˢ* = ∙ᵖ-identityˡ (U 𝓕) .proj₁ .*≤ᵖ*
+    ◁ˢ-identityˡ 𝓕 .proj₂ .*≤ˢ* = ∙ᵖ-identityˡ (U 𝓕) .proj₂ .*≤ᵖ*
 
-    ▷ˢ-identityʳ : RightIdentity _≈ˢ_ ιˢ _▷ˢ_
-    ▷ˢ-identityʳ 𝓕 .proj₁ .*≤ˢ* = ∙ᵖ-identityʳ (U 𝓕) .proj₁ .*≤ᵖ*
-    ▷ˢ-identityʳ 𝓕 .proj₂ .*≤ˢ* = ∙ᵖ-identityʳ (U 𝓕) .proj₂ .*≤ᵖ*
+    ◁ˢ-identityʳ : RightIdentity _≈ˢ_ ιˢ _◁ˢ_
+    ◁ˢ-identityʳ 𝓕 .proj₁ .*≤ˢ* = ∙ᵖ-identityʳ (U 𝓕) .proj₁ .*≤ᵖ*
+    ◁ˢ-identityʳ 𝓕 .proj₂ .*≤ˢ* = ∙ᵖ-identityʳ (U 𝓕) .proj₂ .*≤ᵖ*
 
-    ▷ˢ-identity : Identity _≈ˢ_ ιˢ _▷ˢ_
-    ▷ˢ-identity = (▷ˢ-identityˡ , ▷ˢ-identityʳ)
+    ◁ˢ-identity : Identity _≈ˢ_ ιˢ _◁ˢ_
+    ◁ˢ-identity = (◁ˢ-identityˡ , ◁ˢ-identityʳ)
 
-    ▷ˢ-isPomonoid : IsPomonoid _≈ˢ_ _≤ˢ_ _▷ˢ_ ιˢ
-    ▷ˢ-isPomonoid = record
+    ◁ˢ-isPomonoid : IsPomonoid _≈ˢ_ _≤ˢ_ _◁ˢ_ ιˢ
+    ◁ˢ-isPomonoid = record
       { isPosemigroup = record
         { isPomagma = record
           { isPartialOrder = ≤ˢ-isPartialOrder
-          ; mono = ▷ˢ-mono
+          ; mono = ◁ˢ-mono
           }
-        ; assoc = ▷ˢ-assoc
+        ; assoc = ◁ˢ-assoc
         }
-      ; identity = ▷ˢ-identity
+      ; identity = ◁ˢ-identity
       }
 
-    U-monoidal : U (𝓕 ▷ˢ 𝓖) ≈ᵖ (U 𝓕 ∙ᵖ U 𝓖)
+    U-monoidal : U (𝓕 ◁ˢ 𝓖) ≈ᵖ (U 𝓕 ∙ᵖ U 𝓖)
     U-monoidal .proj₁ .*≤ᵖ* 𝓕x = 𝓕x
     U-monoidal .proj₂ .*≤ᵖ* 𝓕x = 𝓕x
 
@@ -606,11 +606,11 @@ module LiftIsCommutativePomonoid
 ------------------------------------------------------------------------------
 -- Lift duoidals to sheaves
 module LiftIsDuoidal
-    {_∙_} {_▷_} {ε} {ι}
-    (isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _▷_ ε ι)
+    {_∙_} {_◁_} {ε} {ι}
+    (isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _◁_ ε ι)
     (comm : Commutative _≈_ _∙_)
     (distrib : _DistributesOver_ _≤_ _∙_ _∨_)
-    (∨-entropy : Entropy _≤_ _∨_ _▷_)
+    (∨-entropy : Entropy _≤_ _∨_ _◁_)
     (∨-tidy : ι ∨ ι ≤ ι)
   where
 
@@ -623,27 +623,27 @@ module LiftIsDuoidal
     }
 
   open LiftIsCommutativePomonoid ∙-isCommutativePomonoid distrib
-  open LiftIsPomonoid ▷-isPomonoid ∨-entropy ∨-tidy
+  open LiftIsPomonoid ◁-isPomonoid ∨-entropy ∨-tidy
   open P.LiftIsDuoidal isDuoidal
 
-  ⊗ˢ-▷ˢ-entropy : Entropy _≤ˢ_ _⊗ˢ_ _▷ˢ_
-  ⊗ˢ-▷ˢ-entropy 𝓕₁ 𝓖₁ 𝓕₂ 𝓖₂ =
+  ⊗ˢ-◁ˢ-entropy : Entropy _≤ˢ_ _⊗ˢ_ _◁ˢ_
+  ⊗ˢ-◁ˢ-entropy 𝓕₁ 𝓖₁ 𝓕₂ 𝓖₂ =
     begin
-      (𝓕₁ ▷ˢ 𝓖₁) ⊗ˢ (𝓕₂ ▷ˢ 𝓖₂)
+      (𝓕₁ ◁ˢ 𝓖₁) ⊗ˢ (𝓕₂ ◁ˢ 𝓖₂)
     ≡⟨⟩
-      α (U (𝓕₁ ▷ˢ 𝓖₁) ∙ᵖ U (𝓕₂ ▷ˢ 𝓖₂))
+      α (U (𝓕₁ ◁ˢ 𝓖₁) ∙ᵖ U (𝓕₂ ◁ˢ 𝓖₂))
     ≈⟨ α-cong (∙ᵖ-cong U-monoidal U-monoidal) ⟩
-      α ((U 𝓕₁ ▷ᵖ U 𝓖₁) ∙ᵖ (U 𝓕₂ ▷ᵖ U 𝓖₂))
-    ≤⟨ α-mono (∙ᵖ-▷ᵖ-entropy (U 𝓕₁) (U 𝓖₁) (U 𝓕₂) (U 𝓖₂)) ⟩
-      α ((U 𝓕₁ ∙ᵖ U 𝓕₂) ▷ᵖ (U 𝓖₁ ∙ᵖ U 𝓖₂))
-    ≤⟨ α-mono (▷ᵖ-mono unit unit) ⟩
-      α (U (α (U 𝓕₁ ∙ᵖ U 𝓕₂)) ▷ᵖ U (α (U 𝓖₁ ∙ᵖ U 𝓖₂)))
+      α ((U 𝓕₁ ◁ᵖ U 𝓖₁) ∙ᵖ (U 𝓕₂ ◁ᵖ U 𝓖₂))
+    ≤⟨ α-mono (∙ᵖ-◁ᵖ-entropy (U 𝓕₁) (U 𝓖₁) (U 𝓕₂) (U 𝓖₂)) ⟩
+      α ((U 𝓕₁ ∙ᵖ U 𝓕₂) ◁ᵖ (U 𝓖₁ ∙ᵖ U 𝓖₂))
+    ≤⟨ α-mono (◁ᵖ-mono unit unit) ⟩
+      α (U (α (U 𝓕₁ ∙ᵖ U 𝓕₂)) ◁ᵖ U (α (U 𝓖₁ ∙ᵖ U 𝓖₂)))
     ≈⟨ α-cong U-monoidal ⟨
-      α (U (α (U 𝓕₁ ∙ᵖ U 𝓕₂) ▷ˢ α (U 𝓖₁ ∙ᵖ U 𝓖₂)))
+      α (U (α (U 𝓕₁ ∙ᵖ U 𝓕₂) ◁ˢ α (U 𝓖₁ ∙ᵖ U 𝓖₂)))
     ≈⟨ counit-≈ˢ ⟨
-      α (U 𝓕₁ ∙ᵖ U 𝓕₂) ▷ˢ α (U 𝓖₁ ∙ᵖ U 𝓖₂)
+      α (U 𝓕₁ ∙ᵖ U 𝓕₂) ◁ˢ α (U 𝓖₁ ∙ᵖ U 𝓖₂)
     ≡⟨⟩
-      (𝓕₁ ⊗ˢ 𝓕₂) ▷ˢ (𝓖₁ ⊗ˢ 𝓖₂)
+      (𝓕₁ ⊗ˢ 𝓕₂) ◁ˢ (𝓖₁ ⊗ˢ 𝓖₂)
     ∎
     where open PosetReasoning ≤ˢ-poset
 
@@ -653,17 +653,17 @@ module LiftIsDuoidal
          (≤-trans (mapᵗ-⋁ᵗ t)
                   (⋁ˢ (mapᵗ (λ (lift y≤ε) → lift (≤-trans y≤ε ε≲ι)) t))))
 
-  ⊗ˢ-▷ˢ-isDuoidal : IsDuoidal _≈ˢ_ _≤ˢ_ _⊗ˢ_ _▷ˢ_ εˢ ιˢ
-  ⊗ˢ-▷ˢ-isDuoidal = record
+  ⊗ˢ-◁ˢ-isDuoidal : IsDuoidal _≈ˢ_ _≤ˢ_ _⊗ˢ_ _◁ˢ_ εˢ ιˢ
+  ⊗ˢ-◁ˢ-isDuoidal = record
     { ∙-isPomonoid = IsCommutativePomonoid.isPomonoid ⊗ˢ-isCommutativePomonoid
-    ; ▷-isPomonoid = ▷ˢ-isPomonoid
-    ; ∙-▷-entropy = ⊗ˢ-▷ˢ-entropy
+    ; ◁-isPomonoid = ◁ˢ-isPomonoid
+    ; ∙-◁-entropy = ⊗ˢ-◁ˢ-entropy
     ; ∙-idem-ι = ≤ˢ-trans (α-mono (∙ᵖ-mono (U-monoidal-ι .proj₁) (U-monoidal-ι .proj₁)))
                 (≤ˢ-trans (α-mono ∙ᵖ-idem-ιᵖ)
                 (≤ˢ-trans (α-mono (U-monoidal-ι .proj₂))
                           counit))
-    ; ▷-idem-ε = ≤ˢ-trans (α-mono ▷ᵖ-idem-εᵖ)
-                (≤ˢ-trans (α-mono (▷ᵖ-mono unit unit))
+    ; ◁-idem-ε = ≤ˢ-trans (α-mono ◁ᵖ-idem-εᵖ)
+                (≤ˢ-trans (α-mono (◁ᵖ-mono unit unit))
                 (≤ˢ-trans (α-mono (U-monoidal .proj₂))
                 counit))
     ; ε≲ι = εˢ≤ιˢ

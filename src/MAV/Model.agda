@@ -21,7 +21,7 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
     I       : Carrier
     J       : Carrier
     _⊗_     : Carrier → Carrier → Carrier
-    _▷_     : Carrier → Carrier → Carrier
+    _◁_     : Carrier → Carrier → Carrier
     _&_     : Carrier → Carrier → Carrier
 
     ⊗-isCommutativePomonoid : IsCommutativePomonoid _≈_ _≲_ _⊗_ I
@@ -29,17 +29,17 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
     mix                     : I ≈ ¬ I
 
     &-isMeet                : IsMeetSemilattice _≈_ _≲_ _&_
-    ⊗-▷-isDuoidal           : IsDuoidal _≈_ _≲_ _⊗_ _▷_ I J
+    ⊗-◁-isDuoidal           : IsDuoidal _≈_ _≲_ _⊗_ _◁_ I J
     I-eq-J                  : I ≈ J
-    ▷-self-dual             : ∀ {x y} → (¬ (x ▷ y)) ≈ ((¬ x) ▷ (¬ y))
+    ◁-self-dual             : ∀ {x y} → (¬ (x ◁ y)) ≈ ((¬ x) ◁ (¬ y))
 
   open IsStarAuto ⊗-isStarAutonomous public
   open IsMeetSemilattice &-isMeet public
     using ()
     renaming (x∧y≤x to x&y≲x ; x∧y≤y to x&y≲y ; ∧-greatest to &-greatest)
-  open IsDuoidal ⊗-▷-isDuoidal
-    using (▷-cong; ▷-mono; ▷-assoc; ▷-identityʳ; ▷-identityˡ)
-    renaming (∙-▷-entropy to ⊗-▷-entropy) public
+  open IsDuoidal ⊗-◁-isDuoidal
+    using (◁-cong; ◁-mono; ◁-assoc; ◁-identityʳ; ◁-identityˡ)
+    renaming (∙-◁-entropy to ⊗-◁-entropy) public
 
   _⊕_ : Carrier → Carrier → Carrier
   x ⊕ y = ¬ (¬ x & ¬ y)
@@ -76,13 +76,13 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
   &-cong x₁≈x₂ y₁≈y₂ =
     antisym (&-mono (reflexive x₁≈x₂) (reflexive y₁≈y₂)) (&-mono (reflexive (Eq.sym x₁≈x₂)) (reflexive (Eq.sym y₁≈y₂)))
 
-  sequence : ∀ {w x y z} → ((w ⅋ x) ▷ (y ⅋ z)) ≲ ((w ▷ y) ⅋ (x ▷ z))
+  sequence : ∀ {w x y z} → ((w ⅋ x) ◁ (y ⅋ z)) ≲ ((w ◁ y) ⅋ (x ◁ z))
   sequence =
     trans (reflexive involution)
-          (¬-mono (trans (⊗-mono (reflexive ▷-self-dual) (reflexive ▷-self-dual))
-                  (trans (⊗-▷-entropy _ _ _ _)
-                  (trans (▷-mono (reflexive involution) (reflexive involution))
-                         (reflexive (Eq.sym ▷-self-dual))))))
+          (¬-mono (trans (⊗-mono (reflexive ◁-self-dual) (reflexive ◁-self-dual))
+                  (trans (⊗-◁-entropy _ _ _ _)
+                  (trans (◁-mono (reflexive involution) (reflexive involution))
+                         (reflexive (Eq.sym ◁-self-dual))))))
 
   ⊕-⊗-distrib : ∀ {x y z} → (x ⊗ (y ⊕ z)) ≲ ((x ⊗ y) ⊕ (x ⊗ z))
   ⊕-⊗-distrib =

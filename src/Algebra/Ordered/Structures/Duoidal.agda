@@ -33,13 +33,13 @@ open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 ------------------------------------------------------------------------------
 -- Duoidal structures
 
-record IsDuoidal (∙ ▷ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+record IsDuoidal (∙ ◁ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   field
     ∙-isPomonoid : IsPomonoid ∙ ε
-    ▷-isPomonoid : IsPomonoid ▷ ι
-    ∙-▷-entropy  : Entropy ∙ ▷
+    ◁-isPomonoid : IsPomonoid ◁ ι
+    ∙-◁-entropy  : Entropy ∙ ◁
     ∙-idem-ι     : ∙ SubidempotentOn ι
-    ▷-idem-ε     : ▷ SuperidempotentOn ε
+    ◁-idem-ε     : ◁ SuperidempotentOn ε
     ε≲ι          : ε ≲ ι
 
   open IsPomonoid ∙-isPomonoid public
@@ -68,7 +68,7 @@ record IsDuoidal (∙ ▷ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂)
       ; monoˡ          to ∙-monoˡ
       ; monoʳ          to ∙-monoʳ
       )
-  open IsPomonoid ▷-isPomonoid public
+  open IsPomonoid ◁-isPomonoid public
     hiding
       ( isPreorder
       ; refl
@@ -77,20 +77,20 @@ record IsDuoidal (∙ ▷ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂)
       ; setoid
       )
     renaming
-      ( isMagma        to ▷-isMagma
-      ; isSemigroup    to ▷-isSemigroup
-      ; isMonoid       to ▷-isMonoid
-      ; isPromagma     to ▷-isPromagma
-      ; isProsemigroup to ▷-isProsemigroup
-      ; isPromonoid    to ▷-isPromonoid
-      ; assoc          to ▷-assoc
-      ; identity       to ▷-identity
-      ; identityˡ      to ▷-identityˡ
-      ; identityʳ      to ▷-identityʳ
-      ; mono           to ▷-mono
-      ; monoˡ          to ▷-monoˡ
-      ; monoʳ          to ▷-monoʳ
-      ; ∙-cong         to ▷-cong
-      ; ∙-congˡ        to ▷-congˡ
-      ; ∙-congʳ        to ▷-congʳ
+      ( isMagma        to ◁-isMagma
+      ; isSemigroup    to ◁-isSemigroup
+      ; isMonoid       to ◁-isMonoid
+      ; isPromagma     to ◁-isPromagma
+      ; isProsemigroup to ◁-isProsemigroup
+      ; isPromonoid    to ◁-isPromonoid
+      ; assoc          to ◁-assoc
+      ; identity       to ◁-identity
+      ; identityˡ      to ◁-identityˡ
+      ; identityʳ      to ◁-identityʳ
+      ; mono           to ◁-mono
+      ; monoˡ          to ◁-monoˡ
+      ; monoʳ          to ◁-monoʳ
+      ; ∙-cong         to ◁-cong
+      ; ∙-congˡ        to ◁-congˡ
+      ; ∙-congʳ        to ◁-congʳ
       )

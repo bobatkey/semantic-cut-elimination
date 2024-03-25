@@ -16,10 +16,10 @@ import MAV.Symmetric Atom as SMAV
 
 -- An example:
 --
---  Normalising A proof that (`I `⊕ `I) `▷ (`I `& `I) ⊸ (`I `⊕ `I) `▷ (`I `& `I):
+--  Normalising A proof that (`I `⊕ `I) `◁ (`I `& `I) ⊸ (`I `⊕ `I) `◁ (`I `& `I):
 
 example₁ : Formula
-example₁ = (`I `⊕ `I) `▷ (`I `& `I)
+example₁ = (`I `⊕ `I) `◁ (`I `& `I)
 
 SMAV-proof-of-example₁ : (example₁ `⅋ `¬ example₁) SMAV.⟶⋆ `I
 SMAV-proof-of-example₁ =
@@ -40,21 +40,21 @@ MAV-proof-of-example₁
     ◅ `⅋-comm 
     ◅ `⅋-comm 
     ◅ `sequence 
-    ◅ (`⅋-comm `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ (`⅋-comm `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ (`external `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-unit) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ (((`I `⅋ (`I `⊕ `I)) `&⟩ `right) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ ((`⅋-comm `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ ((`⅋-comm `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ ((`⅋-comm `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ ((`⅋-unit `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ ((`left `⟨& `I) `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ (`tidy `⟨▷ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ `▷-lunit 
+    ◅ (`⅋-comm `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
+    ◅ (`⅋-comm `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
+    ◅ (`external `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
+    ◅ (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
+    ◅ (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
+    ◅ (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
+    ◅ (((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-unit) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
+    ◅ (((`I `⅋ (`I `⊕ `I)) `&⟩ `right) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
+    ◅ ((`⅋-comm `⟨& `I) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
+    ◅ ((`⅋-comm `⟨& `I) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
+    ◅ ((`⅋-comm `⟨& `I) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
+    ◅ ((`⅋-unit `⟨& `I) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
+    ◅ ((`left `⟨& `I) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
+    ◅ (`tidy `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
+    ◅ `◁-lunit 
     ◅ `⅋-comm 
     ◅ `external 
     ◅ ((`I `⅋ (`I `⊕ `I)) `&⟩ `⅋-comm) 

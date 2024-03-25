@@ -44,7 +44,7 @@ Residuated : Op₂ A → Op₂ A → Op₂ A → Set _
 Residuated ∙ ⇦ ⇨ = LeftResidual ∙ ⇦ × RightResidual ∙ ⇨
 
 Entropy : Op₂ A → Op₂ A → Set _
-Entropy _∙_ _▷_ = ∀ w x y z → ((w ▷ x) ∙ (y ▷ z)) ≲ ((w ∙ y) ▷ (x ∙ z))
+Entropy _∙_ _◁_ = ∀ w x y z → ((w ◁ x) ∙ (y ◁ z)) ≲ ((w ∙ y) ◁ (x ∙ z))
 
 LeftContract : Op₂ A → A → Op₁ A → Set _
 LeftContract _∙_ ε _ˡ = ∀ x → ((x ˡ) ∙ x) ≲ ε

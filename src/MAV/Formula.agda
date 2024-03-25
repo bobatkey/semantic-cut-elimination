@@ -14,7 +14,7 @@ infix 10 _`⅋_
 infix 10 _`⊗_
 infix 10 _`&_
 infix 10 _`⊕_
-infix 10 _`▷_
+infix 10 _`◁_
 
 data Formula : Set a where
   `I   : Formula
@@ -24,7 +24,7 @@ data Formula : Set a where
   _`⊗_ : Formula → Formula → Formula
   _`&_ : Formula → Formula → Formula
   _`⊕_ : Formula → Formula → Formula
-  _`▷_ : Formula → Formula → Formula
+  _`◁_ : Formula → Formula → Formula
 
 `¬_ : Formula → Formula
 `¬ `I = `I
@@ -34,7 +34,7 @@ data Formula : Set a where
 `¬ (P `⊗ Q) = `¬ P `⅋ `¬ Q
 `¬ (P `& Q) = `¬ P `⊕ `¬ Q
 `¬ (P `⊕ Q) = `¬ P `& `¬ Q
-`¬ (P `▷ Q) = `¬ P `▷ `¬ Q
+`¬ (P `◁ Q) = `¬ P `◁ `¬ Q
 
 _≡ᵇ`I : (P : Formula) → Bool
 `I       ≡ᵇ`I = true
@@ -44,7 +44,7 @@ _≡ᵇ`I : (P : Formula) → Bool
 (P `⊗ Q) ≡ᵇ`I = false
 (P `& Q) ≡ᵇ`I = false
 (P `⊕ Q) ≡ᵇ`I = false
-(P `▷ Q) ≡ᵇ`I = false
+(P `◁ Q) ≡ᵇ`I = false
 
 record NonUnit (P : Formula) : Set where
   field
@@ -63,8 +63,8 @@ instance
   `&-nonUnit = _
   `⊕-nonUnit : ∀ {P Q} → NonUnit (P `⊕ Q)
   `⊕-nonUnit = _
-  `▷-nonUnit : ∀ {P Q} → NonUnit (P `▷ Q)
-  `▷-nonUnit = _
+  `◁-nonUnit : ∀ {P Q} → NonUnit (P `◁ Q)
+  `◁-nonUnit = _
 
 _≟`I : (P : Formula) → Dec (P ≡ `I)
 `I       ≟`I = yes refl
@@ -74,7 +74,7 @@ _≟`I : (P : Formula) → Dec (P ≡ `I)
 (P `⊗ Q) ≟`I = no (λ ())
 (P `& Q) ≟`I = no (λ ())
 (P `⊕ Q) ≟`I = no (λ ())
-(P `▷ Q) ≟`I = no (λ ())
+(P `◁ Q) ≟`I = no (λ ())
 
 ≢-nonUnit : ∀ {P} → P ≢ `I → NonUnit P
 ≢-nonUnit {`I}     P≢`I = contradiction refl P≢`I 
@@ -84,4 +84,4 @@ _≟`I : (P : Formula) → Dec (P ≡ `I)
 ≢-nonUnit {P `⊗ Q} P≢`I = _
 ≢-nonUnit {P `& Q} P≢`I = _
 ≢-nonUnit {P `⊕ Q} P≢`I = _
-≢-nonUnit {P `▷ Q} P≢`I = _
+≢-nonUnit {P `◁ Q} P≢`I = _

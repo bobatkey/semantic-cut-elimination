@@ -357,33 +357,33 @@ module LiftIsCommutativePomonoid {_∙_} {ε} (isCommutativePomonoid : IsCommuta
   ∙ᵖ-∨ᵖ-distrib = supremum∧residuated⇒distrib ≤ᵖ-isPreorder ∨ᵖ-supremum 
     (IsResiduatedCommutativePomonoid.residuated ⇨ᵖ-∙ᵖ-isResiduatedCommutativePomonoid)
 
-module LiftIsDuoidal {_∙_} {_▷_} {ε} {ι} (isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _▷_ ε ι) where
+module LiftIsDuoidal {_∙_} {_◁_} {ε} {ι} (isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _◁_ ε ι) where
 
   open IsDuoidal isDuoidal
   open LiftIsPomonoid ∙-isPomonoid public
-  open LiftIsPomonoid ▷-isPomonoid public
+  open LiftIsPomonoid ◁-isPomonoid public
     renaming
-      ( _∙ᵖ_          to _▷ᵖ_
+      ( _∙ᵖ_          to _◁ᵖ_
       ; εᵖ            to ιᵖ
-      ; ∙ᵖ-mono       to ▷ᵖ-mono
-      ; ∙ᵖ-monoˡ      to ▷ᵖ-monoˡ
-      ; ∙ᵖ-monoʳ      to ▷ᵖ-monoʳ
-      ; ∙ᵖ-cong       to ▷ᵖ-cong
-      ; ∙ᵖ-congˡ      to ▷ᵖ-congˡ
-      ; ∙ᵖ-congʳ      to ▷ᵖ-congʳ
-      ; ∙ᵖ-assoc      to ▷ᵖ-assoc
-      ; ∙ᵖ-identity   to ▷ᵖ-identity
-      ; ∙ᵖ-identityˡ  to ▷ᵖ-identityˡ
-      ; ∙ᵖ-identityʳ  to ▷ᵖ-identityʳ
-      ; ∙ᵖ-isPomonoid to ▷ᵖ-isPomonoid
+      ; ∙ᵖ-mono       to ◁ᵖ-mono
+      ; ∙ᵖ-monoˡ      to ◁ᵖ-monoˡ
+      ; ∙ᵖ-monoʳ      to ◁ᵖ-monoʳ
+      ; ∙ᵖ-cong       to ◁ᵖ-cong
+      ; ∙ᵖ-congˡ      to ◁ᵖ-congˡ
+      ; ∙ᵖ-congʳ      to ◁ᵖ-congʳ
+      ; ∙ᵖ-assoc      to ◁ᵖ-assoc
+      ; ∙ᵖ-identity   to ◁ᵖ-identity
+      ; ∙ᵖ-identityˡ  to ◁ᵖ-identityˡ
+      ; ∙ᵖ-identityʳ  to ◁ᵖ-identityʳ
+      ; ∙ᵖ-isPomonoid to ◁ᵖ-isPomonoid
       )
 
-  ∙ᵖ-▷ᵖ-entropy : Entropy _≤ᵖ_ _∙ᵖ_ _▷ᵖ_
-  ∙ᵖ-▷ᵖ-entropy F₁ G₁ F₂ G₂ .*≤ᵖ*
+  ∙ᵖ-◁ᵖ-entropy : Entropy _≤ᵖ_ _∙ᵖ_ _◁ᵖ_
+  ∙ᵖ-◁ᵖ-entropy F₁ G₁ F₂ G₂ .*≤ᵖ*
     (y , z , x≤yz ,
       (y₁ , y₂ , y≤y₁y₂ , F₁y₁ , G₁y₂) ,
       (z₁ , z₂ , z≤z₁z₂ , F₂z₁ , G₂z₂)) =
-    (-, -, trans x≤yz (trans (∙-mono y≤y₁y₂ z≤z₁z₂) (∙-▷-entropy y₁ y₂ z₁ z₂)) ,
+    (-, -, trans x≤yz (trans (∙-mono y≤y₁y₂ z≤z₁z₂) (∙-◁-entropy y₁ y₂ z₁ z₂)) ,
       (-, -, refl , F₁y₁ , F₂z₁) ,
       (-, -, refl , G₁y₂ , G₂z₂))
 
@@ -391,19 +391,19 @@ module LiftIsDuoidal {_∙_} {_▷_} {ε} {ι} (isDuoidal : IsDuoidal _≈_ _≤
   ∙ᵖ-idem-ιᵖ .*≤ᵖ* (y , z , x≤y∙z , ιy , ιz) .lower =
     trans x≤y∙z (trans (∙-mono (ιy .lower) (ιz .lower)) ∙-idem-ι)
 
-  ▷ᵖ-idem-εᵖ : _SuperidempotentOn_ _≤ᵖ_ _▷ᵖ_ εᵖ
-  ▷ᵖ-idem-εᵖ .*≤ᵖ* εx =
-    (-, -, trans (εx .lower) ▷-idem-ε , lift refl , lift refl)
+  ◁ᵖ-idem-εᵖ : _SuperidempotentOn_ _≤ᵖ_ _◁ᵖ_ εᵖ
+  ◁ᵖ-idem-εᵖ .*≤ᵖ* εx =
+    (-, -, trans (εx .lower) ◁-idem-ε , lift refl , lift refl)
 
   εᵖ≤ιᵖ : εᵖ ≤ᵖ ιᵖ
   εᵖ≤ιᵖ .*≤ᵖ* εx .lower = trans (εx .lower) ε≲ι
 
-  ∙ᵖ-▷ᵖ-isDuoidal : IsDuoidal _≈ᵖ_ _≤ᵖ_ _∙ᵖ_ _▷ᵖ_ εᵖ ιᵖ
-  ∙ᵖ-▷ᵖ-isDuoidal = record
+  ∙ᵖ-◁ᵖ-isDuoidal : IsDuoidal _≈ᵖ_ _≤ᵖ_ _∙ᵖ_ _◁ᵖ_ εᵖ ιᵖ
+  ∙ᵖ-◁ᵖ-isDuoidal = record
     { ∙-isPomonoid = ∙ᵖ-isPomonoid
-    ; ▷-isPomonoid = ▷ᵖ-isPomonoid
-    ; ∙-▷-entropy  = ∙ᵖ-▷ᵖ-entropy
+    ; ◁-isPomonoid = ◁ᵖ-isPomonoid
+    ; ∙-◁-entropy  = ∙ᵖ-◁ᵖ-entropy
     ; ∙-idem-ι     = ∙ᵖ-idem-ιᵖ
-    ; ▷-idem-ε     = ▷ᵖ-idem-εᵖ
+    ; ◁-idem-ε     = ◁ᵖ-idem-εᵖ
     ; ε≲ι          = εᵖ≤ιᵖ
     }
