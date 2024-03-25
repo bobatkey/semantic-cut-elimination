@@ -12,7 +12,17 @@
 
 \begin{definition}
   A \emph{$*$-autonomous partial order} is ... TODO
+
+  
 \end{definition}
+
+\begin{remark}
+  The structure of a $*$-autonomous partial order has a number of
+  immediate consequences, but we leave description of these until
+  after the definition of MAV algebra below. \bob{because there are
+    even more consequences in the presence of additive and duoidal
+    structure}
+\end{remark}
 
 FIXME: cite that combinatorics book.
 \begin{definition}
@@ -36,28 +46,61 @@ FIXME: cite that combinatorics book.
 \subsection{MAV Algebras}
 
 \begin{definition}
-  An \emph{MAV Algebra} is a structure $(A, \leq, ...)$
+  An \emph{MAV Algebra} is a structure
+  $(A, \leq, \otimes, \rhd, I, \lnot)$ with the following properties:
   \begin{enumerate}
-  \item 
+  \item $(A, \leq, \otimes, I, \lnot)$ is $*$-autonomous and satisfies \emph{mix}.
+  \item $(A, \leq, \rhd, I)$ is a pomonoid.
+  \item $(\otimes, I)$ and $(\rhd, I)$ are in a duoidal relationship.
+  \item $(A, \leq)$ has binary meets, which we write as $x \with y$.
   \end{enumerate}
 \end{definition}
 
-\bob{Consequences of the definition, as listed in the Agda}
+\begin{proposition}\label{prop:mav-algebra-consequences}
+  \bob{Consequences of the definition, as listed in the Agda}
+\end{proposition}
 
-\subsection{Interpretation}
+\begin{definition}\label{defn:mav-interpretation}
+  Let $\mathit{At}$ be a set of atomic propositions. Given an MAV
+  Algebra $(A, \leq, \otimes, \rhd, I, \lnot)$ and valuation
+  $V : \mathit{At} \to A$, define the interpretation of MAV Formulas as follows:
+  \begin{mathpar}
+    FIXME
+  \end{mathpar}
+\end{definition}
 
-\begin{theorem}
-  The interpretation of SMAV proofs in an MAV Algebra is sound. \bob{elaborate...}
+\begin{theorem}\label{thm:soundness}
+  The interpretation defined in Definition
+  \ref{defn:mav-interpretation} is sound: for all formulas $P$, if
+  $P \longrightarrow^* I$, then $I \leq \llbracket P \rrbracket$.
 \end{theorem}
 
+\begin{proof}
+  Each of the required inequalities has been established in
+  Proposition \ref{prop:mav-algebra-consequences}.
+\end{proof}
+
 \subsection{MAV Frames}
+
+To prove completeness of the cut-free fragment of SMAV, we will
+construct a particular MAV Algebra from the syntax and cut-free
+proofs. Since cut-free proofs do not a priori have all the necessary
+structure for an MAV Algebra, we develop a procedure to construct MAV
+Algebra from the lighter requirements of an MAV Frame, defined in this
+section. MAV Frames have an intuitive reading as a kind of process
+algebra, so we use process algebra-like notation. In the following
+sections, we show how every MAV Frame induces an MAV Algebra, and in
+Section XXX we will show that the MAV Algebra constructed from the
+cut-free proof MAV Frame allows us to prove that all proofs in SMAV
+have cut-free normal forms.
 
 \begin{definition}
   An \emph{MAV Frame} is a structure
   $(F, \leq, I, \parallel, \rhd, +)$ where $(F, \leq)$ is a partial
   order, $(F, \leq, I, \parallel)$ is a commutative pomonoid,
   $(F, \leq, I, \rhd)$ is a pomonoid, $+$ is a binary monotone
-  function on $(F, \leq)$, and these structures satisfy the following:
+  function on $(F, \leq)$, and these structures satisfy the following
+  inequalities:
   \begin{enumerate}
   \item $(w \rhd x) \parallel (y \rhd z) \leq (w \parallel y) \rhd (x \parallel z)$
   \item $(x + y) \parallel z \leq (x \parallel z) + (y \parallel z)$
@@ -67,50 +110,252 @@ FIXME: cite that combinatorics book.
 \end{definition}
 
 \begin{remark}
-  \bob{Connection to process algebras}
+  \bob{A frame is nearly two duoidal structures, except that we don't
+    assume that $+$ is a monoid, nor is there a unit element for it.}
+\end{remark}
+
+\begin{remark}
+  \bob{Connection to process algebras: we can read the ordering as
+    ``reduces to'' and the connectives as parallel combination,
+    sequential composition, and choice, respectively. If we add in
+    atomic elements with duals and an interaction law, then we get
+    something like CCS without restriction, but with sequential
+    composition.}
 \end{remark}
 
 \begin{proposition}
-  \bob{The Cut-free system forms an MAV Frame}
+  \bob{The Cut-free system forms an MAV Frame; fwd ref to next section}
 \end{proposition}
 
-\subsection{Chu Construction and Self-Dual Monoids}
+\subsection{Constructing MAV Algebras from MAV Frames}
 
+\newcommand{\LowerSet}[1]{\widehat{#1}}
+
+\bob{Some introductory text here: explain the steps in the construction and what each one adds.}
+
+\subsubsection{Lower Sets}
+
+\begin{definition}
+  Given a partial order $(A, \leq)$, the set of lower sets
+  $\LowerSet{A}$ consists of subsets $F \subseteq A$ that are
+  down-closed: $x \in F$ and $y \leq x$ implies $y \in F$. Lower sets
+  are ordered by inclusion. Define the embedding
+  $\eta : A \to \LowerSet{A}$ as $\eta(x) = \{ y \mid y \leq x \}$.
+\end{definition}
+
+\begin{proposition}
+  For any $(A, \leq)$, the function $\eta$ is monotone, and
+  $(\LowerSet{A}, \subseteq)$ has meets and joins given by
+  intersection and union respectively.
+
+  \bob{and $\eta$ preserves any meets that exist}
+\end{proposition}
+
+\newcommand{\Day}[1]{\mathop{\widehat{#1}}}
+
+\begin{proposition}\label{prop:day-construction}
+  If $(\bullet, i)$ is a pomonoid on $(A, \leq)$, then there is a
+  corresponding \emph{Day pomonoid} $(\Day{\bullet}, \Day{i})$ on
+  $\LowerSet{A}$ defined as
+  $F \Day\bullet G = \{ z \mid z \leq x \bullet y, x \in F, y \in G
+  \}$ and $\Day{i} = \eta(i)$. Moreover:
+  \begin{enumerate}
+  \item $(\Day{\bullet}, \Day{i})$ is left and right residuated: there
+    exists a function
+    $\Day{\rightblackspoon} : \LowerSet{A} \times \LowerSet{A} \to
+    \LowerSet{A}$ such that ... FIXME
+  \item If $(\bullet, i)$ is a commutative pomonoid, then so is
+    $(\Day{\bullet}, \Day{i})$. In this case, the residuals coincide.
+  \end{enumerate}
+  \bob{Could also say that $\eta$ preserves the monoids}
+\end{proposition}
+
+\begin{remark}
+  This is the Day construction \cite{day} restricted to the case of
+  partial orders.
+\end{remark}
+
+\begin{remark}
+  When $(A, \leq)$ is an MAV Frame, by \ref{prop:day-construction} we
+  obtain two pomonoids $(\Day{\parallel}, \Day{I})$ and
+  $(\Day{\rhd}, \Day{I})$ on $\LowerSet{A}$. Moreover, the next
+  proposition states that the duoidal relationship between these
+  monoids is preserved by the Day construction:
+\end{remark}
+
+\begin{proposition}\label{prop:lower-set-duoidal}
+  If $(\bullet, i)$ and $(\rhd, j)$ are in a duoidal relationship then
+  so are $(\Day{\bullet}, \Day{i})$ and $(\Day{\rhd}, \Day{j})$.
+\end{proposition}
+
+\subsubsection{Closed Lower Sets}
+
+\newcommand{\ClosedLowerSet}[1]{\widehat{#1}^+}
+\newcommand{\ClosedDay}[1]{\mathop{\widehat{#1}^+}}
 \newcommand{\Chu}{\mathrm{Chu}}
 \newcommand{\op}{\mathrm{op}}
+
+The Lower Set adds residuals to the pomonoids of an MAV Frame, so the
+Chu construction below will allow us to add duals to interpret all of
+the multiplicative subsystem of MAV. To incorporate the additives in
+such a way that we will be able to derive the proof normalisation
+property, we need to refine lower sets to ones that are closed under
+$+$-combinations.
+
+This corresponds to a sheaf construction, but we do not assume that
+the ``join'' operation is stable with respect to meets.
+
+The following development has proved amenable to mechanisation.
+
+Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
+  contexts}.
+
+\begin{definition}
+  Let $(A, \leq)$ be a partial order with a monotone binary operation
+  $+ : A \times A \to A$.  Let $F \in \LowerSet{A}$. A \emph{formal
+    $+$-context} over $F$ is a binary tree built from constructors
+  $\mathsf{leaf} : F \to \mathrm{ctxt}(F)$ and
+  $\mathsf{node} : \mathrm{ctxt}(F) \times \mathrm{ctxt}(F) \to
+  \mathrm{ctxt}(F)$. We define the \emph{sum} of a context as
+  $\mathit{sum}(\mathsf{leaf}~x) = x$ and
+  $\mathit{sum}(\mathsf{node}(c,d)) = \mathit{sum}(c) +
+  \mathit{sum}(d)$.
+\end{definition}
+
+\begin{remark}
+  Conceptually higher level view on contexts: if we view a lower set
+  $F$ as a monotone function $F : A^\op \to \Omega$, then we can view
+  the context construction as a relative monad on lower sets to
+  partial orders.  \bob{and this should extend to presheaves and
+    categories}.
+\end{remark}
+
+\begin{definition}
+  A lower set $F \in \LowerSet{A}$ is \emph{$+$-closed} if for all
+  $c \in \mathsf{ctxt}(F)$, $\mathit{sum}(c) \in F$. $+$-closed lower
+  sets are ordered by subset inclusion and form a partial order
+  $(\ClosedLowerSet{A}, \subseteq)$.
+\end{definition}
+
+\begin{proposition}
+  There is a monotone function
+  $\alpha : \LowerSet{A} \to \ClosedLowerSet{A}$ with the following
+  properties. It is a Galois reflection. FIXME
+\end{proposition}
+
+\begin{proof}
+  Explain the Agda, this relies on the fact that $\mathrm{ctxt}$ is a
+  (relative) monad.
+\end{proof}
+
+\begin{proposition}
+  $(\ClosedLowerSet{A}, \subseteq)$ has all meets and joins. In the
+  binary case, meets are defined by intersection and joins are defined
+  by $x \lor y = \alpha (U(x) \cup U(y))$.
+\end{proposition}
+
+\begin{remark}
+  Note that $\alpha$ does not preserve meets.
+\end{remark}
+
+\begin{proposition}\label{prop:closed-monoid-distrib}
+  Monoid construction 1, for monoids that distribute over $+$.
+\end{proposition}
+
+\begin{proof}
+  $\alpha$ preserves the monoidal structure, so we can use it to prove
+  the monoid laws for the constructed monoid.
+
+  Sketch why this works: we can multiply together the contexts.
+\end{proof}
+
+\begin{proposition}\label{prop:closed-monoid-duoidal}
+  For a pomonoid $(\rhd, j)$ on $(A, \leq)$, if this satisfies
+  $(w \rhd x) + (y \rhd z) \leq (w + y) \rhd (x + z)$ then the Day
+  construction
+  $F \Day{\rhd} G = \{ z \mid z \leq x \rhd y, x \in F, y \in G \}$ on
+  lower sets is $+$-closed when $F$ and $G$ are. We write
+  $F \ClosedDay{\rhd} G$ to indicate when we mean this construction as
+  an operation on $+$-closed lower sets. If $j + j \leq j$, then the
+  Day unit $\Day{j} = \eta(j)$ is also closed and we write it as
+  $\ClosedDay{j} \in \ClosedLowerSet{A}$. Together
+  $(\ClosedDay{\rhd}, \ClosedDay{j})$ form a pomonoid on
+  $(\ClosedLowerSet{A}, \subseteq)$.
+\end{proposition}
+
+\begin{proof}
+  In this case, the Day pomonoid is already closed, by use of the duoidal property.
+
+  \bob{Explain the Agda here}
+\end{proof}
+
+\begin{remark}
+  Generalising the situation for the unit $j$ in Proposition
+  \ref{prop:closed-monoid-duoidal}, $\eta(x)$ is closed for any $x$
+  such that $x + x \leq x$. Note that if $+$ were a join on
+  $(A, \leq)$, then this would automatically be satisfied.
+\end{remark}
+
+\begin{remark}
+  We have used the same decoration $\ClosedDay{\bullet}$ and
+  $\ClosedDay{\rhd}$ for two separate constructions of pomonoids on
+  $+$-closed lower sets. We will be careful to distinguish which we
+  mean: a symmetric operator like $\bullet$ 
+\end{remark}
+
+\begin{proposition}
+  Let $(\bullet, i)$ and $(\rhd, j)$ be pomonoids on $(A, \leq)$ in a
+  duoidal relationship, and assume that $(\bullet, i)$ distributes
+  over $+$ (as in Proposition \ref{prop:closed-monoid-distrib}) and
+  $(\rhd, j)$ is entropic with respect to $+$ (as in Proposition
+  \ref{prop:closed-monoid-duoidal}). Then
+  $(\ClosedDay{\bullet}, \ClosedDay{i})$ and
+  $(\ClosedDay{\rhd}, \ClosedDay{j})$ are in a duoidal relationship on
+  $(\ClosedLowerSet{A}, \subseteq)$.
+\end{proposition}
+
+\begin{proof}
+  \bob{Explain the Agda here}
+\end{proof}
+
+\subsubsection{Chu Construction}
 
 To construct suitable MAV Algebras, we use the poset version of the
 Chu construction \cite{barr}. The Chu construction builds
 $*$-autonomous categories from symmetric monoidal closed categories
 with pullbacks. In the preorder case, the requirement for preorders
 simplifies to binary meets. Therefore, for this section, we let
-$(A, \leq, \bullet, \epsilon, -\kern-9pt\bullet)$ be a symmetric
-monoidal closed preorder with all binary meets.
+$(A, \leq, \bullet, i, \rightblackspoon)$ be a symmetric monoidal
+closed preorder with all binary meets.
 
 \begin{definition}
-  Let $k$ be an element of $A$. $\Chu(A, k)$ is the preorder with
-  elements comprised of pairs $(a^+, a^-)$ such that
-  $a^+ \bullet a^- \leq k$, with ordering
-  $(a^+,a^-) \sqsubseteq (b^+, b^-)$ when $a^+ \leq b^+$ and
+  Let $k$ be an element of $A$. $\Chu(A, k)$ is the partial order with
+  elements pairs $(a^+, a^-)$ such that $a^+ \bullet a^- \leq k$, with
+  ordering $(a^+,a^-) \sqsubseteq (b^+, b^-)$ when $a^+ \leq b^+$ and
   $b^- \leq a^-$.
 \end{definition}
 
-\begin{theorem}
-  $\Chu(A, k)$ is a $*$-autonomous preorder with symmetric monoidal
-  structure and negation defined as:
+\begin{proposition}
+  $\Chu(A, k)$ is a $*$-autonomous partial order with pomonoid and
+  negation structure defined as:
   \begin{mathpar}
-    (a^+, a^-) \otimes (b^+, b^-) = (a^+ \bullet b^+, (b^+ \multimap a^-) \land (a^+ \multimap b^-))
+    (a^+, a^-) \otimes (b^+, b^-) = (a^+ \bullet b^+, (b^+ \rightblackspoon a^-) \land (a^+ \rightblackspoon b^-))
 
-    I = (\epsilon, k)
+    I = (i, k)
 
     (a^+,a^-)^\perp = (a^-, a^+)
   \end{mathpar}
-\end{theorem}
+\end{proposition}
 
-\begin{theorem}
+\begin{remark}
+  If we choose $k = i$, then $\Chu(A, i)$ is a $*$-autonomous partial
+  order that satisfies \emph{mix}.
+\end{remark}
+
+\begin{proposition}
   If $A$ has binary joins, then $\Chu(A, k)$ has binary meets, given
-  by $(a^+,a^-) \land (b^+,b^-) = (a^+ \land b^+, a^- \lor b^-)$.
-\end{theorem}
+  by $(a^+,a^-) \with (b^+,b^-) = (a^+ \land b^+, a^- \lor b^-)$.
+\end{proposition}
 
 \paragraph{Self-dual duoidal structure}
 These two theorems give us enough structure to interpret the
@@ -132,27 +377,23 @@ The Chu construction allows us to state
 directly that any operator we define on $\Chu(A, k)$ is self dual by
 defining as the same
 
-\subsection{Monoids on Lower Sets}
-
-Lower sets: $X : A^\op \to \Omega$.
-
 \begin{proposition}
-  FIXME: Day construction.
+  \bob{self dual operators from pomonoids with $k \rhd k \leq k$ and $j \leq k$.}
 \end{proposition}
 
-\subsection{Closure Operators on Lower Sets}
+\begin{proposition}
+  \bob{duoidality is preserved.}
+\end{proposition}
 
-need the ``preorder of elements'' $\int X$ of a lower set $X$.
+\subsubsection{Complete Construction}
 
-need trees, and their combination.
-
-% what would the category version of this look like? 
-
-\begin{displaymath}
-  \mathsf{C}(X) = \{ x \mid t \in \mathrm{Tree}(\int X), x \leq \mathrm{combine}(t) \}
-\end{displaymath}
+We can now state the second main theorem of this section:
 
 \begin{theorem}
-  $\mathsf{C}$ is a closure operator. Moreover, it is lax monoidal wrt
-  to one operator, and strong monoidal wrt the other.
+  If $(F, \leq, \parallel, \rhd, I, +)$ is an MAV Frame, then
+  $\Chu(\ClosedLowerSet{F}, I)$ has the structure of an MAV Algebra.
 \end{theorem}
+
+\begin{proof}
+  Combining all the propositions above.
+\end{proof}

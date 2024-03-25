@@ -16,6 +16,7 @@
             latexmk cmll mathpartir xypic todonotes mathtools xifthen ifmtarg polytable lazylist etoolbox environ
             newunicodechar
             mathcommand foreign xpunctuate cleveref
+            fdsymbol stmaryrd
             # latex-bin latexmk
             # etoolbox xcolor geometry stmaryrd
             # mathpartir hyperref pdftexcmds infwarerr
