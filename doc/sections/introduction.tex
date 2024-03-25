@@ -17,7 +17,11 @@ The technique of cut-elimination by construction of a semantic model for MALL is
 The completeness of this model directly yields the existence of a cut-free proof for every proof constructible in the MALL sequent calculus.
 The same technique was used by Abrusci~\cite{Abrusci91:psc} for non-commutative linear logic, by De, Jafarrahmani, and Saurin~\cite{De22:psc} for MALL with fixed points, and by Frumin~\cite{Frumin22:psc} for bunched implications.
 
-For MAV, we cannot use the phase space model, due to the presence of the self-dual connective.
+The phase semantic proof of cut-elimination does not easily extend to include the kind of self-dual connective present in BV and its extensions.
+The phase space model defines duals by means of double negation with respect to the monoidal structure, which means that attempts to extend the model with the self-dual non-commutative connective result in two distinct dual connectives, reminiscent of the non-commutative tensor and par introduced by Slavnov~\cite{Slavnov19:scmll}.
 \wen{%
       I think we can't quite say we \emph{cannot} use phase spaces, only that they do not immediately generalise to accommodate self-dual connectives, right?}
-\bob{I think we can say ``The Phase Space proof of cut-elimination does not easily extend to the kind of self-dual connective present in BV and its extensions.'' Maybe elaborate by saying that the phase space model defines duality by means of a double negation with respect to one one of the monoidal structures, and ignores the other one completely. So I think it is unlikely that phase spaces can be adapted to BV.}
+\bob{%
+      I think we can say ``The Phase Space proof of cut-elimination does not easily extend to the kind of self-dual connective present in BV and its extensions.'' Maybe elaborate by saying that the phase space model defines duality by means of a double negation with respect to one one of the monoidal structures, and ignores the other one completely. So I think it is unlikely that phase spaces can be adapted to BV.}
+\wen{%
+      Gave it a shot.}
