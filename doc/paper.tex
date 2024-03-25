@@ -59,12 +59,24 @@
 %% Preamble:                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Set up unicode support
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1,T5]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage[english]{babel}
+  \usepackage{newunicodechar}
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \usepackage{newunicodechar}
+\fi
+
 % `\IfSingleTF`: Does the element consist of a single token?
 \ExplSyntaxOn
 \cs_new_eq:NN \IfSingleTF \tl_if_single:nTF
 \ExplSyntaxOff
 
-% Cleveref with custom labels (via Fabrizio Montesi)
+% Set up cleveref with custom labels (via Fabrizio Montesi)
 \usepackage[nameinlink]{cleveref}
 \makeatletter
 \newcommand{\customlabel}[4][0]{%
@@ -155,16 +167,6 @@
 % \usepackage[bw]{agda}
 % \usepackage{ifthen}
 
-% Set up unicode support
-% \usepackage{iftex}
-% \ifPDFTeX
-%   \usepackage{fontenc}
-%   \usepackage[utf8]{inputenc}
-%   \usepackage{newunicodechar}
-% \else % if luatex or xetex
-%   \usepackage{unicode-math} % this also loads fontspec
-%   \usepackage{newunicodechar}
-% \fi
 % \usepackage{textcomp} % provide euro and other symbols
 % \newunicodechar{−}{\ensuremath{\mathnormal-}}
 % \newunicodechar{α}{\ensuremath{\alpha}}
