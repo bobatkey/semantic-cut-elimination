@@ -1,26 +1,23 @@
 {-# OPTIONS --safe --without-K #-}
 
 open import Level using (Level; _⊔_)
-open import Algebra.Core using (Op₁; Op₂)
-open import Algebra.Definitions using (Congruent₁; Congruent₂)
-open import Data.Product using (_×_; _,_; proj₁; proj₂; swap)
+open import Algebra.Core
+open import Algebra.Definitions
+open import Data.Product using (_,_; proj₁; proj₂; swap)
 open import Function using (flip)
-open import Relation.Binary.Bundles using (Preorder; Poset)
-open import Relation.Binary using (Rel; Antisymmetric; Reflexive; Transitive; IsPreorder; IsPartialOrder; IsEquivalence; Setoid)
+open import Relation.Binary
 import Relation.Binary.PropositionalEquality as PropEq
+open import Relation.Binary.Construct.Closure.Symmetric using (SymClosure; fwd; bwd)
+import Relation.Binary.Construct.Closure.Symmetric as SymClosure
+import Relation.Binary.Construct.Flip.EqAndOrd as Flip
+import Relation.Binary.Construct.Intersection as Intersection
 
 module Relation.Binary.Construct.Core.Symmetric where
 
-import Relation.Binary.Construct.Flip.EqAndOrd as F
-import Relation.Binary.Construct.Intersection as I
-
-module _
-    {a ℓ}
-    {A : Set a}
-  where
+module _ {a ℓ} {A : Set a} where
 
   SymCore : Rel A ℓ → Rel A ℓ
-  SymCore _≲_ = _≲_ I.∩ (flip _≲_)
+  SymCore _≲_ = _≲_ Intersection.∩ (flip _≲_)
 
   module _ (_≲_ : Rel A ℓ) where
 
@@ -28,10 +25,10 @@ module _
     antisymmetric x₁≲x₂ x₂≲x₁ = (x₁≲x₂ , x₂≲x₁)
 
     reflexive : Reflexive _≲_ → Reflexive (SymCore _≲_)
-    reflexive refl = I.reflexive _≲_ (flip _≲_) refl (F.refl _≲_ refl)
+    reflexive refl = Intersection.reflexive _≲_ (flip _≲_) refl (Flip.refl _≲_ refl)
 
     transitive : Transitive _≲_ → Transitive (SymCore _≲_)
-    transitive trans = I.transitive _≲_ (flip _≲_) trans (F.trans _≲_ trans)
+    transitive trans = Intersection.transitive _≲_ (flip _≲_) trans (Flip.trans _≲_ trans)
 
     congruent₁ : {f : Op₁ A} → Congruent₁ _≲_ f → Congruent₁ (SymCore _≲_) f
     congruent₁ cong₁ x = cong₁ (proj₁ x) , cong₁ (proj₂ x)
@@ -39,10 +36,7 @@ module _
     congruent₂ : {∙ : Op₂ A} → Congruent₂ _≲_ ∙ → Congruent₂ (SymCore _≲_) ∙
     congruent₂ cong₂ x₁ x₂ = cong₂ (proj₁ x₁) (proj₁ x₂) , cong₂ (proj₂ x₁) (proj₂ x₂)
 
-    module _
-        {ℓ′} {_≈_ : Rel A ℓ′}
-        (isPreorder : IsPreorder _≈_ _≲_)
-      where
+    module _ {ℓ′} {_≈_ : Rel A ℓ′} (isPreorder : IsPreorder _≈_ _≲_) where
 
       isPreorder⇒isEquivalence : IsEquivalence (SymCore _≲_)
       isPreorder⇒isEquivalence .IsEquivalence.refl = reflexive (IsPreorder.refl isPreorder)
@@ -75,10 +69,7 @@ module _
       isPreorder⇒poset .Poset._≤_ = _≲_
       isPreorder⇒poset .Poset.isPartialOrder = isPreorder⇒isPartialOrder
 
-    module _
-        (refl : Reflexive _≲_)
-        (trans : Transitive _≲_)
-      where
+    module _ (refl : Reflexive _≲_) (trans : Transitive _≲_) where
 
       refl,trans⇒≡-≲-isPreorder : IsPreorder PropEq._≡_ _≲_
       refl,trans⇒≡-≲-isPreorder .IsPreorder.isEquivalence = PropEq.isEquivalence
@@ -102,3 +93,6 @@ module _
 
       refl,trans⇒poset : Poset a ℓ ℓ
       refl,trans⇒poset = isPreorder⇒poset refl,trans⇒≡-≲-isPreorder
+
+    SymCore⇒SymClosure : SymCore _≲_ ⇒ SymClosure _≲_
+    SymCore⇒SymClosure (x≲y , _y≲x) = fwd x≲y -- or bwd y≲x
