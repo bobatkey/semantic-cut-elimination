@@ -1,0 +1,2878 @@
+% VirginiaLake LaTeX macros by Alessio Guglielmi
+%
+% Many thanks to Ross Moore (Macquarie University) for suggestions leading 
+% to \vlupdate
+
+\NeedsTeXFormat{LaTeX2e}%
+\ProvidesPackage{virginialake}[2021/11/02 v4.2]
+\newif\ifvirginialakeusesxy
+        \virginialakeusesxytrue
+\DeclareOption{noxy}{\virginialakeusesxyfalse}%
+\newif\ifvirginialakegoodsyntax
+        \virginialakegoodsyntaxfalse
+\DeclareOption{goodsyntax}{\virginialakegoodsyntaxtrue}%
+\newif\ifvirginialakelutzsyntax
+        \virginialakelutzsyntaxfalse
+\DeclareOption{lutzsyntax}{\virginialakelutzsyntaxtrue}%
+\ProcessOptions
+\@ifclassloaded{beamer}%
+               {\RequirePackage{etex}}%
+               {}%
+\let\circledS\undefined\RequirePackage{amssymb}%
+\RequirePackage{stmaryrd}%
+\RequirePackage{ifthen}%
+\RequirePackage{ifpdf}%
+\RequirePackage{etoolbox}%
+\newif\ifvirginialakepdflatex\ifpdf\virginialakepdflatextrue\else
+                                   \virginialakepdflatexfalse\fi
+\@ifpackageloaded{fp-basic}%
+                 {\relax}%
+                 {\RequirePackage{fp-basic}\FPmessagesfalse}%
+\ifvirginialakeusesxy
+    \ifvirginialakepdflatex
+       \@ifpackageloaded{xy}%
+                        {\relax}%
+                        {\RequirePackage[line,arrow,curve,frame,color,crayon,pdf]{xy}}%
+       \newxycolor{afbackground}{0 0 0 0.12 cmyk}%
+       \makeatletter\renewcommand\xywarning@[1]{\relax}\catcode`@=11
+       \W@{}%
+       \W@{VirginiaLake Warning: Xy-pic warnings are suppressed in PDF mode.}%
+       \W@{}%
+    \else
+       \RequirePackage[line,arrow,curve,frame,color,crayon,ps,dvips]{xy}%
+       \newxycolor@{afbackground}{0 0 0 0.12}{cmyk}{}{}%
+   \fi
+\fi
+\@ifpackageloaded{xcolor}%
+                 {\relax}%
+                 {\RequirePackage[dvipsnames]{xcolor}}%
+\newif\ifetex
+\AtBeginDocument{\@ifpackageloaded{etex}{\etextrue}{\etexfalse}}%
+
+%----------------------------------------------------------------------- IFMTARG
+% Code from ifmtarg.sty, reproduced below with permission - A.G.
+%
+% ifmtarg.sty
+%
+% Provides an if-then-else command for an empty macro argument
+% (empty = zero or more spaces only)
+% Use as \@ifmtarg{arg1}{Code for arg1 empty}{Code for arg1 not empty}%
+%
+% author: Peter Wilson (CUA)
+%         (now at peter.r.wilson@boeing.com)
+% Copyright Peter Wilson, 1996
+% Copyright Peter Wilson and Donald Arseneau, 2000
+% Released under the LaTeX Project Public License
+%
+%% Commands by Donald Arseneau
+\begingroup
+\catcode`\Q=3
+\long\gdef\@ifmtarg#1{\@xifmtarg#1QQ\@secondoftwo\@firstoftwo\@nil}%
+\long\gdef\@xifmtarg#1#2Q#3#4#5\@nil{#4}%
+\long\gdef\@ifnotmtarg#1{\@xifmtarg#1QQ\@firstofone\@gobble\@nil}%
+\endgroup
+%---------------------------------------------------------------- END OF IFMTARG
+
+%------------------------------------------------------------ MACROS FOR SYMBOLS
+
+\newcommand{\one}{{\mathsf 1}}%
+\newcommand{\zer}{{\mathsf 0}}%
+\newcommand{\fff}{{\mathsf f}}%
+\newcommand{\ttt}{{\mathsf t}}%
+\newcommand{\sw }{{\mathsf s}}%
+\newcommand{\me }{{\mathsf m}}%
+\newcommand{\iD }{{\mathsf i}{\downarrow}}%
+\newcommand{\iU }{{\mathsf i}{  \uparrow}}%
+\newcommand{\cD }{{\mathsf c}{\downarrow}}%
+\newcommand{\cU }{{\mathsf c}{  \uparrow}}%
+\newcommand{\wD }{{\mathsf w}{\downarrow}}%
+\newcommand{\wU }{{\mathsf w}{  \uparrow}}%
+\newcommand{\qD }{{\mathsf q}{\downarrow}}%
+\newcommand{\qU }{{\mathsf q}{  \uparrow}}%
+\newcommand{\BV }{{\mathsf {BV}}}%
+\newcommand{\SBV}{{\mathsf{SBV}}}%
+\newcommand{\KS }{{\mathsf {KS}}}%
+\newcommand{\SKS}{{\mathsf{SKS}}}%
+
+%---------------------------------------------------------------- END OF SYMBOLS
+
+%------------------------------------------------ MACROS FOR FORMULAE/STRUCTURES
+
+\newif\ifvlsmallops\vlsmallopsfalse
+
+\newcommand\vlbin[1]{\ifvlsmallops\mathchoice
+      {\mathbin{\raise.2ex \hbox{$\scriptstyle      #1$}}}%
+      {\mathbin{\raise.2ex \hbox{$\scriptstyle      #1$}}}%
+      {\mathbin{\raise.12ex\hbox{$\scriptscriptstyle#1$}}}%
+      {\mathbin{           \hbox{$\scriptscriptstyle#1$}}}\else\mathbin{#1}\fi}%
+
+\newif\ifvllinear\vllinearfalse
+
+\newcommand{\vlor}{\ifvllinear\vlbin\varoplus\else\vlbin\vee\fi}%
+
+\newcommand{\vlan}{\ifvllinear\vlbin\binampersand\else\vlbin\wedge\fi}%
+
+\newcommand{\vlpa}{\vlbin\bindnasrepma}%
+
+\newcommand{\vlte}{\vlbin\varotimes}%
+
+\newcommand{\vlse}{\vlbin\triangleleft}%
+
+\newcommand{\vlim}{\vlbin\to}%
+
+\newcommand{\vlli}{\vlbin\multimap}%
+
+\newcommand{\vlmi}{\vlbin\leftarrow}%
+
+\newcommand{\vldi}{\vlbin\leftrightarrow}%
+
+\newcommand{\vlne}{\vlbin\neg}%
+
+\newcommand{\vljm}{\vlbin\supset}%
+
+\newcommand{\vlmj}{\vlbin\subset}%
+
+\newcommand{\vlgoodsyntax}{%
+   \def\vlleftparbracket   {\ifvirginialakesmallbrackets[\else
+                                       \mathopen{}\left [\fi}%
+   \def\vlrightparbracket  {\ifvirginialakesmallbrackets]\else
+                                                  \right]\mathclose{}\fi}%
+   \let\vlleftparbracketex \vlleftparbracket
+   \let\vlrightparbracketex\vlrightparbracket
+   \let\vlleftparbracketcn \vlleftparbracket
+   \let\vlrightparbracketcn\vlrightparbracket
+   \def\vlleftcopbracket   {\ifvirginialakesmallbrackets(\else
+                                       \mathopen{}\left (\fi}%
+   \def\vlrightcopbracket  {\ifvirginialakesmallbrackets)\else
+                                                  \right)\mathclose{}\fi}%
+   \let\vlleftcopbracketex \vlleftcopbracket
+   \let\vlrightcopbracketex\vlrightcopbracket
+   \let\vlleftcopbracketcn \vlleftcopbracket
+   \let\vlrightcopbracketcn\vlrightcopbracket
+   \def\vlleftseqbracket   {\ifvirginialakesmallbrackets\langle\else
+                                        \mathopen{}\left\langle\fi}%
+   \def\vlrightseqbracket  {\ifvirginialakesmallbrackets\rangle\else
+                                                  \right\rangle\mathclose{}\fi}%
+   \let\vlleftseqbracketex \vlleftseqbracket
+   \let\vlrightseqbracketex\vlrightseqbracket
+   \let\vlleftseqbracketcn \vlleftseqbracket
+   \let\vlrightseqbracketcn\vlrightseqbracket
+   \def\vldsaaux{\ifx\vlxspacetmp\vldsa\vlx\vlx\vlx\togglexspacefalse\else
+                  \iftogglexspace\vlx\else\togglexspacetrue\fi\fi}%
+   \def\vldsa{\futurelet\vlxspacetmp\vldsaaux}%
+   \def\vlcsaaux{\ifx\vlxspacetmp\vlcsa\vlx\vlx\vlx\togglexspacefalse\else
+                  \iftogglexspace\vlx\else\togglexspacetrue\fi\fi}%
+   \def\vlcsa{\futurelet\vlxspacetmp\vlcsaaux}%
+   \def\vldsmaux{\ifx\vlxspacetmp\vldsm\vlx\vlx\vlx\togglexspacefalse\else
+                  \iftogglexspace\vlx\else\togglexspacetrue\fi\fi}%
+   \def\vldsm{\futurelet\vlxspacetmp\vldsmaux}%
+   \def\vlcsmaux{\ifx\vlxspacetmp\vlcsm\vlx\vlx\vlx\togglexspacefalse\else
+                  \iftogglexspace\vlx\else\togglexspacetrue\fi\fi}%
+   \def\vlcsm{\futurelet\vlxspacetmp\vlcsmaux}%
+   \def\vlnsmaux{\ifx\vlxspacetmp\vlnsm\vlx\vlx\vlx\togglexspacefalse\else
+                  \iftogglexspace\vlx\else\togglexspacetrue\fi\fi}%
+   \def\vlnsm{\futurelet\vlxspacetmp\vlnsmaux}%
+   \let\vldots=\dots}%
+
+\newcommand{\vlx}{\;}%
+
+\newif\iftogglexspace\togglexspacetrue
+
+\newcommand{\vlsetoperators}{%
+   \def\vldsaaux{\ifx\vlxspacetmp\vldsa\vlx\vlor\vlx\togglexspacefalse\else
+                  \iftogglexspace\vlor\else\togglexspacetrue\fi\fi}%
+   \def\vldsa{\futurelet\vlxspacetmp\vldsaaux}%
+   \def\vlcsaaux{\ifx\vlxspacetmp\vlcsa\vlx\vlan\vlx\togglexspacefalse\else
+                  \iftogglexspace\vlan\else\togglexspacetrue\fi\fi}%
+   \def\vlcsa{\futurelet\vlxspacetmp\vlcsaaux}%
+   \def\vldsmaux{\ifx\vlxspacetmp\vldsm\vlx\vlpa\vlx\togglexspacefalse\else
+                  \iftogglexspace\vlpa\else\togglexspacetrue\fi\fi}%
+   \def\vldsm{\futurelet\vlxspacetmp\vldsmaux}%
+   \def\vlcsmaux{\ifx\vlxspacetmp\vlcsm\vlx\vlte\vlx\togglexspacefalse\else
+                  \iftogglexspace\vlte\else\togglexspacetrue\fi\fi}%
+   \def\vlcsm{\futurelet\vlxspacetmp\vlcsmaux}%
+   \def\vlnsmaux{\ifx\vlxspacetmp\vlnsm\vlx\vlse\vlx\togglexspacefalse\else
+                  \iftogglexspace\vlse\else\togglexspacetrue\fi\fi}%
+   \def\vlnsm{\futurelet\vlxspacetmp\vlnsmaux}%
+   \let\vldots=\cdots}%
+
+\newcommand{\vllutzsyntax}{%
+   \def\vlleftparbracket   {\ifvirginialakesmallbrackets[\else
+                                       \mathopen{}\left [\fi}%
+   \def\vlrightparbracket  {\ifvirginialakesmallbrackets]\else
+                                                  \right]\mathclose{}\fi}%
+   \let\vlleftparbracketex \relax
+   \let\vlrightparbracketex\relax
+   \let\vlleftparbracketcn \{
+   \let\vlrightparbracketcn\}%
+   \def\vlleftcopbracket   {\ifvirginialakesmallbrackets(\else
+                                       \mathopen{}\left (\fi}%
+   \def\vlrightcopbracket  {\ifvirginialakesmallbrackets)\else
+                                                  \right)\mathclose{}\fi}%
+   \let\vlleftcopbracketex \relax
+   \let\vlrightcopbracketex\relax
+   \let\vlleftcopbracketcn \{
+   \let\vlrightcopbracketcn\}%
+   \def\vlleftseqbracket   {\ifvirginialakesmallbrackets\langle\else
+                                        \mathopen{}\left\langle\fi}%
+   \def\vlrightseqbracket  {\ifvirginialakesmallbrackets\rangle\else
+                                                  \right\rangle\mathclose{}\fi}%
+   \let\vlleftseqbracketex \relax
+   \let\vlrightseqbracketex\relax
+   \let\vlleftseqbracketcn \{
+   \let\vlrightseqbracketcn\}%
+   \vlsetoperators
+   \vlsmallopstrue}%
+
+\newcommand{\vlnogoodsyntax}{%
+   \def\vlleftparbracket   {\ifvirginialakesmallbrackets(\else
+                                       \mathopen{}\left (\fi}%
+   \def\vlrightparbracket  {\ifvirginialakesmallbrackets)\else
+                                                  \right)\mathclose{}\fi}%
+   \let\vlleftparbracketex \relax
+   \let\vlrightparbracketex\relax
+   \let\vlleftparbracketcn \{
+   \let\vlrightparbracketcn\}%
+   \let\vlleftcopbracket   \vlleftparbracket
+   \let\vlrightcopbracket  \vlrightparbracket
+   \let\vlleftcopbracketex \relax
+   \let\vlrightcopbracketex\relax
+   \let\vlleftcopbracketcn \{
+   \let\vlrightcopbracketcn\}%
+   \let\vlleftseqbracket   \vlleftparbracket
+   \let\vlrightseqbracket  \vlrightparbracket
+   \let\vlleftseqbracketex \relax
+   \let\vlrightseqbracketex\relax
+   \let\vlleftseqbracketcn \{
+   \let\vlrightseqbracketcn\}%
+   \vlsetoperators}%
+
+\ifvirginialakegoodsyntax
+   \vlgoodsyntax
+\else
+   \ifvirginialakelutzsyntax
+      \vllutzsyntax
+   \else
+      \vlnogoodsyntax
+   \fi
+\fi
+
+\newif\ifvirginialakesmallbrackets\virginialakesmallbracketsfalse
+
+\newcommand{\vlsmallbrackets}{\virginialakesmallbracketstrue}%
+
+\newcommand{\vlnosmallbrackets}{\virginialakesmallbracketsfalse}%
+
+\newcommand{\vlprepstructuresaux}{\catcode`.=\active
+                                  \catcode`;=\active
+                                  \catcode`[=\active
+                                  \catcode`]=\active
+                                  \catcode`(=\active
+                                  \catcode`)=\active
+                                  \catcode`<=\active
+                                  \catcode`>=\active
+                                  \catcode`-=\active}%
+
+\newcommand{\lt}{<}%
+\newcommand{\gt}{>}%
+
+\let\vldot  .
+\let\vlscol ;
+\let\vlsqbrl[
+\let\vlsqbrr]
+\let\vlrobrl(
+\let\vlrobrr)
+\let\vlanbrl<
+\let\vlanbrr>
+\let\vlminus-
+
+\newif\ifvirginialakestructuressyntax\virginialakestructuressyntaxtrue
+
+\newcommand{\vlnostructuressyntax}{\virginialakestructuressyntaxfalse}%
+
+\newcommand{\vlgobble}[1]{}%
+
+{%--------------------------------------
+\vlprepstructuresaux
+
+\gdef\vlnos{\let.\vldot
+            \let;\vlscol
+            \let[\vlsqbrl
+            \let]\vlsqbrr
+            \let(\vlrobrl
+            \let)\vlrobrr
+            \let<\vlanbrl
+            \let>\vlanbrr
+            \let-\vlminus}%
+
+\gdef\vlprepstructures{\ifvirginialakestructuressyntax
+                          \vlprepstructuresaux\vlnos\fi}%
+
+\gdef\vlparopen  {\vlleftparbracket  \bgroup\catcode`.=\active\let.\vldsa
+                                            \catcode`;=\active\let;\vldsm
+                                            \catcode`]=\active\let]\vlparclose}%
+
+\gdef\vlparopenex{\vlleftparbracketex\bgroup\catcode`.=\active\let.\vldsa
+                                            \catcode`;=\active\let;\vldsm\vlsbr
+                                          \catcode`]=\active\let]\vlparcloseex}%
+
+\gdef\vlparopencn{\vlleftparbracketcn\bgroup\catcode`.=\active\let.\vldsa
+                                            \catcode`;=\active\let;\vldsm\vlsbr
+                                          \catcode`]=\active\let]\vlparclosecn}%
+
+\gdef\vlcopopen  {\vlleftcopbracket  \bgroup\catcode`.=\active\let.\vlcsa
+                                            \catcode`;=\active\let;\vlcsm
+                                            \catcode`)=\active\let)\vlcopclose}%
+
+\gdef\vlcopopenex{\vlleftcopbracketex\bgroup\catcode`.=\active\let.\vlcsa
+                                            \catcode`;=\active\let;\vlcsm\vlsbr
+                                          \catcode`)=\active\let)\vlcopcloseex}%
+
+\gdef\vlcopopencn{\vlleftcopbracketcn\bgroup\catcode`.=\active\let.\vlcsa
+                                            \catcode`;=\active\let;\vlcsm\vlsbr
+                                          \catcode`)=\active\let)\vlcopclosecn}%
+
+\gdef\vlseqopen  {\vlleftseqbracket  \bgroup\catcode`;=\active\let;\vlnsm
+                                            \catcode`>=\active\let>\vlseqclose}%
+
+\gdef\vlseqopenex{\vlleftseqbracketex\bgroup\catcode`;=\active\let;\vlnsm\vlsbr
+                                          \catcode`>=\active\let>\vlseqcloseex}%
+
+\gdef\vlseqopencn{\vlleftseqbracketcn\bgroup\catcode`;=\active\let;\vlnsm\vlsbr
+                                          \catcode`>=\active\let>\vlseqclosecn}%
+
+\gdef\vls  {\catcode`[=\active\let[\vlparopenex
+            \catcode`(=\active\let(\vlcopopenex
+            \catcode`<=\active\let<\vlseqopenex
+            \catcode`-=\active\let-\bar
+            \odframefirstfalse
+            \odbackgroundfirstfalse}%
+
+\gdef\vlsbr{\catcode`[=\active\let[\vlparopen
+            \catcode`(=\active\let(\vlcopopen
+            \catcode`<=\active\let<\vlseqopen
+            \catcode`-=\active\let-\bar
+            \odframefirstfalse
+            \odbackgroundfirstfalse}%
+
+\gdef\vlscn{\catcode`[=\active\let[\vlparopencn
+            \catcode`(=\active\let(\vlcopopencn
+            \catcode`<=\active\let<\vlseqopencn
+            \catcode`-=\active\let-\bar
+            \odframefirstfalse
+            \odbackgroundfirstfalse}%
+
+\gdef\vlupdate #1{
+   \expandafter\let\csname\expandafter\vlgobble\string #1vltemp\endcsname #1
+   \def #1{\bgroup\vlprepstructures
+     \csname\expandafter\vlgobble\string #1vlaux\endcsname}%
+   \expandafter\def\csname\expandafter\vlgobble\string #1vlaux\endcsname ##1{%
+      \csname\expandafter\vlgobble\string #1vltemp\endcsname{##1}\egroup}}%
+}%--------------------------------------
+
+\newcommand{\vlparclose  }{\egroup\vlrightparbracket  }%
+
+\newcommand{\vlparcloseex}{\egroup\vlrightparbracketex}%
+
+\newcommand{\vlparclosecn}{\egroup\vlrightparbracketcn}%
+
+\newcommand{\vlcopclose  }{\egroup\vlrightcopbracket  }%
+
+\newcommand{\vlcopcloseex}{\egroup\vlrightcopbracketex}%
+
+\newcommand{\vlcopclosecn}{\egroup\vlrightcopbracketcn}%
+
+\newcommand{\vlseqclose  }{\egroup\vlrightseqbracket  }%
+
+\newcommand{\vlseqcloseex}{\egroup\vlrightseqbracketex}%
+
+\newcommand{\vlseqclosecn}{\egroup\vlrightseqbracketcn}%
+
+\newcommand{\vlhole}{\{\kern.3em\}}%
+
+\newcommand{\vlstore}{\bgroup\vlprepstructures\afterassignment\egroup
+                      \global\def\vlread}%
+
+%----------------------------------------- END OF MACROS FOR FORMULAE/STRUCTURES
+
+%-------------------------------------------------------- MACROS FOR DERIVATIONS
+%
+%                                                   +-------+--------+-------+
+%                                                   |  dcl  |  dcc   |  dcr  |
+%                                                   +-------+--------+-------+
+%                                                       +---+        +---+
+%                                                       | l |--------| m |
+%                                                       +---+        +---+
+%                                                             +----+
+%                                                             | dc |
+%                                                             +----+
+%                                                   <---dl--->      <---dr--->
+%
+
+\newdimen\dercldim                                % dcl
+\newdimen\derccdim                                % dcc
+\newdimen\dercrdim                                % dcr
+\newdimen\derdim                                  % d
+\newdimen\derdldim                                % ddl
+\newdimen\derdrdim                                % ddr
+\newbox\derboxtwo                                 % b2
+\newbox\derboxthree                               % b3
+\newbox\derboxfour                                % b4
+\newdimen\derquad
+\newdimen\deropen
+\newbox\stembox
+
+\newcount\vlsavederboxonec
+%\newcount\vlsavederdimc
+\newcount\vldummycount
+
+% THE FOLLOWING IS VERY DANGEROUS: WE ARE CREATING A 'VIRTUAL MEMORY MANAGER'
+% FOR \derboxone, \derldim, \dercdim AND \derrdim, IN PARTICULAR BY USING
+% \count11 AND \count14. ETEX MIGHT INTERFERE WITH THIS STUFF. START FROM 
+% HERE IF YOU SEE SOMETHING ODD SUCH AS DUPLICATION OR MISPLACEMENT OF BOXES IN 
+% DERIVATIONS
+
+\newcommand{\vlderivationinitaux}{%
+   \newbox\derboxone                              % b1
+   \setbox\derboxone=\hbox{}%
+   \vlsavederboxonec=\derboxone
+%   \vlsavederdimc=\count11\advance\vlsavederdimc by1%
+   \newdimen\derldim                              % dl
+   \newdimen\dercdim                              % dc
+   \newdimen\derrdim}%                            % dr
+
+\newcommand{\vlderivationinit}{\bgroup
+   \vlprepstructures\vlderivationinitaux}%
+
+\newcommand{\vlderivationterm}{\egroup
+   \global\chardef\derboxone=\vlsavederboxonec
+   \ifetex
+      \ifnum\count264>256
+         \global\advance\count264 by-1
+      \else
+         \global\advance\count14 by-1
+      \fi
+   \else\global\advance\count14 by-1
+   \fi
+   \ifetex
+      \ifnum\count261>258
+         \global\advance\count261 by-3
+      \else
+         \ifnum\count261>257
+            \global\advance\count261 by-2
+            \global\advance\count11  by-1
+         \else
+            \ifnum\count261>256
+               \global\advance\count261 by-1
+               \global\advance\count11  by-2
+            \else
+               \global\advance\count11 by-3
+            \fi
+         \fi
+      \fi
+   \else\global\advance\count11 by-3
+   \fi
+%   \global\dimendef\derldim=\vlsavederdimc
+%   \global\advance\vlsavederdimc by1%
+%   \global\dimendef\dercdim=\vlsavederdimc
+%   \global\advance\vlsavederdimc by1%
+%   \global\dimendef\derrdim=\vlsavederdimc
+%   \global\advance\vlsavederdimc by-2
+   }%
+
+\newcommand{\vlderivationaux}[1]{#1\vcenter{\box\derboxone}\vlderivationterm}%
+
+\newcommand{\vlderivation}{\vlderivationinit\vlderivationaux}%
+
+\newcommand{\vlhyaux}[1]{\global\setbox\derboxone=\hbox{#1}%
+   \global\derldim=0pt%                           % dl=0
+   \global\dercdim=\wd\derboxone                  % dc=wd(b1)
+   \global\derrdim=0pt%                           % dr=0
+   }%
+
+\newbox\vlhybox
+\newcommand{\vlhy}[1]{\global\setbox\vlhybox=\hbox{\strut$#1$}%
+   \vlhyaux{\box\vlhybox}}%
+
+\newcommand{\vlstemaux}{\dercldim=\derldim
+                        \derccdim=\dercdim
+                        \dercrdim=\derrdim}%
+
+\newcommand{\vldaux}[6]{\setbox\derboxtwo=\hbox{\unhbox\derboxone}%
+                                                  % b2=b1
+   \setbox\derboxthree=\hbox{$#1$}%               % b3; l=wd(b3)
+   \setbox\derboxfour =\hbox{$#2$}%               % b4; m=wd(b4)
+   #3                                             % dl=0, dc=wd(b1), dr=0
+   \derdim=\dercdim\advance\derdim by-\derccdim\divide\derdim by2%
+                                                  % d=(dc-dcc)/2
+   \global\derldim=\dercldim\global\advance\derldim by-\derdim
+                                                  % dl=dcl-d
+   \global\derrdim=\dercrdim\global\advance\derrdim by-\derdim
+                                                  % dr=dcr-d
+   \deropen=\fontdimen5\textfont2\divide\deropen by3%
+   \setbox\derboxone=\hbox{\vbox{\offinterlineskip
+         \hbox{\ifdim\derldim<0pt\kern-\derldim\fi
+               \box\derboxtwo
+               \ifdim\derrdim<0pt\kern-\derrdim\fi}%
+         #4%
+         \hbox{\ifdim\dercldim>\derldim
+                  \ifdim\derldim>0pt\kern\derldim\fi
+                  \else\kern\dercldim\fi
+               \hbox to0pt{\hss\copy\derboxthree}%
+               \vbox{\ifdim\derccdim>\dercdim\hsize=\derccdim
+                                        \else\hsize=\dercdim \fi
+                    #5}%
+               \hbox to0pt{\copy\derboxfour\hss}%
+               \ifdim\dercrdim>\derrdim
+                  \ifdim\derrdim>0pt\kern\derrdim\fi
+                  \else\kern\dercrdim\fi}%
+         #6%
+         \hbox{\ifdim\derldim>0pt\kern\derldim\fi
+               \box\derboxone
+               \ifdim\derrdim>0pt\kern\derrdim\fi}}}%
+   \ifdim\derldim<0pt\global\derldim=0pt\fi       % dl=max(dl,0)
+   \ifdim\derrdim<0pt\global\derrdim=0pt\fi       % dr=max(dr,0)
+   \derdldim=\wd\derboxthree\advance\derdldim by-\dercldim
+                                                  % ddl=l-dcl
+   \derdrdim=\wd\derboxfour \advance\derdrdim by-\dercrdim
+                                                  % ddr=m-dcr
+   \ifdim\derdim<0pt%
+      \ifdim\derdldim<0pt%
+         \derdldim=0pt%                           % d<0, ddl<0 -> ddl=0
+      \fi
+      \ifdim\derdrdim<0pt%
+         \derdrdim=0pt%                           % d<0, ddr<0 -> ddr=0
+      \fi
+   \else
+      \ifdim\derldim>0pt%
+         \ifdim\derdldim>-\derdim
+            \advance\derdldim by\derdim           % d>=0, dl>0, ddl+d>0 -> 
+         \else                                    %                    ddl=ddl+d
+            \derdldim=0pt%                        % d>=0, dl>0, ddl+d<=0 ->
+         \fi                                      %                        ddl=0
+      \else
+         \advance\derdldim by\dercldim            % d>=0, dl=0 -> ddl=ddl+dcl
+      \fi
+      \ifdim\derrdim>0pt%
+         \ifdim\derdrdim>-\derdim
+            \advance\derdrdim by\derdim           % d>=0, dr>0, ddr+d>0 -> 
+         \else                                    %                    ddr=ddr+d
+            \derdrdim=0pt%                        % d>=0, dr>0, ddr+d<=0 ->
+         \fi                                      %                        ddr=0
+      \else
+         \advance\derdrdim by\dercrdim            % d>=0, dr=0 -> ddr=ddr+dcr
+      \fi
+   \fi
+   \global\setbox\derboxone=\hbox
+      {\kern\derdldim\unhbox\derboxone\kern\derdrdim}%
+   \global\advance\derldim by\derdldim            % dl=dl+ddl
+   \global\advance\derrdim by\derdrdim            % dr=dr+ddr
+   }%
+
+\newcommand{\vlstemraux }[4]{{#4}\vlstemaux\vldaux
+   {\scriptstyle #1}%
+   {\scriptstyle #2}%
+   {\vlhyaux{#3}}%
+   {\kern-\deropen\kern-\ht\strutbox\kern-\dp\strutbox}%
+   {\hbox{$\vcenter{\vbox{\offinterlineskip
+                    \hbox{$\copy\stembox$}}}$}}%
+   {\kern-\deropen}}%
+
+\newcommand{\vlstemrraux}[4]{{#4}\vlstemaux\vldaux
+   {\scriptstyle #1}%
+   {\scriptstyle #2}%
+   {\vlhy{#3}}%
+   {\kern\deropen}%
+   {\hbox{\hfil}}%
+   {\kern\deropen}}%
+
+\newif\ifvlsmallleftlabels\vlsmallleftlabelstrue
+
+\newcommand{\vlnosmallleftlabels}{\vlsmallleftlabelsfalse}%
+
+\newcommand{\vlsmallleftlabels}{\vlsmallleftlabelstrue}%
+
+\newcommand{\vlleftlabel }[1]{\@ifnotmtarg{#1}{\ifvlsmallleftlabels
+                               \scriptstyle\fi #1\;}\relax}%
+
+\newcommand{\vlrightlabel}[1]{\@ifnotmtarg{#1}{\;#1}\relax}%
+
+\newdimen\vlstemheight\vlstemheight=8pt%
+
+\newcommand{\vlvruler}{\hbox{\vrule width .6pt height \vlstemheightc sp
+                             \kern1.2pt
+                             \vrule width .6pt height \vlstemheightc sp}}%
+
+\newcount\vlstemheightc
+
+\newcommand{\vldf}[5]{\vldummycount=\vlstemheight
+                      \FPmul\vlstemheightc{\the\vldummycount}{#5}%
+   \setbox\stembox=\vbox to \vlstemheightc sp{\vlvruler}%
+   \vlstemrraux{                }{                 }{#3              }  {%
+   \vlstemraux {\vlleftlabel{#1}}{\vlrightlabel{#2}}{\kern\wd\stembox} {%
+   \vlstemrraux{                }{                 }{\kern\wd\stembox}{%
+   #4                                                                 }}}}%
+
+\newcommand{\vlde}[4]{\vldf{#1}{#2}{#3}{#4}1}%
+
+\newcommand{\vldd}[4]{\vldf{#1}{#2}{#3}{#4}2}%
+
+\newcommand{\vlpf}[4]{\vldf{#1}{#2}{#3}%
+   {\vlhyaux{\vbox to0pt{\vss\kern3pt\hrule width4.2pt\vss}}}{#4}}%
+
+\newcommand{\vlpr}[3]{\vlpf{#1}{#2}{#3}1}%
+
+\newcommand{\vlpd}[3]{\vlpf{#1}{#2}{#3}2}%
+
+\newcommand{\vlproofaux}[4]{\vlderivationaux{\vlpf{#2}{#3}{#4}{#1}}}%
+
+\newcommand{\vlproof }{\vlderivationinit\vlproofaux1}%
+
+\newcommand{\vlproofd}{\vlderivationinit\vlproofaux2}%
+
+\newcommand{\vlderaux}[5]{\vlderivationaux{\vldf{#2}{#3}{#4}{\vlhy{#5}}{#1}}}%
+
+\newcommand{\vlder }{\vlderivationinit\vlderaux1}%
+
+\newcommand{\vlderd}{\vlderivationinit\vlderaux2}%
+
+\newcommand{\vlhruler}{\vfill\hbox to\hsize{\hrulefill}\vfill}%
+
+\newcommand{\vlhhruler}{\vfill
+                        \hbox to\hsize{\hrulefill}%
+                        \kern1pt
+                        \hbox to\hsize{\hrulefill}%
+                        \vfill}%
+
+\newcommand{\vlhdotter}{\vfill
+   \hbox to\hsize{\cleaders\vbox to0pt{\vss
+       \hbox{\kern-.35pt$.$\kern-.35pt}\vss}\hskip\hsize}\vfill}%
+
+\newcommand{\vldsinaux}[3]{\vldaux
+   {\smash{\ifvlsmallleftlabels\lower\fontdimen22\scriptfont2%
+                          \else\lower\fontdimen22\textfont2\fi
+                                       \hbox{$\vlleftlabel {#1}$}}}%
+   {\smash{\lower\fontdimen22\textfont2\hbox{$\vlrightlabel{#2}$}}}%
+   {\vlhy{#3}}%
+   {\kern\deropen}%
+   {\vbox to.4pt{\vlhruler}}%
+   {\kern\deropen}}%
+
+\newcommand{\vldsidaux}[3]{\vldaux
+   {\smash{\ifvlsmallleftlabels\lower\fontdimen22\scriptfont2%
+                          \else\lower\fontdimen22\textfont2\fi
+                                       \hbox{$\vlleftlabel {#1}$}}}%
+   {\smash{\lower\fontdimen22\textfont2\hbox{$\vlrightlabel{#2}$}}}%
+   {\vlhy{#3}}%
+   {\kern\deropen}%
+   {\vbox to.4pt{\vlhdotter}}%
+   {\kern\deropen}}%
+
+\newdimen\vldsiqdimenleft
+\newdimen\vldsiqdimenright
+
+\newcommand{\vldsiqaux}[3]{\ifvlsmallleftlabels
+                                \vldsiqdimenleft=\fontdimen22\scriptfont2%
+                           \else\vldsiqdimenleft=\fontdimen22\textfont2\fi
+                           \advance\vldsiqdimenleft  by-.7pt%
+                           \vldsiqdimenright=\fontdimen22\textfont2%
+                           \advance\vldsiqdimenright by-.7pt%
+   \vldaux
+   {\smash{\lower\vldsiqdimenleft \hbox{$\vlleftlabel {#1}$}}}%
+   {\smash{\lower\vldsiqdimenright\hbox{$\vlrightlabel{#2}$}}}%
+   {\vlhy{#3}}%
+   {\kern\deropen\kern-.7pt}%
+   {\vbox to1.8pt{\vlhhruler}}%
+   {\kern\deropen\kern-.7pt}}%
+
+\newbox\derboxin
+\newdimen\derboxinwidth
+
+\newcommand{\vliaux}[2]{#2%
+   \dercldim=\derldim
+   \derccdim=\dercdim
+   \dercrdim=\derrdim
+   \setbox\derboxin=\hbox{$#1$}%
+   \derboxinwidth=1em\advance\derboxinwidth by-\wd\derboxin
+   \ifdim\derboxinwidth>0pt\divide\derboxinwidth by2\else\derboxinwidth=0pt\fi}%
+
+\newcommand{\vlin}[4]{\vliaux{#3}{#4}%
+   \vldsinaux{#1}{#2}{\kern\derboxinwidth\box\derboxin\kern\derboxinwidth}}%
+
+\newcommand{\vlid}[4]{\vliaux{#3}{#4}%
+   \vldsidaux{#1}{#2}{\kern\derboxinwidth\box\derboxin\kern\derboxinwidth}}%
+
+\newcommand{\vliq}[4]{\vliaux{#3}{#4}%
+   \vldsiqaux{#1}{#2}{\kern\derboxinwidth\box\derboxin\kern\derboxinwidth}}%
+
+\newcommand{\vliiaux}[2]{\derquad=\fontdimen6\textfont2%
+   {#1}%
+           \dercldim  =\derldim
+           \derccdim  =\dercdim
+   \setbox\derboxtwo=\hbox{\unhbox\derboxone\kern\derquad}%
+   \advance\derccdim by\derrdim
+   \advance\derccdim by\derquad
+   {#2}%
+   \setbox\derboxone=\hbox{\unhbox\derboxtwo\unhbox\derboxone}%
+   \advance\derccdim by\derldim
+   \advance\derccdim by\dercdim
+           \dercrdim  =\derrdim}%
+
+\newcommand{\vliin}[5]{\vliiaux{#4}{#5}\vldsinaux{#1}{#2}{#3}}%
+
+\newcommand{\vliid}[5]{\vliiaux{#4}{#5}\vldsidaux{#1}{#2}{#3}}%
+
+\newcommand{\vliiq}[5]{\vliiaux{#4}{#5}\vldsiqaux{#1}{#2}{#3}}%
+
+\newcommand{\vldsauxx}{\setbox\derboxtwo=\hbox
+   {\unhbox\derboxtwo\unhbox\derboxone\kern\derquad}%
+   \advance\derccdim by\derldim
+   \advance\derccdim by\dercdim
+   \advance\derccdim by\derrdim
+   \advance\derccdim by\derquad}%
+
+\newcommand{\vldsiiiaux}[3]{\derquad=\fontdimen6\textfont2%
+   {#1}%
+           \dercldim  =\derldim
+           \derccdim  =\dercdim
+   \setbox\derboxtwo=\hbox{\unhbox\derboxone\kern\derquad}%
+   \advance\derccdim by\derrdim
+   \advance\derccdim by\derquad
+   {#2}\vldsauxx
+   {#3}%
+   \setbox\derboxone=\hbox{\unhbox\derboxtwo\unhbox\derboxone}%
+   \advance\derccdim by\derldim
+   \advance\derccdim by\dercdim
+           \dercrdim  =\derrdim}%
+
+\newcommand{\vliiin}[6]{\vldsiiiaux{#4}{#5}{#6}\vldsinaux{#1}{#2}{#3}}%
+
+\newcommand{\vliiid}[6]{\vldsiiiaux{#4}{#5}{#6}\vldsidaux{#1}{#2}{#3}}%
+
+\newcommand{\vliiiq}[6]{\vldsiiiaux{#4}{#5}{#6}\vldsiqaux{#1}{#2}{#3}}%
+
+\newcommand{\vldsiiiiaux}[4]{\derquad=\fontdimen6\textfont2%
+   {#1}%
+           \dercldim  =\derldim
+           \derccdim  =\dercdim
+   \setbox\derboxtwo=\hbox{\unhbox\derboxone\kern\derquad}%
+   \advance\derccdim by\derrdim
+   \advance\derccdim by\derquad
+   {#2}\vldsauxx
+   {#3}\vldsauxx
+   {#4}%
+   \setbox\derboxone=\hbox{\unhbox\derboxtwo\unhbox\derboxone}%
+   \advance\derccdim by\derldim
+   \advance\derccdim by\dercdim
+           \dercrdim  =\derrdim}%
+
+\newcommand{\vliiiin}[7]{\vldsiiiiaux{#4}{#5}{#6}{#7}\vldsinaux{#1}{#2}{#3}}%
+
+\newcommand{\vliiiid}[7]{\vldsiiiiaux{#4}{#5}{#6}{#7}\vldsidaux{#1}{#2}{#3}}%
+
+\newcommand{\vliiiiq}[7]{\vldsiiiiaux{#4}{#5}{#6}{#7}\vldsiqaux{#1}{#2}{#3}}%
+
+\newcommand{\vldsiiiiiaux}[5]{\derquad=\fontdimen6\textfont2%
+   {#1}%
+           \dercldim  =\derldim
+           \derccdim  =\dercdim
+   \setbox\derboxtwo=\hbox{\unhbox\derboxone\kern\derquad}%
+   \advance\derccdim by\derrdim
+   \advance\derccdim by\derquad
+   {#2}\vldsauxx
+   {#3}\vldsauxx
+   {#4}\vldsauxx
+   {#5}%
+   \setbox\derboxone=\hbox{\unhbox\derboxtwo\unhbox\derboxone}%
+   \advance\derccdim by\derldim
+   \advance\derccdim by\dercdim
+           \dercrdim  =\derrdim}%
+
+\newcommand{\vliiiiin}[8]{\vldsiiiiiaux{#4}{#5}{#6}{#7}{#8}%
+                          \vldsinaux{#1}{#2}{#3}}%
+
+\newcommand{\vliiiiid}[8]{\vldsiiiiiaux{#4}{#5}{#6}{#7}{#8}%
+                          \vldsidaux{#1}{#2}{#3}}%
+
+\newcommand{\vliiiiiq}[8]{\vldsiiiiiaux{#4}{#5}{#6}{#7}{#8}%
+                          \vldsiqaux{#1}{#2}{#3}}%
+
+\newcommand{\vldsiiiiiiaux}[6]{\derquad=\fontdimen6\textfont2%
+   {#1}%
+           \dercldim  =\derldim
+           \derccdim  =\dercdim
+   \setbox\derboxtwo=\hbox{\unhbox\derboxone\kern\derquad}%
+   \advance\derccdim by\derrdim
+   \advance\derccdim by\derquad
+   {#2}\vldsauxx
+   {#3}\vldsauxx
+   {#4}\vldsauxx
+   {#5}\vldsauxx
+   {#6}%
+   \setbox\derboxone=\hbox{\unhbox\derboxtwo\unhbox\derboxone}%
+   \advance\derccdim by\derldim
+   \advance\derccdim by\dercdim
+           \dercrdim  =\derrdim}%
+
+\newcommand{\vliiiiiin}[9]{\vldsiiiiiiaux{#4}{#5}{#6}{#7}{#8}{#9}%
+                           \vldsinaux{#1}{#2}{#3}}%
+
+\newcommand{\vliiiiiid}[9]{\vldsiiiiiiaux{#4}{#5}{#6}{#7}{#8}{#9}%
+                           \vldsidaux{#1}{#2}{#3}}%
+
+\newcommand{\vliiiiiiq}[9]{\vldsiiiiiiaux{#4}{#5}{#6}{#7}{#8}{#9}%
+                           \vldsiqaux{#1}{#2}{#3}}%
+
+\newcommand{\vlinfaux     }[4]{\vlderivationaux{\vlin  {#1}{#2}{#3}%
+                                                                {\vlhy{#4}}}}%
+
+\newcommand{\vliqfaux     }[4]{\vlderivationaux{\vliq  {#1}{#2}{#3}%
+                                                                {\vlhy{#4}}}}%
+
+\newcommand{\vlindaux     }[4]{\vlderivationaux{\vlid  {#1}{#2}{#3}%
+                                                                {\vlhy{#4}}}}%
+
+\newcommand{\vliinfaux    }[5]{\vlderivationaux{\vliin {#1}{#2}{#3}%
+                                                                {\vlhy{#4}}%
+                                                                {\vlhy{#5}}}}%
+
+\newcommand{\vliidfaux    }[5]{\vlderivationaux{\vliid {#1}{#2}{#3}%
+                                                                {\vlhy{#4}}%
+                                                                {\vlhy{#5}}}}%
+
+\newcommand{\vliiqfaux    }[5]{\vlderivationaux{\vliiq {#1}{#2}{#3}%
+                                                                {\vlhy{#4}}%
+                                                                {\vlhy{#5}}}}%
+
+\newcommand{\vliiinfaux   }[6]{\vlderivationaux{\vliiin{#1}{#2}{#3}%
+                                                                {\vlhy{#4}}%
+                                                                {\vlhy{#5}}%
+                                                                {\vlhy{#6}}}}%
+
+\newcommand{\vliiidfaux   }[6]{\vlderivationaux{\vliiid{#1}{#2}{#3}%
+                                                                {\vlhy{#4}}%
+                                                                {\vlhy{#5}}%
+                                                                {\vlhy{#6}}}}%
+
+\newcommand{\vliiiqfaux   }[6]{\vlderivationaux{\vliiiq{#1}{#2}{#3}%
+                                                                {\vlhy{#4}}%
+                                                                {\vlhy{#5}}%
+                                                                {\vlhy{#6}}}}%
+
+\newcommand{\vliiiinfaux  }[7]{\vlderivationaux{\vliiiin{#1}{#2}{#3}%
+                                                                {\vlhy{#4}}%
+                                                                {\vlhy{#5}}%
+                                                                {\vlhy{#6}}%
+                                                                {\vlhy{#7}}}}%
+
+\newcommand{\vliiiidfaux  }[7]{\vlderivationaux{\vliiiid{#1}{#2}{#3}%
+                                                                {\vlhy{#4}}%
+                                                                {\vlhy{#5}}%
+                                                                {\vlhy{#6}}%
+                                                                {\vlhy{#7}}}}%
+
+\newcommand{\vliiiiqfaux  }[7]{\vlderivationaux{\vliiiiq{#1}{#2}{#3}%
+                                                                {\vlhy{#4}}%
+                                                                {\vlhy{#5}}%
+                                                                {\vlhy{#6}}%
+                                                                {\vlhy{#7}}}}%
+
+\newcommand{\vliiiiinfaux }[8]{\vlderivationaux{\vliiiiin{#1}{#2}{#3}%
+                                                                {\vlhy{#4}}%
+                                                                {\vlhy{#5}}%
+                                                                {\vlhy{#6}}%
+                                                                {\vlhy{#7}}%
+                                                                {\vlhy{#8}}}}%
+
+\newcommand{\vliiiiidfaux }[8]{\vlderivationaux{\vliiiiid{#1}{#2}{#3}%
+                                                                {\vlhy{#4}}%
+                                                                {\vlhy{#5}}%
+                                                                {\vlhy{#6}}%
+                                                                {\vlhy{#7}}%
+                                                                {\vlhy{#8}}}}%
+
+\newcommand{\vliiiiiqfaux }[8]{\vlderivationaux{\vliiiiiq{#1}{#2}{#3}%
+                                                                {\vlhy{#4}}%
+                                                                {\vlhy{#5}}%
+                                                                {\vlhy{#6}}%
+                                                                {\vlhy{#7}}%
+                                                                {\vlhy{#8}}}}%
+
+\newcommand{\vliiiiiinfaux}[9]{\vlderivationaux{\vliiiiiin{#1}{#2}{#3}%
+                                                                {\vlhy{#4}}%
+                                                                {\vlhy{#5}}%
+                                                                {\vlhy{#6}}%
+                                                                {\vlhy{#7}}%
+                                                                {\vlhy{#8}}%
+                                                                {\vlhy{#9}}}}%
+
+\newcommand{\vliiiiiidfaux}[9]{\vlderivationaux{\vliiiiiid{#1}{#2}{#3}%
+                                                                {\vlhy{#4}}%
+                                                                {\vlhy{#5}}%
+                                                                {\vlhy{#6}}%
+                                                                {\vlhy{#7}}%
+                                                                {\vlhy{#8}}%
+                                                                {\vlhy{#9}}}}%
+
+\newcommand{\vliiiiiiqfaux}[9]{\vlderivationaux{\vliiiiiiq{#1}{#2}{#3}%
+                                                                {\vlhy{#4}}%
+                                                                {\vlhy{#5}}%
+                                                                {\vlhy{#6}}%
+                                                                {\vlhy{#7}}%
+                                                                {\vlhy{#8}}%
+                                                                {\vlhy{#9}}}}%
+
+\newcommand{\vlinf     }{\vlderivationinit\vlinfaux     }%
+
+\newcommand{\vlidf     }{\vlderivationinit\vlindaux     }%
+
+\newcommand{\vliqf     }{\vlderivationinit\vliqfaux     }%
+
+\newcommand{\vliinf    }{\vlderivationinit\vliinfaux    }%
+
+\newcommand{\vliidf    }{\vlderivationinit\vliidfaux    }%
+
+\newcommand{\vliiqf    }{\vlderivationinit\vliiqfaux    }%
+
+\newcommand{\vliiinf   }{\vlderivationinit\vliiinfaux   }%
+
+\newcommand{\vliiidf   }{\vlderivationinit\vliiidfaux   }%
+
+\newcommand{\vliiiqf   }{\vlderivationinit\vliiiqfaux   }%
+
+\newcommand{\vliiiinf  }{\vlderivationinit\vliiiinfaux  }%
+
+\newcommand{\vliiiidf  }{\vlderivationinit\vliiiidfaux  }%
+
+\newcommand{\vliiiiqf  }{\vlderivationinit\vliiiiqfaux  }%
+
+\newcommand{\vliiiiinf }{\vlderivationinit\vliiiiinfaux }%
+
+\newcommand{\vliiiiidf }{\vlderivationinit\vliiiiidfaux }%
+
+\newcommand{\vliiiiiqf }{\vlderivationinit\vliiiiiqfaux }%
+
+\newcommand{\vliiiiiinf}{\vlderivationinit\vliiiiiinfaux}%
+
+\newcommand{\vliiiiiidf}{\vlderivationinit\vliiiiiidfaux}%
+
+\newcommand{\vliiiiiiqf}{\vlderivationinit\vliiiiiiqfaux}%
+
+\catcode`@=12
+\newcommand{\vltrauxx}[5]{\vldaux
+   {#1}%
+   {#2}%
+   {\vlhy{#3}}%
+   {}%
+   {\hbox{$\vcenter{\xy
+          0;<\hsize,0pt>:<0pt,#4\hsize>::
+          (-0.5,0.5);(0.5,0.5)**\crv{(0.1,0.6)&(-0.1,0.4)};
+          (0,0)**@{-};(-0.5,0.5)**@{-};
+          (0,0.273)*{\scriptstyle #5\strut}%
+          \endxy}$}}%
+   {\kern\deropen}}%
+\catcode`\@=11
+
+\newcommand{\vltraux}[3]{\vltrauxx{}{}{#2}{#3}{#1}}%
+
+\newcount\vltrindc
+\newdimen\vltrindd
+
+\newcommand{\vltrlaux}[5]{\ifdim\derccdim>\dercdim\vldummycount=\derccdim
+                             \else\vldummycount=\dercdim
+                             \fi
+                          \FPmul\vltrindc{\the\vldummycount}{0.25}%
+                          \vltrindd=\vltrindc sp
+                          \advance\vltrindd by-10pt%
+   \vltrauxx{\scriptstyle #2\strut\kern-\vltrindd}%
+            {\kern-\vltrindd\scriptstyle #3\strut}{#4}{#5}{#1}}%
+
+\newcommand{\vltrauxxx}[2]{{#2}\vlstemaux\vldaux
+   {}%
+   {}%
+   {\vlhy{#1}}%
+   {\kern-\ht\strutbox\kern-\dp\strutbox}%
+   {}%
+   {}}%
+
+\newcommand{\vltrf }[6]{\vltrauxxx{#2}%
+                        {\vldsiiiaux{#3}{#4}{#5}\vltraux{#1}{}{#6}}}%
+
+\newcommand{\vltrlf}[8]{\vltrauxxx{#4}%
+                        {\vldsiiiaux{#5}{#6}{#7}\vltrlaux{#1}{#2}{#3}{}{#8}}}%
+
+\newcommand{\vltr }[5]{\vltrf{#1}{#2}{#3}{#4}{#5}1}%
+
+\newcommand{\vltrl}[7]{\vltrlf{#1}{#2}{#3}{#4}{#5}{#6}{#7}1}%
+
+\newcommand{\vltreeder }[5]{\vlderivation{\vltr{#1}{#2}{\vlhy{#3}}%
+                                                       {\vlhy{#4}}%
+                                                       {\vlhy{#5}}}}%
+
+\newcommand{\vltreederl}[7]{\vlderivation{\vltrl{#1}{#2}{#3}{#4}{\vlhy{#5}}%
+                                                                {\vlhy{#6}}%
+                                                                {\vlhy{#7}}}}%
+
+\newcommand{\vlvdots}{\vbox to12pt{\vfil\hbox{$\smash\vdots$}}}%
+
+%------------------------------------------------- END OF MACROS FOR DERIVATIONS
+
+%----------------------------------------------------- MACROS FOR OPEN DEDUCTION
+
+\newif\ifodframe          \odframetrue
+\newif\ifodframefirst     \odframefirsttrue
+\newif\ifodbackground     \odbackgroundfalse
+\newif\ifodbackgroundfirst\odbackgroundfirsttrue
+
+\newcount\odback
+\newcount\odframe
+
+\newcommand{\odboxed}[1]{\vls
+   \ifnum\odback=0
+      \ifnum\odframe=0
+         \hbox{$\vcenter{%
+         \vbox{\kern\fboxrule
+         \hbox{\kern\fboxrule$#1$%
+               \kern\fboxrule}%
+               \kern\fboxrule}%
+         }$}%
+      \else
+         \colorlet{currentcolor}{.}%
+         {\color{currentcolor!\the\odframe}\fbox{\color{currentcolor}$#1$}}%
+      \fi
+   \else
+      \colorlet{currentcolor}{.}%
+      \fcolorbox{currentcolor!\the\odframe}{currentcolor!\the\odback}{$#1$}%
+   \fi}%
+\vlupdate\odboxed
+
+\newcommand{\odbox}{\odframe=100\setlength{\fboxsep}{2pt}%
+                                \setlength{\fboxrule}{.25pt}\odboxed}%
+
+\newcommand{\odsetframes}{\ifodbackground\ifodbackgroundfirst
+                                                   \odbackgroundfirstfalse
+                                                   \odback =0%
+                                                   \setlength{\fboxsep}{0pt}%
+                                                   \odframe=0%
+                                         \else\advance\odback by5%
+                                              \odframe=\odback
+                                              \ifodframe\odframe=100%
+                                              \setlength{\fboxsep}{2pt}%
+                                              \setlength{\fboxrule}{.25pt}%
+                                              \fi
+                                         \fi
+                          \else\setlength{\fboxsep}{0pt}%
+                          \fi
+                          \ifodframe\ifodframefirst\odframefirstfalse
+                                                   \odframe=0%
+                                    \else          \odframe=100%
+                                                   \setlength{\fboxsep}{2pt}%
+                                                   \setlength{\fboxrule}{.25pt}%
+                                    \fi
+                          \else     \odframe=0%
+                          \fi}%
+
+\newcommand{\odderivationinit}{\bgroup
+   \odsetframes
+   \vlprepstructures\vlderivationinitaux}%                            % dr
+
+\newcommand{\odderivationaux}[1]{#1\odboxed
+                                 {\vcenter{\copy\derboxone}}\vlderivationterm}%
+
+\newcommand{\od        }   {\odderivationinit\odderivationaux}%
+
+\newcommand{\odp       }[3]{\vlpr{#1}{#3}{\vls #2}}%
+
+\newcommand{\odP       }[3]{\vlpd{#1}{#3}{\vls #2}}%
+
+\newcommand{\odpx      }[4]{\vlpf{#1}{#3}{\vls #2}{#4}}%
+
+\newcommand{\odproofaux}[4]{\odderivationaux{\vlpf{#2}{#4}{\vls #3}{#1}}}%
+
+\newcommand{\odr       }   {\odderivationinit\odproofaux1}%
+
+\newcommand{\odR       }   {\odderivationinit\odproofaux2}%
+
+\newcommand{\odd       }[4]{\vldf{#2}{#4}{\vls #3}{\vls #1}1}%
+
+\newcommand{\odD       }[4]{\vldf{#2}{#4}{\vls #3}{\vls #1}2}%
+
+\newcommand{\oddx      }[5]{\vldf{#2}{#4}{\vls #3}{\vls #1}{#5}}%
+
+\newcommand{\odh       }[1]{\vlhy{\vls #1}}%
+
+\newcommand{\odderaux  }[5]{\odderivationaux{\vldf{#3}{#5}{\vls #4}%
+                                                    {\vlhy{\vls #2}}{#1}}}%
+
+\newcommand{\odv       }   {\odderivationinit\odderaux1}%
+
+\newcommand{\odV       }   {\odderivationinit\odderaux2}%
+
+\newcommand{\odi       }[4]{\vlin{#2}{#4}{\vls #3}{\vls #1}}%
+
+\newcommand{\odI       }[4]{\vliq{#2}{#4}{\vls #3}{\vls #1}}%
+
+\newcommand{\odo       }[4]{\vlid{#2}{#4}{\vls #3}{\vls #1}}%
+
+\newcommand{\odnaux    }[4]{\odderivationaux{\vlin{#2}{#4}{\vls #3}%
+                                                    {\vlhy{\vls #1}}}}%
+
+\newcommand{\odNaux    }[4]{\odderivationaux{\vliq{#2}{#4}{\vls #3}%
+                                                    {\vlhy{\vls #1}}}}%
+
+\newcommand{\odtaux    }[4]{\odderivationaux{\vlid{#2}{#4}{\vls #3}%
+                                                    {\vlhy{\vls #1}}}}%
+
+\newcommand{\odn       }   {\odderivationinit\odnaux}%
+
+\newcommand{\odN       }   {\odderivationinit\odNaux}%
+
+\newcommand{\odt       }   {\odderivationinit\odtaux}%
+
+%---------------------------------------------- END OF MACROS FOR OPEN DEDUCTION
+
+%------------------------------------------------------- MACROS FOR ATOMIC FLOWS
+
+\catcode`@=12
+
+\newdimen\afunitmst\afunitmst=0.01pt%
+
+\newdimen\afelwidthmst
+\newdimen\afelheightmst
+\newdimen\afthickonemst
+\newdimen\afthicktwomst
+\newdimen\afthickthreemst
+\newdimen\afthickfourmst
+\newdimen\aflabeldistancemst
+
+\newcommand{\afsetparamsmst}{%
+\afelwidthmst      =425\afunitmst
+\afelheightmst     =325\afunitmst
+\afthickonemst     = 40\afunitmst
+\afthicktwomst     = 40\afunitmst
+\afthickthreemst   =120\afunitmst
+\afthickfourmst    = 40\afunitmst
+\aflabeldistancemst=220\afunitmst}%
+
+\afsetparamsmst
+
+\newdimen\afunit\afunit=0.01pt%
+
+\newdimen\afelwidth
+\newdimen\afelheight
+\newdimen\afthickone
+\newdimen\afthicktwo
+\newdimen\afthickthree
+\newdimen\afthickfour
+\newdimen\aflabeldistance
+
+\newdimen\afthicksep
+
+\newcommand{\afsetparams}{%
+\afelwidth      =425\afunit
+\afelheight     =325\afunit
+\afthickone     = 40\afunit
+\afthicktwo     = 40\afunit
+\afthickthree   =120\afunit
+\afthickfour    = 40\afunit
+\aflabeldistance=220\afunit
+\afthicksep     =  3\afelwidth\divide\afthicksep by10%
+                             \advance\afthicksep by-\afthickfour}%
+
+%---------------------------------------- Temporarily decreasing stroke distance
+
+\makeatletter
+
+\let\afrestorexydashhmacro=\xydashh@
+
+\newcommand\afxydashh{\let\xydashh@=\afthicksep
+                      \advance\xydashh@ by\afthickfour}%
+
+\newcommand\afrestorexydashh{\let\xydashh@=\afrestorexydashhmacro}%
+
+\makeatother 
+
+\newcommand\afdoublestrokes[1]{\afxydashh{#1}\afrestorexydashh}
+
+%------------------------------------ End temporarily decreasing stroke distance
+
+\afsetparams
+
+\newbox\aftrdnbox
+\newbox\aftrbldnbox
+\newbox\aftrupbox
+\newbox\aftrblupbox
+\newbox\afdiskbox
+\newbox\afbbdbox
+\newbox\afbbubox
+\newbox\afbdbox
+\newbox\afbubox
+\newbox\afcdcbox
+\newbox\afcdcmbox
+\newbox\afcucbox
+\newbox\afcucmbox
+\newbox\afcdabox\newbox\afcdsabox
+\newbox\afwdabox\newbox\afwdsbox
+\newbox\afadabox\newbox\afsdabox
+\newbox\afCdbox\newbox\afCdsbox
+\newbox\afWdbox\newbox\afWdsbox
+\newbox\afAdbox\newbox\afSdbox
+\newbox\afcdnbox\newbox\afcdsnbox
+\newbox\afwdnbox\newbox\afadnbox\newbox\afsdnbox
+\newbox\afCdnbox\newbox\afCdsnbox
+\newbox\afcuabox\newbox\afcusabox
+\newbox\afwuabox\newbox\afwusbox
+\newbox\afauabox\newbox\afsuabox
+\newbox\afCubox\newbox\afCusbox
+\newbox\afWubox\newbox\afWusbox
+\newbox\afAubox\newbox\afSubox
+\newbox\afcunbox\newbox\afcusnbox
+\newbox\afwunbox\newbox\afaunbox\newbox\afsunbox
+\newbox\afCunbox\newbox\afCusnbox
+\newbox\afIubox
+\newbox\afiubox
+\newbox\afIdbox
+\newbox\afidbox
+\newbox\afinubox\newbox\afindbox 
+\newbox\afDubox
+\newbox\afduabox
+\newbox\afDdbox
+\newbox\afddabox
+\newbox\afddnbox
+\newbox\afdunbox
+\newbox\afCudbox
+\newbox\afcudabox
+\newbox\afCddbox
+\newbox\afcddabox
+\newbox\afCudnbox
+\newbox\afcudnbox
+\newbox\afCddnbox
+\newbox\afcddnbox
+
+\newif\ifvlcompileflows\vlcompileflowsfalse
+
+\newcommand{\ifemptyargparamsunchangedcompileflows}[3]{%
+\ifblank{#1}{%
+\ifdim\afunit           =\afunitmst
+\ifdim\afelwidth        =\afelwidthmst
+\ifdim\afelheight       =\afelheightmst
+\ifdim\afthickone       =\afthickonemst
+\ifdim\afthicktwo       =\afthicktwomst
+\ifdim\afthickthree     =\afthickthreemst
+\ifdim\afthickfour      =\afthickfourmst
+\ifdim\aflabeldistance  =\aflabeldistancemst
+\ifvlcompileflows
+#2%
+\else #3\fi
+\else #3\fi
+\else #3\fi
+\else #3\fi
+\else #3\fi
+\else #3\fi
+\else #3\fi
+\else #3\fi
+\else #3\fi}%
+{#3}}%
+
+\newif\ifaftrin
+\newif\ifafdual
+\newif\ifafstem
+\newif\ifafmult
+\newif\ifafdisk
+\newif\ifaftrbl
+
+\newcommand{\afcompileenable}{%
+\afdisktrue
+   \aftrinfalse
+      \aftrblfalse
+         \afstemtrue
+            \afdualtrue \afmulttrue
+                              \setbox\afDubox    =\afwauxx{}{}{}%
+                              \setbox\afCudbox   =\afcauxx{}{}{}{}{}{}{}{}{}%
+                        \afmultfalse
+                              \setbox\afduabox   =\afwauxx{}{}{}%
+                              \setbox\afcudabox  =\afcauxx{}{}{}{}{}{}{}{}{}%
+            \afdualfalse\afmulttrue
+                              \setbox\afDdbox    =\afwauxx{}{}{}%
+                              \setbox\afCddbox   =\afcauxx{}{}{}{}{}{}{}{}{}%
+                        \afmultfalse
+                              \setbox\afddabox   =\afwauxx{}{}{}%
+                              \setbox\afcddabox  =\afcauxx{}{}{}{}{}{}{}{}{}%
+         \afstemfalse
+            \afdualtrue \afmultfalse
+                              \setbox\afdunbox   =\afwauxx{}{}{}%
+                              \setbox\afcudnbox  =\afcauxx{}{}{}{}{}{}{}{}{}%
+                        \afmulttrue
+                              \setbox\afCudnbox  =\afcauxx{}{}{}{}{}{}{}{}{}%
+            \afdualfalse\afmultfalse
+                              \setbox\afddnbox   =\afwauxx{}{}{}%
+                              \setbox\afcddnbox  =\afcauxx{}{}{}{}{}{}{}{}{}%
+                        \afmulttrue
+                              \setbox\afCddnbox  =\afcauxx{}{}{}{}{}{}{}{}{}%
+\afdiskfalse
+   \aftrintrue
+      \aftrbltrue
+         \afstemtrue
+            \afdualtrue \afmulttrue
+                              \setbox\afSubox    =\afwauxx{}{}{}%
+                        \afmultfalse
+                              \setbox\afsuabox   =\afwauxx{}{}{}%
+            \afdualfalse\afmulttrue
+                              \setbox\afSdbox    =\afwauxx{}{}{}%
+                        \afmultfalse
+                              \setbox\afsdabox   =\afwauxx{}{}{}%
+         \afstemfalse
+            \afdualtrue \afmultfalse
+                              \setbox\afsunbox   =\afwauxx{}{}{}%
+            \afdualfalse\afmultfalse
+                              \setbox\afsdnbox   =\afwauxx{}{}{}%
+      \aftrblfalse
+         \afstemtrue
+            \afdualtrue \afmulttrue
+                              \setbox\afAubox    =\afwauxx{}{}{}%
+                        \afmultfalse
+                              \setbox\afauabox   =\afwauxx{}{}{}%
+            \afdualfalse\afmulttrue
+                              \setbox\afAdbox    =\afwauxx{}{}{}%
+                        \afmultfalse
+                              \setbox\afadabox   =\afwauxx{}{}{}%
+         \afstemfalse
+            \afdualtrue \afmultfalse
+                              \setbox\afaunbox   =\afwauxx{}{}{}%
+            \afdualfalse\afmultfalse
+                              \setbox\afadnbox   =\afwauxx{}{}{}%
+   \aftrinfalse
+      \aftrbltrue
+         \afstemtrue
+            \afdualtrue \afmulttrue
+                              \setbox\afWusbox   =\afwauxx{}{}{}%
+                              \setbox\afCusbox   =\afcauxx{}{}{}{}{}{}{}{}{}%
+                        \afmultfalse
+                              \setbox\afwusbox   =\afwauxx{}{}{}%
+                              \setbox\afcusabox  =\afcauxx{}{}{}{}{}{}{}{}{}%
+            \afdualfalse\afmulttrue
+                              \setbox\afWdsbox   =\afwauxx{}{}{}%
+                              \setbox\afCdsbox   =\afcauxx{}{}{}{}{}{}{}{}{}%
+                        \afmultfalse
+                              \setbox\afwdsbox   =\afwauxx{}{}{}%
+                              \setbox\afcdsabox  =\afcauxx{}{}{}{}{}{}{}{}{}%
+         \afstemfalse
+            \afdualtrue \afmulttrue
+                              \setbox\afCusnbox  =\afcauxx{}{}{}{}{}{}{}{}{}%
+                        \afmultfalse
+                              \setbox\afcusnbox  =\afcauxx{}{}{}{}{}{}{}{}{}%
+                              \setbox\aftrblupbox=\aftraux
+            \afdualfalse\afmulttrue
+                              \setbox\afCdsnbox  =\afcauxx{}{}{}{}{}{}{}{}{}%
+                        \afmultfalse
+                              \setbox\afcdsnbox  =\afcauxx{}{}{}{}{}{}{}{}{}%
+                              \setbox\aftrbldnbox=\aftraux
+      \aftrblfalse
+         \afstemtrue
+            \afdualtrue \afmulttrue
+                              \setbox\afWubox    =\afwauxx{}{}{}%
+                              \setbox\afCubox    =\afcauxx{}{}{}{}{}{}{}{}{}%
+                              \setbox\afIubox    =\hbox{\afiauxx{}{}{}{}11{}{}}%
+                        \afmultfalse
+                              \setbox\afwuabox   =\afwauxx{}{}{}%
+                              \setbox\afcuabox   =\afcauxx{}{}{}{}{}{}{}{}{}%
+                              \setbox\afiubox    =\hbox{\afiauxx{}{}{}{}11{}{}}%
+            \afdualfalse\afmulttrue
+                              \setbox\afWdbox    =\afwauxx{}{}{}%
+                              \setbox\afCdbox    =\afcauxx{}{}{}{}{}{}{}{}{}%
+                              \setbox\afIdbox    =\hbox{\afiauxx{}{}{}{}11{}{}}%
+                        \afmultfalse
+                              \setbox\afwdabox   =\afwauxx{}{}{}%
+                              \setbox\afcdabox   =\afcauxx{}{}{}{}{}{}{}{}{}%
+                              \setbox\afidbox    =\hbox{\afiauxx{}{}{}{}11{}{}}%
+         \afstemfalse
+            \afdualtrue \afmulttrue
+                              \setbox\afcucmbox  =\afccaux{}{}{2}%
+                              \setbox\afCunbox   =\afcauxx{}{}{}{}{}{}{}{}{}%
+                        \afmultfalse
+                              \setbox\aftrupbox  =\aftraux
+                              \setbox\afbbubox   =\afbmaux
+                              \setbox\afdiskbox  =\afdiaux
+                              \setbox\afwunbox   =\afwauxx{}{}{}%
+                              \setbox\afbubox    =\afbauxx
+                              \setbox\afcucbox   =\afccaux{}{}{}%
+                              \setbox\afcunbox   =\afcauxx{}{}{}{}{}{}{}{}{}%
+                              \setbox\afinubox   =\hbox{\afiauxx{}{}{}{}11{}{}}%
+            \afdualfalse\afmulttrue
+                              \setbox\afcdcmbox  =\afccaux{}{}{2}%
+                              \setbox\afCdnbox   =\afcauxx{}{}{}{}{}{}{}{}{}%
+                        \afmultfalse
+                              \setbox\aftrdnbox  =\aftraux
+                              \setbox\afbbdbox   =\afbmaux
+                              \setbox\afwdnbox   =\afwauxx{}{}{}%
+                              \setbox\afbdbox    =\afbauxx
+                              \setbox\afcdcbox   =\afccaux{}{}{}%
+                              \setbox\afcdnbox   =\afcauxx{}{}{}{}{}{}{}{}{}%
+                              \setbox\afindbox   =\hbox{\afiauxx{}{}{}{}11{}{}}%
+\vlcompileflowstrue}%
+
+\newcommand{\afcompiledisable}{\vlcompileflowsfalse}%
+
+\AtBeginDocument{\ifvirginialakeusesxy\afcompileenable\fi}%
+
+\newcommand{\af}[1]{\vcenter{\xy
+<\afelwidth,0pt>:<0pt,\afelheight>::#1\endxy}}%
+
+\newcommand{\afinv}[1]{\vcenter{\xy
+<\afelwidth,0pt>:<0pt,-\afelheight>::#1\endxy}}%
+
+\newcommand{\afinvm}{\vbox to0pt{\color{white}\vss
+\hbox to0pt{\hss\vrule height.1sp depth0sp width.1sp}}}%
+
+\newcommand{\aftrimabove}[1]{\vcenter
+                             {\vbox{\kern-3.2\afelheight\hbox{$#1$}}}}%
+
+\newcommand{\aftrimbelow}[1]{\vcenter
+                             {\vbox{\hbox{$#1$}\kern-3.2\afelheight}}}%
+
+\newcommand{\aftrim}[1]{\vcenter{\vbox{\kern-3.2\afelheight\hbox{$#1$}%
+                                       \kern-3.2\afelheight}}}%
+
+\newcommand{\afraise}[1]{\raise2\afelheight\hbox{$#1$}}%
+
+\newcommand{\aflower}[1]{\lower2\afelheight\hbox{$#1$}}%
+
+%-------------------------------- LABELS
+
+\newcommand{\aflr}[1]{\vbox to0pt{\vss
+   \hbox to0pt{$\scriptstyle\kern\aflabeldistance #1\strut$\hss}\vss}}%
+
+\newcommand{\afll}[1]{\vbox to 0pt{\vss
+   \hbox to0pt{\hss$\scriptstyle #1\kern\aflabeldistance\strut$}\vss}}%
+
+%-------------------- TRIANGLES AND DISK
+
+\newcommand{\aftrauxps}{\ifaftrbl
+\xybox{<\afelwidth,0pt>:<0pt,\ifaftrin
+                                \ifafdual
+                                \else
+                                   -
+                                \fi
+                             \else
+                                \ifafdual
+                                   -
+                                \fi
+                             \fi\afelheight>::
+( 0   ,-0.40);( 0   , 0.34)**[|<\afthickone>]@{-};
+( 0.08,-0.28);( 0.08, 0.34)**[|<\afthickone>]@{-};
+(-0.08,-0.28);(-0.08, 0.34)**[|<\afthickone>]@{-};
+( 0.16,-0.16);( 0.16, 0.34)**[|<\afthickone>]@{-};
+(-0.16,-0.16);(-0.16, 0.34)**[|<\afthickone>]@{-};
+( 0.24,-0.04);( 0.24, 0.34)**[|<\afthickone>]@{-};
+(-0.24,-0.04);(-0.24, 0.34)**[|<\afthickone>]@{-};
+( 0.32, 0.08);( 0.32, 0.34)**[|<\afthickone>]@{-};
+(-0.32, 0.08);(-0.32, 0.34)**[|<\afthickone>]@{-};
+( 0.40, 0.20);( 0.40, 0.34)**[|<\afthickone>]@{-};
+(-0.40, 0.20);(-0.40, 0.34)**[|<\afthickone>]@{-};
+( 0.48, 0.32);( 0.48, 0.34)**[|<\afthickone>]@{-};
+(-0.48, 0.32);(-0.48, 0.34)**[|<\afthickone>]@{-};
+(-0.6 , 0.45);( 0   ,-0.45)**[|<\afthickthree>]@{-};
+( 0   ,-0.45);( 0.6 , 0.45)**[|<\afthickthree>]@{-};
+(-0.6 , 0.45);( 0.6 , 0.45)**[|<\afthickthree>]@{-}}%
+\else
+\xybox{<\afelwidth,0pt>:<0pt,\ifaftrin
+                                \ifafdual
+                                \else
+                                   -
+                                \fi
+                             \else
+                                \ifafdual
+                                   -
+                                \fi
+                             \fi\afelheight>::
+( 0   ,-0.55);( 0   , 0.54)**[|<\afthickone>][white]@{-};
+( 0.08,-0.43);( 0.08, 0.54)**[|<\afthickone>][white]@{-};
+(-0.08,-0.43);(-0.08, 0.54)**[|<\afthickone>][white]@{-};
+( 0.16,-0.31);( 0.16, 0.54)**[|<\afthickone>][white]@{-};
+(-0.16,-0.31);(-0.16, 0.54)**[|<\afthickone>][white]@{-};
+( 0.24,-0.19);( 0.24, 0.54)**[|<\afthickone>][white]@{-};
+(-0.24,-0.19);(-0.24, 0.54)**[|<\afthickone>][white]@{-};
+( 0.32,-0.07);( 0.32, 0.54)**[|<\afthickone>][white]@{-};
+(-0.32,-0.07);(-0.32, 0.54)**[|<\afthickone>][white]@{-};
+( 0.40, 0.05);( 0.40, 0.54)**[|<\afthickone>][white]@{-};
+(-0.40, 0.05);(-0.40, 0.54)**[|<\afthickone>][white]@{-};
+( 0.48, 0.17);( 0.48, 0.54)**[|<\afthickone>][white]@{-};
+(-0.48, 0.17);(-0.48, 0.54)**[|<\afthickone>][white]@{-};
+( 0.56, 0.29);( 0.56, 0.54)**[|<\afthickone>][white]@{-};
+(-0.56, 0.29);(-0.56, 0.54)**[|<\afthickone>][white]@{-};
+( 0.64, 0.41);( 0.64, 0.54)**[|<\afthickone>][white]@{-};
+(-0.64, 0.41);(-0.64, 0.54)**[|<\afthickone>][white]@{-};
+( 0.72, 0.53);( 0.72, 0.54)**[|<\afthickone>][white]@{-};
+(-0.72, 0.53);(-0.72, 0.54)**[|<\afthickone>][white]@{-};
+(-0.8 , 0.6 );( 0   ,-0.6 )**[|<\afthickthree>]@{-};
+( 0   ,-0.6 );( 0.8 , 0.6 )**[|<\afthickthree>]@{-};
+(-0.8 , 0.6 );( 0.8 , 0.6 )**[|<\afthickthree>]@{-}}%
+\fi}%
+
+\newcommand{\aftrauxpdf}{\ifaftrbl
+\hbox{\kern-.15\afelwidth
+\xybox{<\afelwidth,0pt>:<0pt,\ifaftrin
+                                \ifafdual
+                                \else
+                                   -
+                                \fi
+                             \else
+                                \ifafdual
+                                   -
+                                \fi
+                             \fi\afelheight>::
+( 0   ,-0.40);( 0   , 0.34)**[|<\afthickone>]@{-};
+( 0.04,-0.34);( 0.04, 0.34)**[|<\afthickone>]@{-};
+(-0.04,-0.34);(-0.04, 0.34)**[|<\afthickone>]@{-};
+( 0.08,-0.28);( 0.08, 0.34)**[|<\afthickone>]@{-};
+(-0.08,-0.28);(-0.08, 0.34)**[|<\afthickone>]@{-};
+( 0.12,-0.22);( 0.12, 0.34)**[|<\afthickone>]@{-};
+(-0.12,-0.22);(-0.12, 0.34)**[|<\afthickone>]@{-};
+( 0.16,-0.16);( 0.16, 0.34)**[|<\afthickone>]@{-};
+(-0.16,-0.16);(-0.16, 0.34)**[|<\afthickone>]@{-};
+( 0.20,-0.10);( 0.20, 0.34)**[|<\afthickone>]@{-};
+(-0.20,-0.10);(-0.20, 0.34)**[|<\afthickone>]@{-};
+( 0.24,-0.04);( 0.24, 0.34)**[|<\afthickone>]@{-};
+(-0.24,-0.04);(-0.24, 0.34)**[|<\afthickone>]@{-};
+( 0.28, 0.02);( 0.28, 0.34)**[|<\afthickone>]@{-};
+(-0.28, 0.02);(-0.28, 0.34)**[|<\afthickone>]@{-};
+( 0.32, 0.08);( 0.32, 0.34)**[|<\afthickone>]@{-};
+(-0.32, 0.08);(-0.32, 0.34)**[|<\afthickone>]@{-};
+( 0.36, 0.14);( 0.36, 0.34)**[|<\afthickone>]@{-};
+(-0.36, 0.14);(-0.36, 0.34)**[|<\afthickone>]@{-};
+(-0.75, 0.53);( 0   ,-0.59)**[|<\afthickone>]@{-};
+( 0   ,-0.59);( 0.75, 0.53)**[|<\afthickone>]@{-};
+(-0.75, 0.53);( 0.75, 0.53)**[|<\afthickone>]@{-};
+(-0.6 , 0.45);( 0   ,-0.45)**[|<\afthickone>]@{-};
+( 0   ,-0.45);( 0.6 , 0.45)**[|<\afthickone>]@{-};
+(-0.6 , 0.45);( 0.6 , 0.45)**[|<\afthickone>]@{-};
+(-0.45, 0.37);( 0   ,-0.31)**[|<\afthickone>]@{-};
+( 0   ,-0.31);( 0.45, 0.37)**[|<\afthickone>]@{-};
+(-0.45, 0.37);( 0.45, 0.37)**[|<\afthickone>]@{-}}%
+\kern-.15\afelwidth}%
+\else
+\hbox{\kern-.15\afelwidth
+\xybox{<\afelwidth,0pt>:<0pt,\ifaftrin
+                                \ifafdual
+                                \else
+                                   -
+                                \fi
+                             \else
+                                \ifafdual
+                                   -
+                                \fi
+                             \fi\afelheight>::
+( 0   ,-0.55);( 0   , 0.54)**[|<\afthickone>][white]@{-};
+( 0.04,-0.49);( 0.04, 0.54)**[|<\afthickone>][white]@{-};
+(-0.04,-0.49);(-0.04, 0.54)**[|<\afthickone>][white]@{-};
+( 0.08,-0.43);( 0.08, 0.54)**[|<\afthickone>][white]@{-};
+(-0.08,-0.43);(-0.08, 0.54)**[|<\afthickone>][white]@{-};
+( 0.12,-0.37);( 0.12, 0.54)**[|<\afthickone>][white]@{-};
+(-0.12,-0.37);(-0.12, 0.54)**[|<\afthickone>][white]@{-};
+( 0.16,-0.31);( 0.16, 0.54)**[|<\afthickone>][white]@{-};
+(-0.16,-0.31);(-0.16, 0.54)**[|<\afthickone>][white]@{-};
+( 0.20,-0.25);( 0.20, 0.54)**[|<\afthickone>][white]@{-};
+(-0.20,-0.25);(-0.20, 0.54)**[|<\afthickone>][white]@{-};
+( 0.24,-0.19);( 0.24, 0.54)**[|<\afthickone>][white]@{-};
+(-0.24,-0.19);(-0.24, 0.54)**[|<\afthickone>][white]@{-};
+( 0.28,-0.13);( 0.28, 0.54)**[|<\afthickone>][white]@{-};
+(-0.28,-0.13);(-0.28, 0.54)**[|<\afthickone>][white]@{-};
+( 0.32,-0.07);( 0.32, 0.54)**[|<\afthickone>][white]@{-};
+(-0.32,-0.07);(-0.32, 0.54)**[|<\afthickone>][white]@{-};
+( 0.36,-0.01);( 0.36, 0.54)**[|<\afthickone>][white]@{-};
+(-0.36,-0.01);(-0.36, 0.54)**[|<\afthickone>][white]@{-};
+( 0.40, 0.05);( 0.40, 0.54)**[|<\afthickone>][white]@{-};
+(-0.40, 0.05);(-0.40, 0.54)**[|<\afthickone>][white]@{-};
+( 0.44, 0.11);( 0.44, 0.54)**[|<\afthickone>][white]@{-};
+(-0.44, 0.11);(-0.44, 0.54)**[|<\afthickone>][white]@{-};
+( 0.48, 0.17);( 0.48, 0.54)**[|<\afthickone>][white]@{-};
+(-0.48, 0.17);(-0.48, 0.54)**[|<\afthickone>][white]@{-};
+( 0.52, 0.23);( 0.52, 0.54)**[|<\afthickone>][white]@{-};
+(-0.52, 0.23);(-0.52, 0.54)**[|<\afthickone>][white]@{-};
+( 0.56, 0.29);( 0.56, 0.54)**[|<\afthickone>][white]@{-};
+(-0.56, 0.29);(-0.56, 0.54)**[|<\afthickone>][white]@{-};
+( 0.60, 0.35);( 0.60, 0.54)**[|<\afthickone>][white]@{-};
+(-0.60, 0.35);(-0.60, 0.54)**[|<\afthickone>][white]@{-};
+(-0.95, 0.68);( 0   ,-0.74)**[|<\afthickone>]@{-};
+( 0   ,-0.74);( 0.95, 0.68)**[|<\afthickone>]@{-};
+(-0.95, 0.68);( 0.95, 0.68)**[|<\afthickone>]@{-};
+(-0.8 , 0.6 );( 0   ,-0.6 )**[|<\afthickone>]@{-};
+( 0   ,-0.6 );( 0.8 , 0.6 )**[|<\afthickone>]@{-};
+(-0.8 , 0.6 );( 0.8 , 0.6 )**[|<\afthickone>]@{-};
+(-0.65, 0.52);( 0   ,-0.46)**[|<\afthickone>]@{-};
+( 0   ,-0.46);( 0.65, 0.52)**[|<\afthickone>]@{-};
+(-0.65, 0.52);( 0.65, 0.52)**[|<\afthickone>]@{-}}%
+\kern-.15\afelwidth}%
+\fi}%
+
+\newcommand{\aftraux}{\ifvirginialakepdflatex\aftrauxpdf\else\aftrauxps\fi}%
+
+\newcommand{\aftr}{%
+\ifemptyargparamsunchangedcompileflows{}%
+{\ifaftrin
+    \ifafdual
+       \ifaftrbl
+          \copy\aftrbldnbox
+       \else
+          \copy\aftrdnbox
+       \fi
+    \else
+       \ifaftrbl
+          \copy\aftrblupbox
+       \else
+          \copy\aftrupbox
+       \fi
+    \fi
+ \else
+    \ifafdual
+       \ifaftrbl
+          \copy\aftrblupbox
+       \else
+          \copy\aftrupbox
+       \fi
+    \else
+       \ifaftrbl
+          \copy\aftrbldnbox
+       \else
+          \copy\aftrdnbox
+       \fi
+    \fi
+ \fi}%
+{\hbox{\aftraux}}}%
+
+\newcommand{\afdiaux}{%
+\xybox{<\afelheight,0pt>:<0pt,\afelheight>::
+( 0  , 0.0)*\frm<.6\afelwidth>{*};
+( 0.6, 0.6)*{\afinvm}            ;
+(-0.6,-0.6)*{\afinvm}            }}%
+
+\newcommand{\afdi}{%
+\ifemptyargparamsunchangedcompileflows{}%
+{\copy\afdiskbox}%
+{\hbox{\afdiaux}}}%
+
+%---------------------------- IDENTITIES
+
+%---------------------------------------- Temporarily decreasing stroke distance
+
+\makeatletter
+
+\newcommand\afxydashhsmall{\xydashh@=.32pt}%
+
+\makeatother 
+
+\newcommand\afsuperimposedstrokes[1]{\afxydashhsmall{#1}\afrestorexydashh}
+
+%------------------------------------ End temporarily decreasing stroke distance
+
+\newcommand{\afistemsaux}[3]{\afdoublestrokes{%
+\xybox{<\afelwidth,0pt>:<0pt,\afelheight>::
+(-2,-2);(-2,2)**[|<\afthickone>][#1]@#3{-};
+( 2,-2);( 2,2)**[|<\afthickone>][#2]@#3{-}}}}%
+
+\newcommand{\afistems}[2]{\ifafstem\ifafmult\afistemsaux{#1}{#2}2\else
+                                       \afistemsaux{#1}{#2}{}\fi\else\relax\fi}%
+
+\newcommand{\afiauxx}[8]{\multiply\afelwidth by#5%
+                           \divide\afelwidth by#6%
+                         \FPdiv\height{#5}{#6}\FPdiv\height\height{1.5}%
+\xybox{<\afelwidth,0pt>:<0pt,\ifafdual-\fi\afelheight>::
+( 0  ,-2)*{\hbox{\afistems{#7}{#8}}};
+(0,\height)="A";
+(0,\ifafdual\else-\fi.3)*{\afsuperimposedstrokes{\xy
+   \ar@3{-}@`{"A"}(-2.5,0);(2.5,0)\endxy}};
+( 0  ,-4  )*{\afinvm};
+( 0  , 4  )*{\afinvm};
+(-2  ,-2.5)*{\afll{#1}};
+(-2  ,-2.5)*{\aflr{#2}};
+( 2  ,-2.5)*{\afll{#3}};
+( 2  ,-2.5)*{\aflr{#4}}}}%
+
+\newcommand{\afiaux}[4]{\ifemptyargparamsunchangedcompileflows{#1#2#3#4}%
+                         {\ifafstem
+                             \ifafdual
+                                \ifafmult
+                                   \copy\afIubox
+                                \else
+                                   \copy\afiubox
+                                \fi
+                             \else
+                                \ifafmult
+                                   \copy\afIdbox
+                                \else
+                                   \copy\afidbox
+                                \fi
+                             \fi
+                          \else
+                             \ifafdual
+                                \copy\afinubox
+                             \else
+                                \copy\afindbox
+                             \fi
+                          \fi}%
+                         {\afiauxx{#1}{#2}{#3}{#4}11{}{}}}%
+
+\newcommand{\afid  }[4]{\afstemtrue\afdualfalse\afmultfalse
+                             \afiaux{#1}{#2}{#3}{#4}}%
+
+\newcommand{\afId  }[4]{\afstemtrue\afdualfalse\afmulttrue
+                             \afiaux{#1}{#2}{#3}{#4}}%
+
+\newcommand{\afiu  }[4]{\afstemtrue\afdualtrue\afmultfalse
+                             \afiaux{#1}{#2}{#3}{#4}}%
+
+\newcommand{\afIu  }[4]{\afstemtrue\afdualtrue\afmulttrue
+                             \afiaux{#1}{#2}{#3}{#4}}%
+
+\newcommand{\afidn }   {\afstemfalse\afdualfalse
+                             \afiaux{}{}{}{}}%
+
+\newcommand{\afiun }   {\afstemfalse\afdualtrue
+                             \afiaux{}{}{}{}}%
+
+\newcommand{\afidc }[6]{\afstemtrue\afdualfalse\afmultfalse
+                             \afiauxx{#1}{#2}{#3}{#4}11{#5}{#6}}%
+
+\newcommand{\afIdc }[6]{\afstemtrue\afdualfalse\afmulttrue
+                             \afiauxx{#1}{#2}{#3}{#4}11{#5}{#6}}%
+
+\newcommand{\afiuc }[6]{\afstemtrue\afdualtrue\afmultfalse
+                             \afiauxx{#1}{#2}{#3}{#4}11{#5}{#6}}%
+
+\newcommand{\afIuc }[6]{\afstemtrue\afdualtrue\afmulttrue
+                             \afiauxx{#1}{#2}{#3}{#4}11{#5}{#6}}%
+
+\newcommand{\afidx }[6]{\afstemtrue\afdualfalse\afmultfalse
+                             \afiauxx{#1}{#2}{#3}{#4}{#5}{#6}{}{}}%
+
+\newcommand{\afidxc}[8]{\afstemtrue\afdualfalse\afmultfalse
+                             \afiauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+
+\newcommand{\afIdx }[6]{\afstemtrue\afdualfalse\afmulttrue
+                             \afiauxx{#1}{#2}{#3}{#4}{#5}{#6}{}{}}%
+
+\newcommand{\afIdxc}[8]{\afstemtrue\afdualfalse\afmulttrue
+                             \afiauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+
+\newcommand{\afiux }[6]{\afstemtrue\afdualtrue\afmultfalse
+                             \afiauxx{#1}{#2}{#3}{#4}{#5}{#6}{}{}}%
+
+\newcommand{\afiuxc}[8]{\afstemtrue\afdualtrue\afmultfalse
+                             \afiauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+
+\newcommand{\afIux }[6]{\afstemtrue\afdualtrue\afmulttrue
+                             \afiauxx{#1}{#2}{#3}{#4}{#5}{#6}{}{}}%
+
+\newcommand{\afIuxc}[8]{\afstemtrue\afdualtrue\afmulttrue
+                             \afiauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+
+%------------ WEAKENINGS AND ABSORPTIONS
+
+\newcommand{\afstemaux}[2]{\afdoublestrokes{%
+\xybox{<\afelwidth,0pt>:<0pt,\afelheight>::
+(0,-2);(0,2)**[|<\afthickone>][#1]@#2{-}}}}%
+
+\newcommand{\afstem}[1]{\ifafstem\ifafmult\afstemaux{#1}2\else
+                                             \afstemaux{#1}{}\fi\else\relax\fi}%
+
+\newcommand{\afwauxx}[3]{%
+\xybox{<\afelwidth,0pt>:<0pt,\ifafdual-\fi\afelheight>::
+(0,-2  )*{\hbox{\afstem{#3}}};
+(0, 0  )*{\hbox{\ifafdisk\afdi\fi}};
+(0, 0  )*{\hbox{\ifafdisk\else\aftr\fi}};
+(0,-4  )*{\afinvm};
+(0, 4  )*{\afinvm};
+(0,-2.5)*{\afll{#1}};
+(0,-2.5)*{\aflr{#2}}}}%
+
+\newcommand{\afwaux}[3]{\ifemptyargparamsunchangedcompileflows{#1#2#3}%
+                         {\ifaftrin
+                             \ifafstem
+                                \ifafdual
+                                   \ifafmult
+                                     \ifaftrbl\copy\afSubox\else\copy\afAubox\fi
+                                   \else
+                                   \ifaftrbl\copy\afsuabox\else\copy\afauabox\fi
+                                   \fi
+                                \else
+                                   \ifafmult
+                                     \ifaftrbl\copy\afSdbox\else\copy\afAdbox\fi
+                                   \else
+                                   \ifaftrbl\copy\afsdabox\else\copy\afadabox\fi
+                                   \fi
+                                \fi
+                             \else
+                                \ifafdual
+                                   \ifaftrbl\copy\afsunbox\else\copy\afaunbox\fi
+                                \else
+                                   \ifaftrbl\copy\afsdnbox\else\copy\afadnbox\fi
+                                \fi
+                             \fi
+                          \else
+                             \ifafstem
+                                \ifafdual
+                                   \ifafmult
+                                      \ifafdisk
+                                         \copy\afDubox
+                                      \else
+                                    \ifaftrbl\copy\afWusbox\else\copy\afWubox\fi
+                                      \fi
+                                   \else
+                                      \ifafdisk
+                                         \copy\afduabox
+                                      \else
+                                   \ifaftrbl\copy\afwusbox\else\copy\afwuabox\fi
+                                      \fi
+                                   \fi
+                                \else
+                                   \ifafmult
+                                      \ifafdisk
+                                         \copy\afDdbox
+                                      \else
+                                    \ifaftrbl\copy\afWdsbox\else\copy\afWdbox\fi
+                                      \fi
+                                   \else
+                                      \ifafdisk
+                                         \copy\afddabox
+                                      \else
+                                   \ifaftrbl\copy\afwdsbox\else\copy\afwdabox\fi
+                                      \fi
+                                   \fi
+                                \fi
+                             \else
+                                \ifafdual
+                                   \ifafdisk
+                                      \copy\afdunbox
+                                   \else
+                                   \ifaftrbl\copy\afsdnbox\else\copy\afwunbox\fi
+                                   \fi
+                                \else
+                                   \ifafdisk
+                                      \copy\afddnbox
+                                   \else
+                                   \ifaftrbl\copy\afsunbox\else\copy\afwdnbox\fi
+                                   \fi
+                                \fi
+                             \fi
+                          \fi}%
+                         {\afwauxx{#1}{#2}{#3}}}%
+
+%----- OPEN TRIANGLE
+
+\newcommand{\afwd }[2]{\aftrinfalse\afstemtrue\afdualfalse\afmultfalse
+                                  \afdiskfalse\aftrblfalse\afwaux{#1}{#2}{}}%
+
+\newcommand{\afWd }[2]{\aftrinfalse\afstemtrue\afdualfalse\afmulttrue
+                                  \afdiskfalse\aftrblfalse\afwaux{#1}{#2}{}}%
+
+\newcommand{\afwu }[2]{\aftrinfalse\afstemtrue\afdualtrue\afmultfalse
+                                  \afdiskfalse\aftrblfalse\afwaux{#1}{#2}{}}%
+
+\newcommand{\afWu }[2]{\aftrinfalse\afstemtrue\afdualtrue\afmulttrue
+                                  \afdiskfalse\aftrblfalse\afwaux{#1}{#2}{}}%
+
+\newcommand{\afwdn}   {\aftrinfalse\afstemfalse\afdualfalse
+                                  \afdiskfalse\aftrblfalse\afwaux{}{}{}}%
+
+\newcommand{\afwun}   {\aftrinfalse\afstemfalse\afdualtrue
+                                  \afdiskfalse\aftrblfalse\afwaux{}{}{}}%
+
+\newcommand{\afwdc}[3]{\aftrinfalse\afstemtrue\afdualfalse\afmultfalse
+                                  \afdiskfalse\aftrblfalse\afwauxx{#1}{#2}{#3}}%
+
+\newcommand{\afWdc}[3]{\aftrinfalse\afstemtrue\afdualfalse\afmulttrue
+                                  \afdiskfalse\aftrblfalse\afwauxx{#1}{#2}{#3}}%
+
+\newcommand{\afwuc}[3]{\aftrinfalse\afstemtrue\afdualtrue\afmultfalse
+                                  \afdiskfalse\aftrblfalse\afwauxx{#1}{#2}{#3}}%
+
+\newcommand{\afWuc}[3]{\aftrinfalse\afstemtrue\afdualtrue\afmulttrue
+                                  \afdiskfalse\aftrblfalse\afwauxx{#1}{#2}{#3}}%
+
+%---- SOLID TRIANGLE
+
+\newcommand{\afwds }[2]{\aftrinfalse\afstemtrue\afdualfalse\afmultfalse
+                                  \afdiskfalse\aftrbltrue\afwaux{#1}{#2}{}}%
+
+\newcommand{\afWds }[2]{\aftrinfalse\afstemtrue\afdualfalse\afmulttrue
+                                  \afdiskfalse\aftrbltrue\afwaux{#1}{#2}{}}%
+
+\newcommand{\afwus }[2]{\aftrinfalse\afstemtrue\afdualtrue\afmultfalse
+                                  \afdiskfalse\aftrbltrue\afwaux{#1}{#2}{}}%
+
+\newcommand{\afWus }[2]{\aftrinfalse\afstemtrue\afdualtrue\afmulttrue
+                                  \afdiskfalse\aftrbltrue\afwaux{#1}{#2}{}}%
+
+\newcommand{\afwdsn}   {\aftrinfalse\afstemfalse\afdualfalse
+                                  \afdiskfalse\aftrbltrue\afwaux{}{}{}}%
+
+\newcommand{\afwusn}   {\aftrinfalse\afstemfalse\afdualtrue
+                                  \afdiskfalse\aftrbltrue\afwaux{}{}{}}%
+
+\newcommand{\afwdsc}[3]{\aftrinfalse\afstemtrue\afdualfalse\afmultfalse
+                                  \afdiskfalse\aftrbltrue\afwauxx{#1}{#2}{#3}}%
+
+\newcommand{\afWdsc}[3]{\aftrinfalse\afstemtrue\afdualfalse\afmulttrue
+                                  \afdiskfalse\aftrbltrue\afwauxx{#1}{#2}{#3}}%
+
+\newcommand{\afwusc}[3]{\aftrinfalse\afstemtrue\afdualtrue\afmultfalse
+                                  \afdiskfalse\aftrbltrue\afwauxx{#1}{#2}{#3}}%
+
+\newcommand{\afWusc}[3]{\aftrinfalse\afstemtrue\afdualtrue\afmulttrue
+                                  \afdiskfalse\aftrbltrue\afwauxx{#1}{#2}{#3}}%
+
+%-------------- DISK
+
+\newcommand{\afdd }[2]{\afstemtrue\afdualfalse\afmultfalse
+                                  \afdisktrue\afwaux{#1}{#2}{}}%
+
+\newcommand{\afDd }[2]{\afstemtrue\afdualfalse\afmulttrue
+                                  \afdisktrue\afwaux{#1}{#2}{}}%
+
+\newcommand{\afdu }[2]{\afstemtrue\afdualtrue\afmultfalse
+                                  \afdisktrue\afwaux{#1}{#2}{}}%
+
+\newcommand{\afDu }[2]{\afstemtrue\afdualtrue\afmulttrue
+                                  \afdisktrue\afwaux{#1}{#2}{}}%
+
+\newcommand{\afd  }   {\afstemfalse\afdualtrue
+                                  \afdisktrue\afwaux{}{}{}}%
+
+\newcommand{\afddc}[3]{\afstemtrue\afdualfalse\afmultfalse
+                                  \afdisktrue\afwauxx{#1}{#2}{#3}}%
+
+\newcommand{\afDdc}[3]{\afstemtrue\afdualfalse\afmulttrue
+                                  \afdisktrue\afwauxx{#1}{#2}{#3}}%
+
+\newcommand{\afduc}[3]{\afstemtrue\afdualtrue\afmultfalse
+                                  \afdisktrue\afwauxx{#1}{#2}{#3}}%
+
+\newcommand{\afDuc}[3]{\afstemtrue\afdualtrue\afmulttrue
+                                  \afdisktrue\afwauxx{#1}{#2}{#3}}%
+
+%----- OPEN TRIANGLE
+
+\newcommand{\afau }[2]{\aftrintrue \afstemtrue\afdualfalse\afmultfalse
+                                  \afdiskfalse\aftrblfalse\afwaux{#1}{#2}{}}%
+
+\newcommand{\afAu }[2]{\aftrintrue \afstemtrue\afdualfalse\afmulttrue
+                                  \afdiskfalse\aftrblfalse\afwaux{#1}{#2}{}}%
+
+\newcommand{\afad }[2]{\aftrintrue \afstemtrue\afdualtrue\afmultfalse
+                                  \afdiskfalse\aftrblfalse\afwaux{#1}{#2}{}}%
+
+\newcommand{\afAd }[2]{\aftrintrue \afstemtrue\afdualtrue\afmulttrue
+                                  \afdiskfalse\aftrblfalse\afwaux{#1}{#2}{}}%
+
+\newcommand{\afaun}   {\aftrintrue \afstemfalse\afdualfalse
+                                  \afdiskfalse\aftrblfalse\afwaux{}{}{}}%
+
+\newcommand{\afadn}   {\aftrintrue \afstemfalse\afdualtrue
+                                  \afdiskfalse\aftrblfalse\afwaux{}{}{}}%
+
+\newcommand{\afauc}[3]{\aftrintrue \afstemtrue\afdualfalse\afmultfalse
+                                  \afdiskfalse\aftrblfalse\afwauxx{#1}{#2}{#3}}%
+
+\newcommand{\afAuc}[3]{\aftrintrue \afstemtrue\afdualfalse\afmulttrue
+                                  \afdiskfalse\aftrblfalse\afwauxx{#1}{#2}{#3}}%
+
+\newcommand{\afadc}[3]{\aftrintrue \afstemtrue\afdualtrue\afmultfalse
+                                  \afdiskfalse\aftrblfalse\afwauxx{#1}{#2}{#3}}%
+
+\newcommand{\afAdc}[3]{\aftrintrue \afstemtrue\afdualtrue\afmulttrue
+                                  \afdiskfalse\aftrblfalse\afwauxx{#1}{#2}{#3}}%
+
+%---- SOLID TRIANGLE
+
+\newcommand{\afaus }[2]{\aftrintrue \afstemtrue\afdualfalse\afmultfalse
+                                   \afdiskfalse\aftrbltrue\afwaux{#1}{#2}{}}%
+
+\newcommand{\afAus }[2]{\aftrintrue \afstemtrue\afdualfalse\afmulttrue
+                                   \afdiskfalse\aftrbltrue\afwaux{#1}{#2}{}}%
+
+\newcommand{\afads }[2]{\aftrintrue \afstemtrue\afdualtrue\afmultfalse
+                                   \afdiskfalse\aftrbltrue\afwaux{#1}{#2}{}}%
+
+\newcommand{\afAds }[2]{\aftrintrue \afstemtrue\afdualtrue\afmulttrue
+                                   \afdiskfalse\aftrbltrue\afwaux{#1}{#2}{}}%
+
+\newcommand{\afausn}   {\aftrintrue \afstemfalse\afdualfalse
+                                   \afdiskfalse\aftrbltrue\afwaux{}{}{}}%
+
+\newcommand{\afadsn}   {\aftrintrue \afstemfalse\afdualtrue
+                                   \afdiskfalse\aftrbltrue\afwaux{}{}{}}%
+
+\newcommand{\afausc}[3]{\aftrintrue \afstemtrue\afdualfalse\afmultfalse
+                                   \afdiskfalse\aftrbltrue\afwauxx{#1}{#2}{#3}}%
+
+\newcommand{\afAusc}[3]{\aftrintrue \afstemtrue\afdualfalse\afmulttrue
+                                   \afdiskfalse\aftrbltrue\afwauxx{#1}{#2}{#3}}%
+
+\newcommand{\afadsc}[3]{\aftrintrue \afstemtrue\afdualtrue\afmultfalse
+                                   \afdiskfalse\aftrbltrue\afwauxx{#1}{#2}{#3}}%
+
+\newcommand{\afAdsc}[3]{\aftrintrue \afstemtrue\afdualtrue\afmulttrue
+                                   \afdiskfalse\aftrbltrue\afwauxx{#1}{#2}{#3}}%
+
+%---------------------- TOPS AND BOTTOMS
+
+\newcommand{\afbmaux}{%
+\xybox{<\afelwidth,0pt>:<0pt,\ifafdual-\fi\afelheight>::
+(-0.6,-0.8)*{\afinvm};
+( 0.6,-0.8)*{\afinvm};
+(-0.6,0   );(0.6,0  )**[|<\afthickone>]@{-};
+( 0  ,0   );(0  ,0.8)**[|<\afthickone>]@{-}}}%
+
+\newcommand{\afbm}{%
+\ifemptyargparamsunchangedcompileflows{}%
+{\ifafdual\copy\afbbubox
+     \else\copy\afbbdbox\fi}%
+{\hbox{\afbmaux}}}%
+
+\newcommand{\afbauxx}{%
+\xybox{<\afelwidth,0pt>:<0pt,\ifafdual-\fi\afelheight>::
+(0, 0)*{\hbox{\afbm}};
+(0,-4)*{\afinvm};
+(0, 4)*{\afinvm}}}%
+
+\newcommand{\afbaux}{\ifemptyargparamsunchangedcompileflows{}%
+                       {\ifafdual\copy\afbubox\else\copy\afbdbox\fi}%
+                       {\afbauxx}}%
+
+\newcommand{\afbd}  {\afdualfalse\afbaux}%
+
+\newcommand{\afbu}  {\afdualtrue \afbaux}%
+
+%---------------- OLD STYLE CONTRACTIONS
+
+\newcommand{\afccaux}[3]{\hbox{\afdoublestrokes{%
+\xybox{<\afelwidth,0pt>:<0pt,\ifafdual-\fi\afelheight>::
+(-1,0)*{\xy\ar@#3{-}@[#1]@[|<\afthickone>]@`{(-2,-0.4)}(-2,2);(0,-2)\endxy};
+( 1,0)*{\xy\ar@#3{-}@[#2]@[|<\afthickone>]@`{( 2,-0.4)}( 2,2);(0,-2)\endxy}}}}}%
+
+\newcommand{\afcc}[2]{\ifafmult
+   \ifemptyargparamsunchangedcompileflows{#1#2}%
+   {\ifafdual\copy\afcucmbox
+        \else\copy\afcdcmbox\fi}%
+   {\afccaux{#1}{#2}{2}}%
+\else
+   \ifemptyargparamsunchangedcompileflows{#1#2}%
+   {\ifafdual\copy\afcucbox
+        \else\copy\afcdcbox\fi}%
+   {\afccaux{#1}{#2}{}}%
+\fi}%
+
+\newcommand{\afcauxx}[9]{%
+\xybox{<\afelwidth,0pt>:<0pt,\ifafdual-\fi\afelheight>::
+( 0  , 2  )*{\hbox{\afcc{#7}{#8}}};
+( 0  , 0  )*{\hbox{\afwaux{#5}{#6}{#9}}};
+( 0  ,-4  )*{\afinvm};
+(-1.7, 2.5)*{\afll{#1}};
+(-1.5, 2.5)*{\aflr{#2}};
+( 1.5, 2.5)*{\afll{#3}};
+( 1.7, 2.5)*{\aflr{#4}}}}%
+
+\newcommand{\afcaux}[6]{\ifemptyargparamsunchangedcompileflows{#1#2#3#4#5#6}%
+   {\ifafdisk
+       \ifafstem
+          \ifafdual
+             \ifafmult
+                \copy\afCudbox
+             \else
+                \copy\afcudabox
+             \fi
+          \else
+             \ifafmult
+                \copy\afCddbox
+             \else
+                \copy\afcddabox
+             \fi
+          \fi
+       \else
+          \ifafdual
+             \ifafmult
+                \copy\afCudnbox
+             \else
+                \copy\afcudnbox
+             \fi
+          \else
+             \ifafmult
+                \copy\afCddnbox
+             \else
+                \copy\afcddnbox
+             \fi
+          \fi
+       \fi
+    \else
+       \ifafstem
+          \ifafdual
+             \ifafmult
+                \ifaftrbl
+                   \copy\afCusbox
+                \else
+                   \copy\afCubox
+                \fi
+             \else
+                \ifaftrbl
+                   \copy\afcusabox
+                \else
+                   \copy\afcuabox
+                \fi
+             \fi
+          \else
+             \ifafmult
+                \ifaftrbl
+                   \copy\afCdsbox
+                \else
+                   \copy\afCdbox
+                \fi
+             \else
+                \ifaftrbl
+                   \copy\afcdsabox
+                \else
+                   \copy\afcdabox
+                \fi
+             \fi
+          \fi
+       \else
+          \ifafdual
+             \ifafmult
+                \ifaftrbl
+                   \copy\afCusnbox
+                \else
+                   \copy\afCunbox
+                \fi
+             \else
+                \ifaftrbl
+                   \copy\afcusnbox
+                \else
+                   \copy\afcunbox
+                \fi
+             \fi
+          \else
+             \ifafmult
+                \ifaftrbl
+                   \copy\afCdsnbox
+                \else
+                   \copy\afCdnbox
+                \fi
+             \else
+                \ifaftrbl
+                   \copy\afcdsnbox
+                \else
+                   \copy\afcdnbox
+                \fi
+             \fi
+          \fi
+       \fi
+    \fi}%
+   {\afcauxx{#1}{#2}{#3}{#4}{#5}{#6}{}{}{}}}%
+
+%----- OPEN TRIANGLE
+
+\newcommand{\afcd  }[6]{\afstemtrue\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{#5}{#6}}%
+
+\newcommand{\afCd  }[6]{\afstemtrue\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{#5}{#6}}%
+
+\newcommand{\afcu  }[6]{\afstemtrue\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{#5}{#6}}%
+
+\newcommand{\afCu  }[6]{\afstemtrue\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{#5}{#6}}%
+
+\newcommand{\afcdn }[4]{\afstemfalse\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{}{}}%
+
+\newcommand{\afCdn }[4]{\afstemfalse\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{}{}}%
+
+\newcommand{\afcun }[4]{\afstemfalse\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{}{}}%
+
+\newcommand{\afCun }[4]{\afstemfalse\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{}{}}%
+
+\newcommand{\afcdc }[9]{\afstemtrue\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{#9}}%
+
+\newcommand{\afCdc }[9]{\afstemtrue\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{#9}}%
+
+\newcommand{\afcuc }[9]{\afstemtrue\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{#9}}%
+
+\newcommand{\afCuc }[9]{\afstemtrue\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{#9}}%
+
+\newcommand{\afcdnc}[6]{\afstemfalse\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{}{}{#5}{#6}{}}%
+
+\newcommand{\afCdnc}[6]{\afstemfalse\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{}{}{#5}{#6}{}}%
+
+\newcommand{\afcunc}[6]{\afstemfalse\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{}{}{#5}{#6}{}}%
+
+\newcommand{\afCunc}[6]{\afstemfalse\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{}{}{#5}{#6}{}}%
+
+%---- SOLID TRIANGLE
+
+\newcommand{\afcds  }[6]{\afstemtrue\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcaux{#1}{#2}{#3}{#4}{#5}{#6}}%
+
+\newcommand{\afCds  }[6]{\afstemtrue\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcaux{#1}{#2}{#3}{#4}{#5}{#6}}%
+
+\newcommand{\afcus  }[6]{\afstemtrue\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcaux{#1}{#2}{#3}{#4}{#5}{#6}}%
+
+\newcommand{\afCus  }[6]{\afstemtrue\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcaux{#1}{#2}{#3}{#4}{#5}{#6}}%
+
+\newcommand{\afcdsn }[4]{\afstemfalse\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcaux{#1}{#2}{#3}{#4}{}{}}%
+
+\newcommand{\afCdsn }[4]{\afstemfalse\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcaux{#1}{#2}{#3}{#4}{}{}}%
+
+\newcommand{\afcusn }[4]{\afstemfalse\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcaux{#1}{#2}{#3}{#4}{}{}}%
+
+\newcommand{\afCusn }[4]{\afstemfalse\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcaux{#1}{#2}{#3}{#4}{}{}}%
+
+\newcommand{\afcdsc }[9]{\afstemtrue\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{#9}}%
+
+\newcommand{\afCdsc }[9]{\afstemtrue\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{#9}}%
+
+\newcommand{\afcusc }[9]{\afstemtrue\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{#9}}%
+
+\newcommand{\afCusc }[9]{\afstemtrue\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{#9}}%
+
+\newcommand{\afcdsnc}[6]{\afstemfalse\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcauxx{#1}{#2}{#3}{#4}{}{}{#5}{#6}{}}%
+
+\newcommand{\afCdsnc}[6]{\afstemfalse\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcauxx{#1}{#2}{#3}{#4}{}{}{#5}{#6}{}}%
+
+\newcommand{\afcusnc}[6]{\afstemfalse\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcauxx{#1}{#2}{#3}{#4}{}{}{#5}{#6}{}}%
+
+\newcommand{\afCusnc}[6]{\afstemfalse\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcauxx{#1}{#2}{#3}{#4}{}{}{#5}{#6}{}}%
+
+%-------------- DISK
+
+\newcommand{\afcdd  }[6]{\afstemtrue\afdualfalse\afmultfalse\afdisktrue
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{#5}{#6}}%
+
+\newcommand{\afCdd  }[6]{\afstemtrue\afdualfalse\afmulttrue\afdisktrue
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{#5}{#6}}%
+
+\newcommand{\afcud  }[6]{\afstemtrue\afdualtrue\afmultfalse\afdisktrue
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{#5}{#6}}%
+
+\newcommand{\afCud  }[6]{\afstemtrue\afdualtrue\afmulttrue\afdisktrue
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{#5}{#6}}%
+
+\newcommand{\afcddn }[4]{\afstemfalse\afdualfalse\afmultfalse\afdisktrue
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{}{}}%
+
+\newcommand{\afCddn }[4]{\afstemfalse\afdualfalse\afmulttrue\afdisktrue
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{}{}}%
+
+\newcommand{\afcudn }[4]{\afstemfalse\afdualtrue\afmultfalse\afdisktrue
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{}{}}%
+
+\newcommand{\afCudn }[4]{\afstemfalse\afdualtrue\afmulttrue\afdisktrue
+                 \aftrblfalse\afcaux{#1}{#2}{#3}{#4}{}{}}%
+
+\newcommand{\afcddc }[9]{\afstemtrue\afdualfalse\afmultfalse\afdisktrue
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{#9}}%
+
+\newcommand{\afCddc }[9]{\afstemtrue\afdualfalse\afmulttrue\afdisktrue
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{#9}}%
+
+\newcommand{\afcudc }[9]{\afstemtrue\afdualtrue\afmultfalse\afdisktrue
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{#9}}%
+
+\newcommand{\afCudc }[9]{\afstemtrue\afdualtrue\afmulttrue\afdisktrue
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{#9}}%
+
+\newcommand{\afcddnc}[6]{\afstemfalse\afdualfalse\afmultfalse\afdisktrue
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{}{}{#5}{#6}{}}%
+
+\newcommand{\afCddnc}[6]{\afstemfalse\afdualfalse\afmulttrue\afdisktrue
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{}{}{#5}{#6}{}}%
+
+\newcommand{\afcudnc}[6]{\afstemfalse\afdualtrue\afmultfalse\afdisktrue
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{}{}{#5}{#6}{}}%
+
+\newcommand{\afCudnc}[6]{\afstemfalse\afdualtrue\afmulttrue\afdisktrue
+                 \aftrblfalse\afcauxx{#1}{#2}{#3}{#4}{}{}{#5}{#6}{}}%
+
+%-------------------- SHORT CONTRACTIONS
+
+\newcommand{\afcxncaux}[3]{\hbox{\afdoublestrokes{%
+\xybox{<\afelwidth,0pt>:<0pt,\ifafdual-\fi\afelheight>::
+(-1,0)*{\xy\ar@#3{-}@[#1]@[|<\afthickone>]@`{(-2,-1),(0,0.2)}
+           (-2,2);(0,-2)\endxy};
+( 1,0)*{\xy\ar@#3{-}@[#2]@[|<\afthickone>]@`{( 2,-1),(0,0.2)}
+           ( 2,2);(0,-2)\endxy}}}}}%
+
+\newcommand{\afcxnc}[8]{\multiply\afelwidth by#5%
+                          \divide\afelwidth by#6%
+\xybox{<\afelwidth,0pt>:<0pt,\ifafdual-\fi\afelheight>::
+(-1.6,-0.9)*{\afll{#1}};
+(-1.7, 1.3)*{\aflr{#2}};
+( 1.7, 1.3)*{\afll{#3}};
+( 1.6,-0.9)*{\aflr{#4}};
+( 0  , 0  )*{\hbox{\ifafmult\afcxncaux{#7}{#8}2\else\afcxncaux{#7}{#8}{}\fi}}}}%
+
+\newcommand{\afcxncauxx}[9]{\afcxnc{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+
+\newcommand{\afwxnaux}[5]{\afwaux{#1}{#2}{#5}}%
+
+\newcommand{\afcxnaux}[9]{%
+\xybox{<\afelwidth,0pt>:<0pt,\ifafdual-\fi\afelheight>::
+(0, 2)*{\hbox{\afcxncauxx{#1}{#2}{#3}{#4}{#7}{#8}#9}};
+(0, 0)*{\hbox{\afwxnaux{#5}{#6}#9}};
+(0,-4)*{\afinvm}}}%
+
+\newcommand{\afcxnauxdo}{\expandafter\afcxnaux\the\toks0\the\toks1}%
+
+%----- OPEN TRIANGLE
+
+\newcommand{\afcdx  }[8]{\afstemtrue\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afCdx  }[8]{\afstemtrue\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afcux  }[8]{\afstemtrue\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afCux  }[8]{\afstemtrue\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afcdnx }[6]{\afstemfalse\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afCdnx }[6]{\afstemfalse\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afcunx }[6]{\afstemfalse\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afCunx }[6]{\afstemfalse\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afcdxc }[8]{\afstemtrue\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxnauxdo\afrestparamss}%
+
+\newcommand{\afCdxc }[8]{\afstemtrue\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxnauxdo\afrestparamss}%
+
+\newcommand{\afcuxc }[8]{\afstemtrue\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxnauxdo\afrestparamss}%
+
+\newcommand{\afCuxc }[8]{\afstemtrue\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxnauxdo\afrestparamss}%
+
+\newcommand{\afcdnxc}[8]{\afstemfalse\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afCdnxc}[8]{\afstemfalse\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afcunxc}[8]{\afstemfalse\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afCunxc}[8]{\afstemfalse\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+%---- SOLID TRIANGLE
+
+\newcommand{\afcdsx  }[8]{\afstemtrue\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcxnaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afCdsx  }[8]{\afstemtrue\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcxnaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afcusx  }[8]{\afstemtrue\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcxnaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afCusx  }[8]{\afstemtrue\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcxnaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afcdsnx }[6]{\afstemfalse\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afCdsnx }[6]{\afstemfalse\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afcusnx }[6]{\afstemfalse\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afCusnx }[6]{\afstemfalse\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afcdsxc }[8]{\afstemtrue\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrbltrue \toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxnauxdo\afrestparamss}%
+
+\newcommand{\afCdsxc }[8]{\afstemtrue\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrbltrue \toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxnauxdo\afrestparamss}%
+
+\newcommand{\afcusxc }[8]{\afstemtrue\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrbltrue \toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxnauxdo\afrestparamss}%
+
+\newcommand{\afCusxc }[8]{\afstemtrue\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrbltrue \toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxnauxdo\afrestparamss}%
+
+\newcommand{\afcdsnxc}[8]{\afstemfalse\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afCdsnxc}[8]{\afstemfalse\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afcusnxc}[8]{\afstemfalse\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afCusnxc}[8]{\afstemfalse\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+%-------------- DISK
+
+\newcommand{\afcddx  }[8]{\afstemtrue\afdualfalse\afmultfalse\afdisktrue
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afCddx  }[8]{\afstemtrue\afdualfalse\afmulttrue\afdisktrue
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afcudx  }[8]{\afstemtrue\afdualtrue\afmultfalse\afdisktrue
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afCudx  }[8]{\afstemtrue\afdualtrue\afmulttrue\afdisktrue
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afcddnx }[6]{\afstemfalse\afdualfalse\afmultfalse\afdisktrue
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afCddnx }[6]{\afstemfalse\afdualfalse\afmulttrue\afdisktrue
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afcudnx }[6]{\afstemfalse\afdualtrue\afmultfalse\afdisktrue
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afCudnx }[6]{\afstemfalse\afdualtrue\afmulttrue\afdisktrue
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afcddxc }[8]{\afstemtrue\afdualfalse\afmultfalse\afdisktrue
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxnauxdo\afrestparamss}%
+
+\newcommand{\afCddxc }[8]{\afstemtrue\afdualfalse\afmulttrue\afdisktrue
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxnauxdo\afrestparamss}%
+
+\newcommand{\afcudxc }[8]{\afstemtrue\afdualtrue\afmultfalse\afdisktrue
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxnauxdo\afrestparamss}%
+
+\newcommand{\afCudxc }[8]{\afstemtrue\afdualtrue\afmulttrue\afdisktrue
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxnauxdo\afrestparamss}%
+
+\newcommand{\afcddnxc}[8]{\afstemfalse\afdualfalse\afmultfalse\afdisktrue
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afCddnxc}[8]{\afstemfalse\afdualfalse\afmulttrue\afdisktrue
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afcudnxc}[8]{\afstemfalse\afdualtrue\afmultfalse\afdisktrue
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afCudnxc}[8]{\afstemfalse\afdualtrue\afmulttrue\afdisktrue
+                 \aftrblfalse\afcxnaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+%--------------------- LONG CONTRACTIONS
+
+\newcommand{\afcxqcaux}[3]{\hbox{\afdoublestrokes{%
+\xybox{<\afelwidth,0pt>:<0pt,\ifafdual-\fi\afelheight>::
+(-1,0)*{\xy\ar@#3{-}@[#1]@[|<\afthickone>]@`{(-2,-2),(-0.2,-1)}
+           (-2,4);(0,-4)\endxy};
+( 1,0)*{\xy\ar@#3{-}@[#2]@[|<\afthickone>]@`{( 2,-2),( 0.2,-1)}
+           ( 2,4);(0,-4)\endxy}}}}}%
+
+\newcommand{\afcxqc}[8]{\multiply\afelwidth by#5%
+                          \divide\afelwidth by#6%
+\xybox{<\afelwidth,0pt>:<0pt,\ifafdual-\fi\afelheight>::
+(-1.6,-0.8)*{\afll{#1}};
+(-1.7, 1.3)*{\aflr{#2}};
+( 1.7, 1.3)*{\afll{#3}};
+( 1.6,-0.8)*{\aflr{#4}};
+( 0  , 0  )*{\hbox{\ifafmult\afcxqcaux{#7}{#8}2\else\afcxqcaux{#7}{#8}{}\fi}}}}%
+
+\newcommand{\afcxqcauxx}[9]{\afcxqc{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+
+\newcommand{\afwxqaux}[5]{\afwaux{#1}{#2}{#5}}%
+
+\newcommand{\afcxqaux}[9]{%
+\xybox{<\afelwidth,0pt>:<0pt,\ifafdual-\fi\afelheight>::
+(0, 4.135)*{\hbox{\afcxqcauxx{#1}{#2}{#3}{#4}{#7}{#8}#9}};
+(0, 0    )*{\hbox{\afwxqaux{#5}{#6}#9}};
+(0,-4    )*{\afinvm}}}%
+
+\newcommand{\afcxqauxdo}{\expandafter\afcxqaux\the\toks0\the\toks1}%
+
+\newcommand\afrestparamss[3]{\toks1={{{#1}{#2}{#3}}}}%
+
+%----- OPEN TRIANGLE
+
+\newcommand{\afcdX  }[8]{\afstemtrue\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afCdX  }[8]{\afstemtrue\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afcuX  }[8]{\afstemtrue\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afCuX  }[8]{\afstemtrue\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afcdnX }[6]{\afstemfalse\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afCdnX }[6]{\afstemfalse\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afcunX }[6]{\afstemfalse\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afCunX }[6]{\afstemfalse\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afcdXc }[8]{\afstemtrue\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxqauxdo\afrestparamss}%
+
+\newcommand{\afCdXc }[8]{\afstemtrue\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxqauxdo\afrestparamss}%
+
+\newcommand{\afcuXc }[8]{\afstemtrue\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxqauxdo\afrestparamss}%
+
+\newcommand{\afCuXc }[8]{\afstemtrue\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxqauxdo\afrestparamss}%
+
+\newcommand{\afcdnXc}[8]{\afstemfalse\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afCdnXc}[8]{\afstemfalse\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afcunXc}[8]{\afstemfalse\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afCunXc}[8]{\afstemfalse\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+%---- SOLID TRIANGLE
+
+\newcommand{\afcdsX  }[8]{\afstemtrue\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcxqaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afCdsX  }[8]{\afstemtrue\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcxqaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afcusX  }[8]{\afstemtrue\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcxqaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afCusX  }[8]{\afstemtrue\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcxqaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afcdsnX }[6]{\afstemfalse\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afCdsnX }[6]{\afstemfalse\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afcusnX }[6]{\afstemfalse\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afCusnX }[6]{\afstemfalse\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afcdsXc }[8]{\afstemtrue\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrbltrue \toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxqauxdo\afrestparamss}%
+
+\newcommand{\afCdsXc }[8]{\afstemtrue\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrbltrue \toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxqauxdo\afrestparamss}%
+
+\newcommand{\afcusXc }[8]{\afstemtrue\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrbltrue \toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxqauxdo\afrestparamss}%
+
+\newcommand{\afCusXc }[8]{\afstemtrue\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrbltrue \toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxqauxdo\afrestparamss}%
+
+\newcommand{\afcdsnXc}[8]{\afstemfalse\afdualfalse\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afCdsnXc}[8]{\afstemfalse\afdualfalse\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afcusnXc}[8]{\afstemfalse\afdualtrue\afmultfalse\afdiskfalse
+                 \aftrbltrue \afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afCusnXc}[8]{\afstemfalse\afdualtrue\afmulttrue\afdiskfalse
+                 \aftrbltrue \afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+%-------------- DISK
+
+\newcommand{\afcddX  }[8]{\afstemtrue\afdualfalse\afmultfalse\afdisktrue
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afCddX  }[8]{\afstemtrue\afdualfalse\afmulttrue\afdisktrue
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afcudX  }[8]{\afstemtrue\afdualtrue\afmultfalse\afdisktrue
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afCudX  }[8]{\afstemtrue\afdualtrue\afmulttrue\afdisktrue
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}{{}{}{}}}%
+
+\newcommand{\afcddnX }[6]{\afstemfalse\afdualfalse\afmultfalse\afdisktrue
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afCddnX }[6]{\afstemfalse\afdualfalse\afmulttrue\afdisktrue
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afcudnX }[6]{\afstemfalse\afdualtrue\afmultfalse\afdisktrue
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afCudnX }[6]{\afstemfalse\afdualtrue\afmulttrue\afdisktrue
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{}{}{}}}%
+
+\newcommand{\afcddXc }[8]{\afstemtrue\afdualfalse\afmultfalse\afdisktrue
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxqauxdo\afrestparamss}%
+
+\newcommand{\afCddXc }[8]{\afstemtrue\afdualfalse\afmulttrue\afdisktrue
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxqauxdo\afrestparamss}%
+
+\newcommand{\afcudXc }[8]{\afstemtrue\afdualtrue\afmultfalse\afdisktrue
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxqauxdo\afrestparamss}%
+
+\newcommand{\afCudXc }[8]{\afstemtrue\afdualtrue\afmulttrue\afdisktrue
+                 \aftrblfalse\toks0={{#1}{#2}{#3}{#4}{#5}{#6}{#7}{#8}}%
+                             \afterassignment\afcxqauxdo\afrestparamss}%
+
+\newcommand{\afcddnXc}[8]{\afstemfalse\afdualfalse\afmultfalse\afdisktrue
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afCddnXc}[8]{\afstemfalse\afdualfalse\afmulttrue\afdisktrue
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afcudnXc}[8]{\afstemfalse\afdualtrue\afmultfalse\afdisktrue
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+\newcommand{\afCudnXc}[8]{\afstemfalse\afdualtrue\afmulttrue\afdisktrue
+                 \aftrblfalse\afcxqaux{#1}{#2}{#3}{#4}{}{}{#5}{#6}{{#7}{#8}{}}}%
+
+%-------------------- VERTICAL JUNCTIONS
+
+\newcommand{\afvaux}[6]{\divide\afelheight by2\afdoublestrokes{%
+\xybox{<\afelwidth,0pt>:<0pt,#5\afelheight>::
+(0, #1)-(0,4)*{\afll{#2}};
+(0, #1)-(0,4)*{\aflr{#3}};
+(0,  4)*{\afinvm};
+(0, -4)*{\afinvm};
+(0,  0)*{\xy\ar@#6{-}@[#4]@[|<\afthickone>](0,-#1);(0,#1)\endxy}}}}%
+
+\newcommand{\afv  }[1]{\afvaux{#1}{}{}{}{}{}}%
+
+\newcommand{\afvc }[2]{\afvaux{#1}{}{}{#2}{}{}}%
+
+\newcommand{\afvd }[3]{\afvaux{#1}{#2}{#3}{}{}{}}%
+
+\newcommand{\afvdc}[4]{\afvaux{#1}{#2}{#3}{#4}{}{}}%
+
+\newcommand{\afvu }[3]{\afvaux{#1}{#2}{#3}{}{-}{}}%
+
+\newcommand{\afvuc}[4]{\afvaux{#1}{#2}{#3}{#4}{-}{}}%
+
+\newcommand{\afV  }[1]{\afvaux{#1}{}{}{}{}{2}}%
+
+\newcommand{\afVc }[2]{\afvaux{#1}{}{}{#2}{}{2}}%
+
+\newcommand{\afVd }[3]{\afvaux{#1}{#2}{#3}{}{}{2}}%
+
+\newcommand{\afVdc}[4]{\afvaux{#1}{#2}{#3}{#4}{}{2}}%
+
+\newcommand{\afVu }[3]{\afvaux{#1}{#2}{#3}{}{-}{2}}%
+
+\newcommand{\afVuc}[4]{\afvaux{#1}{#2}{#3}{#4}{-}{2}}%
+
+\newcommand{\afvdj}{\divide\afelheight by2%
+\xybox{<\afelwidth,0pt>:<0pt,\afelheight>::
+(0,-1);(0,1)**[|<\afthickone>]@{.}}}%
+
+%---------------------- CURVED JUNCTIONS
+
+\newcommand{\afjaux}[5]{\divide\afelwidth by2
+                        \divide\afelheight by2\afdoublestrokes{%
+\xybox{<\afelwidth,0pt>:<0pt,#4\afelheight>::
+(0,0)*{\xy\ar@#5{-}@[#3]@[|<\afthickone>]@`{(-#1,0),(#1,0)}
+          (-#1,#2);(#1,-#2)\endxy}}}}%
+
+\newcommand{\afjl }[2]{\afjaux{#1}{#2}{}{}{}}%
+
+\newcommand{\afjlc}[3]{\afjaux{#1}{#2}{#3}{}{}}%
+
+\newcommand{\afjr }[2]{\afjaux{#1}{#2}{}{-}{}}%
+
+\newcommand{\afjrc}[3]{\afjaux{#1}{#2}{#3}{-}{}}%
+
+\newcommand{\afJl }[2]{\afjaux{#1}{#2}{}{}{2}}%
+
+\newcommand{\afJlc}[3]{\afjaux{#1}{#2}{#3}{}{2}}%
+
+\newcommand{\afJr }[2]{\afjaux{#1}{#2}{}{-}{2}}%
+
+\newcommand{\afJrc}[3]{\afjaux{#1}{#2}{#3}{-}{2}}%
+
+\newcommand{\afexc  }[4]{%
+\xybox{<\afelwidth,0pt>:<0pt,\afelheight>::
+(0,0)*{\hbox{\afjlc{#1}{#2}{#3}}};
+(0,0)*{\hbox{\afjrc{#1}{#2}{#4}}}}}%
+
+\newcommand{\afex }[2]{\afexc{#1}{#2}{}{}}%
+
+\newcommand{\afcxaux}[5]{\multiply\afelwidth by#1
+                          \multiply\afelheight by#2\afdoublestrokes{%
+\xybox{<\afelwidth,0pt>:<0pt,\afelheight>::
+(0,0)*{\xy\ar@#5{-}@[#3]@[|<\afthickone>]@`{(0.25, 0.1875),(-0.25,-0.1875)}
+       (-0.5,0.5);(0.5,-0.5)\endxy};
+(0,0)*{\xy\ar@#5{-}@[#4]@[|<\afthickone>]@`{(0.25,-0.1875),(-0.25, 0.1875)}
+       (-0.5,-0.5);(0.5,0.5)\endxy}}}}%
+
+\newcommand{\afcx }[2]{\afcxaux{#1}{#2}{}{}{}}
+
+\newcommand{\afcxc}[4]{\afcxaux{#1}{#2}{#3}{#4}{}}
+
+\newcommand{\afCx }[2]{\afcxaux{#1}{#2}{}{}{2}}
+
+\newcommand{\afCxc}[4]{\afcxaux{#1}{#2}{#3}{#4}{2}}
+
+\newcommand{\afclraux}[4]{\multiply\afelwidth by#1
+                          \multiply\afelheight by#2\afdoublestrokes{%
+\xybox{<\ifafdual-\fi\afelwidth,0pt>:<0pt,\afelheight>::
+(-0.5,0)*{\afinvm};
+( 0.5,0)*{\afinvm};
+( 0  ,0)*{\hbox to0pt{\ifafdual\else\hss\fi
+       \xy\ar@#4{-}@[#3]@[|<\afthickone>]@`{(0,-0.25),(0,0.25)}
+                            (0.667,-0.5);(0.667,0.5)\endxy\ifafdual\hss\fi}}}}}%
+
+\newcommand{\afcl }[2]{\afdualfalse\afclraux{#1}{#2}{}{}}
+
+\newcommand{\afcr }[2]{\afdualtrue\afclraux{#1}{#2}{}{}}
+
+\newcommand{\afCl }[2]{\afdualfalse\afclraux{#1}{#2}{}2}
+
+\newcommand{\afCr }[2]{\afdualtrue\afclraux{#1}{#2}{}2}
+
+\newcommand{\afclc}[3]{\afdualfalse\afclraux{#1}{#2}{#3}{}}
+
+\newcommand{\afcrc}[3]{\afdualtrue\afclraux{#1}{#2}{#3}{}}
+
+\newcommand{\afClc}[3]{\afdualfalse\afclraux{#1}{#2}{#3}2}
+
+\newcommand{\afCrc}[3]{\afdualtrue\afclraux{#1}{#2}{#3}2}
+
+%-------------- TRIANGLES AND RECTANGLES
+
+\newcommand{\afexpaux}[4]{\divide\afelheight by2%
+\xybox{<\afelwidth,0pt>:<0pt,#4\afelheight>::
+(#1, #2)+(#3,0);(0,-#2)**[|<\afthickone>]@{-};
+(#1,-#2)+(#1,0)**[|<\afthicktwo>]@{-};
+(#1, #2)+(#3,0)**[|<\afthickone>]@{-}}}%
+
+\newcommand{\afexpd}[3]{\afexpaux{#1}{#2}{#3}{}}%
+
+\newcommand{\afexpu}[3]{\afexpaux{#1}{#2}{#3}{-}}%
+
+\newcommand{\affraux}[3]{\divide\afelheight by2%
+\xybox{<.5\afelwidth,0pt>:<0pt,\afelheight>::
+(0,0)*[#3]{%
+\xybox{<.5\afelwidth,0pt>:<0pt,\afelheight>::
+(-#1,-#2);
+(-#1, #2)**[|<\afthicktwo>]@{-};
+( #1, #2)**[|<\afthicktwo>]@{-};
+( #1,-#2)**[|<\afthicktwo>]@{-};
+(-#1,-#2)**[|<\afthicktwo>]@{-}}}}}%
+
+\newcommand{\affr }[2]{\affraux{#1}{#2}{}}%
+
+\newcommand{\affrb}[2]{\divide\afthicktwo by 4%
+                       \affraux{#1}{#2}{F*:afbackground}}%
+
+%------------------------------------------------ END OF MACROS FOR ATOMIC FLOWS
+
+%----------------------------------------- \vlsmash, \vlupsmash AND \vldownsmash
+
+\catcode`@=11
+
+\def\upsmash{\relax % \relax, in case this comes first in \halign
+  \ifmmode\def\next{\mathpalette\mathupsm@sh}\else\let\next\makeupsm@sh
+  \fi\next}%
+\def\makeupsm@sh#1{\setbox\z@\hbox{#1}\finupsm@sh}%
+\def\mathupsm@sh#1#2{\setbox\z@\hbox{$\m@th#1{#2}$}\finupsm@sh}%
+\def\finupsm@sh{\ht\z@\z@ \box\z@}%
+\def\downsmash{\relax % \relax, in case this comes first in \halign
+  \ifmmode\def\next{\mathpalette\mathdownsm@sh}\else\let\next\makedownsm@sh
+  \fi\next}%
+\def\makedownsm@sh#1{\setbox\z@\hbox{#1}\findownsm@sh}%
+\def\mathdownsm@sh#1#2{\setbox\z@\hbox{$\m@th#1{#2}$}\findownsm@sh}%
+\def\findownsm@sh{\dp\z@\z@ \box\z@}%
+
+\newcommand{\vldownsmashend}{\egroup\downsmash{\vlread}}%
+
+\newcommand{\vlupsmashend  }{\egroup  \upsmash{\vlread}}%
+
+\newcommand{\vlsmashend    }{\egroup    \smash{\vlread}}%
+
+\newcommand{\vldownsmash}{\strut\bgroup\vlprepstructures
+                          \afterassignment\vldownsmashend\global\def\vlread}%
+
+\newcommand{\vlupsmash  }{\strut\bgroup\vlprepstructures
+                          \afterassignment  \vlupsmashend\global\def\vlread}%
+
+\newcommand{\vlsmash    }{\strut\bgroup\vlprepstructures
+                          \afterassignment    \vlsmashend\global\def\vlread}%
+
+%---------------------------------- END OF \vlsmash, \vlupsmash AND \vldownsmash
