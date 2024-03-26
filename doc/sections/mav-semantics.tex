@@ -1,4 +1,4 @@
-\section{Semantics}\label{sec:mav-semantics}
+\section{Semantic Models for MAV}\label{sec:mav-semantics}
 
 \newcommand{\LowerSet}[1]{\widehat{#1}}
 \newcommand{\Day}[1]{\mathop{\widehat{#1}}}
@@ -9,7 +9,18 @@
 
 \bob{Short introduction to the section here}
 
-\subsection{$*$-autonomous and Duoidal Structure on Partial Orders}
+\begin{itemize}
+\item We construct algebraic models of MAV
+\item MAV-algebras are algebras that MAV is sound for. In some
+  sense, this is straightforward, but we identify precisely the
+  structure that is needed.
+\item The key structure is duoidality, or entropy.
+\item We develop some model theory here, and show that MAV-algebras
+  can be induced by the weaker structure of MAV-frames. This is
+  essential for the cut-free elimination proof.
+\end{itemize}
+
+\subsection{Pomonoidal, $*$-autonomous, and Duoidal Structure on Partial Orders}
 
 \begin{definition}
   A \emph{partial order monoid (pomonoid)} $(\bullet, i)$ on a poset
@@ -80,6 +91,8 @@ FIXME: cite that combinatorics book.
 \end{remark}
 
 \subsection{MAV-algebras}
+
+\bob{Change $;$ to $\lhd$}
 
 \begin{definition}\label{defn:mav-algebra}
   An \emph{MAV-algebra} is a structure
@@ -177,20 +190,21 @@ all proofs in SMAV have cut-free normal forms.
 \end{definition}
 
 \begin{remark}
-  \bob{A frame is nearly two duoidal structures, except that we don't
-    assume that $+$ is a monoid, nor is there a unit element for
-    it. If we assumed that $+$ was a lattice join, then (iii) and (iv)
-    would automatically be true. We do not include this because these
-    facts are not true for the cut-free MAV system.}
+  An MAV-frame is essentially two duoidal relationships and a
+  distributivity law.
 \end{remark}
 
 \begin{remark}
-  \bob{Connection to process algebras: we can read the ordering as
-    ``reduces to'' and the connectives as parallel combination,
-    sequential composition, and choice, respectively. If we add in
-    atomic elements with duals and an interaction law, then we get
-    something like CCS without restriction, but with sequential
-    composition.}
+  MAV-frames have a intuitive reading as a CCS-like process algebra
+  (see Milner \cite{milner89} for an introduction to CCS). If we
+  assume the existence of a collection of ``action'' elements
+  $a \in F$ and their duals $\overline{a} \in F$, satisfying
+  $a \parallel \overline{a} \leq I$, then we can read the constructs
+  of an MAV-frame as parallel composition, sequential composition, and
+  choice. The ordering is interpreted as a reduction relation. An
+  interesting avenue for future work would be to discover to what
+  extent MAV can be thought of as a logic for processes in this
+  process algebra.
 \end{remark}
 
 \begin{proposition}
@@ -212,9 +226,18 @@ all proofs in SMAV have cut-free normal forms.
 
 \subsection{Constructing MAV-algebras from MAV-frames}
 
-\bob{Some introductory text here: explain the steps in the construction and what each one adds.}
+We construct MAV-algebras from MAV-frames in a three step process. In
+Section \ref{sec:lower-sets}, we use lower sets and the Day
+construction to add meets, joins and residuals for pomonoids to a
+partial order. This construction creates joins freely, so we restrict
+to $+$-closed lower sets in Section \ref{sec:closed-lower-sets}, which
+separates the Day construction of pomonoids into two separate
+cases. Finally, we create the $*$-autonomous structure using the Chu
+construction in Section \ref{sec:chu}. We maintain the duoidal
+structure through each construction.
 
 \subsubsection{Lower Sets and Day pomonoids}
+\label{sec:lower-sets}
 
 \begin{definition}
   Given a partial order $(A, \leq)$, the set of lower sets
@@ -228,8 +251,8 @@ all proofs in SMAV have cut-free normal forms.
   For any $(A, \leq)$, the function $\eta$ is monotone, and
   $(\LowerSet{A}, \subseteq)$ has meets and joins given by
   intersection and union respectively.
-
-  \bob{and $\eta$ preserves any meets that exist}
+%
+%  \bob{and $\eta$ preserves any meets that exist}
 \end{proposition}
 
 \begin{proposition}\label{prop:day-construction}
@@ -246,7 +269,8 @@ all proofs in SMAV have cut-free normal forms.
     \item If $(\bullet, i)$ is a commutative pomonoid, then so is
           $(\Day{\bullet}, \Day{i})$. In this case, the residuals coincide.
   \end{enumerate}
-  \bob{Could also say that $\eta$ preserves the monoids}
+  \bob{Could also say that $\eta$ preserves the monoids. Does this
+    come up later?}
 \end{proposition}
 
 \begin{remark}
@@ -263,11 +287,12 @@ all proofs in SMAV have cut-free normal forms.
 \end{remark}
 
 \begin{proposition}\label{prop:lower-set-duoidal}
-  If $(\bullet, i)$ and $(\lhd, j)$ are in a duoidal relationship then
-  so are $(\Day{\bullet}, \Day{i})$ and $(\Day{\lhd}, \Day{j})$.
+  If $(\bullet, i)$ is duoidal over $(\lhd, j)$ then
+  $(\Day{\bullet}, \Day{i})$ is duoidal over $(\Day{\lhd}, \Day{j})$.
 \end{proposition}
 
-\subsubsection{Closed Lower Sets}
+\subsubsection{$+$-closed Lower Sets}
+\label{sec:closed-lower-sets}
 
 In the phase semantics, formulas are interpreted as elements that are
 fixed points of a closure operator defined by a double negation with
@@ -277,67 +302,57 @@ correspond to the syntactic ones when the original monoid is derived
 from the proofs. As we mentioned in the introduction, the presence of
 a self-dual operator in BV means that we cannot use double negation
 closure, and we have to proceed more deliberately to preserve
-join-like structure in an MAV-frame when building MAV-algebras.
+join-like structure in an MAV-frame when building MAV-algebras. We do
+this by defining $+$-closed lower sets as those that are closed under
+finite $+$-combinations of their elements. This leads to a closure
+operator on lower sets that allows us to immediately deduce that
+$+$-closed lower sets form a lattice. We also preserve the
+Day-pomonoids from lower sets, but in two different ways, depending on
+how the original pomonoid interacts with $+$. In Proposition
+\ref{prop:closed-monoid-distrib} we handle pomonoids that distribute
+over $+$, and in Propositional \ref{prop:closed-monoid-duoidal} we
+handle pomonoids that are entopic under $+$. We need these
+constructions to lift the $\parallel$ and $\lhd$ pomonoids from
+MAV-frames to $+$-closed lower sets. Finally in this section, we show
+that duoidal structure on lower sets from Proposition
+\ref{prop:lower-set-duoidal} is preserved in $+$-closed lower sets.
 
-We do this by defining closed lower sets as those that are closed
-under finite $+$-combinations of their elements. 
-
-Lower sets add residuals to the pomonoids of an MAV-frame, so the Chu
-construction below will allow us to add duals to interpret all of the
-multiplicative subsystem of MAV. To incorporate the additives in such
-a way that we will be able to derive the proof normalisation property,
-we need to refine lower sets to ones that are closed under
-$+$-combinations.
-
-This corresponds to a sheaf construction, but we do not assume that
-the ``join'' operation is stable with respect to meets.
-
-
-The following development has proved amenable to mechanisation.
-
-$+$-contexts are the semantic analogue of Horne's \emph{Killing
-  contexts}.
+For this section, we assume that $(A, \leq)$ is a partial order with a
+monotone binary operation $+ : A \times A \to A$ (we do not assume
+that $+$ is a join or even a pomonoid.)
 
 \begin{definition}
-  Let $(A, \leq)$ be a partial order with a monotone binary operation
-  $+ : A \times A \to A$.  Let $F \in \LowerSet{A}$. A
-  \emph{$+$-context} over $F$ is a binary tree built from constructors
-  $\mathsf{leaf} : F \to \mathrm{ctxt}(F)$ and
-  $\mathsf{node} : \mathrm{ctxt}(F) \times \mathrm{ctxt}(F) \to
-    \mathrm{ctxt}(F)$. We define the \emph{sum} of a context as
-  $\mathit{sum}(\mathsf{leaf}~x) = x$ and
-  $\mathit{sum}(\mathsf{node}(c,d)) = \mathit{sum}(c) +
-    \mathit{sum}(d)$.
-\end{definition}
-
-\begin{remark}
-  Conceptually higher level view on contexts: if we view a lower set
-  $F$ as a monotone function $F : A^\op \to \Omega$, then we can view
-  the context construction as a relative monad on lower sets to
-  partial orders.  \bob{and this should extend to presheaves and
-    categories}.
-\end{remark}
-
-\begin{definition}
-  A lower set $F \in \LowerSet{A}$ is \emph{$+$-closed} if for all
-  $c \in \mathsf{ctxt}(F)$, $\mathit{sum}(c) \in F$. $+$-closed lower
-  sets are ordered by subset inclusion and form a partial order
+  A lower set $F \in \LowerSet{A}$ is \emph{$+$-closed} if $x \in F$
+  and $y \in F$ imply $x + y \in F$. $+$-closed lower sets are ordered
+  by subset inclusion and form a partial order
   $(\ClosedLowerSet{A}, \subseteq)$.
 \end{definition}
 
 \begin{proposition}
-  There is a monotone function
-  $\alpha : \LowerSet{A} \to \ClosedLowerSet{A}$ with the following
-  properties. It is a Galois reflection. FIXME
-
-  \begin{displaymath}
-    \alpha(F) = \{ x \mid c \in \mathrm{ctxt}(F), x \leq \mathit{sum}(c) \}
-  \end{displaymath}
+  Let $U : \ClosedLowerSet{A} \to \LowerSet{A}$ be the ``forgetful''
+  function that forgets the $+$-closed property. There is a monotone
+  function $\alpha : \LowerSet{A} \to \ClosedLowerSet{A}$ such that
+  for all $F \in \ClosedLowerSet{A}$, $\alpha(U F) = F$ and for all
+  $F \in \LowerSet{A}$, $F \subseteq U (\alpha F)$.
 \end{proposition}
 
 \begin{proof}
-  Explain the Agda, this relies on the fact that $\mathrm{ctxt}$ is a
-  (relative) monad.
+  To define $\alpha$, we close lower sets under all
+  $+$-combinations. To this end, for $F \in \LowerSet{A}$, define
+  $\mathrm{ctxt}(F)$, the set of all $+$-combinations of $F$
+  inductively built from constructors
+  $\mathsf{leaf} : F \to \mathrm{ctxt}(F)$ and
+  $\mathsf{node} : \mathrm{ctxt}(F) \times \mathrm{ctxt}(F) \to
+  \mathrm{ctxt}(F)$. We define the \emph{sum} of a context as
+  $\mathit{sum}(\mathsf{leaf}~x) = x$ and
+  $\mathit{sum}(\mathsf{node}(c,d)) = \mathit{sum}(c) +
+  \mathit{sum}(d)$. Now define:
+  $\alpha(F) = \{ x \mid c \in \mathrm{ctxt}(F), x \leq
+  \mathit{sum}(c) \}$. This is $+$-closed, by taking the
+  $\mathsf{node}$ combination of contexts. $\alpha \circ U$ is
+  idempotent because $\alpha$ does not introduce any elements to lower
+  sets that are already closed. For arbitrary lower sets $F$,
+  $F \subseteq U(\alpha F)$ by the $\mathsf{leaf}$ constructor.
 \end{proof}
 
 \begin{remark}
@@ -368,10 +383,18 @@ $+$-contexts are the semantic analogue of Horne's \emph{Killing
 \end{proposition}
 
 \begin{proof}
-  $\alpha$ preserves the monoidal structure, so we can use it to prove
-  the monoid laws for the constructed monoid.
-
-  \bob{Sketch why this works: we can multiply together the contexts.}
+  We can define an operation
+  $\bullet^c : \mathrm{ctxt}(F) \times \mathrm{ctxt}(G) \to
+  \mathrm{ctxt}(F \Day{\bullet} G)$ that ``multiplies'' two trees,
+  such that
+  $\mathit{sum}(c) \bullet \mathit{sum}(d) \leq \mathit{sum}(c
+  \bullet^c d)$, using the distributivity. This allows us to show that
+  $\alpha$ preserves the monoid operation:
+  $\alpha F \ClosedDay{\bullet} \alpha F = \alpha (F \Day{\bullet}
+  G)$. With this, we can show that the monotonicity, associativity,
+  unit, and commutativity properties of $\Day{\bullet}$ transfer over
+  to $\ClosedDay{\bullet}$. The definition of the residual from lower
+  sets is already $+$-closed, by distributivity.
 \end{proof}
 
 \begin{proposition}\label{prop:closed-monoid-duoidal}
@@ -389,7 +412,10 @@ $+$-contexts are the semantic analogue of Horne's \emph{Killing
 \end{proposition}
 
 \begin{proof}
-  \bob{Explain the Agda here}
+  Since $+$ is entropic over $(\lhd, j)$, the Day monoid $\Day{\lhd}$
+  is automatically $+$-closed. The monoid structure directly
+  transfers. Similarly, $\eta(j)$ is automatically $+$-closed since
+  $j + j \leq j$.
 \end{proof}
 
 \begin{remark}
@@ -423,7 +449,7 @@ $+$-contexts are the semantic analogue of Horne's \emph{Killing
   Let $(\bullet, i)$ and $(\lhd, j)$ be pomonoids on $(A, \leq)$ in a
   duoidal relationship, and assume that $(\bullet, i)$ distributes
   over $+$ (as in Proposition \ref{prop:closed-monoid-distrib}) and
-  $(\lhd, j)$ is entropic with respect to $+$ (as in Proposition
+  $+$ is entropic over $(\lhd, j)$ (as in Proposition
   \ref{prop:closed-monoid-duoidal}). Then
   $(\ClosedDay{\bullet}, \ClosedDay{i})$ and
   $(\ClosedDay{\lhd}, \ClosedDay{j})$ are in a duoidal relationship on
@@ -431,10 +457,15 @@ $+$-contexts are the semantic analogue of Horne's \emph{Killing
 \end{proposition}
 
 \begin{proof}
-  \bob{Explain the Agda here}
+  The entropic relationship established in Proposition
+  \ref{prop:lower-set-duoidal} carries over thanks to the properties
+  of $\alpha$ and $U$. The fact that
+  $\ClosedDay{i} \subseteq \ClosedDay{j}$ relies on the condition
+  $j + j \leq j$ to collapse $+$-contexts of $j$s.
 \end{proof}
 
 \subsubsection{Chu Construction}
+\label{sec:chu}
 
 To construct suitable MAV-algebras, we use the poset version of the
 Chu construction \cite{barr}. The Chu construction builds
@@ -486,14 +517,17 @@ the $\vSeq$ connective. First we transfer pomonoids from $(A, \leq)$
 to self-dual pomonoids on $(\Chu(A, k), \sqsubseteq)$ provided they
 interact well with $k$:
 \begin{proposition}\label{prop:chu-self-dual}
-  Let $(\lhd, j)$ be a pomonoid on $(A, \leq)$ such that
+  Let $(\lhd, j)$ be a pomonoid on $(A, \leq)$ such that $(\bullet, i)$ is entropic over 
   $k \lhd k \leq k$ and $j \leq k$, then
   $x ; y = (x^+ \lhd y^+, x^- \lhd y^-)$ and $J = (j, j)$ form a
   self-dual pomonoid on $\Chu(A, k)$.
 \end{proposition}
 
 \begin{proof}
-  \bob{show that that two extra bits are needed.}
+  $x;y$ is well-defined because
+  $(x^+ \lhd y^+) \bullet (x^- \lhd y^-) \leq (x^+ \bullet x^-) \lhd
+  (y^+ \bullet y^-) \leq k \lhd k \leq k$. $J$ is well defined because
+  $j \bullet j \leq j \leq k$. The pomonoid laws all transfer directly.
 \end{proof}
 
 \begin{remark}
@@ -525,14 +559,17 @@ pomonoids:
 \end{remark}
 
 \begin{proposition}
-  If $(\bullet, i)$ and $(\lhd, j)$ are in a duoidal relationship on
-  $(A, \leq)$, and $(\lhd, j)$ satisfies the conditions of Proposition
+  If $(\bullet, i)$ is entropic over $(\lhd, j)$ on $(A, \leq)$, and
+  $(\lhd, j)$ satisfies the conditions of Proposition
   \ref{prop:chu-self-dual}, then $(\otimes, I)$ and $(;, J)$ are in a
   duoidal relationship on $\Chu(A, k)$.
 \end{proposition}
 
 \begin{proof}
-  \bob{Explain the Agda}
+  For the positive half of the Chu construction, this is a direct
+  consequence of the entropy on $(A, \leq)$. For the negative half, we
+  use Lemma \ref{lem:duoidal-residual} and the fact that meets are
+  always duoidal.
 \end{proof}
 
 \subsection{Construction of MAV-algebras}
