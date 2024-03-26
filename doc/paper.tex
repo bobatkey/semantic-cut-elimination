@@ -139,12 +139,12 @@
 
 % NOTE: Binary connectives are defined to be the same width.
 \usepackage{tikz}
-\newlength{\vlpaWidth}
-\settowidth{\vlpaWidth}{$\vlpa$}
-\newlength{\vlseWidth}
-\settowidth{\vlseWidth}{$\vlse$}
+\newlength{\vTensWidth}
+\settowidth{\vTensWidth}{$\vlpa$}
+\newlength{\vParrWidth}
+\settowidth{\vParrWidth}{$\vlse$}
 \newlength{\vOpWidth}
-\pgfmathsetlength{\vOpWidth}{max(\vlpaWidth,\vlseWidth)}
+\pgfmathsetlength{\vOpWidth}{max(\vTensWidth,\vParrWidth)}
 
 \def\vTens{%
   \ensuremath{%
@@ -166,6 +166,10 @@
   \ensuremath{%
     \mathbin{%
       \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\vlse}}}}}
+\def\vTo{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\vlli}}}}}
 
 % Contexts
 \newcommand{\vEmpty}[0]{\ensuremath{\Box}}
@@ -173,15 +177,20 @@
 
 % Relations
 \NewDocumentCommand{\vEquiv}{s}{%
-  \ensuremath{%
-    \mathrel{%
-      \simeq\IfBooleanTF{#1}{^\star}{}}}}
-      % \equiv\IfBooleanTF{#1}{^\star}{}}}}
-      % \longleftrightarrow\IfBooleanTF{#1}{^\star}{}}}}
+  \ensuremath{\simeq}}
 \NewDocumentCommand{\vInfer}{s}{%
   \ensuremath{%
     \mathrel{%
       \longrightarrow\IfBooleanTF{#1}{^\star}{}}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Semantics:                                                                 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Agda:                                                                      %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Include agda.sty
 % \usepackage[bw]{agda}
