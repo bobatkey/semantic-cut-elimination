@@ -116,6 +116,9 @@ module Reasoning where
 ηᵖ x .ICarrier y = Lift c (y ≤ x)
 ηᵖ x .≤-closed z≤y y≤x = lift (≤-trans z≤y (y≤x .lower))
 
+ηᵖ-mono : x ≤ y → ηᵖ x ≤ᵖ ηᵖ y
+ηᵖ-mono x≤y .*≤ᵖ* (lift z≤x) = lift (≤-trans z≤x x≤y)
+
 ------------------------------------------------------------------------------
 -- Construct a meet semilattice for presheaves
 
@@ -261,6 +264,13 @@ module LiftIsPomonoid {_∙_} {ε} (isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε
   ∙ᵖ-mono F₁≤F₂ G₁≤G₂ .*≤ᵖ* (y , z , x≤yz , F₁y , G₁z) =
     (-, -, x≤yz , F₁≤F₂ .*≤ᵖ* F₁y , G₁≤G₂ .*≤ᵖ* G₁z)
 
+  η-preserve-∙ : ηᵖ (x ∙ y) ≤ᵖ ηᵖ x ∙ᵖ ηᵖ y
+  η-preserve-∙ {x} {y} .*≤ᵖ* {z} (lift z≤xy) = x , y , z≤xy , lift ≤-refl , lift ≤-refl
+
+  η-preserve-∙⁻¹ : ηᵖ x ∙ᵖ ηᵖ y ≤ᵖ ηᵖ (x ∙ y)
+  η-preserve-∙⁻¹ {x} {y} .*≤ᵖ* {z} (z₁ , z₂ , z≤z₁z₂ , lift z₁≤x , lift z₂≤y) =
+    lift (≤-trans z≤z₁z₂ (mono z₁≤x z₂≤y))
+
   εᵖ : PreSheaf
   εᵖ = ηᵖ ε
 
@@ -376,6 +386,8 @@ module LiftIsDuoidal {_∙_} {_◁_} {ε} {ι} (isDuoidal : IsDuoidal _≈_ _≤
       ; ∙ᵖ-identityˡ  to ◁ᵖ-identityˡ
       ; ∙ᵖ-identityʳ  to ◁ᵖ-identityʳ
       ; ∙ᵖ-isPomonoid to ◁ᵖ-isPomonoid
+      ; η-preserve-∙  to η-preserve-◁
+      ; η-preserve-∙⁻¹ to η-preserve-◁⁻¹
       )
 
   ∙ᵖ-◁ᵖ-entropy : Entropy _≤ᵖ_ _∙ᵖ_ _◁ᵖ_

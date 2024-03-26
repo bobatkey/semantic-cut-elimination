@@ -1,5 +1,44 @@
 \section{Semantic Cut-Elimination}\label{sec:mav-cut-elimination}
 
-\subsection{Constructing a preorder from MAV}
+\begin{proposition}
+  Let $\Chu(\ClosedLowerSet{\textsc{CFMav}}, \ClosedDay{I})$ be the
+  MAV-algebra constructed from the Cut-free proof MAV-frame
+  (Proposition \ref{prop:cfmav-frame}), where elements are
+  positive/negative pairs of $+$-closed lower sets of formulas.
+
+  \bob{describe the interpretation of atoms}
+
+  The interpretation of SMAV formulas in this MAV-algebra satisfies
+  the following two properties for every formula $\vP$:
+  \begin{enumerate}
+  \item $\eta^+(P) \subseteq \sem{\vP}^-$
+  \item $\sem{\vP}^+ \subseteq \eta^+(P) \rightblackspoon \ClosedDay{i}$
+%  \item $\forall \vR \in \sem{\vP}^+.~(\vR \vParr \vP) \longrightarrow^* I$
+  \end{enumerate}
+\end{proposition}
+
+\begin{remark}
+  These properties are akin to the \emph{reflect} and \emph{reify}
+  functions used in Normalisation by Evaluation (NbE). The
+  \emph{reflect} property creates a canonical negative proof of every
+  formula assuming that formula (corresponding to $\eta$-expansion in
+  NbE. The \emph{reify} property extracts a normal-form proof from the
+  semantic model.
+\end{remark}
+
+\begin{proof}
+  By induction on the structure of the formula $\vP$.
+  \begin{itemize}
+  \item[$\vUnit$] reflexivity
+  \item[A+] reflexivity
+  \item[A-] reflexivity
+  \item[$\vP \vParr \vQ$] $\eta^+$ preserves monoids (FIXME: proposition)
+  \item[$\vP \vTens \vQ$] complicated
+  \item[$\vP \vWith \vQ$] $\eta^i$ preserves $+$
+  \item[$\vP \vPlus \vQ$] interpreted as a meet, so we reason directly
+  \item[$\vP \vSeq \vQ$] $\eta^+$ preserves monoids (FIXME: proposition)
+  \end{itemize}
+\end{proof}
+
 
 \subsection{The Okada Property}

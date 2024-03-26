@@ -7,6 +7,7 @@ open import Data.Product
 open import Data.Sum
 open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (ε; _◅_; _◅◅_)
+open import Relation.Binary.Construct.Closure.Symmetric
 
 Atom : Set
 Atom = ⊥
@@ -29,47 +30,157 @@ SMAV-proof-of-example₁ =
   where open SMAV
 
 MAV-proof-of-example₁ : (example₁ `⅋ `¬ example₁) MAV.⟶⋆ `I
-MAV-proof-of-example₁
-    = bwd (`⅋-comm ((`I `& `I) `◁ (`I `⊕ `I)) ((`I `⊕ `I) `◁ (`I `& `I)))
-    ◅ bwd (`⅋-comm ((`I `⊕ `I) `◁ (`I `& `I)) ((`I `& `I) `◁ (`I `⊕ `I)))
-    ◅ bwd (`⅋-comm ((`I `& `I) `◁ (`I `⊕ `I)) ((`I `⊕ `I) `◁ (`I `& `I)))
-    ◅ bwd (`⅋-comm ((`I `⊕ `I) `◁ (`I `& `I)) ((`I `& `I) `◁ (`I `⊕ `I)))
-    ◅ bwd (`⅋-comm ((`I `& `I) `◁ (`I `⊕ `I)) ((`I `⊕ `I) `◁ (`I `& `I)))
-    ◅ bwd (`⅋-comm ((`I `⊕ `I) `◁ (`I `& `I)) ((`I `& `I) `◁ (`I `⊕ `I)))
-    ◅ bwd (`⅋-comm ((`I `& `I) `◁ (`I `⊕ `I)) ((`I `⊕ `I) `◁ (`I `& `I)))
-    ◅ bwd (`⅋-comm ((`I `⊕ `I) `◁ (`I `& `I)) ((`I `& `I) `◁ (`I `⊕ `I)))
-    ◅ bwd (`⅋-comm ((`I `& `I) `◁ (`I `⊕ `I)) ((`I `⊕ `I) `◁ (`I `& `I)))
-    ◅ bwd (`⅋-comm ((`I `⊕ `I) `◁ (`I `& `I)) ((`I `& `I) `◁ (`I `⊕ `I)))
-    ◅ bwd (`⅋-comm ((`I `& `I) `◁ (`I `⊕ `I)) ((`I `⊕ `I) `◁ (`I `& `I)))
-    ◅ step `sequence
-    ◅ bwd (`⅋-comm (`I `⊕ `I) (`I `& `I)) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))
-    ◅ bwd (`⅋-comm (`I `& `I) (`I `⊕ `I)) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))
-    ◅ step `external `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))
-    ◅ ((`I `⅋ (`I `⊕ `I)) `&⟩ bwd (`⅋-comm (`I `⊕ `I) `I)) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))
-    ◅ ((`I `⅋ (`I `⊕ `I)) `&⟩ bwd (`⅋-comm `I (`I `⊕ `I))) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))
-    ◅ (((`I `⅋ (`I `⊕ `I)) `&⟩ fwd (`⅋-comm `I (`I `⊕ `I))) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ (((`I `⅋ (`I `⊕ `I)) `&⟩ fwd (`⅋-identityʳ (`I `⊕ `I))) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ (((`I `⅋ (`I `⊕ `I)) `&⟩ emb (inj₂ `right)) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ ((bwd (`⅋-comm (`I `⊕ `I) `I) `⟨& `I) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ ((bwd (`⅋-comm `I (`I `⊕ `I)) `⟨& `I) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ ((fwd (`⅋-comm `I (`I `⊕ `I)) `⟨& `I) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ ((fwd (`⅋-identityʳ (`I `⊕ `I)) `⟨& `I) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) 
-    ◅ (step `left `⟨& `I) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))
-    ◅ step `tidy `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))
-    ◅ fwd (`◁-identityˡ ((`I `⊕ `I) `⅋ (`I `& `I)))
-    ◅ bwd (`⅋-comm (`I `& `I) (`I `⊕ `I))
-    ◅ step `external
-    ◅ ((`I `⅋ (`I `⊕ `I)) `&⟩ bwd (`⅋-comm (`I `⊕ `I) `I))
-    ◅ ((`I `⅋ (`I `⊕ `I)) `&⟩ (step `right `⟨⅋ `I))
-    ◅ ((`I `⅋ (`I `⊕ `I)) `&⟩ fwd (`⅋-comm `I `I))
-    ◅ ((`I `⅋ (`I `⊕ `I)) `&⟩ fwd (`⅋-identityʳ `I))
-    ◅ (bwd (`⅋-comm (`I `⊕ `I) `I) `⟨& `I) 
-    ◅ (step `left `⟨⅋ `I) `⟨& `I
-    ◅ (fwd (`⅋-comm `I `I)) `⟨& `I
-    ◅ (fwd (`⅋-identityʳ `I)) `⟨& `I
-    ◅ step `tidy
-    ◅ ε
-    where open MAV
+MAV-proof-of-example₁ =
+   emb
+   (inj₁
+    (SymClosure.bwd
+     (emb
+      (`⅋-comm ((`I `& `I) `◁ (`I `⊕ `I)) ((`I `⊕ `I) `◁ (`I `& `I))))
+     ◅ ε))
+   ◅
+   emb
+   (inj₁
+    (SymClosure.bwd
+     (emb
+      (`⅋-comm ((`I `⊕ `I) `◁ (`I `& `I)) ((`I `& `I) `◁ (`I `⊕ `I))))
+     ◅ ε))
+   ◅
+   emb
+   (inj₁
+    (SymClosure.bwd
+     (emb
+      (`⅋-comm ((`I `& `I) `◁ (`I `⊕ `I)) ((`I `⊕ `I) `◁ (`I `& `I))))
+     ◅ ε))
+   ◅
+   emb
+   (inj₁
+    (SymClosure.bwd
+     (emb
+      (`⅋-comm ((`I `⊕ `I) `◁ (`I `& `I)) ((`I `& `I) `◁ (`I `⊕ `I))))
+     ◅ ε))
+   ◅
+   emb
+   (inj₁
+    (SymClosure.bwd
+     (emb
+      (`⅋-comm ((`I `& `I) `◁ (`I `⊕ `I)) ((`I `⊕ `I) `◁ (`I `& `I))))
+     ◅ ε))
+   ◅
+   emb
+   (inj₁
+    (SymClosure.bwd
+     (emb
+      (`⅋-comm ((`I `⊕ `I) `◁ (`I `& `I)) ((`I `& `I) `◁ (`I `⊕ `I))))
+     ◅ ε))
+   ◅
+   emb
+   (inj₁
+    (SymClosure.bwd
+     (emb
+      (`⅋-comm ((`I `& `I) `◁ (`I `⊕ `I)) ((`I `⊕ `I) `◁ (`I `& `I))))
+     ◅ ε))
+   ◅
+   emb
+   (inj₁
+    (SymClosure.bwd
+     (emb
+      (`⅋-comm ((`I `⊕ `I) `◁ (`I `& `I)) ((`I `& `I) `◁ (`I `⊕ `I))))
+     ◅ ε))
+   ◅
+   emb
+   (inj₁
+    (SymClosure.bwd
+     (emb
+      (`⅋-comm ((`I `& `I) `◁ (`I `⊕ `I)) ((`I `⊕ `I) `◁ (`I `& `I))))
+     ◅ ε))
+   ◅
+   emb
+   (inj₁
+    (SymClosure.bwd
+     (emb
+      (`⅋-comm ((`I `⊕ `I) `◁ (`I `& `I)) ((`I `& `I) `◁ (`I `⊕ `I))))
+     ◅ ε))
+   ◅
+   emb
+   (inj₁
+    (SymClosure.bwd
+     (emb
+      (`⅋-comm ((`I `& `I) `◁ (`I `⊕ `I)) ((`I `⊕ `I) `◁ (`I `& `I))))
+     ◅ ε))
+   ◅
+   emb (inj₂ `sequence) ◅
+   (emb
+    (inj₁ (SymClosure.bwd (emb (`⅋-comm (`I `⊕ `I) (`I `& `I))) ◅ ε))
+    `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I)))
+   ◅
+   (emb
+    (inj₁ (SymClosure.bwd (emb (`⅋-comm (`I `& `I) (`I `⊕ `I))) ◅ ε))
+    `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I)))
+   ◅
+   (emb (inj₂ `external) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+   (((`I `⅋ (`I `⊕ `I)) `&⟩
+     emb (inj₁ (SymClosure.bwd (emb (`⅋-comm (`I `⊕ `I) `I)) ◅ ε)))
+    `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I)))
+   ◅
+   (((`I `⅋ (`I `⊕ `I)) `&⟩
+     emb (inj₁ (SymClosure.bwd (emb (`⅋-comm `I (`I `⊕ `I))) ◅ ε)))
+    `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I)))
+   ◅
+   (((`I `⅋ (`I `⊕ `I)) `&⟩
+     emb (inj₁ (SymClosure.fwd (emb (`⅋-comm `I (`I `⊕ `I))) ◅ ε)))
+    `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I)))
+   ◅
+   (((`I `⅋ (`I `⊕ `I)) `&⟩
+     emb (inj₁ (SymClosure.fwd (emb (`⅋-identityʳ (`I `⊕ `I))) ◅ ε)))
+    `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I)))
+   ◅
+   ((emb (inj₁ (SymClosure.bwd (emb (`⅋-comm (`I `⊕ `I) `I)) ◅ ε)) `⟨&
+     (`I `⊕ `I))
+    `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I)))
+   ◅
+   ((emb (inj₁ (SymClosure.bwd (emb (`⅋-comm `I (`I `⊕ `I))) ◅ ε)) `⟨&
+     (`I `⊕ `I))
+    `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I)))
+   ◅
+   ((emb (inj₁ (SymClosure.fwd (emb (`⅋-comm `I (`I `⊕ `I))) ◅ ε)) `⟨&
+     (`I `⊕ `I))
+    `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I)))
+   ◅
+   ((emb (inj₁ (SymClosure.fwd (emb (`⅋-identityʳ (`I `⊕ `I))) ◅ ε))
+     `⟨& (`I `⊕ `I))
+    `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I)))
+   ◅
+   (((`I `⊕ `I) `&⟩ emb (inj₂ `right)) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I)))
+   ◅
+   ((emb (inj₂ `left) `⟨& `I) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+   (emb (inj₂ `tidy) `⟨◁ ((`I `⊕ `I) `⅋ (`I `& `I))) ◅
+   emb
+   (inj₁
+    (SymClosure.fwd (emb (`◁-identityˡ ((`I `⊕ `I) `⅋ (`I `& `I)))) ◅
+     ε))
+   ◅
+   emb
+   (inj₁ (SymClosure.bwd (emb (`⅋-comm (`I `& `I) (`I `⊕ `I))) ◅ ε))
+   ◅
+   emb (inj₂ `external) ◅
+   ((`I `⅋ (`I `⊕ `I)) `&⟩
+    emb (inj₁ (SymClosure.bwd (emb (`⅋-comm (`I `⊕ `I) `I)) ◅ ε)))
+   ◅
+   ((`I `⅋ (`I `⊕ `I)) `&⟩ (emb (inj₂ `right) `⟨⅋ `I)) ◅
+   ((`I `⅋ (`I `⊕ `I)) `&⟩
+    emb (inj₁ (SymClosure.fwd (emb (`⅋-comm `I `I)) ◅ ε)))
+   ◅
+   ((`I `⅋ (`I `⊕ `I)) `&⟩
+    emb (inj₁ (SymClosure.fwd (emb (`⅋-identityʳ `I)) ◅ ε)))
+   ◅
+   (emb (inj₁ (SymClosure.bwd (emb (`⅋-comm (`I `⊕ `I) `I)) ◅ ε)) `⟨&
+    `I)
+   ◅
+   ((emb (inj₂ `left) `⟨⅋ `I) `⟨& `I) ◅
+   (emb (inj₁ (SymClosure.fwd (emb (`⅋-comm `I `I)) ◅ ε)) `⟨& `I) ◅
+   (emb (inj₁ (SymClosure.fwd (emb (`⅋-identityʳ `I)) ◅ ε)) `⟨& `I) ◅
+   emb (inj₂ `tidy) ◅ ε
+   where open MAV
 
 _ : cut-elim _ SMAV-proof-of-example₁ ≡ MAV-proof-of-example₁
 _ = refl

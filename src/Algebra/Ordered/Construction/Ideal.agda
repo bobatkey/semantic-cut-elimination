@@ -49,6 +49,7 @@ open import Algebra.Ordered.Construction.LowerSet poset as P
     ; ≤ᵖ-refl
     ; ≤ᵖ-trans
     ; _≈ᵖ_
+    ; ηᵖ
     ; _∨ᵖ_
     ; inj₁ᵖ
     ; inj₂ᵖ
@@ -239,6 +240,22 @@ inj₂ⁱ = ≤ⁱ-trans counit⁻¹ (α-mono inj₂ᵖ)
   ; supremum       = λ 𝓕 𝓖 → (inj₁ⁱ , inj₂ⁱ , λ 𝓗 → [_,_]ⁱ)
   }
 
+
+hulp : (c : ctxt (ηᵖ (x + y))) → Σ[ d ∈ ctxt (U (α (ηᵖ x) ∨ⁱ α (ηᵖ y))) ] (sum c ≤ sum d)
+hulp {x}{y} (leaf z (lift z≤x+y)) =
+  (node (leaf x (inj₁ⁱ .*≤ⁱ* ((leaf x (lift ≤-refl)) , ≤-refl)))
+        (leaf y (inj₂ⁱ .*≤ⁱ* ((leaf y (lift ≤-refl)) , ≤-refl)))) ,
+  z≤x+y
+hulp (node c₁ c₂) =
+  let (d₁ , c₁≤d₁) , (d₂ , c₂≤d₂) = hulp c₁ , hulp c₂
+  in node d₁ d₂ , +-mono c₁≤d₁ c₂≤d₂
+
+η-preserve-+ : α (ηᵖ (x + y)) ≤ⁱ α (ηᵖ x) ∨ⁱ α (ηᵖ y)
+η-preserve-+ {x}{y} .*≤ⁱ* {z} (c , z≤c) =
+  let d , c≤d = hulp c in down-closed (≤-trans z≤c c≤d) (ideal-ctxt-closed d)
+  where open Ideal (α (ηᵖ x) ∨ⁱ α (ηᵖ y)) renaming (≤-closed to down-closed)
+
+
 ------------------------------------------------------------------------------
 module DayEntropic {_∙_ ε}
     (isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε)
@@ -302,6 +319,15 @@ module DayEntropic {_∙_ ε}
   U-monoidal-ι .proj₁ .*≤ᵖ* x≤ε = x≤ε
   U-monoidal-ι .proj₂ .*≤ᵖ* x≤ε = x≤ε
 
+  ηⁱ-preserve-◁ : α (ηᵖ (x ∙ y)) ≤ⁱ α (ηᵖ x) ◁ⁱ α (ηᵖ y)
+  ηⁱ-preserve-◁ {x}{y} .*≤ⁱ* {z} (c , z≤c) =
+    down-closed
+      (≤-trans z≤c (ctxt-map-sum _ c))
+      (ideal-ctxt-closed {α (ηᵖ x) ◁ⁱ α (ηᵖ y)}
+         (ctxt-map (≤ᵖ-trans η-preserve-∙ (≤ᵖ-trans (∙ᵖ-mono unit unit) (U-monoidal .proj₂))) c))
+    where open Ideal (α (ηᵖ x) ◁ⁱ α (ηᵖ y)) renaming (≤-closed to down-closed)
+
+
 module DayDistributive
     {_∙_} {ε}
     (isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _∙_ ε)
@@ -343,6 +369,12 @@ module DayDistributive
 
   ∙ⁱ-mono : Monotonic₂ _≤ⁱ_ _≤ⁱ_ _≤ⁱ_ _∙ⁱ_
   ∙ⁱ-mono 𝓕₁≤𝓕₂ 𝓖₁≤𝓖₂ = α-mono (∙ᵖ-mono (U-mono 𝓕₁≤𝓕₂) (U-mono 𝓖₁≤𝓖₂))
+
+  ηⁱ-preserve-∙ : α (ηᵖ (x ∙ y)) ≤ⁱ α (ηᵖ x) ∙ⁱ α (ηᵖ y)
+  ηⁱ-preserve-∙ = α-mono (≤ᵖ-trans η-preserve-∙ (∙ᵖ-mono unit unit))
+
+  ηⁱ-preserve-∙⁻¹ : α (ηᵖ x) ∙ⁱ α (ηᵖ y) ≤ⁱ α (ηᵖ (x ∙ y))
+  ηⁱ-preserve-∙⁻¹ = ≤ⁱ-trans (α-monoidal .proj₁) (α-mono η-preserve-∙⁻¹)
 
   ∙ⁱ-assoc : Associative _≈ⁱ_ _∙ⁱ_
   ∙ⁱ-assoc 𝓕 𝓖 𝓗 =
