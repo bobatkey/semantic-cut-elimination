@@ -189,7 +189,7 @@
 
 % Connectives
 
-\newcommand{\aDual}[1]{\IfSingleTF{#1}{#1}{(#1)}^{\perp}}
+\newcommand{\aDual}[1]{\neg\IfSingleTF{#1}{#1}{(#1)}}
 % \newcommand{\aDual}[1]{\overline{#1}}
 
 \def\aUnit{%
@@ -241,7 +241,7 @@
 % \newunicodechar{⟶}{\ensuremath{\mathnormal\longrightarrow}}
 % \newunicodechar{⋆}{\ensuremath{\mathnormal\star}}
 % \newunicodechar{⁺}{\ensuremath{^{+}}}
-% \newunicodechar{⁻}{\ensuremath{^{-}}}
+% \newunicodechar{���}{\ensuremath{^{-}}}
 % \newunicodechar{¹}{\ensuremath{^{1}}}
 % \newunicodechar{′}{\ensuremath{^{\prime}}}
 % \newunicodechar{∀}{\ensuremath{\mathnormal\forall}}
