@@ -1,12 +1,11 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-open import Algebra.Definitions
 open import Algebra.Ordered
 open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum as Sum using (_⊎_; inj₁; inj₂)
 open import Level using (suc; _⊔_)
-open import Relation.Binary
+open import Relation.Binary using (Rel; IsPartialOrder; Poset; IsEquivalence)
 open import Relation.Binary.Construct.Union using (_∪_)
 import Relation.Binary.Construct.Union as Union
 open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
@@ -18,8 +17,6 @@ import Relation.Binary.Construct.Closure.Equivalence as EqClosure
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star; ε; _◅_; _◅◅_)
 import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star
 import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as StarProps
-open import Relation.Nullary using (Dec; yes; no)
-open import Relation.Binary.PropositionalEquality.Core using (_≡_; _≢_)
 import Relation.Binary.PropositionalEquality.Core as PropEq
 import Relation.Binary.Reasoning.PartialOrder as PartialOrderReasoning
 
@@ -37,18 +34,22 @@ private
     R R′ : Formula
     S S′ : Formula
 
-infix 5 _∼_
+module _ where
+  infix 5 _∼_
 
-data _∼_ : Rel Formula a where
-  `⊗-assoc     : Associative _∼_ _`⊗_
-  `⊗-comm      : Commutative _∼_ _`⊗_
-  `⊗-identityʳ : RightIdentity _∼_ `I _`⊗_
-  `⅋-assoc     : Associative _∼_ _`⅋_
-  `⅋-comm      : Commutative _∼_ _`⅋_
-  `⅋-identityʳ : RightIdentity _∼_ `I _`⅋_
-  `◁-assoc     : Associative _∼_ _`◁_
-  `◁-identityʳ : RightIdentity _∼_ `I _`◁_
-  `◁-identityˡ : LeftIdentity _∼_ `I _`◁_
+  mutual
+    data _∼_ : Rel Formula a where
+      `⊗-assoc     : Associative _`⊗_
+      `⊗-comm      : Commutative _`⊗_
+      `⊗-identityʳ : RightIdentity `I _`⊗_
+      `⅋-assoc     : Associative _`⅋_
+      `⅋-comm      : Commutative _`⅋_
+      `⅋-identityʳ : RightIdentity `I _`⅋_
+      `◁-assoc     : Associative _`◁_
+      `◁-identityʳ : RightIdentity `I _`◁_
+      `◁-identityˡ : LeftIdentity `I _`◁_
+
+    open import Algebra.Definitions _∼_
 
 infix 5 _≃_
 
@@ -260,8 +261,10 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 `&-Pomagma : Pomagma a (suc a) (suc a)
 `&-Pomagma = record { isPomagma = `&-isPomagma }
 
+open import Algebra.Definitions _⟶⋆_ using (_DistributesOver_)
+
 -- FIXME: should probably have a left-external and a right-external
-`⅋-distrib-`& : _DistributesOver_ _⟶⋆_ _`⅋_ _`&_
+`⅋-distrib-`& : _`⅋_ DistributesOver _`&_
 `⅋-distrib-`& .proj₁ P Q R = fwd (`⅋-comm _ _) ◅ step `external ◅ ε ◅◅ `&-mono (fwd (`⅋-comm _ _) ◅ ε) (fwd (`⅋-comm _ _) ◅ ε)
 `⅋-distrib-`& .proj₂ P Q R = step `external ◅ ε
 
