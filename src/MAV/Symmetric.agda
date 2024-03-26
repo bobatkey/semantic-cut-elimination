@@ -45,7 +45,7 @@ mutual
 infix 5 _≃_
 
 _≃_ : Rel Formula (suc a)
-_≃_ = CongClosure (EqClosure _∼_)
+_≃_ = EqClosure (CongClosure _∼_)
 
 infix 5 _⟶_
 

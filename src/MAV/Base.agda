@@ -54,7 +54,7 @@ module _ where
 infix 5 _≃_
 
 _≃_ : Rel Formula (suc a)
-_≃_ = CongClosure (EqClosure _∼_)
+_≃_ = EqClosure (CongClosure _∼_)
 
 infix 5 _⟶_
 
@@ -88,10 +88,10 @@ _⟷⋆_ : Rel Formula (suc a)
 _⟷⋆_ = SymCore _⟶⋆_
 
 fwd : P ∼ Q → P ⟶₌ Q
-fwd P∼Q = emb (inj₁ (emb (SymClosure.fwd P∼Q ◅ ε)))
+fwd P∼Q = emb (inj₁ (SymClosure.fwd (emb P∼Q) ◅ ε))
 
 bwd : P ∼ Q → Q ⟶₌ P
-bwd P∼Q = emb (inj₁ (emb (SymClosure.bwd P∼Q ◅ ε)))
+bwd P∼Q = emb (inj₁ (SymClosure.bwd (emb P∼Q) ◅ ε))
 
 eq : P ∼ Q → P ⟷⋆ Q
 eq P∼Q = (fwd P∼Q ◅ ε , bwd P∼Q ◅ ε)
