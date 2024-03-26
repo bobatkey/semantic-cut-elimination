@@ -1,7 +1,9 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
+open import Level using (suc; _⊔_)
 open import Data.Bool.Base using (Bool; true; false; T; not)
 open import Relation.Nullary using (Dec; yes; no)
+open import Relation.Binary
 open import Relation.Binary.PropositionalEquality.Core using (_≡_; _≢_; refl)
 open import Relation.Nullary.Negation.Core using (¬_; contradiction)
 
@@ -26,6 +28,13 @@ data Formula : Set a where
   _`⊕_ : Formula → Formula → Formula
   _`◁_ : Formula → Formula → Formula
 
+private
+  variable
+    P P′ : Formula
+    Q Q′ : Formula
+    R R′ : Formula
+    S S′ : Formula
+
 `¬_ : Formula → Formula
 `¬ `I = `I
 `¬ (`+ A) = `- A
@@ -35,6 +44,26 @@ data Formula : Set a where
 `¬ (P `& Q) = `¬ P `⊕ `¬ Q
 `¬ (P `⊕ Q) = `¬ P `& `¬ Q
 `¬ (P `◁ Q) = `¬ P `◁ `¬ Q
+
+
+module _ {ℓ} (_∼_ : Rel Formula ℓ) where
+  mutual
+    private
+      _≅_ : Rel Formula (suc a ⊔ ℓ)
+      _≅_ = CongClosure
+
+    data CongClosure : Rel Formula (suc a ⊔ ℓ) where
+      emb   : P ∼ P′ → P ≅ P′
+      _`⟨⊗_ : P ≅ P′ → (Q : Formula) → (P `⊗ Q) ≅ (P′ `⊗ Q)
+      _`⊗⟩_ : (P : Formula) → Q ≅ Q′ → (P `⊗ Q) ≅ (P `⊗ Q′)
+      _`⟨⅋_ : P ≅ P′ → (Q : Formula) → (P `⅋ Q) ≅ (P′ `⅋ Q)
+      _`⅋⟩_ : (P : Formula) → Q ≅ Q′ → (P `⅋ Q) ≅ (P `⅋ Q′)
+      _`⟨◁_ : P ≅ P′ → (Q : Formula) → (P `◁ Q) ≅ (P′ `◁ Q)
+      _`◁⟩_ : (P : Formula) → Q ≅ Q′ → (P `◁ Q) ≅ (P `◁ Q′)
+      _`⟨&_ : P ≅ P′ → (Q : Formula) → (P `& Q) ≅ (P′ `& Q)
+      _`&⟩_ : (P : Formula) → Q ≅ Q′ → (P `& Q) ≅ (P `& Q′)
+      _`⟨⊕_ : P ≅ P′ → (Q : Formula) → (P `⊕ Q) ≅ (P′ `⊕ Q)
+      _`⊕⟩_ : (P : Formula) → Q ≅ Q′ → (P `⊕ Q) ≅ (P `⊕ Q′)
 
 _≡ᵇ`I : (P : Formula) → Bool
 `I       ≡ᵇ`I = true

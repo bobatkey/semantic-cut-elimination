@@ -18,7 +18,7 @@ open MAV.Frame.FrameModel MAV.frame
   renaming (model to analyticModel)
 
 open import MAV.Interpretation Atom analyticModel
-  (λ A → embedDual (`- A) (`+ A) (`axiom ◅ ε))
+  (λ A → embedDual (`- A) (`+ A) (step `axiom ◅ ε))
 
 open Chu
 open S.Ideal
@@ -32,17 +32,17 @@ mutual
   reflect (P `⅋ Q) = S.leaf (P `⅋ Q) (P , Q , ε , reflect P , reflect Q) , ε
   reflect (P `⊗ Q) .proj₁ {R} x =
     ⟦ P ⟧ .neg .≤-closed
-      (`switch ◅ (P `⊗⟩⋆ (`⅋-comm ◅ reify Q R x) ◅◅ `⊗-unit ◅ ε))
+      (step `switch ◅ P `⊗⟩ fwd (`⅋-comm Q R) ◅ (P `⊗⟩⋆ reify Q R x) ◅◅ fwd (`⊗-identityʳ P) ◅ ε)
       (reflect P)
   reflect (P `⊗ Q) .proj₂ {R} x =
     ⟦ Q ⟧ .neg .≤-closed
-      (`⊗-comm `⟨⅋ R ◅ `switch ◅ Q `⊗⟩⋆ (`⅋-comm ◅ reify P R x) ◅◅ `⊗-unit ◅ ε)
+      (fwd (`⊗-comm P Q) `⟨⅋ R ◅ step `switch ◅ Q `⊗⟩ fwd (`⅋-comm P R) ◅ Q `⊗⟩⋆ reify P R x ◅◅ fwd (`⊗-identityʳ Q) ◅ ε)
       (reflect Q)
   reflect (P `& Q) =
     S.node (S.leaf P (inj₁ (reflect P))) (S.leaf Q (inj₂ (reflect Q))) , ε
   reflect (P `⊕ Q) =
-    ⟦ P ⟧ .neg .≤-closed (`left ◅ ε) (reflect P) ,
-    ⟦ Q ⟧ .neg .≤-closed (`right ◅ ε) (reflect Q)
+    ⟦ P ⟧ .neg .≤-closed (step `left ◅ ε) (reflect P) ,
+    ⟦ Q ⟧ .neg .≤-closed (step `right ◅ ε) (reflect Q)
   reflect (P `◁ Q) =
     P , Q , ε , reflect P , reflect Q
 

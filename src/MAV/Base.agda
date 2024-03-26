@@ -1,20 +1,26 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-open import Algebra using (_DistributesOver_)
+open import Algebra.Definitions
 open import Algebra.Ordered
 open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
-open import Level using (0ℓ; lift; lower; Lift; suc)
-open import Relation.Binary using (IsPartialOrder; Poset)
+open import Data.Sum as Sum using (_⊎_; inj₁; inj₂)
+open import Level using (suc; _⊔_)
+open import Relation.Binary
+open import Relation.Binary.Construct.Union using (_∪_)
+import Relation.Binary.Construct.Union as Union
 open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 import Relation.Binary.Construct.Core.Symmetric as SymCore
+open import Relation.Binary.Construct.Closure.Symmetric using (SymClosure)
+import Relation.Binary.Construct.Closure.Symmetric as SymClosure
 open import Relation.Binary.Construct.Closure.Equivalence using (EqClosure)
 import Relation.Binary.Construct.Closure.Equivalence as EqClosure
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star; ε; _◅_; _◅◅_)
 import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star
 import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as StarProps
 open import Relation.Nullary using (Dec; yes; no)
-open import Relation.Binary.PropositionalEquality.Core using (_≡_; _≢_; refl)
+open import Relation.Binary.PropositionalEquality.Core using (_≡_; _≢_)
+import Relation.Binary.PropositionalEquality.Core as PropEq
 import Relation.Binary.Reasoning.PartialOrder as PartialOrderReasoning
 
 module MAV.Base {a} (Atom : Set a) where
@@ -30,13 +36,30 @@ private
     Q Q′ : Formula
     R R′ : Formula
     S S′ : Formula
-  
+
+infix 5 _∼_
+
+data _∼_ : Rel Formula a where
+  `⊗-assoc     : Associative _∼_ _`⊗_
+  `⊗-comm      : Commutative _∼_ _`⊗_
+  `⊗-identityʳ : RightIdentity _∼_ `I _`⊗_
+  `⅋-assoc     : Associative _∼_ _`⅋_
+  `⅋-comm      : Commutative _∼_ _`⅋_
+  `⅋-identityʳ : RightIdentity _∼_ `I _`⅋_
+  `◁-assoc     : Associative _∼_ _`◁_
+  `◁-identityʳ : RightIdentity _∼_ `I _`◁_
+  `◁-identityˡ : LeftIdentity _∼_ `I _`◁_
+
+infix 5 _≃_
+
+_≃_ : Rel Formula (suc a)
+_≃_ = CongClosure (EqClosure _∼_)
+
 infix 5 _⟶_
 
 -- One step of the “analytic” proof system
 data _⟶_ : Formula → Formula → Set a where
   `axiom    : `- A `⅋ `+ A ⟶ `I
-
   `tidy     : `I `& `I ⟶ `I
   `switch   : (P `⊗ Q) `⅋ R ⟶ P `⊗ (Q `⅋ R)
   `sequence : (P `◁ Q) `⅋ (R `◁ S) ⟶ (P `⅋ R) `◁ (Q `⅋ S)
@@ -45,61 +68,57 @@ data _⟶_ : Formula → Formula → Set a where
   `external : (P `& Q) `⅋ R ⟶ (P `⅋ R) `& (Q `⅋ R)
   `medial   : (P `◁ Q) `& (R `◁ S) ⟶ (P `& R) `◁ (Q `& S)
 
-  _`⟨⊗_      : P ⟶ P′ → (Q : Formula) → P `⊗ Q ⟶ P′ `⊗ Q
-  _`⊗⟩_      : (P : Formula) → Q ⟶ Q′ → P `⊗ Q ⟶ P `⊗ Q′
-  -- `⊗-assoc   : P `⊗ (Q `⊗ R) ⟶ (P `⊗ Q) `⊗ R
-  -- `⊗-assoc⁻¹ : (P `⊗ Q) `⊗ R ⟶ P `⊗ (Q `⊗ R)
-  `⊗-comm    : P `⊗ Q ⟶ Q `⊗ P
-  `⊗-unit    : P `⊗ `I ⟶ P
-  `⊗-unit⁻¹  : P ⟶ (P `⊗ `I)
-
-  _`⟨⅋_      : P ⟶ P′ → (Q : Formula) → (P `⅋ Q) ⟶ (P′ `⅋ Q)
-  _`⅋⟩_      : (P : Formula) → Q ⟶ Q′ → (P `⅋ Q) ⟶ (P `⅋ Q′)
-  `⅋-assoc   : (P `⅋ (Q `⅋ R)) ⟶ ((P `⅋ Q) `⅋ R)
-  `⅋-assoc⁻¹ : ((P `⅋ Q) `⅋ R) ⟶ (P `⅋ (Q `⅋ R))
-  `⅋-comm    : (P `⅋ Q) ⟶ (Q `⅋ P)
-  `⅋-unit    : (P `⅋ `I) ⟶ P
-  `⅋-unit⁻¹  : P ⟶ (P `⅋ `I)
-
-  _`⟨◁_      : P ⟶ P′ → (Q : Formula) → (P `◁ Q) ⟶ (P′ `◁ Q)
-  _`◁⟩_      : (P : Formula) → Q ⟶ Q′ → (P `◁ Q) ⟶ (P `◁ Q′)
-  `◁-assoc   : (P `◁ (Q `◁ R)) ⟶ ((P `◁ Q) `◁ R)
-  `◁-assoc⁻¹ : ((P `◁ Q) `◁ R) ⟶ (P `◁ (Q `◁ R))
-  `◁-runit   : (P `◁ `I) ⟶ P
-  `◁-runit⁻¹ : P ⟶ (P `◁ `I)
-  `◁-lunit   : (`I `◁ P) ⟶ P
-  `◁-lunit⁻¹ : P ⟶ (`I `◁ P)
-
-  _`⟨&_      : P ⟶ P′ → (Q : Formula) → (P `& Q) ⟶ (P′ `& Q)
-  _`&⟩_      : (P : Formula) → Q ⟶ Q′ → (P `& Q) ⟶ (P `& Q′)
-
-  -- _`⟨⊕_      : P ⟶ P′ → (Q : Formula) → (P `⊕ Q) ⟶ (P′ `⊕ Q)
-  -- _`⊕⟩_      : (P : Formula) → Q ⟶ Q′ → (P `⊕ Q) ⟶ (P `⊕ Q′)
-
 ------------------------------------------------------------------------------
 -- Turning the proof system into a pre-order
 
+infix 5 _⟶₌_
+
+_⟶₌_ : Rel Formula (suc a)
+_⟶₌_ = CongClosure (_≃_ ∪ _⟶_)
+
 infix 5 _⟶⋆_
 
-_⟶⋆_ : Formula → Formula → Set a
-_⟶⋆_ = Star _⟶_
+_⟶⋆_ : Rel Formula (suc a)
+_⟶⋆_ = Star (CongClosure (_≃_ ∪ _⟶_))
 
 infix 5 _⟷⋆_
 
-_⟷⋆_ : Formula → Formula → Set a
+_⟷⋆_ : Rel Formula (suc a)
 _⟷⋆_ = SymCore _⟶⋆_
 
-⟶⋆-isPartialOrder : IsPartialOrder _⟷⋆_ _⟶⋆_
-⟶⋆-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _⟶⋆_ (StarProps.isPreorder _⟶_)
+fwd : P ∼ Q → P ⟶₌ Q
+fwd P∼Q = emb (inj₁ (emb (SymClosure.fwd P∼Q ◅ ε)))
 
-⟶⋆-Poset : Poset a a a
+bwd : P ∼ Q → Q ⟶₌ P
+bwd P∼Q = emb (inj₁ (emb (SymClosure.bwd P∼Q ◅ ε)))
+
+eq : P ∼ Q → P ⟷⋆ Q
+eq P∼Q = (fwd P∼Q ◅ ε , bwd P∼Q ◅ ε)
+
+step : P ⟶ Q → P ⟶₌ Q
+step P⟶Q = emb (inj₂ P⟶Q)
+
+⟶⋆-isPartialOrder : IsPartialOrder _⟷⋆_ _⟶⋆_
+⟶⋆-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _⟶⋆_ (StarProps.isPreorder _)
+
+⟶⋆-Poset : Poset a (suc a) (suc a)
 ⟶⋆-Poset .Poset.Carrier = Formula
 ⟶⋆-Poset .Poset._≈_ = _⟷⋆_
 ⟶⋆-Poset .Poset._≤_ = _⟶⋆_
 ⟶⋆-Poset .Poset.isPartialOrder = ⟶⋆-isPartialOrder
 
-------------------------------------------------------------------------------
--- Lift congruence rules to the preorder
+open IsPartialOrder ⟶⋆-isPartialOrder public
+  using () renaming (isEquivalence to ⟷⋆-isEquivalence)
+
+open IsEquivalence ⟷⋆-isEquivalence
+  using ()
+  renaming
+    ( refl  to ⟷⋆-refl
+    ; trans to ⟷⋆-trans
+    )
+
+-- ------------------------------------------------------------------------------
+-- -- Lift congruence rules to the preorder
 
 _`⊗⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `⊗ Q) ⟶⋆ (P `⊗ Q′)
 P `⊗⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `⊗⟩_) Q⟶⋆Q′
@@ -183,17 +202,18 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 
 `⅋-isPosemigroup : IsPosemigroup  _⟷⋆_ _⟶⋆_ _`⅋_
 `⅋-isPosemigroup .IsPosemigroup.isPomagma = `⅋-isPomagma
-`⅋-isPosemigroup .IsPosemigroup.assoc P Q R = (`⅋-assoc⁻¹ ◅ ε , `⅋-assoc ◅ ε)
+`⅋-isPosemigroup .IsPosemigroup.assoc P Q R = eq (`⅋-assoc P Q R)
 
 `⅋-isPomonoid : IsPomonoid _⟷⋆_ _⟶⋆_ _`⅋_ `I
 `⅋-isPomonoid .IsPomonoid.isPosemigroup = `⅋-isPosemigroup
-`⅋-isPomonoid .IsPomonoid.identity =
-  (λ P → (`⅋-comm ◅ `⅋-unit ◅ ε , `⅋-unit⁻¹ ◅ `⅋-comm ◅ ε)) ,
-  (λ P → (`⅋-unit ◅ ε , `⅋-unit⁻¹ ◅ ε))
+`⅋-isPomonoid .IsPomonoid.identity = identityˡ , identityʳ
+  where
+    identityʳ = λ P → eq (`⅋-identityʳ P)
+    identityˡ = λ P → ⟷⋆-trans (eq (`⅋-comm `I P)) (identityʳ P)
 
 `⅋-isCommutativePomonoid : IsCommutativePomonoid  _⟷⋆_ _⟶⋆_ _`⅋_ `I
 `⅋-isCommutativePomonoid .IsCommutativePomonoid.isPomonoid = `⅋-isPomonoid
-`⅋-isCommutativePomonoid .IsCommutativePomonoid.comm P Q = (`⅋-comm ◅ ε , `⅋-comm ◅ ε)
+`⅋-isCommutativePomonoid .IsCommutativePomonoid.comm P Q = eq (`⅋-comm P Q)
 
 ------------------------------------------------------------------------------
 -- Turning ◁ into a pomonoid
@@ -207,13 +227,14 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 
 `◁-isPosemigroup : IsPosemigroup  _⟷⋆_ _⟶⋆_ _`◁_
 `◁-isPosemigroup .IsPosemigroup.isPomagma = `◁-isPomagma
-`◁-isPosemigroup .IsPosemigroup.assoc P Q R = (`◁-assoc⁻¹ ◅ ε , `◁-assoc ◅ ε)
+`◁-isPosemigroup .IsPosemigroup.assoc P Q R = eq (`◁-assoc P Q R)
 
 `◁-isPomonoid : IsPomonoid _⟷⋆_ _⟶⋆_ _`◁_ `I
 `◁-isPomonoid .IsPomonoid.isPosemigroup = `◁-isPosemigroup
-`◁-isPomonoid .IsPomonoid.identity = 
-  (λ P → (`◁-lunit ◅ ε , `◁-lunit⁻¹ ◅ ε)) ,
-  (λ P → (`◁-runit ◅ ε , `◁-runit⁻¹ ◅ ε))
+`◁-isPomonoid .IsPomonoid.identity = (identityˡ , identityʳ)
+  where
+    identityʳ = λ P → eq (`◁-identityʳ P)
+    identityˡ = λ P → eq (`◁-identityˡ P)
 
 ------------------------------------------------------------------------------
 -- Turning ⅋ and ◁ into a duoid
@@ -221,9 +242,9 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 `⅋-`◁-isDuoidal : IsDuoidal _⟷⋆_ _⟶⋆_ _`⅋_ _`◁_ `I `I
 `⅋-`◁-isDuoidal .IsDuoidal.∙-isPomonoid = `⅋-isPomonoid
 `⅋-`◁-isDuoidal .IsDuoidal.◁-isPomonoid = `◁-isPomonoid
-`⅋-`◁-isDuoidal .IsDuoidal.∙-◁-entropy w x y z = `sequence ◅ ε
-`⅋-`◁-isDuoidal .IsDuoidal.∙-idem-ι = `⅋-unit ◅ ε
-`⅋-`◁-isDuoidal .IsDuoidal.◁-idem-ε = `◁-lunit⁻¹ ◅ ε -- or `◁-runit⁻¹ ◅ ε
+`⅋-`◁-isDuoidal .IsDuoidal.∙-◁-entropy P Q R S = step `sequence ◅ ε
+`⅋-`◁-isDuoidal .IsDuoidal.∙-idem-ι = fwd (`⅋-identityʳ `I) ◅ ε
+`⅋-`◁-isDuoidal .IsDuoidal.◁-idem-ε = bwd (`◁-identityʳ `I) ◅ ε
 `⅋-`◁-isDuoidal .IsDuoidal.ε≲ι = ε
 
 ------------------------------------------------------------------------------
@@ -236,16 +257,16 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 `&-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
 `&-isPomagma .IsPomagma.mono = `&-mono
 
-`&-Pomagma : Pomagma a a a
+`&-Pomagma : Pomagma a (suc a) (suc a)
 `&-Pomagma = record { isPomagma = `&-isPomagma }
 
 -- FIXME: should probably have a left-external and a right-external
 `⅋-distrib-`& : _DistributesOver_ _⟶⋆_ _`⅋_ _`&_
-`⅋-distrib-`& .proj₁ x y z = `⅋-comm ◅ `external ◅ `&-mono (`⅋-comm ◅ ε) (`⅋-comm ◅ ε)
-`⅋-distrib-`& .proj₂ x y z = `external ◅ ε
+`⅋-distrib-`& .proj₁ P Q R = fwd (`⅋-comm _ _) ◅ step `external ◅ ε ◅◅ `&-mono (fwd (`⅋-comm _ _) ◅ ε) (fwd (`⅋-comm _ _) ◅ ε)
+`⅋-distrib-`& .proj₂ P Q R = step `external ◅ ε
 
 `&-`◁-entropy : Entropy _⟶⋆_ _`&_ _`◁_
-`&-`◁-entropy w x y z = `medial ◅ ε
+`&-`◁-entropy P Q R S = step `medial ◅ ε
 
 ------------------------------------------------------------------------------
 -- Turning ⊕ into a pomagma
@@ -258,7 +279,7 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 -- `⊕-isPomagma .IsPomagma.mono = `⊕-mono
 
 ------------------------------------------------------------------------------
-frame : Frame a a a
+frame : Frame a (suc a) (suc a)
 frame .Frame.Carrier = Formula
 frame .Frame._≈_ = _⟷⋆_
 frame .Frame._≲_ = _⟶⋆_
@@ -271,5 +292,5 @@ frame .Frame.&-mono = `&-mono
 frame .Frame.⅋-◁-isDuoidal = `⅋-`◁-isDuoidal
 frame .Frame.⅋-distrib-& = `⅋-distrib-`&
 frame .Frame.&-◁-entropy = `&-`◁-entropy
-frame .Frame.&-tidy = `tidy ◅ ε
- 
+frame .Frame.&-tidy = step `tidy ◅ ε
+  
