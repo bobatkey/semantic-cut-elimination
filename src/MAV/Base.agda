@@ -79,7 +79,7 @@ _⟶₌_ = CongClosure (_≃_ ∪ _⟶_)
 infix 5 _⟶⋆_
 
 _⟶⋆_ : Rel Formula (suc a)
-_⟶⋆_ = Star (CongClosure (_≃_ ∪ _⟶_))
+_⟶⋆_ = Star _⟶₌_
 
 infix 5 _⟷⋆_
 
