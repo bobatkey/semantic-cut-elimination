@@ -79,14 +79,7 @@ Structures are considered equivalent modulo the decidable equality $\vEquiv$, wh
      & \RuleLabel*[parr-assoc]{\vParr-Assoc}
   \end{array}
 \end{displaymath}
-
-\begin{itemize}
-  \item Structural equivalences are explicit.
-  \item Inference is a congruence.
-  \item Inference rules are unary.
-  \item Relate to usual presentation of MALL.
-  \item Relate to usual presentation of BV.
-\end{itemize}
+The inference rules of MAV are presented as \emph{rewrite rules} on structures, \eg we write $\vP\vInferFrom\vQ$ to mean that $\vP$ can be inferred from $\vQ$.
 
 Inference rules:
 \begin{displaymath}
@@ -155,6 +148,8 @@ We write $\vBiInfer$ for the symmetric core of $\vInferFrom$ (\ie ${\vBiInfer} =
   The structural connectives of BV are usually presented as lists, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
 \end{remark}
 
+A \emph{normal} derivation is a derivation where \cref{rule:cut} is not used and \cref{rule:axiom} is restricted to atoms.
+
 \begin{displaymath}
   \begin{array}{l@{\;\vInferFrom\;}l@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
     \vNeg\va\vParr\vPos\va
@@ -162,3 +157,11 @@ We write $\vBiInfer$ for the symmetric core of $\vInferFrom$ (\ie ${\vBiInfer} =
      & \RuleLabel{Axiom}
   \end{array}
 \end{displaymath}
+
+\begin{itemize}
+  \item Structural equivalences are explicit.
+  \item Inference is a congruence.
+  \item Inference rules are unary.
+  \item Relate to usual presentation of MALL.
+  \item Relate to usual presentation of BV.
+\end{itemize}
