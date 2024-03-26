@@ -90,55 +90,73 @@ Structures are considered equivalent modulo the decidable equality $\vEquiv$, wh
 
 Inference rules:
 \begin{displaymath}
-  \begin{array}{l@{\;\vInfer\;}l@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
+  \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
     \vP\vParr\vDual\vP
+     & \vInferFrom
      & \vUnit
      & \RuleLabel{axiom}
     \\
     \vUnit
+     & \vInferFrom
      & \vP\vTens\vDual\vP
      & \RuleLabel{cut}
     \\
     \vUnit\vWith\vUnit
+     & \vInferFrom
      & \vUnit
      & \RuleLabel{tidy}
     \\
     (\vP\vTens\vQ)\vParr\vR
+     & \vInferFrom
      & \vP\vTens(\vQ\vParr\vR)
      & \RuleLabel{switch}
     \\
     (\vP\vSeq\vQ)\vParr(\vR\vSeq\vS)
+     & \vInferFrom
      & (\vP\vParr\vR)\vSeq(\vQ\vParr\vS)
      & \RuleLabel{sequence}
     \\
     \vP\vPlus\vQ
+     & \vInferFrom
      & \vP
      & \RuleLabel{left}
     \\
     \vP\vPlus\vQ
+     & \vInferFrom
      & \vQ
      & \RuleLabel{right}
     \\
     (\vP\vWith\vQ)\vParr\vR
+     & \vInferFrom
      & (\vP\vParr\vR)\vWith(\vQ\vParr\vR)
      & \RuleLabel{external}
     \\
     (\vP\vSeq\vQ)\vWith(\vR\vSeq\vS)
+     & \vInferFrom
      & (\vP\vWith\vR)\vSeq(\vQ\vWith\vS)
      & \RuleLabel{medial}
+    \\
+    \vC\vPlug\vP\vInferFrom\vC\vPlug\vQ
+     & \text{if}
+     & \vP\vInferFrom\vQ
+     & \RuleLabel{cong}
+    % \\
+    % \vP\vInferFrom\vQ
+    %  & \text{if}
+    %  & \vP\vEquiv\vQ
+    %  & \RuleLabel{equiv}
   \end{array}
 \end{displaymath}
 
-We write $\vEquiv$ for invertible inference rules, \ie $\vP\vEquiv\vQ$ means $\vP\vInfer\vQ$ and $\vQ\vInfer\vP$.
-
-We write $\vInfer*$ for the reflexive, transitive closure of $\vInfer$.
+We write $\vInferFrom*$ for the reflexive, transitive closure of $\vInferFrom$.
+We write $\vBiInfer$ for the symmetric core of $\vInferFrom$ and $\vBiInfer*$ for the reflexive, transitive closure of $\vBiInfer$.
 
 \begin{remark}
   The structural connectives of BV are usually presented as lists, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
 \end{remark}
 
 \begin{displaymath}
-  \begin{array}{l@{\;\vInfer\;}l@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
+  \begin{array}{l@{\;\vInferFrom\;}l@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
     \vNeg\va\vParr\vPos\va
      & \vUnit
      & \RuleLabel{Axiom}

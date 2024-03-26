@@ -172,13 +172,17 @@
       \makebox[\vOpWidth][c]{\ensuremath{\vlli}}}}}
 
 % Contexts
-\newcommand{\vEmpty}[0]{\ensuremath{\Box}}
-\newcommand{\vPlug}[1]{\ensuremath{\{#1\,\}}}
+\newcommand{\vEmpty}[0]{\ensuremath{\vlhole}}
+\newcommand{\vPlug}[1]{\ensuremath{\{#1\kern.3em\}}}
 
 % Relations
 \NewDocumentCommand{\vEquiv}{s}{%
   \ensuremath{\simeq}}
-\NewDocumentCommand{\vInfer}{s}{%
+\NewDocumentCommand{\vBiInfer}{s}{%
+  \ensuremath{%
+    \mathrel{%
+      \longleftrightarrow\IfBooleanTF{#1}{^\star}{}}}}
+\NewDocumentCommand{\vInferFrom}{s}{%
   \ensuremath{%
     \mathrel{%
       \longrightarrow\IfBooleanTF{#1}{^\star}{}}}}
