@@ -13,6 +13,8 @@ open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 import Relation.Binary.Construct.Core.Symmetric as SymCore
 open import Relation.Binary.Construct.Closure.Symmetric using (SymClosure)
 import Relation.Binary.Construct.Closure.Symmetric as SymClosure
+open import Relation.Binary.Construct.Closure.Equivalence using (EqClosure)
+import Relation.Binary.Construct.Closure.Equivalence as EqClosure
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star; ε; _◅_; _◅◅_)
 import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star
 import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as StarProps
@@ -35,25 +37,6 @@ private
     R R′ : Formula
     S S′ : Formula
 
-module _ {ℓ} (_∼_ : Rel Formula ℓ) where
-  mutual
-    private
-      _≅_ : Rel Formula (suc a ⊔ ℓ)
-      _≅_ = CongClosure
-
-    data CongClosure : Rel Formula (suc a ⊔ ℓ) where
-      emb   : P ∼ P′ → P ≅ P′
-      _`⟨⊗_ : P ≅ P′ → (Q : Formula) → (P `⊗ Q) ≅ (P′ `⊗ Q)
-      _`⊗⟩_ : (P : Formula) → Q ≅ Q′ → (P `⊗ Q) ≅ (P `⊗ Q′)
-      _`⟨⅋_ : P ≅ P′ → (Q : Formula) → (P `⅋ Q) ≅ (P′ `⅋ Q)
-      _`⅋⟩_ : (P : Formula) → Q ≅ Q′ → (P `⅋ Q) ≅ (P `⅋ Q′)
-      _`⟨◁_ : P ≅ P′ → (Q : Formula) → (P `◁ Q) ≅ (P′ `◁ Q)
-      _`◁⟩_ : (P : Formula) → Q ≅ Q′ → (P `◁ Q) ≅ (P `◁ Q′)
-      _`⟨&_ : P ≅ P′ → (Q : Formula) → (P `& Q) ≅ (P′ `& Q)
-      _`&⟩_ : (P : Formula) → Q ≅ Q′ → (P `& Q) ≅ (P `& Q′)
-      _`⟨⊕_ : P ≅ P′ → (Q : Formula) → (P `⊕ Q) ≅ (P′ `⊕ Q)
-      _`⊕⟩_ : (P : Formula) → Q ≅ Q′ → (P `⊕ Q) ≅ (P `⊕ Q′)
-
 infix 5 _∼_
 
 data _∼_ : Rel Formula a where
@@ -66,13 +49,17 @@ data _∼_ : Rel Formula a where
   `◁-assoc     : Associative _∼_ _`◁_
   `◁-identityʳ : RightIdentity _∼_ `I _`◁_
   `◁-identityˡ : LeftIdentity _∼_ `I _`◁_
-  
+
+infix 5 _≅_
+
+_≅_ : Rel Formula (suc a)
+_≅_ = CongClosure (EqClosure _∼_)
+
 infix 5 _⟶_
 
 -- One step of the “analytic” proof system
 data _⟶_ : Formula → Formula → Set a where
   `axiom    : `- A `⅋ `+ A ⟶ `I
-
   `tidy     : `I `& `I ⟶ `I
   `switch   : (P `⊗ Q) `⅋ R ⟶ P `⊗ (Q `⅋ R)
   `sequence : (P `◁ Q) `⅋ (R `◁ S) ⟶ (P `⅋ R) `◁ (Q `⅋ S)
@@ -87,28 +74,20 @@ data _⟶_ : Formula → Formula → Set a where
 infix 5 _⟶⋆_
 
 _⟶⋆_ : Rel Formula (suc a)
-_⟶⋆_ = Star (CongClosure (SymClosure _∼_ ∪ _⟶_))
+_⟶⋆_ = Star (CongClosure (_≅_ ∪ _⟶_))
 
 infix 5 _⟷⋆_
 
 _⟷⋆_ : Rel Formula (suc a)
 _⟷⋆_ = SymCore _⟶⋆_
 
-pattern fwd P∼Q = emb (inj₁ (SymClosure.fwd P∼Q))
-pattern bwd P∼Q = emb (inj₁ (SymClosure.bwd P∼Q))
+pattern fwd P∼Q = emb (inj₁ (emb (SymClosure.fwd P∼Q ◅ ε)))
+pattern bwd P∼Q = emb (inj₁ (emb (SymClosure.bwd P∼Q ◅ ε)))
+
+eq : P ∼ Q → P ⟷⋆ Q
+eq P∼Q = (fwd P∼Q ◅ ε , bwd P∼Q ◅ ε)
+
 pattern step P⟶Q = emb (inj₂ P⟶Q)
-
--- fwd : P ∼ Q → P ⟶⋆ Q
--- fwd P∼Q = emb (inj₁ (SymClosure.fwd P∼Q)) ◅ ε
-
--- bwd : P ∼ Q → Q ⟶⋆ P
--- bwd P∼Q = emb (inj₁ (SymClosure.bwd P∼Q)) ◅ ε
-
-fab : P ∼ Q → P ⟷⋆ Q
-fab P∼Q = (fwd P∼Q ◅ ε , bwd P∼Q ◅ ε)
-
--- step : P ⟶ Q → P ⟶⋆ Q
--- step P⟶Q = emb (inj₂ P⟶Q) ◅ ε
 
 ⟶⋆-isPartialOrder : IsPartialOrder _⟷⋆_ _⟶⋆_
 ⟶⋆-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _⟶⋆_ (StarProps.isPreorder _)
@@ -214,18 +193,18 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 
 `⅋-isPosemigroup : IsPosemigroup  _⟷⋆_ _⟶⋆_ _`⅋_
 `⅋-isPosemigroup .IsPosemigroup.isPomagma = `⅋-isPomagma
-`⅋-isPosemigroup .IsPosemigroup.assoc P Q R = fab (`⅋-assoc P Q R)
+`⅋-isPosemigroup .IsPosemigroup.assoc P Q R = eq (`⅋-assoc P Q R)
 
 `⅋-isPomonoid : IsPomonoid _⟷⋆_ _⟶⋆_ _`⅋_ `I
 `⅋-isPomonoid .IsPomonoid.isPosemigroup = `⅋-isPosemigroup
 `⅋-isPomonoid .IsPomonoid.identity = identityˡ , identityʳ
   where
-    identityʳ = λ P → fab (`⅋-identityʳ P)
-    identityˡ = λ P → ⟷⋆-trans (fab (`⅋-comm `I P)) (identityʳ P)
+    identityʳ = λ P → eq (`⅋-identityʳ P)
+    identityˡ = λ P → ⟷⋆-trans (eq (`⅋-comm `I P)) (identityʳ P)
 
 `⅋-isCommutativePomonoid : IsCommutativePomonoid  _⟷⋆_ _⟶⋆_ _`⅋_ `I
 `⅋-isCommutativePomonoid .IsCommutativePomonoid.isPomonoid = `⅋-isPomonoid
-`⅋-isCommutativePomonoid .IsCommutativePomonoid.comm P Q = fab (`⅋-comm P Q)
+`⅋-isCommutativePomonoid .IsCommutativePomonoid.comm P Q = eq (`⅋-comm P Q)
 
 ------------------------------------------------------------------------------
 -- Turning ◁ into a pomonoid
@@ -239,14 +218,14 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 
 `◁-isPosemigroup : IsPosemigroup  _⟷⋆_ _⟶⋆_ _`◁_
 `◁-isPosemigroup .IsPosemigroup.isPomagma = `◁-isPomagma
-`◁-isPosemigroup .IsPosemigroup.assoc P Q R = fab (`◁-assoc P Q R)
+`◁-isPosemigroup .IsPosemigroup.assoc P Q R = eq (`◁-assoc P Q R)
 
 `◁-isPomonoid : IsPomonoid _⟷⋆_ _⟶⋆_ _`◁_ `I
 `◁-isPomonoid .IsPomonoid.isPosemigroup = `◁-isPosemigroup
 `◁-isPomonoid .IsPomonoid.identity = (identityˡ , identityʳ)
   where
-    identityʳ = λ P → fab (`◁-identityʳ P)
-    identityˡ = λ P → fab (`◁-identityˡ P)
+    identityʳ = λ P → eq (`◁-identityʳ P)
+    identityˡ = λ P → eq (`◁-identityˡ P)
 
 ------------------------------------------------------------------------------
 -- Turning ⅋ and ◁ into a duoid

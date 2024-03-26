@@ -50,6 +50,7 @@ record IsStarAuto {_⊗_ ε} (⊗-isCommutativePomonoid : IsCommutativePomonoid 
       ; antisym
       ; module Eq
       ; setoid
+      ; isEquivalence
       ; isPreorder
       ; isPartialOrder
       )
