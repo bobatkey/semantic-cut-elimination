@@ -39,7 +39,7 @@ open Pomagma pomagma
     ; trans      to ≤-trans
     )
 
-open import Algebra.PreSheaf poset as P
+open import Algebra.Ordered.Construction.LowerSet poset as P
   using
     ( PreSheaf
     ; ICarrier

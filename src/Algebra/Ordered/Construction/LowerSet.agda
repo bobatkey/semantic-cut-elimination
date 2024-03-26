@@ -18,7 +18,7 @@ open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 import Relation.Binary.Construct.Flip.EqAndOrd as Flip
 open import Relation.Unary using (Pred; _⊆_)
 
-module Algebra.PreSheaf {c ℓ₁ ℓ₂} (poset : Poset c ℓ₁ ℓ₂) where
+module Algebra.Ordered.Construction.LowerSet {c ℓ₁ ℓ₂} (poset : Poset c ℓ₁ ℓ₂) where
 
 open Poset poset
   using

@@ -39,13 +39,13 @@ record Frame c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
 
 module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
 
-  import Algebra.PreSheaf
+  import Algebra.Ordered.Construction.LowerSet
   import Algebra.Ordered.Construction.Ideal
-  import Algebra.Chu
+  import Algebra.Ordered.Construction.Chu
 
   open Frame F
 
-  module P = Algebra.PreSheaf (record { isPartialOrder = isPartialOrder })
+  module P = Algebra.Ordered.Construction.LowerSet (record { isPartialOrder = isPartialOrder })
 
   module M = P.LiftIsCommutativePomonoid ⅋-isCommutativePomonoid
 
@@ -66,7 +66,7 @@ module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
   units-iso .proj₁ = D.εⁱ≤ιⁱ
   units-iso .proj₂ .*≤ⁱ* {x} x≤I = S.leaf x x≤I , refl
 
-  open Algebra.Chu.Construction
+  open Algebra.Ordered.Construction.Chu.Construction
                 MS.⊸ⁱ-∙ⁱ-isResiduatedCommutativePomonoid
                 S.∧ⁱ-isMeetSemilattice
                 S.∨ⁱ-isJoinSemilattice

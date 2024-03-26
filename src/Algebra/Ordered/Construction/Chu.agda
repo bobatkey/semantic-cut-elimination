@@ -1,6 +1,6 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-module Algebra.Chu where
+module Algebra.Ordered.Construction.Chu where
 
 -- If we have a preordered closed symmetric monoid with finite meets
 -- and chosen element K, then the Chu construction is a *-autonomous
@@ -39,7 +39,6 @@ module Construction {a b c}
 
   open IsResiduatedCommutativePomonoid isResiduatedCommutativePomonoid
   open IsMeetSemilattice ∧-isMeet using (x∧y≤x; x∧y≤y; ∧-greatest)
-    -- hiding (refl; reflexive; trans; module Eq) -- why on earth does this export refl?
   open IsJoinSemilattice ∨-isJoin using (supremum; ∨-least; x≤x∨y; y≤x∨y)
 
 

@@ -25,34 +25,34 @@ open S.Ideal
 open S._≤ⁱ_
 
 mutual
-  okada : ∀ P → ⟦ P ⟧ .neg .ICarrier P
-  okada `I = S.leaf `I (lift ε) , ε
-  okada (`+ A) = S.leaf (`+ A) (lift ε) , ε
-  okada (`- A) = S.leaf (`- A) (lift ε) , ε
-  okada (P `⅋ Q) = S.leaf (P `⅋ Q) (P , Q , ε , okada P , okada Q) , ε
-  okada (P `⊗ Q) .proj₁ {R} x =
+  reflect : ∀ P → ⟦ P ⟧ .neg .ICarrier P
+  reflect `I = S.leaf `I (lift ε) , ε
+  reflect (`+ A) = S.leaf (`+ A) (lift ε) , ε
+  reflect (`- A) = S.leaf (`- A) (lift ε) , ε
+  reflect (P `⅋ Q) = S.leaf (P `⅋ Q) (P , Q , ε , reflect P , reflect Q) , ε
+  reflect (P `⊗ Q) .proj₁ {R} x =
     ⟦ P ⟧ .neg .≤-closed
-      (`switch ◅ (P `⊗⟩⋆ (`⅋-comm ◅ okada⁺ Q R x) ◅◅ `⊗-unit ◅ ε))
-      (okada P)
-  okada (P `⊗ Q) .proj₂ {R} x =
+      (`switch ◅ (P `⊗⟩⋆ (`⅋-comm ◅ reify Q R x) ◅◅ `⊗-unit ◅ ε))
+      (reflect P)
+  reflect (P `⊗ Q) .proj₂ {R} x =
     ⟦ Q ⟧ .neg .≤-closed
-      (`⊗-comm `⟨⅋ R ◅ `switch ◅ Q `⊗⟩⋆ (`⅋-comm ◅ okada⁺ P R x) ◅◅ `⊗-unit ◅ ε)
-      (okada Q)
-  okada (P `& Q) =
-    S.node (S.leaf P (inj₁ (okada P))) (S.leaf Q (inj₂ (okada Q))) , ε
-  okada (P `⊕ Q) =
-    ⟦ P ⟧ .neg .≤-closed (`left ◅ ε) (okada P) ,
-    ⟦ Q ⟧ .neg .≤-closed (`right ◅ ε) (okada Q)
-  okada (P `◁ Q) =
-    P , Q , ε , okada P , okada Q
+      (`⊗-comm `⟨⅋ R ◅ `switch ◅ Q `⊗⟩⋆ (`⅋-comm ◅ reify P R x) ◅◅ `⊗-unit ◅ ε)
+      (reflect Q)
+  reflect (P `& Q) =
+    S.node (S.leaf P (inj₁ (reflect P))) (S.leaf Q (inj₂ (reflect Q))) , ε
+  reflect (P `⊕ Q) =
+    ⟦ P ⟧ .neg .≤-closed (`left ◅ ε) (reflect P) ,
+    ⟦ Q ⟧ .neg .≤-closed (`right ◅ ε) (reflect Q)
+  reflect (P `◁ Q) =
+    P , Q , ε , reflect P , reflect Q
 
-  okada⁺ : ∀ P R → ⟦ P ⟧ .pos .ICarrier R → (R `⅋ P) MAV.⟶⋆ `I
-  okada⁺ P R ϕ =
-    tidyup (⟦ P ⟧ .int .*≤ⁱ* {R `⅋ P} (S.leaf (R `⅋ P) (R , P , ε , ϕ , okada P) , ε))
+  reify : ∀ P R → ⟦ P ⟧ .pos .ICarrier R → (R `⅋ P) MAV.⟶⋆ `I
+  reify P R ϕ =
+    tidyup (⟦ P ⟧ .int .*≤ⁱ* {R `⅋ P} (S.leaf (R `⅋ P) (R , P , ε , ϕ , reflect P) , ε))
 
 -- if 'P′ is provable, then it has a cut-free proof
 sem-cut-elim : ∀ P → ⟦I⟧ ==> ⟦ P ⟧ → P ⟶⋆ `I
-sem-cut-elim P prf = tidyup (prf ._==>_.fneg .*≤ⁱ* {P} (okada P))
+sem-cut-elim P prf = tidyup (prf ._==>_.fneg .*≤ⁱ* {P} (reflect P))
 
 cut-elim : (P : Formula) → (P SMAV.⟶⋆ `I) → P ⟶⋆ `I
 cut-elim P prf = sem-cut-elim P ⟦ prf ⟧steps
