@@ -178,14 +178,18 @@
 % Relations
 \NewDocumentCommand{\vEquiv}{s}{%
   \ensuremath{\simeq}}
-\NewDocumentCommand{\vBiInfer}{s}{%
-  \ensuremath{%
-    \mathrel{%
-      \longleftrightarrow\IfBooleanTF{#1}{^\star}{}}}}
 \NewDocumentCommand{\vInferFrom}{s}{%
   \ensuremath{%
     \mathrel{%
       \longrightarrow\IfBooleanTF{#1}{^\star}{}}}}
+\NewDocumentCommand{\vInferTo}{s}{%
+  \ensuremath{%
+    \mathrel{%
+      \longleftarrow\IfBooleanTF{#1}{^\star}{}}}}
+\NewDocumentCommand{\vBiInfer}{s}{%
+  \ensuremath{%
+    \mathrel{%
+      \longleftrightarrow\IfBooleanTF{#1}{^\star}{}}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Semantics:                                                                 %%
