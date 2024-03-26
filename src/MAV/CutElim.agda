@@ -21,15 +21,15 @@ open import MAV.Interpretation Atom analyticModel
   (λ A → embedDual (`- A) (`+ A) (`axiom ◅ ε))
 
 open Chu
-open S.Sheaf
-open S._≤ˢ_
+open S.Ideal
+open S._≤ⁱ_
 
 mutual
   okada : ∀ P → ⟦ P ⟧ .neg .ICarrier P
-  okada `I = S.leaf (`I , lift ε) , ε
-  okada (`+ A) = S.leaf (`+ A , lift ε) , ε
-  okada (`- A) = S.leaf (`- A , lift ε) , ε
-  okada (P `⅋ Q) = S.leaf (P `⅋ Q , P , Q , ε , okada P , okada Q) , ε
+  okada `I = S.leaf `I (lift ε) , ε
+  okada (`+ A) = S.leaf (`+ A) (lift ε) , ε
+  okada (`- A) = S.leaf (`- A) (lift ε) , ε
+  okada (P `⅋ Q) = S.leaf (P `⅋ Q) (P , Q , ε , okada P , okada Q) , ε
   okada (P `⊗ Q) .proj₁ {R} x =
     ⟦ P ⟧ .neg .≤-closed
       (`switch ◅ (P `⊗⟩⋆ (`⅋-comm ◅ okada⁺ Q R x) ◅◅ `⊗-unit ◅ ε))
@@ -39,7 +39,7 @@ mutual
       (`⊗-comm `⟨⅋ R ◅ `switch ◅ Q `⊗⟩⋆ (`⅋-comm ◅ okada⁺ P R x) ◅◅ `⊗-unit ◅ ε)
       (okada Q)
   okada (P `& Q) =
-    S.node (S.leaf (P , inj₁ (okada P))) (S.leaf (Q , inj₂ (okada Q))) , ε
+    S.node (S.leaf P (inj₁ (okada P))) (S.leaf Q (inj₂ (okada Q))) , ε
   okada (P `⊕ Q) =
     ⟦ P ⟧ .neg .≤-closed (`left ◅ ε) (okada P) ,
     ⟦ Q ⟧ .neg .≤-closed (`right ◅ ε) (okada Q)
@@ -48,11 +48,11 @@ mutual
 
   okada⁺ : ∀ P R → ⟦ P ⟧ .pos .ICarrier R → (R `⅋ P) MAV.⟶⋆ `I
   okada⁺ P R ϕ =
-    tidyup (⟦ P ⟧ .int .*≤ˢ* {R `⅋ P} (S.leaf (R `⅋ P , R , P , ε , ϕ , okada P) , ε))
+    tidyup (⟦ P ⟧ .int .*≤ⁱ* {R `⅋ P} (S.leaf (R `⅋ P) (R , P , ε , ϕ , okada P) , ε))
 
 -- if 'P′ is provable, then it has a cut-free proof
 sem-cut-elim : ∀ P → ⟦I⟧ ==> ⟦ P ⟧ → P ⟶⋆ `I
-sem-cut-elim P prf = tidyup (prf ._==>_.fneg .*≤ˢ* {P} (okada P))
+sem-cut-elim P prf = tidyup (prf ._==>_.fneg .*≤ⁱ* {P} (okada P))
 
 cut-elim : (P : Formula) → (P SMAV.⟶⋆ `I) → P ⟶⋆ `I
 cut-elim P prf = sem-cut-elim P ⟦ prf ⟧steps
