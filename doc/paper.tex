@@ -139,37 +139,37 @@
 
 % NOTE: Binary connectives are defined to be the same width.
 \usepackage{tikz}
-\newlength{\vTensWidth}
-\settowidth{\vTensWidth}{$\vlpa$}
-\newlength{\vParrWidth}
-\settowidth{\vParrWidth}{$\vlse$}
+\newlength{\vlpaWidth}
+\settowidth{\vlpaWidth}{$\vlpa$}
+\newlength{\vlseWidth}
+\settowidth{\vlseWidth}{$\vlse$}
 \newlength{\vOpWidth}
-\pgfmathsetlength{\vOpWidth}{max(\vTensWidth,\vParrWidth)}
+\pgfmathsetlength{\vOpWidth}{max(\vlpaWidth,\vlseWidth)}
 
 \def\vTens{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\vlte}}}}}
+      \makebox[\vOpWidth][c]{\ensuremath{\vlte}}}}}
 \def\vParr{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\vlpa}}}}}
+      \makebox[\vOpWidth][c]{\ensuremath{\vlpa}}}}}
 \def\vPlus{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\vlor}}}}}
+      \makebox[\vOpWidth][c]{\ensuremath{\vlor}}}}}
 \def\vWith{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\vlan}}}}}
+      \makebox[\vOpWidth][c]{\ensuremath{\vlan}}}}}
 \def\vSeq{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\vlse}}}}}
+      \makebox[\vOpWidth][c]{\ensuremath{\vlse}}}}}
 \def\vTo{%
   \ensuremath{%
     \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\mathnormal\vlli}}}}}
+      \makebox[\vOpWidth][c]{\ensuremath{\vlli}}}}}
 
 % Contexts
 \newcommand{\vEmpty}[0]{\ensuremath{\Box}}
@@ -187,6 +187,39 @@
 %% Semantics:                                                                 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Connectives
+
+\newcommand{\aDual}[1]{\IfSingleTF{#1}{#1}{(#1)}^{\perp}}
+% \newcommand{\aDual}[1]{\overline{#1}}
+
+\def\aUnit{%
+  \ensuremath{%
+    \mathord{%
+      \makebox[\vPWidth][c]{\ensuremath{\mathnormal\circ}}}}}
+\def\aTens{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlte}}}}}
+\def\aParr{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlpa}}}}}
+\def\aPlus{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlor}}}}}
+\def\aWith{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlan}}}}}
+\def\aSeq{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlse}}}}}
+\def\aTo{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlli}}}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Agda:                                                                      %%
