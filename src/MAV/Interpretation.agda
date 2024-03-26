@@ -66,7 +66,7 @@ dual-ok (P `◁ Q) = Eq.trans (◁-cong (dual-ok P) (dual-ok Q)) (Eq.sym ◁-sel
 ⟦ `◁-identityˡ _ ⟧eq-ax = Eq.trans (◁-cong I-eq-J Eq.refl) (◁-identityˡ _)
 
 -- Interpret the equivalence
-⟦_⟧eq : P ≅ Q → ⟦ P ⟧ ≈ ⟦ Q ⟧
+⟦_⟧eq : P ≃ Q → ⟦ P ⟧ ≈ ⟦ Q ⟧
 ⟦ emb φ   ⟧eq = EqClosure.gfold isEquivalence ⟦_⟧ ⟦_⟧eq-ax φ
 ⟦ φ `⟨⊗ Q ⟧eq = ⊗-cong ⟦ φ ⟧eq Eq.refl
 ⟦ P `⊗⟩ φ ⟧eq = ⊗-cong Eq.refl ⟦ φ ⟧eq
@@ -92,7 +92,7 @@ dual-ok (P `◁ Q) = Eq.trans (◁-cong (dual-ok P) (dual-ok Q)) (Eq.sym ◁-sel
 ⟦ `medial    ⟧step-ax = &-greatest (◁-mono (x&y≲x _ _) (x&y≲x _ _)) (◁-mono (x&y≲y _ _) (x&y≲y _ _))
 
 -- Interpret the reduction modulo the equivalence
-⟦_⟧step : CongClosure (_≅_ ∪ _⟶_) P Q → ⟦ Q ⟧ ≲ ⟦ P ⟧
+⟦_⟧step : CongClosure (_≃_ ∪ _⟶_) P Q → ⟦ Q ⟧ ≲ ⟦ P ⟧
 ⟦ emb φ   ⟧step = [ reflexive ∘ Eq.sym ∘ ⟦_⟧eq , ⟦_⟧step-ax ] φ
 ⟦ φ `⟨⊗ Q ⟧step = ⊗-mono ⟦ φ ⟧step refl
 ⟦ P `⊗⟩ φ ⟧step = ⊗-mono refl ⟦ φ ⟧step

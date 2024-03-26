@@ -50,10 +50,10 @@ data _∼_ : Rel Formula a where
   `◁-identityʳ : RightIdentity _∼_ `I _`◁_
   `◁-identityˡ : LeftIdentity _∼_ `I _`◁_
 
-infix 5 _≅_
+infix 5 _≃_
 
-_≅_ : Rel Formula (suc a)
-_≅_ = CongClosure (EqClosure _∼_)
+_≃_ : Rel Formula (suc a)
+_≃_ = CongClosure (EqClosure _∼_)
 
 infix 5 _⟶_
 
@@ -74,18 +74,18 @@ data _⟶_ : Formula → Formula → Set a where
 infix 5 _⟶⋆_
 
 _⟶⋆_ : Rel Formula (suc a)
-_⟶⋆_ = Star (CongClosure (_≅_ ∪ _⟶_))
+_⟶⋆_ = Star (CongClosure (_≃_ ∪ _⟶_))
 
 infix 5 _⟷⋆_
 
 _⟷⋆_ : Rel Formula (suc a)
 _⟷⋆_ = SymCore _⟶⋆_
 
-pattern fwd P∼Q = emb (inj₁ (emb (SymClosure.fwd P∼Q ◅ ε)))
-pattern bwd P∼Q = emb (inj₁ (emb (SymClosure.bwd P∼Q ◅ ε)))
+pattern eq-fwd P∼Q = emb (inj₁ (emb (SymClosure.fwd P∼Q ◅ ε)))
+pattern eq-bwd P∼Q = emb (inj₁ (emb (SymClosure.bwd P∼Q ◅ ε)))
 
 eq : P ∼ Q → P ⟷⋆ Q
-eq P∼Q = (fwd P∼Q ◅ ε , bwd P∼Q ◅ ε)
+eq P∼Q = (eq-fwd P∼Q ◅ ε , eq-bwd P∼Q ◅ ε)
 
 pattern step P⟶Q = emb (inj₂ P⟶Q)
 
@@ -234,8 +234,8 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 `⅋-`◁-isDuoidal .IsDuoidal.∙-isPomonoid = `⅋-isPomonoid
 `⅋-`◁-isDuoidal .IsDuoidal.◁-isPomonoid = `◁-isPomonoid
 `⅋-`◁-isDuoidal .IsDuoidal.∙-◁-entropy P Q R S = step `sequence ◅ ε
-`⅋-`◁-isDuoidal .IsDuoidal.∙-idem-ι = fwd (`⅋-identityʳ `I) ◅ ε
-`⅋-`◁-isDuoidal .IsDuoidal.◁-idem-ε = bwd (`◁-identityʳ `I) ◅ ε
+`⅋-`◁-isDuoidal .IsDuoidal.∙-idem-ι = eq-fwd (`⅋-identityʳ `I) ◅ ε
+`⅋-`◁-isDuoidal .IsDuoidal.◁-idem-ε = eq-bwd (`◁-identityʳ `I) ◅ ε
 `⅋-`◁-isDuoidal .IsDuoidal.ε≲ι = ε
 
 ------------------------------------------------------------------------------
@@ -253,7 +253,7 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 
 -- FIXME: should probably have a left-external and a right-external
 `⅋-distrib-`& : _DistributesOver_ _⟶⋆_ _`⅋_ _`&_
-`⅋-distrib-`& .proj₁ P Q R = fwd (`⅋-comm _ _) ◅ step `external ◅ ε ◅◅ `&-mono (fwd (`⅋-comm _ _) ◅ ε) (fwd (`⅋-comm _ _) ◅ ε)
+`⅋-distrib-`& .proj₁ P Q R = eq-fwd (`⅋-comm _ _) ◅ step `external ◅ ε ◅◅ `&-mono (eq-fwd (`⅋-comm _ _) ◅ ε) (eq-fwd (`⅋-comm _ _) ◅ ε)
 `⅋-distrib-`& .proj₂ P Q R = step `external ◅ ε
 
 `&-`◁-entropy : Entropy _⟶⋆_ _`&_ _`◁_

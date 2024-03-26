@@ -1,8 +1,8 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
 open import Level using (suc; _⊔_)
-open import Algebra.Definitions
 open import Relation.Binary
+open import Data.Sum using (inj₂)
 open import Relation.Binary.Construct.Union using (_∪_)
 import Relation.Binary.Construct.Union as Union
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star; ε; _◅_; _◅◅_)
@@ -26,23 +26,26 @@ private
     R R′ : Formula
     S S′ : Formula
 
-infix 5 _∼_
+mutual
+  infix 5 _∼_ 
 
-data _∼_ : Rel Formula a where
-  `⊗-assoc     : Associative _∼_ _`⊗_
-  `⊗-comm      : Commutative _∼_ _`⊗_
-  `⊗-identityʳ : RightIdentity _∼_ `I _`⊗_
-  `⅋-assoc     : Associative _∼_ _`⅋_
-  `⅋-comm      : Commutative _∼_ _`⅋_
-  `⅋-identityʳ : RightIdentity _∼_ `I _`⅋_
-  `◁-assoc     : Associative _∼_ _`◁_
-  `◁-identityʳ : RightIdentity _∼_ `I _`◁_
-  `◁-identityˡ : LeftIdentity _∼_ `I _`◁_
+  data _∼_ : Rel Formula a where
+    `⊗-assoc     : Associative _`⊗_
+    `⊗-comm      : Commutative _`⊗_
+    `⊗-identityʳ : RightIdentity `I _`⊗_
+    `⅋-assoc     : Associative _`⅋_
+    `⅋-comm      : Commutative _`⅋_
+    `⅋-identityʳ : RightIdentity `I _`⅋_
+    `◁-assoc     : Associative _`◁_
+    `◁-identityʳ : RightIdentity `I _`◁_
+    `◁-identityˡ : LeftIdentity `I _`◁_
 
-infix 5 _≅_
+  open import Algebra.Definitions _∼_
 
-_≅_ : Rel Formula (suc a)
-_≅_ = CongClosure (EqClosure _∼_)
+infix 5 _≃_
+
+_≃_ : Rel Formula (suc a)
+_≃_ = CongClosure (EqClosure _∼_)
 
 infix 5 _⟶_
 
@@ -60,4 +63,6 @@ data _⟶_ : Rel Formula a where
 infix  5 _⟶⋆_
 
 _⟶⋆_ : Rel Formula (suc a)
-_⟶⋆_ = Star (CongClosure (_≅_ ∪ _⟶_))
+_⟶⋆_ = Star (CongClosure (_≃_ ∪ _⟶_))
+
+pattern step P⟶Q = emb (inj₂ P⟶Q)
