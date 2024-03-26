@@ -17,17 +17,7 @@
             newunicodechar
             mathcommand foreign xpunctuate cleveref
             fdsymbol stmaryrd
-            vntex
-            # latex-bin latexmk
-            # etoolbox xcolor geometry stmaryrd
-            # mathpartir hyperref pdftexcmds infwarerr
-            # kvoptions cmll ntheorem mathtools
-            # latex-tools-dev amsmath
-            # oberdiek
-            # natbib todonotes
-            # titlesec bbold bbold-type1 epstopdf-pkg upquote
-            # xypic xifthen ifmtarg polytable lazylist environ newunicodechar
-            # metafont ec
+            vntex enumitem
           ;
         };
 

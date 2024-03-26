@@ -18,6 +18,10 @@
 \end{definition}
 
 \begin{definition}
+  \bob{residuation}
+\end{definition}
+
+\begin{definition}
   A \emph{$*$-autonomous partial order} is a structure
   $(A, \leq, \otimes, I, \lnot)$ where $(\otimes, I)$ is a pomonoid on
   $(A, \leq)$ and $\lnot : A^\op \to A$ is an anti-monotone and
@@ -72,10 +76,11 @@ FIXME: cite that combinatorics book.
   An \emph{MAV-algebra} is a structure
   $(A, \leq, \otimes, ;, I, \lnot)$ with the following properties:
   \begin{enumerate}
-    \item $(A, \leq, \otimes, I, \lnot)$ is $*$-autonomous and satisfies \emph{mix}.
-    \item $(A, \leq, ;, I)$ is a pomonoid.
-    \item $(\otimes, I)$ and $(;, I)$ are in a duoidal relationship.
-    \item $(A, \leq)$ has binary meets, which we write as $x \with y$.
+  \item $(A, \leq, \otimes, I, \lnot)$ is $*$-autonomous and satisfies \emph{mix}.
+  \item $(A, \leq, ;, I)$ is a pomonoid.
+  \item $;$ is self dual: $\lnot (x ; y) = (\lnot x); (\lnot y)$.
+  \item $(\otimes, I)$ is duoidal over $(;, I)$.
+  \item $(A, \leq)$ has binary meets, which we write as $x \with y$.
   \end{enumerate}
 \end{definition}
 
@@ -136,7 +141,7 @@ FIXME: cite that combinatorics book.
 \subsection{MAV-frames}
 
 To prove completeness of the cut-free fragment of SMAV, we will
-construct a particular MAV-algebra from the syntax and cut-free
+construct a particular MAV-algebra from the formulas and cut-free
 proofs. Since cut-free proofs do not a priori have all the necessary
 structure for an MAV-algebra, we develop a procedure to construct
 MAV-algebra from the lighter requirements of an MAV-frame, defined in
@@ -152,7 +157,7 @@ all proofs in SMAV have cut-free normal forms.
   $(F, \leq, I, \parallel, \lhd, +)$ where $(F, \leq)$ is a partial
   order, $(F, \leq, I, \parallel)$ is a commutative pomonoid,
   $(F, \leq, I, \lhd)$ is a pomonoid, $+$ is a binary monotone
-  function on $(F, \leq)$, and these structures satisfy the following
+  function on $(F, \leq)$, and these data satisfy the following
   inequalities:
   \begin{enumerate}
     \item $(w \lhd x) \parallel (y \lhd z) \leq (w \parallel y) \lhd (x \parallel z)$
@@ -180,8 +185,21 @@ all proofs in SMAV have cut-free normal forms.
 \end{remark}
 
 \begin{proposition}
-  \bob{The Cut-free system forms an MAV-frame; fwd ref to next section}
+  The \emph{cut-free MAV-frame} $\textsc{CFMav}$ is the partial order
+  arising as the quotient of the preorder formed from the formulas of
+  MAV and $P \leq Q$ if $P \longrightarrow^* Q$. Define
+  $P \parallel Q = P \vParr Q$, $P \lhd Q = P \vSeq Q$,
+  $P + Q = P \vWith Q$ and $I = \vUnit$. The required (in)equalities
+  follow directly from the definition of $\longrightarrow^*$.
 \end{proposition}
+
+\begin{remark}
+  The construction of the MAV-frame \textsc{CFMav} does not use the
+  $\otimes$ and $\oplus$ structure of MAV directly. We will see in
+  Section \ref{sec:mav-cut-elimination} that this structure is
+  recovered by duality from the other connectives by the constructions
+  in the rest of this section. \bob{Which one is ``positive'' again?}
+\end{remark}
 
 \subsection{Constructing MAV-algebras from MAV-frames}
 
@@ -254,13 +272,13 @@ the ``join'' operation is stable with respect to meets.
 
 The following development has proved amenable to mechanisation.
 
-Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
+$+$-contexts are the semantic analogue of Horne's \emph{Killing
   contexts}.
 
 \begin{definition}
   Let $(A, \leq)$ be a partial order with a monotone binary operation
-  $+ : A \times A \to A$.  Let $F \in \LowerSet{A}$. A \emph{formal
-    $+$-context} over $F$ is a binary tree built from constructors
+  $+ : A \times A \to A$.  Let $F \in \LowerSet{A}$. A
+  \emph{$+$-context} over $F$ is a binary tree built from constructors
   $\mathsf{leaf} : F \to \mathrm{ctxt}(F)$ and
   $\mathsf{node} : \mathrm{ctxt}(F) \times \mathrm{ctxt}(F) \to
     \mathrm{ctxt}(F)$. We define the \emph{sum} of a context as
@@ -310,7 +328,7 @@ Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
 \begin{proposition}
   $(\ClosedLowerSet{A}, \subseteq)$ has all meets and joins. In the
   binary case, meets are defined by intersection and joins are defined
-  by $x \lor y = \alpha (U(x) \cup U(y))$.
+  by $F \lor G = \alpha (U F \cup U G)$.
 \end{proposition}
 
 \begin{remark}
@@ -318,8 +336,12 @@ Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
 \end{remark}
 
 \begin{proposition}\label{prop:closed-monoid-distrib}
-  \bob{Monoid construction 1, for monoids that distribute over
-    $+$. This also has a residual.}
+  For a commutative pomonoid $(\bullet, i)$ on $(A, \leq)$ that
+  distributes over $+$
+  ($(x \bullet y) + z = (x + z) \bullet (y + z)$), then
+  $F \ClosedDay{\bullet} G = \alpha(U F \Day{\bullet} U G)$ and
+  $\ClosedDay{j} = \alpha(\Day{j})$ define a residuated commutative
+  pomonoid on $\ClosedLowerSet{A}$.
 \end{proposition}
 
 \begin{proof}
@@ -358,18 +380,20 @@ Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
   We have used the same decoration $\ClosedDay{\bullet}$ and
   $\ClosedDay{\lhd}$ for two separate constructions of pomonoids on
   $+$-closed lower sets. We will be careful to distinguish which we
-  mean: a symmetric operator like $\bullet$ will distribute over $+$
-  and so $\ClosedDay{\bullet}$ will be constructed by Proposition
-  \ref{prop:closed-monoid-distrib}; and a non-symmetric operator like
-  $\lhd$ will be entropic with respect to $+$ and so
-  $\ClosedDay{\lhd}$ will be constructed by Proposition
+  mean: in our present application, a symmetric operator like
+  $\bullet$ will distribute over $+$ and so $\ClosedDay{\bullet}$ will
+  be constructed by Proposition \ref{prop:closed-monoid-distrib}; and
+  a non-symmetric operator like $\lhd$ will be entropic with respect
+  to $+$ and so $\ClosedDay{\lhd}$ will be constructed by Proposition
   \ref{prop:closed-monoid-duoidal}.
 \end{remark}
 
 \begin{remark}
-  If we have two $(A, \leq)$ pomonoids with the same unit, then the
-  two constructions will yield the same closed lower set.
-  \bob{elaborate a bit...}
+  If we have two pomonoids on $(A, \leq)$ that share a unit, then the
+  two constructions of units in Propositions
+  \ref{prop:closed-monoid-distrib} and
+  \ref{prop:closed-monoid-duoidal} will yield the same element of
+  $\ClosedLowerSet{A}$.
 \end{remark}
 
 \begin{proposition}
@@ -392,10 +416,10 @@ Formal $+$-contexts are the semantic analogue of Horne's \emph{Killing
 To construct suitable MAV-algebras, we use the poset version of the
 Chu construction \cite{barr}. The Chu construction builds
 $*$-autonomous categories from symmetric monoidal closed categories
-with pullbacks. In the preorder case, the requirement for preorders
-simplifies to binary meets. Therefore, for this section, we let
-$(A, \leq, \bullet, i, \rightblackspoon)$ be a symmetric monoidal
-closed preorder with all binary meets.
+with pullbacks. In the partial order case, the requirement for
+pullbacks simplifies to binary meets. Therefore, for this section, we
+let $(A, \leq, \bullet, i, \rightblackspoon)$ be a partial order with
+a residuated pomonoid structure and all binary meets.
 
 \begin{definition}
   Let $k$ be an element of $A$. $\Chu(A, k)$ is the partial order with
@@ -405,42 +429,39 @@ closed preorder with all binary meets.
 \end{definition}
 
 \begin{proposition}
-  $\Chu(A, k)$ is a $*$-autonomous partial order with pomonoid and
-  negation structure defined as:
-  \begin{mathpar}
+  $(\Chu(A, k), \sqsubseteq)$ has a $*$-autonomous structure defined
+  as:
+  \begin{displaymath}
     (a^+, a^-) \otimes (b^+, b^-) = (a^+ \bullet b^+, (b^+ \rightblackspoon a^-) \land (a^+ \rightblackspoon b^-))
-
+    \qquad
     I = (i, k)
-
-    (a^+,a^-)^\perp = (a^-, a^+)
-  \end{mathpar}
+    \qquad
+    \lnot(a^+,a^-) = (a^-, a^+)
+  \end{displaymath}
 \end{proposition}
 
 \begin{remark}
-  If we choose $k = i$, then $\Chu(A, i)$ is a $*$-autonomous partial
-  order that satisfies \emph{mix}.
+  If we choose $k = i$, then $(\Chu(A, i), \sqsubseteq)$ has
+  $*$-autonomous structure that satisfies \emph{mix}.
 \end{remark}
 
-\begin{proposition}
-  If $A$ has binary joins, then $\Chu(A, k)$ has binary meets, given
-  by $(a^+,a^-) \with (b^+,b^-) = (a^+ \land b^+, a^- \lor b^-)$.
+\begin{proposition}\label{prop:chu-meets}
+  If $A$ has binary joins, then $(\Chu(A, k), \sqsubseteq) x$ has
+  binary meets, given by
+  $(a^+,a^-) \with (b^+,b^-) = (a^+ \land b^+, a^- \lor b^-)$.
 \end{proposition}
 
-\paragraph{Self-dual duoidal structure}
-These two theorems give us enough structure to interpret the
-multiplicative and additive constructs of MAV. We need to also
-interpret the self-dual $P; Q$ connective. Let us assume that we have
-an operation $-\lhd- : A \times A \to A$ that we want to induce
-self-dual operator on $\Chu(A, k)$. By the way the Chu construction is
-defined, we can make an operator that is self-dual by definition:
-\begin{displaymath}
-  (a^+, a^-) ; (b^+, b^-) = (a^+ \lhd b^+, a^- \lhd b^-)
-\end{displaymath}
-for this to work, we need to assume duoidality.
+\begin{remark}
+  Since $(\Chu(A, k), \sqsubseteq)$ is a $*$-autonomous partial order,
+  then Proposition \ref{prop:chu-meets} also means that $\Chu(A, k)$
+  has all binary joins, with
+  $(a^+, a^-) \oplus (b^+, b^-) = (a^+ \lor b^+, a^- \land b^-)$.
+\end{remark}
 
-And that the dualising object $k$ is a
-satisfies $k \lhd k \leq k$. If $\lhd$ has a unit $j$, then $(j, j)$ is a unit if
-
+We now turn to the self-dual duoidal structure required to interpret
+the $\vSeq$ connective. First we transfer pomonoids from $(A, \leq)$
+to self-dual pomonoids on $(\Chu(A, k), \sqsubseteq)$ provided they
+interact well with $k$:
 \begin{proposition}\label{prop:chu-self-dual}
   Let $(\lhd, j)$ be a pomonoid on $(A, \leq)$ such that
   $k \lhd k \leq k$ and $j \leq k$, then
@@ -459,9 +480,26 @@ satisfies $k \lhd k \leq k$. If $\lhd$ has a unit $j$, then $(j, j)$ is a unit i
   have $I =J$.
 \end{remark}
 
-\begin{lemma}
-  \bob{entropy on residuals}
+Finally, we need to show that if $(\bullet, j)$ is duoidal over
+$(\lhd, j)$, then their Chu counterparts are in the same
+relationship. Due to the use of residuals in the definition of
+$\otimes$, we need the following fact about duoidal residuated
+pomonoids:
+
+\begin{lemma}\label{lem:duoidal-residual}
+  If $(\bullet, j)$ is duoidal over $(\lhd, j)$ in a partial order
+  $(A, \leq)$ and $(\bullet, j)$ has a residual $\rightblackspoon$,
+  then
+  $(w \rightblackspoon x) \lhd (y \rightblackspoon z) \leq (w \lhd y)
+  \rightblackspoon (x \lhd z)$.
 \end{lemma}
+
+\begin{remark}
+  Lemma \ref{lem:duoidal-residual} is in some sense the
+  ``intuitionistic'' version of the duoidal relationship for $\parr$
+  arising as the dual of that for $\otimes$ in a $*$-autonomous
+  partial order.
+\end{remark}
 
 \begin{proposition}
   If $(\bullet, i)$ and $(\lhd, j)$ are in a duoidal relationship on
@@ -478,7 +516,8 @@ satisfies $k \lhd k \leq k$. If $\lhd$ has a unit $j$, then $(j, j)$ is a unit i
 
 \begin{theorem}
   If $(F, \leq, \parallel, \lhd, I, +)$ is an MAV-frame, then
-  $\Chu(\ClosedLowerSet{F}, I)$ has the structure of an MAV-algebra.
+  $(\Chu(\ClosedLowerSet{F}, I), \sqsubseteq)$ has the structure of an
+  MAV-algebra.
 \end{theorem}
 
 \begin{proof}
