@@ -18,7 +18,7 @@ open MAV.Frame.FrameModel MAV.frame
   renaming (model to analyticModel)
 
 open import MAV.Interpretation Atom analyticModel
-  (λ A → embedDual (`- A) (`+ A) (`axiom ◅ ε))
+  (λ A → embedDual (`- A) (`+ A) (step `axiom ◅ ε))
 
 open Chu
 open S.Sheaf
@@ -32,17 +32,17 @@ mutual
   okada (P `⅋ Q) = S.leaf (P `⅋ Q , P , Q , ε , okada P , okada Q) , ε
   okada (P `⊗ Q) .proj₁ {R} x =
     ⟦ P ⟧ .neg .≤-closed
-      (`switch ◅ (P `⊗⟩⋆ (`⅋-comm ◅ okada⁺ Q R x) ◅◅ `⊗-unit ◅ ε))
+      (step `switch ◅ (P `⊗⟩⋆ (fwd (`⅋-comm _ _) ◅ okada⁺ Q R x) ◅◅ fwd (`⊗-identityʳ _) ◅ ε))
       (okada P)
   okada (P `⊗ Q) .proj₂ {R} x =
     ⟦ Q ⟧ .neg .≤-closed
-      (`⊗-comm `⟨⅋ R ◅ `switch ◅ Q `⊗⟩⋆ (`⅋-comm ◅ okada⁺ P R x) ◅◅ `⊗-unit ◅ ε)
+      (fwd (`⊗-comm _ _) `⟨⅋ R ◅ step `switch ◅ Q `⊗⟩ fwd (`⅋-comm _ _) ◅ Q `⊗⟩⋆ okada⁺ P R x ◅◅ fwd (`⊗-identityʳ _) ◅ ε)
       (okada Q)
   okada (P `& Q) =
     S.node (S.leaf (P , inj₁ (okada P))) (S.leaf (Q , inj₂ (okada Q))) , ε
   okada (P `⊕ Q) =
-    ⟦ P ⟧ .neg .≤-closed (`left ◅ ε) (okada P) ,
-    ⟦ Q ⟧ .neg .≤-closed (`right ◅ ε) (okada Q)
+    ⟦ P ⟧ .neg .≤-closed (step `left ◅ ε) (okada P) ,
+    ⟦ Q ⟧ .neg .≤-closed (step `right ◅ ε) (okada Q)
   okada (P `◁ Q) =
     P , Q , ε , okada P , okada Q
 
