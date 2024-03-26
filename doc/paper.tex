@@ -12,6 +12,7 @@
 \usepackage{stmaryrd}
 \usepackage[UKenglish,all]{foreign}
 \usepackage[goodsyntax]{virginialake}
+\vllineartrue%
 %\usepackage{url}
 \sloppy
 % The following is enclosed to allow easy detection of differences in
@@ -111,7 +112,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Metavariables
-\newcommandPIE\vA[0]{A#1#2#3}
+\newcommandPIE\va[0]{\alpha#1#2#3}
+\newcommandPIE\vb[0]{\beta#1#2#3}
 \newcommandPIE\vP[0]{P#1#2#3}
 \newcommandPIE\vQ[0]{Q#1#2#3}
 \newcommandPIE\vR[0]{R#1#2#3}
@@ -123,8 +125,8 @@
 
 % \newcommand{\vDual}[1]{\IfSingleTF{#1}{#1}{(#1)}^{\perp}}
 \newcommand{\vDual}[1]{\overline{#1}}
-\newcommand{\vPos}[1]{#1^{+}}
-\newcommand{\vNeg}[1]{#1^{-}}
+\newcommand{\vPos}[1]{#1^{+}}%{#1}%
+\newcommand{\vNeg}[1]{#1^{-}}%{\bar{#1}}%
 
 % NOTE: Unit is defined to match `\vP` in width.
 \newlength{\vPWidth}
@@ -173,8 +175,9 @@
 \NewDocumentCommand{\vEquiv}{s}{%
   \ensuremath{%
     \mathrel{%
+      \simeq\IfBooleanTF{#1}{^\star}{}}}}
       % \equiv\IfBooleanTF{#1}{^\star}{}}}}
-      \longleftrightarrow\IfBooleanTF{#1}{^\star}{}}}}
+      % \longleftrightarrow\IfBooleanTF{#1}{^\star}{}}}}
 \NewDocumentCommand{\vInfer}{s}{%
   \ensuremath{%
     \mathrel{%

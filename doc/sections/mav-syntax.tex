@@ -1,10 +1,10 @@
 \section{The system MAV}\label{sec:mav-syntax}
 
-The structures of MAV are formed from positive and negative atoms ($\vPos\vA$ and $\vNeg\vA$), units ($\vUnit$), the non-commutative connective \emph{seq} ($\vSeq$), the multiplicative connectives \emph{tensor} and \emph{par} ($\vTens$ and $\vParr$) and additive connectives \emph{with} and \emph{plus} ($\vWith$ and $\vPlus$).
+The structures of MAV are formed from positive and negative atoms ($\vPos\va$ and $\vNeg\va$), units ($\vUnit$), the non-commutative connective \emph{seq} ($\vSeq$), the multiplicative connectives \emph{tensor} and \emph{par} ($\vTens$ and $\vParr$) and additive connectives \emph{with} and \emph{plus} ($\vWith$ and $\vPlus$).
 \begin{displaymath}
   \vP,\vQ,\vR,\vS
-  \Coloneq \vPos\vA
-  \mid     \vNeg\vA
+  \Coloneq \vPos\va
+  \mid     \vNeg\va
   \mid     \vUnit
   \mid     \vP\vSeq \vQ
   \mid     \vP\vTens\vQ
@@ -19,7 +19,7 @@ Duality ($\vDual\vP$) is an involutive function on structures that obeys the De 
       l@{\;=\;}l @{\hspace{1cm}}
       l@{\;=\;}l @{\hspace{1cm}}
       l@{\;=\;}l}
-    \vDual{\vPos\vA}     & \vNeg\vA
+    \vDual{\vPos\va}     & \vNeg\va
                          &
     \vDual{\vUnit}       & \vUnit
                          &
@@ -27,7 +27,7 @@ Duality ($\vDual\vP$) is an involutive function on structures that obeys the De 
                          &
     \vDual{\vP\vParr\vQ} & \vDual\vP \vTens \vDual\vQ
     \\
-    \vDual{\vNeg\vA}     & \vPos\vA
+    \vDual{\vNeg\va}     & \vPos\va
                          &
     \vDual{\vP\vSeq \vQ} & \vDual\vP \vSeq  \vDual\vQ
                          &
@@ -36,7 +36,7 @@ Duality ($\vDual\vP$) is an involutive function on structures that obeys the De 
     \vDual{\vP\vPlus\vQ} & \vDual\vP \vWith \vDual\vQ
   \end{array}
 \end{displaymath}
-Usually, in BV and its extension, structures are considered equivalent modulo a decidable equality comprising duality, as given above, and the associativity, commutativity, and identity laws that ensure that $(\vSeq,\vUnit)$ forms a pomonoid, and $(\vTens,\vUnit)$ and $(\vParr,\vUnit)$ form commutative pomonoids.
+Structures are considered equivalent modulo the decidable equality $\vEquiv$, which is the smallest congruence defined by the associativity, commutativity, and identity laws that ensure that $(\vSeq,\vUnit)$ forms a monoid, and $(\vTens,\vUnit)$ and $(\vParr,\vUnit)$ form commutative monoids.
 \begin{displaymath}
   \begin{array}{
       l@{\;\vEquiv\;}ll @{\hspace{1cm}}
@@ -134,5 +134,13 @@ We write $\vEquiv$ for invertible inference rules, \ie $\vP\vEquiv\vQ$ means $\v
 We write $\vInfer*$ for the reflexive, transitive closure of $\vInfer$.
 
 \begin{remark}
-  The usual presentation of BV writes the structure connectives as lists, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
+  The structural connectives of BV are usually presented as lists, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
 \end{remark}
+
+\begin{displaymath}
+  \begin{array}{l@{\;\vInfer\;}l@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
+    \vNeg\va\vParr\vPos\va
+     & \vUnit
+     & \RuleLabel{Axiom}
+  \end{array}
+\end{displaymath}
