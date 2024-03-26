@@ -7,7 +7,9 @@
 \newcommand{\Chu}{\mathrm{Chu}}
 \newcommand{\op}{\mathrm{op}}
 
-\subsection{$*$-autonomous and Duoidal Partial Orders}
+\bob{Short introduction to the section here}
+
+\subsection{$*$-autonomous and Duoidal Structure on Partial Orders}
 
 \begin{definition}
   A \emph{partial order monoid (pomonoid)} $(\bullet, i)$ on a poset
@@ -21,6 +23,11 @@
   \bob{residuation}
 \end{definition}
 
+The definition of $*$-autonomous category is due to Barr
+\cite{Barr_1979}. For our purposes, we need the partial order
+analogue, also called a CL algebra by Troelstra
+\cite{Troelstra92:lll}.
+
 \begin{definition}
   A \emph{$*$-autonomous partial order} is a structure
   $(A, \leq, \otimes, I, \lnot)$ where $(\otimes, I)$ is a pomonoid on
@@ -33,14 +40,16 @@
 \begin{remark}
   The structure of a $*$-autonomous partial order has a number of
   immediate consequences, but we leave description of these until
-  after the definition of MAV-algebra below. \bob{because there are
-    even more consequences in the presence of additive and duoidal
-    structure}
+  after the definition of MAV-algebra in Definition
+  \ref{defn:mav-algebra}.
 \end{remark}
 
 FIXME: cite that combinatorics book.
 
-\bob{need to define \emph{entropy} and \emph{entropic} somewhere}
+\bob{need to define \emph{entropy} and \emph{entropic} somewhere. I
+  think we can have that one pomonoid is \emph{entropic} over another,
+  and the structure of having two monoids where one is entropic over
+  the other is called duoidal structure.}
 
 \begin{definition}
   Two pomonoids $(\bullet, i)$ and $(\lhd, j)$ on a partial order
@@ -72,7 +81,7 @@ FIXME: cite that combinatorics book.
 
 \subsection{MAV-algebras}
 
-\begin{definition}
+\begin{definition}\label{defn:mav-algebra}
   An \emph{MAV-algebra} is a structure
   $(A, \leq, \otimes, ;, I, \lnot)$ with the following properties:
   \begin{enumerate}
@@ -260,15 +269,29 @@ all proofs in SMAV have cut-free normal forms.
 
 \subsubsection{Closed Lower Sets}
 
-The Lower Set adds residuals to the pomonoids of an MAV-frame, so the
-Chu construction below will allow us to add duals to interpret all of
-the multiplicative subsystem of MAV. To incorporate the additives in
-such a way that we will be able to derive the proof normalisation
-property, we need to refine lower sets to ones that are closed under
+In the phase semantics, formulas are interpreted as elements that are
+fixed points of a closure operator defined by a double negation with
+respect to the monoid on the original frame. This closure operator
+generates a partial order of ``facts'' whose meets and joins exactly
+correspond to the syntactic ones when the original monoid is derived
+from the proofs. As we mentioned in the introduction, the presence of
+a self-dual operator in BV means that we cannot use double negation
+closure, and we have to proceed more deliberately to preserve
+join-like structure in an MAV-frame when building MAV-algebras.
+
+We do this by defining closed lower sets as those that are closed
+under finite $+$-combinations of their elements. 
+
+Lower sets add residuals to the pomonoids of an MAV-frame, so the Chu
+construction below will allow us to add duals to interpret all of the
+multiplicative subsystem of MAV. To incorporate the additives in such
+a way that we will be able to derive the proof normalisation property,
+we need to refine lower sets to ones that are closed under
 $+$-combinations.
 
 This corresponds to a sheaf construction, but we do not assume that
 the ``join'' operation is stable with respect to meets.
+
 
 The following development has proved amenable to mechanisation.
 
@@ -338,7 +361,7 @@ $+$-contexts are the semantic analogue of Horne's \emph{Killing
 \begin{proposition}\label{prop:closed-monoid-distrib}
   For a commutative pomonoid $(\bullet, i)$ on $(A, \leq)$ that
   distributes over $+$
-  ($(x \bullet y) + z = (x + z) \bullet (y + z)$), then
+  ($(x + y) \bullet z \leq (x \bullet z) + (y \bullet z)$), then
   $F \ClosedDay{\bullet} G = \alpha(U F \Day{\bullet} U G)$ and
   $\ClosedDay{j} = \alpha(\Day{j})$ define a residuated commutative
   pomonoid on $\ClosedLowerSet{A}$.
