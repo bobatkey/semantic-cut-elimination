@@ -71,6 +71,5 @@ MAV-proof-of-example₁
     ◅ ε
     where open MAV
 
--- _ : cut-elim _ SMAV-proof-of-example₁ ≡ MAV-proof-of-example₁
--- _ = refl
- 
+_ : cut-elim _ SMAV-proof-of-example₁ ≡ MAV-proof-of-example₁
+_ = refl

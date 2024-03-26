@@ -5,7 +5,7 @@ open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum as Sum using (_⊎_; inj₁; inj₂)
 open import Level using (suc; _⊔_)
-open import Relation.Binary using (Rel; IsPartialOrder; Poset; IsEquivalence)
+open import Relation.Binary using (Rel; IsPartialOrder; Poset; IsEquivalence; Antisymmetric)
 open import Relation.Binary.Construct.Union using (_∪_)
 import Relation.Binary.Construct.Union as Union
 open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
@@ -39,7 +39,7 @@ module _ where
 
   mutual
     data _∼_ : Rel Formula a where
-      `⊗-assoc     : Associative _`⊗_
+      -- `⊗-assoc     : Associative _`⊗_
       `⊗-comm      : Commutative _`⊗_
       `⊗-identityʳ : RightIdentity `I _`⊗_
       `⅋-assoc     : Associative _`⅋_
@@ -93,8 +93,8 @@ fwd P∼Q = emb (inj₁ (SymClosure.fwd (emb P∼Q) ◅ ε))
 bwd : P ∼ Q → Q ⟶₌ P
 bwd P∼Q = emb (inj₁ (SymClosure.bwd (emb P∼Q) ◅ ε))
 
-eq : P ∼ Q → P ⟷⋆ Q
-eq P∼Q = (fwd P∼Q ◅ ε , bwd P∼Q ◅ ε)
+fwd∧bwd : P ∼ Q → P ⟷⋆ Q
+fwd∧bwd P∼Q = (fwd P∼Q ◅ ε , bwd P∼Q ◅ ε)
 
 step : P ⟶ Q → P ⟶₌ Q
 step P⟶Q = emb (inj₂ P⟶Q)
@@ -118,8 +118,8 @@ open IsEquivalence ⟷⋆-isEquivalence
     ; trans to ⟷⋆-trans
     )
 
--- ------------------------------------------------------------------------------
--- -- Lift congruence rules to the preorder
+------------------------------------------------------------------------------
+-- Lift congruence rules to the preorder
 
 _`⊗⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `⊗ Q) ⟶⋆ (P `⊗ Q′)
 P `⊗⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `⊗⟩_) Q⟶⋆Q′
@@ -151,6 +151,12 @@ P `&⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `&⟩_) Q⟶⋆Q′
 _`⟨&⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `& Q ⟶⋆ P′ `& Q
 P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 
+_`⊕⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `⊕ Q) ⟶⋆ (P `⊕ Q′)
+P `⊕⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `⊕⟩_) Q⟶⋆Q′
+
+_`⟨⊕⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⊕ Q ⟶⋆ P′ `⊕ Q
+P⟶⋆P′ `⟨⊕⋆ Q = Star.gmap _ (_`⟨⊕ Q) P⟶⋆P′
+
 ------------------------------------------------------------------------------
 -- Deriving full versions of switch and sequence
 
@@ -170,26 +176,27 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 ------------------------------------------------------------------------------
 -- Turning ⊗ into a commutative pomonoid
 
--- `⊗-mono : (P ⟶⋆ P′) → (Q ⟶⋆ Q′) → (P `⊗ Q) ⟶⋆ (P′ `⊗ Q′)
--- `⊗-mono {P = P} {Q′ = Q′} f g = P `⊗⟩⋆ g ◅◅ f `⟨⊗⋆ Q′
+`⊗-mono : (P ⟶⋆ P′) → (Q ⟶⋆ Q′) → (P `⊗ Q) ⟶⋆ (P′ `⊗ Q′)
+`⊗-mono {P = P} {Q′ = Q′} f g = P `⊗⟩⋆ g ◅◅ f `⟨⊗⋆ Q′
 
--- `⊗-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`⊗_
--- `⊗-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
--- `⊗-isPomagma .IsPomagma.mono = `⊗-mono
+`⊗-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`⊗_
+`⊗-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
+`⊗-isPomagma .IsPomagma.mono = `⊗-mono
 
 -- `⊗-isPosemigroup : IsPosemigroup  _⟷⋆_ _⟶⋆_ _`⊗_
 -- `⊗-isPosemigroup .IsPosemigroup.isPomagma = `⊗-isPomagma
--- `⊗-isPosemigroup .IsPosemigroup.assoc P Q R = (`⊗-assoc⁻¹ ◅ ε , `⊗-assoc ◅ ε)
+-- `⊗-isPosemigroup .IsPosemigroup.assoc P Q R = fwd∧bwd (`⊗-assoc P Q R)
 
 -- `⊗-isPomonoid : IsPomonoid _⟷⋆_ _⟶⋆_ _`⊗_ `I
 -- `⊗-isPomonoid .IsPomonoid.isPosemigroup = `⊗-isPosemigroup
--- `⊗-isPomonoid .IsPomonoid.identity = 
---   (λ P → (`⊗-comm ◅ `⊗-unit ◅ ε , `⊗-unit⁻¹ ◅ `⊗-comm ◅ ε)) ,
---   (λ P → (`⊗-unit ◅ ε , `⊗-unit⁻¹ ◅ ε))
+-- `⊗-isPomonoid .IsPomonoid.identity = identityˡ , identityʳ
+--   where
+--     identityʳ = λ P → fwd∧bwd (`⊗-identityʳ P)
+--     identityˡ = λ P → ⟷⋆-trans (fwd∧bwd (`⊗-comm `I P)) (identityʳ P)
 
 -- `⊗-isCommutativePomonoid : IsCommutativePomonoid  _⟷⋆_ _⟶⋆_ _`⊗_ `I
 -- `⊗-isCommutativePomonoid .IsCommutativePomonoid.isPomonoid = `⊗-isPomonoid
--- `⊗-isCommutativePomonoid .IsCommutativePomonoid.comm P Q = (`⊗-comm ◅ ε , `⊗-comm ◅ ε)
+-- `⊗-isCommutativePomonoid .IsCommutativePomonoid.comm P Q = fwd∧bwd (`⊗-comm P Q)
 
 ------------------------------------------------------------------------------
 -- Turning ⅋ into a commutative pomonoid
@@ -203,18 +210,18 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 
 `⅋-isPosemigroup : IsPosemigroup  _⟷⋆_ _⟶⋆_ _`⅋_
 `⅋-isPosemigroup .IsPosemigroup.isPomagma = `⅋-isPomagma
-`⅋-isPosemigroup .IsPosemigroup.assoc P Q R = eq (`⅋-assoc P Q R)
+`⅋-isPosemigroup .IsPosemigroup.assoc P Q R = fwd∧bwd (`⅋-assoc P Q R)
 
 `⅋-isPomonoid : IsPomonoid _⟷⋆_ _⟶⋆_ _`⅋_ `I
 `⅋-isPomonoid .IsPomonoid.isPosemigroup = `⅋-isPosemigroup
 `⅋-isPomonoid .IsPomonoid.identity = identityˡ , identityʳ
   where
-    identityʳ = λ P → eq (`⅋-identityʳ P)
-    identityˡ = λ P → ⟷⋆-trans (eq (`⅋-comm `I P)) (identityʳ P)
+    identityʳ = λ P → fwd∧bwd (`⅋-identityʳ P)
+    identityˡ = λ P → ⟷⋆-trans (fwd∧bwd (`⅋-comm `I P)) (identityʳ P)
 
 `⅋-isCommutativePomonoid : IsCommutativePomonoid  _⟷⋆_ _⟶⋆_ _`⅋_ `I
 `⅋-isCommutativePomonoid .IsCommutativePomonoid.isPomonoid = `⅋-isPomonoid
-`⅋-isCommutativePomonoid .IsCommutativePomonoid.comm P Q = eq (`⅋-comm P Q)
+`⅋-isCommutativePomonoid .IsCommutativePomonoid.comm P Q = fwd∧bwd (`⅋-comm P Q)
 
 ------------------------------------------------------------------------------
 -- Turning ◁ into a pomonoid
@@ -228,14 +235,14 @@ P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
 
 `◁-isPosemigroup : IsPosemigroup  _⟷⋆_ _⟶⋆_ _`◁_
 `◁-isPosemigroup .IsPosemigroup.isPomagma = `◁-isPomagma
-`◁-isPosemigroup .IsPosemigroup.assoc P Q R = eq (`◁-assoc P Q R)
+`◁-isPosemigroup .IsPosemigroup.assoc P Q R = fwd∧bwd (`◁-assoc P Q R)
 
 `◁-isPomonoid : IsPomonoid _⟷⋆_ _⟶⋆_ _`◁_ `I
 `◁-isPomonoid .IsPomonoid.isPosemigroup = `◁-isPosemigroup
 `◁-isPomonoid .IsPomonoid.identity = (identityˡ , identityʳ)
   where
-    identityʳ = λ P → eq (`◁-identityʳ P)
-    identityˡ = λ P → eq (`◁-identityˡ P)
+    identityʳ = λ P → fwd∧bwd (`◁-identityʳ P)
+    identityˡ = λ P → fwd∧bwd (`◁-identityˡ P)
 
 ------------------------------------------------------------------------------
 -- Turning ⅋ and ◁ into a duoid
@@ -274,12 +281,12 @@ open import Algebra.Definitions _⟶⋆_ using (_DistributesOver_)
 ------------------------------------------------------------------------------
 -- Turning ⊕ into a pomagma
 
--- `⊕-mono : P ⟶⋆ P′ → Q ⟶⋆ Q′ → P `⊕ Q ⟶⋆ P′ `⊕ Q′
--- `⊕-mono {P = P} {Q′ = Q′} f g = P `⊕⟩⋆ g ◅◅ f `⟨⊕⋆ Q′
+`⊕-mono : P ⟶⋆ P′ → Q ⟶⋆ Q′ → P `⊕ Q ⟶⋆ P′ `⊕ Q′
+`⊕-mono {P = P} {Q′ = Q′} f g = P `⊕⟩⋆ g ◅◅ f `⟨⊕⋆ Q′
 
--- `⊕-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`⊕_
--- `⊕-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
--- `⊕-isPomagma .IsPomagma.mono = `⊕-mono
+`⊕-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`⊕_
+`⊕-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
+`⊕-isPomagma .IsPomagma.mono = `⊕-mono
 
 ------------------------------------------------------------------------------
 frame : Frame a (suc a) (suc a)
