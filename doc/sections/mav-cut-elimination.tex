@@ -2,32 +2,34 @@
 \label{sec:mav-cut-elimination}
 
 Let $\Chu(\ClosedLowerSet{\NMAV}, \ClosedDay{I})$ be the MAV-algebra
-constructed from the normal proof MAV-frame (Proposition
-\ref{prop:nmav-frame}), where elements are positive/negative pairs of
-$+$-closed lower sets of formulas. We define the valuation of atoms as
+constructed (Theorem \ref{thm:algebra-from-frame}) from the normal
+proof MAV-frame (Proposition \ref{prop:nmav-frame}), where elements
+are positive/negative pairs of $+$-closed lower sets of formulas. We
+define the valuation of atoms as
 $V(\alpha) = \ChuEmbed(\ClosedLowerEmbed(\vDual{\alpha}))$. By Theorem
 \ref{thm:soundness}, we have an interpretation of MAV formulas
-$\sem{P}$ such that if $P \longrightarrow^* I$, then $I \leq
-\sem{P}$. We now prove our main proposition about the MAV-algebra
-\NMAV{} that will allow us to derive the admissibility of all the
-non-normal proof rules of MAV.
+$\sem{P}$ such that if $P \longrightarrow^* I$, then
+$I \sqsubseteq \sem{P}$. We now prove our main proposition about this
+interpretation in the MAV-algebra derived from the MAV-frame of normal
+proofs \NMAV{} that will allow us to derive the admissibility of all
+the non-normal proof rules of MAV.
 
 \begin{proposition}\label{prop:embedding-sem}
   $\sem{P} \sqsubseteq \lnot (\ChuEmbed(\ClosedLowerEmbed(P)))$
 \end{proposition}
 
 \begin{proof}
-  By the definition of the Chu construction, this statement breaks
-  down into two inclusions between pairs of $+$-closed lower sets:
+  By Definition \ref{defn:chu}, this statement is two inclusions
+  between pairs of $+$-closed lower sets:
   \begin{enumerate}
   \item $\ClosedLowerEmbed(P) \subseteq \sem{\vP}^-$
   \item $\sem{\vP}^+ \subseteq \ClosedLowerEmbed(P) \rightblackspoon^+ \ClosedDay{I}$
   \end{enumerate}
   We prove the second assuming the first. It suffices to prove that
-  $\sem{\vP}^+ \ClosedDay{\bullet} \ClosedLowerEmbed(P) \leq
+  $\sem{\vP}^+ \ClosedDay{\bullet} \ClosedLowerEmbed(P) \subseteq
   \ClosedDay{I}$, which follows from the first part and the property
   of all Chu-elements that
-  $\sem{\vP}^+ \ClosedDay{\bullet} \sem{\vP}^- \leq \ClosedDay{I}$.
+  $\sem{\vP}^+ \ClosedDay{\bullet} \sem{\vP}^- \subseteq \ClosedDay{I}$.
 
   We prove the first part by induction on $P$. In the cases when
   $P = \vUnit$ or $P = \vDual{\alpha}$, we already have
@@ -35,52 +37,52 @@ non-normal proof rules of MAV.
   $\sem{\alpha}^- = \ClosedLowerEmbed(\vDual{\alpha})
   \rightblackspoon^+ \ClosedDay{I}$. It suffices to prove that
   $\ClosedLowerEmbed(\alpha) \ClosedDay{\bullet}
-  \ClosedLowerEmbed(\vDual{\alpha}) \leq \ClosedDay{I}$, which follows
+  \ClosedLowerEmbed(\vDual{\alpha}) \subseteq \ClosedDay{I}$, which follows
   from the preservation of monoid operations by $\ClosedLowerEmbed$
   and the \RuleLabel{Axiom} rule of MAV.
 
   When $P = Q \vParr R$, $Q \vWith R$, or $Q \vSeq R$, the result
   follows from preservation of the corresponding monoid structure by
   $\ClosedLowerEmbed$. For example,
-  $\ClosedLowerEmbed(Q \vParr R) \leq \ClosedLowerEmbed(Q)
-  \ClosedDay{\bullet} \ClosedLowerEmbed(R) \leq \sem{Q}^-
+  $\ClosedLowerEmbed(Q \vParr R) \subseteq \ClosedLowerEmbed(Q)
+  \ClosedDay{\bullet} \ClosedLowerEmbed(R) \subseteq \sem{Q}^-
   \ClosedDay{\bullet} \sem{R}^- = \sem{Q \vParr R}^-$.
 
   When $P = Q \vPlus R$, we have
-  $\ClosedLowerEmbed(Q \vPlus R) \leq \ClosedLowerEmbed(Q)$ and
-  $\ClosedLowerEmbed(Q \vPlus R) \leq \ClosedLowerEmbed(R)$, by the
+  $\ClosedLowerEmbed(Q \vPlus R) \subseteq \ClosedLowerEmbed(Q)$ and
+  $\ClosedLowerEmbed(Q \vPlus R) \subseteq \ClosedLowerEmbed(R)$, by the
   \RuleLabel{Left} and \RuleLabel{Right} rules. Therefore,
-  $\ClosedLowerEmbed(Q \vPlus R) \leq \ClosedLowerEmbed(Q) \lor
-  \ClosedLowerEmbed(R) \leq \sem{Q}^- \lor \sem{R}^- = \sem{Q \vPlus
+  $\ClosedLowerEmbed(Q \vPlus R) \subseteq \ClosedLowerEmbed(Q) \lor
+  \ClosedLowerEmbed(R) \subseteq \sem{Q}^- \lor \sem{R}^- = \sem{Q \vPlus
     R}^-$.
 
   When $P = Q \vTens R$, we have
   $\sem{Q \vTens R}^- = (\sem{Q}^+ \rightblackspoon \sem{R}^-) \land
   (\sem{R}^+ \rightblackspoon \sem{Q}^-)$. We prove inclusion in the
-  left-hand side, the right-hand side is similar. The key property we need to prove is:
+  left-hand side, the right-hand side is similar. The key property we
+  need to prove is:
   \begin{equation}\label{eq:interaction-leq}
     \ClosedLowerEmbed(Q \vTens R) \ClosedDay{\bullet} (\ClosedLowerEmbed(Q) \rightblackspoon^+ \ClosedDay{I})
-    \leq
+    \subseteq
     \ClosedLowerEmbed(R)
   \end{equation}
-  Using the monoidality and monotonicity of $\alpha$, this property is
-  implied by the following property of lower sets in
-  $\LowerSet{\NMAV}$:
+  Using the monoidality and monotonicity of $\alpha$, this inclusion
+  is implied by the following inclusion in $\LowerSet{\NMAV}$:
   \begin{displaymath}
     \LowerEmbed(Q \vTens R) \Day{\bullet} (U(\ClosedLowerEmbed(Q)) \rightblackspoon \Day{I})
-    \leq
+    \subseteq
     \LowerEmbed(R)
   \end{displaymath}
   which follows from the \RuleLabel{Switch} rule of MAV and
-  calculation. Using Inequation \ref{eq:interaction-leq}, and property
-  (ii) above, we can prove the inequality we need:
+  calculation. Using \ref{eq:interaction-leq}, and inclusion (ii)
+  above, we can prove the inequality we need:
   \begin{displaymath}
     \ClosedLowerEmbed(Q \vTens R) \ClosedDay{\bullet} \sem{Q}^+
-    \leq
+    \subseteq
     \ClosedLowerEmbed(Q \vTens R) \ClosedDay{\bullet} (\ClosedLowerEmbed(Q) \rightblackspoon^+ \ClosedDay{I})
-    \leq
+    \subseteq
     \ClosedLowerEmbed(R)
-    \leq
+    \subseteq
     \sem{R}^-
   \end{displaymath}
   Using the residuation property of $\ClosedDay{\bullet}$ we can conclude.
@@ -92,7 +94,7 @@ non-normal proof rules of MAV.
 
 \begin{proof}
   By Theorem \ref{thm:soundness}, $P \longrightarrow^* I$ in MAV
-  implies $I \leq \sem{P}$. Combined with Proposition
+  implies $I \sqsubseteq \sem{P}$. Combined with Proposition
   \ref{prop:embedding-sem}, we have
   $I \sqsubseteq \lnot \ChuEmbed(\LowerEmbed(P)$. By Definition
   \ref{defn:chu} of the ordering of Chu elements, we have

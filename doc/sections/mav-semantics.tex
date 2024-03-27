@@ -468,12 +468,11 @@ that $+$ is a join or even a pomonoid.)
 \end{remark}
 
 \begin{proposition}
-  If $(\bullet, i)$ is duoidal over $(\lhd, j)$ be pomonoids on
-  $(A, \leq)$, and $(\bullet, i)$ distributes over $+$ (as in
-  Proposition \ref{prop:closed-monoid-distrib}) and $+$ is duoidal
-  over $(\lhd, j)$ (as in Proposition
-  \ref{prop:closed-monoid-duoidal}), then
-  $(\ClosedDay{\bullet}, \ClosedDay{i})$ is duoidal over
+  If $(\bullet, i)$ is duoidal over $(\lhd, j)$ on $(A, \leq)$, and
+  $(\bullet, i)$ distributes over $+$ (as in Proposition
+  \ref{prop:closed-monoid-distrib}) and $+$ is duoidal over
+  $(\lhd, j)$ (as in Proposition \ref{prop:closed-monoid-duoidal}),
+  then $(\ClosedDay{\bullet}, \ClosedDay{i})$ is duoidal over
   $(\ClosedDay{\lhd}, \ClosedDay{j})$ on
   $(\ClosedLowerSet{A}, \subseteq)$.
 \end{proposition}
@@ -489,13 +488,13 @@ that $+$ is a join or even a pomonoid.)
 \subsubsection{Chu Construction}
 \label{sec:chu}
 
-To construct suitable MAV-algebras, we use the poset version of the
-Chu construction \cite{barr}. The Chu construction builds
+To construct suitable MAV-algebras, we use the partial order version
+of the Chu construction \cite{barr}. The Chu construction builds
 $*$-autonomous categories from symmetric monoidal closed categories
 with pullbacks. In the partial order case, the requirement for
-pullbacks simplifies to binary meets. For this section, we
-let $(A, \leq, \bullet, i, \rightblackspoon)$ be a partial order with
-a residuated pomonoid structure and all binary meets.
+pullbacks simplifies to binary meets. For this section, we let
+$(A, \leq, \bullet, i, \rightblackspoon)$ be a partial order with a
+residuated pomonoid structure and all binary meets.
 
 \begin{definition}\label{defn:chu}
   Let $k$ be an element of $A$. $\Chu(A, k)$ is the partial order with
@@ -602,7 +601,7 @@ pomonoids:
 
 \subsection{Construction of MAV-algebras}
 
-\begin{theorem}
+\begin{theorem}\label{thm:algebra-from-frame}
   If $(F, \leq, \parr, \lhd, I, +)$ is an MAV-frame, then
   $(\Chu(\ClosedLowerSet{F}, I), \sqsubseteq)$ has the structure of an
   MAV-algebra.
