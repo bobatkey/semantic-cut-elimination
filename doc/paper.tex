@@ -107,6 +107,30 @@
   }}
 \crefformat{Rule}{#2(#1)#3}
 
+% Numbered inline equations
+\makeatletter
+\newcommand*{\inlineequation}[2][]{%
+  \begingroup
+    % Put \refstepcounter at the beginning, because
+    % package `hyperref' sets the anchor here.
+    \refstepcounter{equation}%
+    \ifx\\#1\\%
+    \else
+      \label{#1}%
+    \fi
+    % prevent line breaks inside equation
+    \relpenalty=10000 %
+    \binoppenalty=10000 %
+    % equation
+    \ensuremath{%
+      % \displaystyle % larger fractions, ...
+      #2%
+    }%
+    ~\@eqnnum%
+  \endgroup
+}
+\makeatother
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Syntax:                                                                    %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -120,6 +144,8 @@
 \newcommandPIE\vS[0]{S#1#2#3}
 \newcommandPIE\vC[0]{\mathcal{C}#1#2#3}
 \newcommandPIE\vD[0]{\mathcal{D}#1#2#3}
+\newcommandPIE\vGG[0]{\Gamma#1#2#3}
+\newcommandPIE\vGD[0]{\Delta#1#2#3}
 
 % Connectives
 
@@ -173,7 +199,7 @@
 
 % Contexts
 \newcommand{\vEmpty}[0]{\ensuremath{\vlhole}}
-\newcommand{\vPlug}[1]{\ensuremath{\{#1\kern.3em\}}}
+\newcommand{\vPlug}[1]{\ensuremath{\{#1\}}}
 
 % Relations
 \NewDocumentCommand{\vEquiv}{s}{%

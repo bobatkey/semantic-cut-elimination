@@ -79,9 +79,54 @@ Structures are considered equivalent modulo the decidable equality $\vEquiv$, wh
      & \RuleLabel*[parr-assoc]{\vParr-Assoc}
   \end{array}
 \end{displaymath}
-The inference rules of MAV are presented as \emph{rewrite rules} on structures, \eg we write $\vP\vInferFrom\vQ$ to mean that $\vP$ can be inferred from $\vQ$.
-
-Inference rules:
+The inference rules of MAV are presented as a \emph{rewriting system} on structures. As this may be surprising to readers unfamiliar with deep inference, let us examine how this presentation relates to the usual presentation of linear logic.
+Rule~(\ref{rule:ll-axiom}) is the axiom rule in the usual one-sided presentation of linear logic.
+In the one-sided presentation, the turnstile is vestigial syntax, and can be removed.
+In BV, the $\vParr$ connective plays the same role as the comma does in the antecedent of a linear logic sequent, and the $\vUnit$ plays the same role as the empty sequent, which would give us rule~(\ref{rule:bv-axiom-bad}) for BV.
+However, BV's inference rules can work arbitrarily deep in the structure. (Hence, \emph{deep} inference.)
+Therefore, the axiom for BV is actually rule~(\ref{rule:bv-axiom-good}), where $\vC$ is a one-hole structure context.
+In BV, all inference rules are unary.
+A branching inference rule enforces \emph{disjointness} of its premise derivations.
+In BV, disjointness is internalised by the $\vTens$ connective.
+\begin{center}
+  $\inlineequation[rule:ll-axiom]{%
+      \vlderivation{\vlin{}{}{\vdash\vP,\vDual\vP}{\vlhy{}}}}$
+  \qquad
+  $\inlineequation[rule:bv-axiom-bad]{%
+      \vlderivation{\vlin{}{}{\vP\vParr\vDual\vP}{\vlhy{\vUnit}}}}$
+  \qquad
+  $\inlineequation[rule:bv-axiom-good]{%
+      \vlderivation{\vlin{}{}{%
+          \vC\vPlug{\vP\vParr\vDual\vP}}{%
+          \vlhy{\vC\vPlug{\vUnit}}}}}$
+  \qquad
+  $\inlineequation[rule:mav-axiom]{%
+      \vP\vParr\vDual\vP\vInferFrom\vUnit}$
+  \\[1\baselineskip]
+  $\inlineequation[rule:ll-cut]{%
+      \vlderivation{\vliin{}{}{%
+          \vdash\vGG,\vGG',\vGD,\vGD'}{%
+          \vlhy{\vdash\vGG,\vP,\vGG'}}{%
+          \vlhy{\vdash\vGD,\vDual\vP,\vGD'}}}}$
+  \qquad
+  $\inlineequation[rule:ll-cut]{%
+      \vlderivation{\vliin{}{}{%
+          \vGG,\vGG',\vUnit,\vGD,\vGD'}{%
+          \vlhy{\vdash\vGG,\vP,\vGG'}}{%
+          \vlhy{\vdash\vGD,\vDual\vP,\vGD'}}}}$
+  \qquad
+  $\inlineequation[rule:bv-cut-good]{%
+      \vlderivation{\vlin{}{}{%
+          \vC\vPlug{\vP\vParr\vDual\vP}}{%
+          \vlhy{\vC\vPlug{\vUnit}}}}}$
+  \qquad
+  $\inlineequation[rule:mav-cut]{%
+      \vP\vParr\vDual\vP\vInferFrom\vUnit}$
+\end{center}
+The inference rules of MAV are presented as a \emph{rewrite rules} on structures.
+We write $\vP\vInferFrom\vQ$ when $\vP$ can be inferred from $\vQ$.
+The axiom of linear logic is typically given as \ref{rule:axiom-ll}.
+In MAV, the structure connective $\vParr$ plays the same role as the comma does in the antecedent of a linear logic sequent.
 \begin{displaymath}
   \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
     \vP\vParr\vDual\vP
@@ -132,7 +177,7 @@ Inference rules:
     \vC\vPlug\vP\vInferFrom\vC\vPlug\vQ
      & \text{if}
      & \vP\vInferFrom\vQ
-     & \RuleLabel{cong}
+     & \RuleLabel{mono}
     % \\
     % \vP\vInferFrom\vQ
     %  & \text{if}
