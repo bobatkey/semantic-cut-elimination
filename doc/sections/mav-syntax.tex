@@ -80,133 +80,140 @@ Structures are considered equivalent modulo the decidable equality $\vEquiv$, wh
   \end{array}
 \end{displaymath}
 The inference rules of MAV are presented as a \emph{rewriting system} on structures. As this may be surprising to readers unfamiliar with deep inference, let us examine how this presentation relates to the usual presentation of linear logic.
-Rule~(\ref{rule:ll-axiom}) is the axiom rule in the usual one-sided presentation of linear logic.
+Rule~(\ref{rule:AxiomLL}), shown below, is the axiom rule in the usual one-sided presentation of linear logic.
 In the one-sided presentation, the turnstile is vestigial syntax, and can be removed.
-In BV, the $\vParr$ connective plays the same role as the comma does in the antecedent of a linear logic sequent, and the $\vUnit$ plays the same role as the empty sequent, which would give us rule~(\ref{rule:bv-axiom-bad}) for BV.
+In BV, the $\vParr$ connective plays the same role as the comma does in the antecedent of a linear logic sequent, and the $\vUnit$ plays the same role as the empty sequent, which would give us rule~(\ref{rule:AxiomBV-bad}) for BV.
 However, BV's inference rules can work arbitrarily deep in the structure. (Hence, \emph{deep} inference.)
-Therefore, the axiom for BV is actually rule~(\ref{rule:bv-axiom-good}), where $\vC$ is a one-hole structure context.
-In BV, all inference rules are unary.
-A branching inference rule enforces \emph{disjointness} of its premise derivations.
-In BV, disjointness is internalised by the $\vTens$ connective.
+Hence, the axiom for BV is rule~(\ref{rule:AxiomBV}), where $\vC$ is a one-hole structure context.
 \begin{center}
-  $\inlineequation[rule:ll-axiom]{%
+  $\inlineequation[rule:AxiomLL]{%
       \vlderivation{\vlin{}{}{\vdash\vP,\vDual\vP}{\vlhy{}}}}$
   \qquad
-  $\inlineequation[rule:bv-axiom-bad]{%
+  $\inlineequation[rule:AxiomBV-bad]{%
       \vlderivation{\vlin{}{}{\vP\vParr\vDual\vP}{\vlhy{\vUnit}}}}$
   \qquad
-  $\inlineequation[rule:bv-axiom-good]{%
+  $\inlineequation[rule:AxiomBV]{%
       \vlderivation{\vlin{}{}{%
           \vC\vPlug{\vP\vParr\vDual\vP}}{%
           \vlhy{\vC\vPlug{\vUnit}}}}}$
-  \qquad
-  $\inlineequation[rule:mav-axiom]{%
-      \vP\vParr\vDual\vP\vInferFrom\vUnit}$
-  \\[1\baselineskip]
-  $\inlineequation[rule:ll-cut]{%
+  % \qquad
+  % $\inlineequation[rule:mav-axiom]{%
+  %     \vP\vParr\vDual\vP\vInferFrom\vUnit}$
+\end{center}
+Rule (\ref{rule:CutLL}) is the cut rule in the usual one-sided presentation of linear logic.
+In rule (\ref{rule:CutLL}), as in any branching inference rule, the branching enforces the \emph{disjointness} of the premise derivations.
+In BV, disjointness is internalised by the $\vTens$ connective.
+Hence, it plays the same role as branching does in sequent calculus.
+This would give us rule (\ref{rule:CutBVBad}) for BV.
+However, as BV's inference rules can work arbitrarily deep in the structure, the surrounding context of pars is unnecessary---and too restrictive. Hence, the cut for BV is rule (\ref{rule:CutBV}).
+\begin{center}
+  $\inlineequation[rule:CutLL]{%
       \vlderivation{\vliin{}{}{%
           \vdash\vGG,\vGG',\vGD,\vGD'}{%
           \vlhy{\vdash\vGG,\vP,\vGG'}}{%
           \vlhy{\vdash\vGD,\vDual\vP,\vGD'}}}}$
   \qquad
-  $\inlineequation[rule:ll-cut]{%
-      \vlderivation{\vliin{}{}{%
-          \vGG,\vGG',\vUnit,\vGD,\vGD'}{%
-          \vlhy{\vdash\vGG,\vP,\vGG'}}{%
-          \vlhy{\vdash\vGD,\vDual\vP,\vGD'}}}}$
-  \qquad
-  $\inlineequation[rule:bv-cut-good]{%
+  $\inlineequation[rule:CutBVBad]{%
       \vlderivation{\vlin{}{}{%
-          \vC\vPlug{\vP\vParr\vDual\vP}}{%
-          \vlhy{\vC\vPlug{\vUnit}}}}}$
+          \vGG\vParr\vGG'\vParr\vGD\vParr\vGD'}{%
+          \vlhy{%
+            (\vGG\vParr\vP\vParr\vGG')
+            \vTens
+            (\vGD\vParr\vDual\vP\vParr\vGD')}}}}$
   \qquad
-  $\inlineequation[rule:mav-cut]{%
-      \vP\vParr\vDual\vP\vInferFrom\vUnit}$
+  $\inlineequation[rule:CutBV]{%
+      \vlderivation{\vlin{}{}{%
+          \vC\vPlug{\vUnit}}{%
+          \vlhy{\vC\vPlug{\vP\vTens\vDual\vP}}}}}$
 \end{center}
-The inference rules of MAV are presented as a \emph{rewrite rules} on structures.
-We write $\vP\vInferFrom\vQ$ when $\vP$ can be inferred from $\vQ$.
-The axiom of linear logic is typically given as \ref{rule:axiom-ll}.
-In MAV, the structure connective $\vParr$ plays the same role as the comma does in the antecedent of a linear logic sequent.
+Beautifully, internalising branching makes the symmetry between the axiom and cut plain to see.
+
+Proof trees are a cumbersome presentation for BV's derivations---they are convenient for trees, but cumbersome in the absence of branching.
+\emph{Rewriting systems}, on the other hand, are a well-known and convenient notation for such derivations.
+Hence, in MAV, inference rules are presented as rewrite rules.
+
+\emph{Inference}, written $\vInferFrom$, is the smallest relation defined by the following axioms:
+% NOTE: These shenanigans are for cross-text table alignment.
+\newlength{\vInferFromDefnWidthOfLBL}%
+\settowidth{\vInferFromDefnWidthOfLBL}{$\RuleName{AtomAxiom}$}%
+\newlength{\vInferFromDefnWidthOfLHS}%
+\settowidth{\vInferFromDefnWidthOfLHS}{$(\vP\vSeq\vQ)\vParr(\vR\vSeq\vS)$}%
+\newlength{\vInferFromDefnWidthOfRHS}%
+\settowidth{\vInferFromDefnWidthOfRHS}{$(\vP\vParr\vR)\vWith(\vQ\vParr\vR)$}%
 \begin{displaymath}
   \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
     \vP\vParr\vDual\vP
      & \vInferFrom
      & \vUnit
-     & \RuleLabel{axiom}
+     & \makebox[\vInferFromDefnWidthOfLBL][l]{$\RuleLabel{Axiom}$}
     \\
     \vUnit
      & \vInferFrom
      & \vP\vTens\vDual\vP
-     & \RuleLabel{cut}
+     & \RuleLabel{Cut}
     \\
     \vUnit\vWith\vUnit
      & \vInferFrom
      & \vUnit
-     & \RuleLabel{tidy}
+     & \RuleLabel{Tidy}
     \\
     (\vP\vTens\vQ)\vParr\vR
      & \vInferFrom
      & \vP\vTens(\vQ\vParr\vR)
-     & \RuleLabel{switch}
+     & \RuleLabel{Switch}
     \\
     (\vP\vSeq\vQ)\vParr(\vR\vSeq\vS)
      & \vInferFrom
      & (\vP\vParr\vR)\vSeq(\vQ\vParr\vS)
-     & \RuleLabel{sequence}
+     & \RuleLabel{Sequence}
     \\
     \vP\vPlus\vQ
      & \vInferFrom
      & \vP
-     & \RuleLabel{left}
+     & \RuleLabel{Left}
     \\
     \vP\vPlus\vQ
      & \vInferFrom
      & \vQ
-     & \RuleLabel{right}
+     & \RuleLabel{Right}
     \\
     (\vP\vWith\vQ)\vParr\vR
      & \vInferFrom
      & (\vP\vParr\vR)\vWith(\vQ\vParr\vR)
-     & \RuleLabel{external}
+     & \RuleLabel{External}
     \\
     (\vP\vSeq\vQ)\vWith(\vR\vSeq\vS)
      & \vInferFrom
      & (\vP\vWith\vR)\vSeq(\vQ\vWith\vS)
-     & \RuleLabel{medial}
+     & \RuleLabel{Medial}
     \\
     \vC\vPlug\vP\vInferFrom\vC\vPlug\vQ
      & \text{if}
      & \vP\vInferFrom\vQ
-     & \RuleLabel{mono}
+     & \RuleLabel{Mono}
     % \\
     % \vP\vInferFrom\vQ
     %  & \text{if}
     %  & \vP\vEquiv\vQ
-    %  & \RuleLabel{equiv}
+    %  & \RuleLabel{Equiv}
   \end{array}
 \end{displaymath}
+(If $\vP\vInferFrom\vQ$, we say that $\vP$ can be inferred from $\vQ$, \ie the arrow points from conclusion to premise.)
 
-We write $\vInferFrom*$ for the reflexive, transitive closure of $\vInferFrom$.
-We write $\vBiInfer$ for the symmetric core of $\vInferFrom$ (\ie ${\vBiInfer} = {\vInferFrom\cap\vInferTo}$) and $\vBiInfer*$ for the reflexive, transitive closure of $\vBiInfer$.
+\emph{Derivation}, written $\vInferFrom*$ is the reflexive, transitive closure of inference.
+\emph{Invertible inference}, written $\vBiInfer$, is the symmetric core of $\vInferFrom$, \ie ${\vBiInfer} = {\vInferFrom\cap\vInferTo}$.
+\emph{Invertible derivation}, written $\vBiInfer*$, is the symmetric core of derivation, or, alternatively, the reflexive, transitive closure of invertible inference.
 
+A derivation is in \emph{normal form} if it does not use \cref{rule:Cut} and  use of \cref{rule:Axiom} is restricted to atoms.
+\begin{displaymath}
+  \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
+    \makebox[\vInferFromDefnWidthOfLHS][l]{$\vNeg\va\vParr\vPos\va$}
+     & \vInferFrom
+     & \makebox[\vInferFromDefnWidthOfRHS][l]{$\vUnit$}
+     & \RuleLabel{AtomAxiom}
+  \end{array}
+\end{displaymath}
+Usually, these restrictions correspond to the outcome cut elimination and identity expansion, respectively.
 \begin{remark}
   The structural connectives of BV are usually presented as lists, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
 \end{remark}
-
-A \emph{normal} derivation is a derivation where \cref{rule:cut} is not used and \cref{rule:axiom} is restricted to atoms.
-
-\begin{displaymath}
-  \begin{array}{l@{\;\vInferFrom\;}l@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
-    \vNeg\va\vParr\vPos\va
-     & \vUnit
-     & \RuleLabel{Axiom}
-  \end{array}
-\end{displaymath}
-
-\begin{itemize}
-  \item Structural equivalences are explicit.
-  \item Inference is a congruence.
-  \item Inference rules are unary.
-  \item Relate to usual presentation of MALL.
-  \item Relate to usual presentation of BV.
-\end{itemize}
