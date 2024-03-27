@@ -203,8 +203,9 @@ Hence, in MAV, inference rules are presented as rewrite rules.
 \emph{Derivation}, written $\vInferFrom*$ is the reflexive, transitive closure of inference.
 \emph{Invertible inference}, written $\vBiInfer$, is the symmetric core of $\vInferFrom$, \ie ${\vBiInfer} = {\vInferFrom\cap\vInferTo}$.
 \emph{Invertible derivation}, written $\vBiInfer*$, is the symmetric core of derivation, or, alternatively, the reflexive, transitive closure of invertible inference.
+\emph{Proofs} are derivations that terminate in the unit, \eg a derivation $\vP\vInferFrom*\vUnit$ is a proof of $\vP$.
 
-A derivation is in \emph{normal form} if it does not use \cref{rule:Cut} and  use of \cref{rule:Axiom} is restricted to atoms.
+A derivation is in \emph{normal form} if it does not use \cref{rule:Cut} and \cref{rule:Axiom} is restricted to \cref{rule:AtomAxiom}.
 \begin{displaymath}
   \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
     \makebox[\vInferFromDefnWidthOfLHS][l]{$\vNeg\va\vParr\vPos\va$}
@@ -213,7 +214,19 @@ A derivation is in \emph{normal form} if it does not use \cref{rule:Cut} and  us
      & \RuleLabel{AtomAxiom}
   \end{array}
 \end{displaymath}
-Usually, these restrictions correspond to the outcome cut elimination and identity expansion, respectively.
+These restrictions correspond to the outcome of cut elimination and identity expansion, respectively.
 \begin{remark}
-  The structural connectives of BV are usually presented as lists, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
+  In BV, the structural connectives are usually presented as lists, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
+  % The equations defining duality are usually included in the decidable equality on structures.
+  Inferences, derivations, and proofs are presented vertically, as (\ref{notation:vlin}), (\ref{notation:vlde}), and (\ref{notation:vlpr}), respectively.
+  \begin{center}
+    $\inlineequation[notation:vlin]{%
+        \vlderivation{\vlin{}{}{\vP}{\vlhy{\vQ}}}}$
+    \qquad
+    $\inlineequation[notation:vlde]{%
+        \vlderivation{\vlde{}{}{\vP}{\vlhy{\vQ}}}}$
+    \qquad
+    $\inlineequation[notation:vlpr]{%
+        \vlderivation{\vlpr{}{}{\vP}}}$
+  \end{center}
 \end{remark}
