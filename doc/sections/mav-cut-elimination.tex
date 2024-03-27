@@ -1,23 +1,19 @@
 \section{Semantic Cut-Elimination and Proof Normalisation}
 \label{sec:mav-cut-elimination}
 
-\newcommand{\ChuEmbed}{\eta^c}
-\newcommand{\ClosedLowerEmbed}{\eta^+}
-\newcommand{\LowerEmbed}{\eta}
-
-Let $\Chu(\ClosedLowerSet{\textsc{CFMav}}, \ClosedDay{I})$ be the
-MAV-algebra constructed from the Cut-free proof MAV-frame (Proposition
-\ref{prop:cfmav-frame}), where elements are positive/negative pairs of
+Let $\Chu(\ClosedLowerSet{\NMAV}, \ClosedDay{I})$ be the MAV-algebra
+constructed from the normal proof MAV-frame (Proposition
+\ref{prop:nmav-frame}), where elements are positive/negative pairs of
 $+$-closed lower sets of formulas. We define the valuation of atoms as
 $V(\alpha) = \ChuEmbed(\ClosedLowerEmbed(\vDual{\alpha}))$. By Theorem
-\ref{thm:soundness}, we have an interpretation of SMAV formulas
+\ref{thm:soundness}, we have an interpretation of MAV formulas
 $\sem{P}$ such that if $P \longrightarrow^* I$, then $I \leq
-sem{P}$. We now prove our main proposition about the MAV-algebra
-\textsc{CFMav} that will allow us to derive the admissibility of Cut
-and all the other symmetric rules of SMAV.
+\sem{P}$. We now prove our main proposition about the MAV-algebra
+\NMAV{} that will allow us to derive the admissibility of all the
+non-normal proof rules of MAV.
 
 \begin{proposition}\label{prop:embedding-sem}
-  $\sem{P} \leq \lnot (\ChuEmbed(\ClosedLowerEmbed(P)))$
+  $\sem{P} \sqsubseteq \lnot (\ChuEmbed(\ClosedLowerEmbed(P)))$
 \end{proposition}
 
 \begin{proof}
@@ -40,8 +36,8 @@ and all the other symmetric rules of SMAV.
   \rightblackspoon^+ \ClosedDay{I}$. It suffices to prove that
   $\ClosedLowerEmbed(\alpha) \ClosedDay{\bullet}
   \ClosedLowerEmbed(\vDual{\alpha}) \leq \ClosedDay{I}$, which follows
-  from the preservation of monoids by $\ClosedLowerEmbed$ and the
-  \RuleLabel{Axiom} rule of MAV.
+  from the preservation of monoid operations by $\ClosedLowerEmbed$
+  and the \RuleLabel{Axiom} rule of MAV.
 
   When $P = Q \vParr R$, $Q \vWith R$, or $Q \vSeq R$, the result
   follows from preservation of the corresponding monoid structure by
@@ -68,8 +64,8 @@ and all the other symmetric rules of SMAV.
     \ClosedLowerEmbed(R)
   \end{equation}
   Using the monoidality and monotonicity of $\alpha$, this property is
-  implied by the following property in lower sets
-  $\LowerSet{\textsc{CFMav}}$:
+  implied by the following property of lower sets in
+  $\LowerSet{\NMAV}$:
   \begin{displaymath}
     \LowerEmbed(Q \vTens R) \Day{\bullet} (U(\ClosedLowerEmbed(Q)) \rightblackspoon \Day{I})
     \leq
@@ -91,16 +87,17 @@ and all the other symmetric rules of SMAV.
 \end{proof}
 
 \begin{theorem}\label{thm:cut-elim}
-  If $P \longrightarrow^* I$ in SMAV, then $P \longrightarrow^* I$ in MAV.
+  If $P \longrightarrow^* I$ in MAV, then there is a normal proof $P \longrightarrow^* I$.
 \end{theorem}
 
 \begin{proof}
-  By Theorem \ref{thm:soundness}, $P \longrightarrow^* I$ in SMAV
+  By Theorem \ref{thm:soundness}, $P \longrightarrow^* I$ in MAV
   implies $I \leq \sem{P}$. Combined with Proposition
   \ref{prop:embedding-sem}, we have
-  $I \leq \lnot \ChuEmbed(\LowerEmbed(P)$. By Definition
+  $I \sqsubseteq \lnot \ChuEmbed(\LowerEmbed(P)$. By Definition
   \ref{defn:chu} of the ordering of Chu elements, we have
   $\ClosedLowerEmbed(P) \subseteq \ClosedDay{I}$. Since
   $P \in \ClosedLowerEmbed(P)$, we have $P \in \ClosedDay{I}$, which
-  by definition means that $P \longrightarrow^* I$ in MAV.
+  by definition means that there is a normal proof
+  $P \longrightarrow^* I$.
 \end{proof}
