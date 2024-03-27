@@ -78,7 +78,8 @@ module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
       renaming (_⊗_ to _⟦⊗⟧_;
                 _&_ to _⟦&⟧_;
                 I to ⟦I⟧;
-                ¬ to ⟦¬⟧)
+                ¬ to ⟦¬⟧;
+                embed to Chu-embed)
       public
 
   open Chu
@@ -122,18 +123,5 @@ module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
   model .Model.I-eq-J = I-eq-J
   model .Model.◁-self-dual = self-dual
 
-  -- FIXME: move this to Algebra.Chu
   embed : Carrier → Chu
-  embed x .pos = S.α (P.ηᵖ x)
-  embed x .neg = S.α (P.ηᵖ x) MS.⊸ⁱ MS.εⁱ
-  embed x .int = MS.⊸ⁱ-residual-from S.≤ⁱ-refl
-
-  embedDual : (a⁺ a⁻ : Carrier) → (a⁺ ⅋ a⁻) ≲ I → Chu
-  embedDual a⁺ a⁻ interact .pos = S.α (P.ηᵖ a⁺)
-  embedDual a⁺ a⁻ interact .neg = S.α (P.ηᵖ a⁻)
-  embedDual a⁺ a⁻ interact .int =
-    S.≤ⁱ-trans (MS.α-monoidal .proj₁) (S.α-mono interactᵖ)
-    where
-      interactᵖ : (P.ηᵖ a⁺ M.∙ᵖ P.ηᵖ a⁻) P.≤ᵖ M.εᵖ
-      interactᵖ .P.*≤ᵖ* (x₁ , x₂ , x≤x₁x₂ , lift x₁≤a⁺ , lift x₂≤a⁻) =
-        lift (trans x≤x₁x₂ (trans (mono x₁≤a⁺ x₂≤a⁻) interact))
+  embed x = Chu-embed (S.ηⁱ x)

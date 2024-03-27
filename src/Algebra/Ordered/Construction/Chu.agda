@@ -92,6 +92,12 @@ module Construction {a b c}
   _∘_ : ∀ {X Y Z} → (Y ==> Z) → (X ==> Y) → X ==> Z
   f ∘ g = ==>-trans g f
 
+  -- Embedding
+  embed : A → Chu
+  embed x .pos = x
+  embed x .neg = x -∙ K
+  embed x .int = evalʳ
+
   -- Negation/duality
   ¬ : Chu → Chu
   ¬ X .pos = X .neg
@@ -133,6 +139,16 @@ module Construction {a b c}
   ⊗-sym : ∀ {X Y} → (X ⊗ Y) ==> (Y ⊗ X)
   ⊗-sym .fpos = reflexive (comm _ _)
   ⊗-sym .fneg = ∧-greatest (x∧y≤y _ _) (x∧y≤x _ _)
+
+{- TODO: need general (un)curry
+  embed-⊗ : ∀ {x y} → embed (x ∙ y) ==> embed x ⊗ embed y
+  embed-⊗ .fpos = refl
+  embed-⊗ .fneg = trans (x∧y≤y _ _) {!!}
+
+  ⊗-embed : ∀ {x y} → embed x ⊗ embed y ==> embed (x ∙ y)
+  ⊗-embed .fpos = refl
+  ⊗-embed .fneg = ∧-greatest {!!} {!!}
+-}
 
   Λˡ : ∀ {x y z} → (x ∙ y) ≤ z → x ≤ (y -∙ z)
   Λˡ = residualˡ .Equivalence.to

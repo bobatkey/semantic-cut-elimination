@@ -55,7 +55,7 @@ analogue, also called a CL algebra by Troelstra
   \ref{defn:mav-algebra}.
 \end{remark}
 
-FIXME: cite that combinatorics book.
+\bob{FIXME: cite that combinatorics book.}
 
 \bob{need to define \emph{entropy} and \emph{entropic} somewhere. I
   think we can have that one pomonoid is \emph{entropic} over another,
@@ -136,8 +136,8 @@ FIXME: cite that combinatorics book.
   Let $\mathit{At}$ be a set of atomic propositions. Given an
   MAV-algebra $(A, \leq, \otimes, \lhd, I, \lnot)$ and valuation
   $V : \mathit{At} \to A$, define the interpretation of MAV Formulas
-  as follows: $\sem{\vUnit} = I$, $\sem{a} = V(a)$,
-  $\sem{\vDual a} = \lnot V(a)$,
+  as follows: $\sem{\vUnit} = I$, $\sem{\alpha} = V(\alpha)$,
+  $\sem{\vDual \alpha} = \lnot V(\alpha)$,
   $\sem{\vP\vTens\vQ} = \sem{\vP} \otimes \sem{\vQ}$,
   $\sem{\vP\vParr\vQ} = \sem{\vP} \parr \sem{\vQ}$,
   $\sem{\vP\vSeq\vQ} = \sem{\vP};\sem{\vQ}$,
@@ -260,30 +260,31 @@ structure through each construction.
   corresponding \emph{Day pomonoid} $(\Day{\bullet}, \Day{i})$ on
   $\LowerSet{A}$ defined as
   $F \Day\bullet G = \{ z \mid z \leq x \bullet y, x \in F, y \in G
-    \}$ and $\Day{i} = \eta(i)$. Moreover:
+  \}$ and $\Day{i} = \eta(i)$. Moreover:
   \begin{enumerate}
-    \item $(\Day{\bullet}, \Day{i})$ is left and right residuated: there
-          exists a function
-          $\Day{\rightblackspoon} : \LowerSet{A} \times \LowerSet{A} \to
-            \LowerSet{A}$ such that ... FIXME
-    \item If $(\bullet, i)$ is a commutative pomonoid, then so is
-          $(\Day{\bullet}, \Day{i})$. In this case, the residuals coincide.
+  \item $(\Day{\bullet}, \Day{i})$ is left and right residuated: there
+    exists a function
+    $\Day{\rightblackspoon} : \LowerSet{A} \times \LowerSet{A} \to
+    \LowerSet{A}$ such that ... \bob{FIXME}
+  \item If $(\bullet, i)$ is a commutative pomonoid, then so is
+    $(\Day{\bullet}, \Day{i})$. In this case, the residuals coincide.
+  \item The embedding preserves the monoid:
+    $\eta(x \bullet y) = \eta(x) \Day\bullet \eta(y)$.
   \end{enumerate}
-  \bob{Could also say that $\eta$ preserves the monoids. Does this
-    come up later?}
 \end{proposition}
 
 \begin{remark}
-  This is the Day construction \cite{day} restricted to the case of
-  partial orders.
+  This is the Day monoidal product \cite{day} restricted to the case
+  of partial orders.
 \end{remark}
 
 \begin{remark}
-  When $(A, \leq)$ is an MAV-frame, by \ref{prop:day-construction} we
-  obtain two pomonoids $(\Day{\parallel}, \Day{I})$ and
-  $(\Day{\lhd}, \Day{I})$ on $\LowerSet{A}$. Moreover, the next
-  proposition states that the duoidal relationship between these
-  monoids is preserved by the Day construction:
+  When $(A, \leq)$ is an MAV-frame, Proposition
+  \ref{prop:day-construction} gives us two pomonoids
+  $(\Day{\parallel}, \Day{I})$ and $(\Day{\lhd}, \Day{I})$ on
+  $\LowerSet{A}$. Moreover, the next proposition states that the
+  duoidal relationship between these monoids is preserved by the Day
+  construction:
 \end{remark}
 
 \begin{proposition}\label{prop:lower-set-duoidal}
@@ -355,6 +356,11 @@ that $+$ is a join or even a pomonoid.)
   $F \subseteq U(\alpha F)$ by the $\mathsf{leaf}$ constructor.
 \end{proof}
 
+\begin{definition}
+  Define the embedding $\eta^+ : A \to \ClosedLowerSet{A}$ as
+  $\eta^+(x) = \alpha(\eta(x))$.
+\end{definition}
+
 \begin{remark}
   By this proposition, $U \circ \alpha$ is a closure operator on
   $\LowerSet{A}$ \cite{davey-priestley}, and the closed elements are
@@ -369,8 +375,17 @@ that $+$ is a join or even a pomonoid.)
   by $F \lor G = \alpha (U F \cup U G)$.
 \end{proposition}
 
+\begin{proposition}\label{prop:closed-eta-preserve-joins}
+  $\eta^+(x + y) \subseteq \eta^+(x) \lor \eta^+(y)$.
+\end{proposition}
+
 \begin{remark}
-  Note that $\alpha$ does not preserve meets.
+  Proposition \ref{prop:closed-eta-preserve-joins} is the reason for
+  requiring $+$-closure. This property will allow us to prove the
+  crucial embedding property for all formulas in Section
+  \ref{sec:mav-cut-elimination}.
+
+  \bob{Not an equality, I think, because $+$ isn't necessarily a join.}
 \end{remark}
 
 \begin{proposition}\label{prop:closed-monoid-distrib}
@@ -379,7 +394,8 @@ that $+$ is a join or even a pomonoid.)
   ($(x + y) \bullet z \leq (x \bullet z) + (y \bullet z)$), then
   $F \ClosedDay{\bullet} G = \alpha(U F \Day{\bullet} U G)$ and
   $\ClosedDay{j} = \alpha(\Day{j})$ define a residuated commutative
-  pomonoid on $\ClosedLowerSet{A}$.
+  pomonoid on $\ClosedLowerSet{A}$. Moreover,
+  $\eta^+(x \bullet y) = \eta^+(x) \ClosedDay{\bullet} \eta^+(y)$.
 \end{proposition}
 
 \begin{proof}
@@ -408,7 +424,8 @@ that $+$ is a join or even a pomonoid.)
   Day unit $\Day{j} = \eta(j)$ is also closed and we write it as
   $\ClosedDay{j} \in \ClosedLowerSet{A}$. Together
   $(\ClosedDay{\lhd}, \ClosedDay{j})$ form a pomonoid on
-  $(\ClosedLowerSet{A}, \subseteq)$.
+  $(\ClosedLowerSet{A}, \subseteq)$. Moreover,
+  $\eta^+(x \lhd y) = \eta^+(x) \ClosedDay{\lhd} \eta^+(y)$.
 \end{proposition}
 
 \begin{proof}
@@ -475,7 +492,7 @@ pullbacks simplifies to binary meets. Therefore, for this section, we
 let $(A, \leq, \bullet, i, \rightblackspoon)$ be a partial order with
 a residuated pomonoid structure and all binary meets.
 
-\begin{definition}
+\begin{definition}\label{defn:chu}
   Let $k$ be an element of $A$. $\Chu(A, k)$ is the partial order with
   elements pairs $(a^+, a^-)$ such that $a^+ \bullet a^- \leq k$, with
   ordering $(a^+,a^-) \sqsubseteq (b^+, b^-)$ when $a^+ \leq b^+$ and

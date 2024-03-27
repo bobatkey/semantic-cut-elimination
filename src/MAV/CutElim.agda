@@ -1,6 +1,6 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
-open import Level using (lift)
+open import Level using (lift; lower)
 open import Data.Product using (_,_; proj₁; proj₂)
 open import Data.Sum using (inj₁; inj₂)
 open import Relation.Binary using (Preorder)
@@ -14,11 +14,10 @@ import MAV.Symmetric Atom as SMAV
 import MAV.Frame
 
 open MAV.Frame.FrameModel MAV.frame
-  using (embedDual; Chu; module S; tidyup; ⟦I⟧; _==>_; module P; module MS; module M◁; module M)
+  using (Chu; module S; tidyup; ⟦I⟧; _==>_; module P; module MS; module M◁; module M; module D; embed; ⟦¬⟧)
   renaming (model to analyticModel)
 
-open import MAV.Interpretation Atom analyticModel
-  (λ A → embedDual (`- A) (`+ A) (step `axiom ◅ ε))
+open import MAV.Interpretation Atom analyticModel (λ A → embed (`- A))
 
 open Chu
 open P
@@ -27,74 +26,72 @@ open S.Ideal
 open S._≤ⁱ_
 open P._≤ᵖ_
 
--- (η Q ⊸ U ε) ∙ η (P ⊗ Q) ≤ η P
-interactᵖ : ∀ P Q → (U (α (P.ηᵖ Q)) M.⇨ᵖ U MS.εⁱ) M.∙ᵖ ηᵖ (P `⊗ Q) ≤ᵖ P.ηᵖ P
+-- (η Q ⊸ U ι) ∙ η (P ⊗ Q) ≤ η P
+interactᵖ : ∀ P Q → (U (ηⁱ Q) M.⇨ᵖ U M◁.ιⁱ) M.∙ᵖ ηᵖ (P `⊗ Q) ≤ᵖ P.ηᵖ P
 interactᵖ P Q .*≤ᵖ* {x} (y , z , x≤y⅋z , ϕ₁ , lift z≤P⊗Q) =
   lift (x≤y⅋z
         ◅◅ (y `⅋⟩⋆ z≤P⊗Q)
         ◅◅ (bwd (`⅋-comm _ _) ◅ ε)
         ◅◅ (step `switch ◅ ε)
-        ◅◅ (P `⊗⟩⋆ ((bwd (`⅋-comm _ _) ◅ ε) ◅◅ tidyup (ϕ₁ {Q} ((leaf Q (lift ε)) , ε))))
+        ◅◅ (P `⊗⟩⋆ ((bwd (`⅋-comm _ _) ◅ ε) ◅◅ (ϕ₁ {Q} ((leaf Q (lift ε)) , ε)) .lower))
         ◅◅ fwd (`⊗-identityʳ _) ◅ ε)
 
-interact : ∀ P Q → (α (P.ηᵖ Q) MS.⊸ⁱ MS.εⁱ) MS.∙ⁱ α (P.ηᵖ (P `⊗ Q)) ≤ⁱ α (P.ηᵖ P)
+interact : ∀ P Q → (ηⁱ Q MS.⊸ⁱ M◁.ιⁱ) MS.∙ⁱ ηⁱ (P `⊗ Q) ≤ⁱ ηⁱ P
 interact P Q =
   ≤ⁱ-trans (MS.∙ⁱ-mono counit⁻¹ ≤ⁱ-refl)
  (≤ⁱ-trans (MS.α-monoidal .proj₁)
  (α-mono (≤ᵖ-trans (M.∙ᵖ-mono MS.U⊸ⁱ ≤ᵖ-refl) (interactᵖ P Q))))
 
 mutual
-  reflect : ∀ P → S.α (P.ηᵖ P) S.≤ⁱ ⟦ P ⟧ .neg
+  reflect : ∀ P → ηⁱ P S.≤ⁱ ⟦ P ⟧ .neg
   reflect `I = S.≤ⁱ-refl
-  reflect (`+ A) = S.≤ⁱ-refl
+  reflect (`+ A) =
+    MS.⊸ⁱ-residual-to (≤ⁱ-trans MS.ηⁱ-preserve-∙⁻¹ (ηⁱ-mono ((step `axiom) ◅ ε)))
   reflect (`- A) = S.≤ⁱ-refl
   reflect (P `⅋ Q) = ≤ⁱ-trans MS.ηⁱ-preserve-∙ (MS.∙ⁱ-mono (reflect P) (reflect Q))
   reflect (P `⊗ Q) = ⟨ MS.⊸ⁱ-residual-to (≤ⁱ-trans (MS.∙ⁱ-mono (reify Q) ≤ⁱ-refl) (≤ⁱ-trans (interact P Q) (reflect P)))
-                      , MS.⊸ⁱ-residual-to (≤ⁱ-trans (MS.∙ⁱ-mono (reify P) (α-mono (ηᵖ-mono (fwd (`⊗-comm _ _) ◅ ε)))) (≤ⁱ-trans (interact Q P) (reflect Q))) ⟩ⁱ
+                      , MS.⊸ⁱ-residual-to (≤ⁱ-trans (MS.∙ⁱ-mono (reify P) (ηⁱ-mono (fwd (`⊗-comm _ _) ◅ ε))) (≤ⁱ-trans (interact Q P) (reflect Q))) ⟩ⁱ
   reflect (P `& Q) = ≤ⁱ-trans η-preserve-+ [ (≤ⁱ-trans (reflect P) inj₁ⁱ) , (≤ⁱ-trans (reflect Q) inj₂ⁱ) ]ⁱ
-  reflect (P `⊕ Q) = ⟨ ≤ⁱ-trans (α-mono (ηᵖ-mono (step `left ◅ ε))) (reflect P) ,
-                        ≤ⁱ-trans (α-mono (ηᵖ-mono (step `right ◅ ε))) (reflect Q) ⟩ⁱ
+  reflect (P `⊕ Q) = ⟨ ≤ⁱ-trans (ηⁱ-mono (step `left ◅ ε)) (reflect P) ,
+                        ≤ⁱ-trans (ηⁱ-mono (step `right ◅ ε)) (reflect Q) ⟩ⁱ
   reflect (P `◁ Q) = ≤ⁱ-trans M◁.ηⁱ-preserve-◁ (M◁.◁ⁱ-mono (reflect P) (reflect Q))
 
-  reify : ∀ P → ⟦ P ⟧ .pos ≤ⁱ α (P.ηᵖ P) MS.⊸ⁱ MS.εⁱ
+  reify : ∀ P → ⟦ P ⟧ .pos ≤ⁱ α (P.ηᵖ P) MS.⊸ⁱ M◁.ιⁱ
   reify P = MS.⊸ⁱ-residual-to (≤ⁱ-trans (MS.∙ⁱ-comm _ _ .proj₁)
+                               (≤ⁱ-trans (MS.∙ⁱ-mono ≤ⁱ-refl (reflect P))
+                               (≤ⁱ-trans (⟦ P ⟧ .int) D.εⁱ≤ιⁱ)))
+
+  reify' : ∀ P → ⟦ P ⟧ .pos ≤ⁱ α (P.ηᵖ P) MS.⊸ⁱ MS.εⁱ
+  reify' P = MS.⊸ⁱ-residual-to (≤ⁱ-trans (MS.∙ⁱ-comm _ _ .proj₁)
                                 (≤ⁱ-trans (MS.∙ⁱ-mono ≤ⁱ-refl (reflect P))
-                                          (⟦ P ⟧ .int)))
+                                (⟦ P ⟧ .int)))
+
+{-
+  -- I think this only works if we allow the dual of every rule in MAV.Base?
+  --
+  -- If it did, and we had general identity-expansion, then we'd get a slightly slicker proof?
+  --
+  -- Seems to be a problem with ◁ being preserved in both directions?
+  reify0 : ∀ P → ⟦ P ⟧ .pos ≤ⁱ α (P.ηᵖ (`¬ P))
+  reify0 `I = S.≤ⁱ-refl
+  reify0 (`+ x) = S.≤ⁱ-refl
+  reify0 (`- x) = S.≤ⁱ-refl
+  reify0 (P `⅋ Q) = ≤ⁱ-trans proj₁ⁱ {!!}  -- ⟦Q⟧⁻ ⊸ ⟦P⟧⁺ ≤ ηQ ⊸ η(¬P)
+  reify0 (P `⊗ Q) = ≤ⁱ-trans (MS.∙ⁱ-mono (reify0 P) (reify0 Q)) MS.ηⁱ-preserve-∙⁻¹
+  reify0 (P `& Q) =
+    ≤ⁱ-trans ⟨ (≤ⁱ-trans proj₁ⁱ (reify0 P)) , (≤ⁱ-trans proj₂ⁱ (reify0 Q)) ⟩ⁱ
+             {!!} -- need to preserve meets!
+  reify0 (P `⊕ Q) = [ (≤ⁱ-trans (reify0 P) (α-mono (ηᵖ-mono {!!}))) , {!!} ]ⁱ -- need injections into _`&_
+  reify0 (P `◁ Q) = ≤ⁱ-trans (M◁.◁ⁱ-mono (reify0 P) (reify0 Q)) {!!}
+-}
+
+
+morphism : ∀ P → ⟦ P ⟧ ==> ⟦¬⟧ (embed P)
+morphism P ._==>_.fpos = reify' P
+morphism P ._==>_.fneg = reflect P
 
 sem-cut-elim : ∀ P → ⟦I⟧ ==> ⟦ P ⟧ → P ⟶⋆ `I
 sem-cut-elim P I==>P = tidyup (≤ⁱ-trans (reflect P) (I==>P ._==>_.fneg) .*≤ⁱ* (leaf P (lift ε) , ε))
-
-{-
-mutual
-  reflect : ∀ P → ⟦ P ⟧ .neg .ICarrier P
-  reflect `I = S.leaf `I (lift ε) , ε
-  reflect (`+ A) = S.leaf (`+ A) (lift ε) , ε
-  reflect (`- A) = S.leaf (`- A) (lift ε) , ε
-  reflect (P `⅋ Q) = S.leaf (P `⅋ Q) (P , Q , ε , reflect P , reflect Q) , ε
-  reflect (P `⊗ Q) .proj₁ {R} x =
-    ⟦ P ⟧ .neg .≤-closed
-      (step `switch ◅ P `⊗⟩ fwd (`⅋-comm Q R) ◅ (P `⊗⟩⋆ reify Q R x) ◅◅ fwd (`⊗-identityʳ P) ◅ ε)
-      (reflect P)
-  reflect (P `⊗ Q) .proj₂ {R} x =
-    ⟦ Q ⟧ .neg .≤-closed
-      (fwd (`⊗-comm P Q) `⟨⅋ R ◅ step `switch ◅ Q `⊗⟩ fwd (`⅋-comm P R) ◅ Q `⊗⟩⋆ reify P R x ◅◅ fwd (`⊗-identityʳ Q) ◅ ε)
-      (reflect Q)
-  reflect (P `& Q) =
-    S.node (S.leaf P (inj₁ (reflect P))) (S.leaf Q (inj₂ (reflect Q))) , ε
-  reflect (P `⊕ Q) =
-    ⟦ P ⟧ .neg .≤-closed (step `left ◅ ε) (reflect P) ,
-    ⟦ Q ⟧ .neg .≤-closed (step `right ◅ ε) (reflect Q)
-  reflect (P `◁ Q) =
-    P , Q , ε , reflect P , reflect Q
-
-  reify : ∀ P R → ⟦ P ⟧ .pos .ICarrier R → (R `⅋ P) MAV.⟶⋆ `I
-  reify P R ϕ =
-    tidyup (⟦ P ⟧ .int .*≤ⁱ* {R `⅋ P} (S.leaf (R `⅋ P) (R , P , ε , ϕ , reflect P) , ε))
-
--- if 'P′ is provable, then it has a cut-free proof
-sem-cut-elim : ∀ P → ⟦I⟧ ==> ⟦ P ⟧ → P ⟶⋆ `I
-sem-cut-elim P prf = tidyup (prf ._==>_.fneg .*≤ⁱ* {P} (reflect P))
--}
 
 cut-elim : (P : Formula) → (P SMAV.⟶⋆ `I) → P ⟶⋆ `I
 cut-elim P prf = sem-cut-elim P ⟦ prf ⟧steps
