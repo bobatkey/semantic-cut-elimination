@@ -2,8 +2,6 @@
 
 open import Level using (lift; lower)
 open import Data.Product using (_,_; proj₁; proj₂)
-open import Data.Sum using (inj₁; inj₂)
-open import Relation.Binary using (Preorder)
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (ε; _◅_; _◅◅_)
 
 module MAV.CutElim {a} (Atom : Set a) where
@@ -14,33 +12,31 @@ import MAV.Symmetric Atom as SMAV
 import MAV.Frame
 
 open MAV.Frame.FrameModel MAV.frame
-  using (Chu; module S; tidyup; ⟦I⟧; _==>_; module P; module MS; module M◁; module M; module D; embed; ⟦¬⟧)
+  using (Chu; ==>-trans; module S; module P; ⟦I⟧; _==>_; module MS; module M◁; module M; module D; embed; ⟦¬⟧)
   renaming (model to analyticModel)
 
 open import MAV.Interpretation Atom analyticModel (λ A → embed (`- A))
 
 open Chu
-open P
 open S
-open S.Ideal
-open S._≤ⁱ_
-open P._≤ᵖ_
 
--- (η Q ⊸ U ι) ∙ η (P ⊗ Q) ≤ η P
-interactᵖ : ∀ P Q → (U (ηⁱ Q) M.⇨ᵖ U M◁.ιⁱ) M.∙ᵖ ηᵖ (P `⊗ Q) ≤ᵖ P.ηᵖ P
-interactᵖ P Q .*≤ᵖ* {x} (y , z , x≤y⅋z , ϕ₁ , lift z≤P⊗Q) =
-  lift (x≤y⅋z
-        ◅◅ (y `⅋⟩⋆ z≤P⊗Q)
-        ◅◅ (bwd (`⅋-comm _ _) ◅ ε)
-        ◅◅ (step `switch ◅ ε)
-        ◅◅ (P `⊗⟩⋆ ((bwd (`⅋-comm _ _) ◅ ε) ◅◅ (ϕ₁ {Q} ((leaf Q (lift ε)) , ε)) .lower))
-        ◅◅ fwd (`⊗-identityʳ _) ◅ ε)
+module _ where
+  open P
 
-interact : ∀ P Q → (ηⁱ Q MS.⊸ⁱ M◁.ιⁱ) MS.∙ⁱ ηⁱ (P `⊗ Q) ≤ⁱ ηⁱ P
-interact P Q =
-  ≤ⁱ-trans (MS.∙ⁱ-mono counit⁻¹ ≤ⁱ-refl)
- (≤ⁱ-trans (MS.α-monoidal .proj₁)
- (α-mono (≤ᵖ-trans (M.∙ᵖ-mono MS.U⊸ⁱ ≤ᵖ-refl) (interactᵖ P Q))))
+  interactᵖ : ∀ P Q → (U (ηⁱ Q) M.⇨ᵖ U M◁.ιⁱ) M.∙ᵖ ηᵖ (P `⊗ Q) ≤ᵖ P.ηᵖ P
+  interactᵖ P Q ._≤ᵖ_.*≤ᵖ* {x} (y , z , x≤y⅋z , ϕ₁ , lift z≤P⊗Q) =
+    lift (x≤y⅋z
+          ◅◅ (y `⅋⟩⋆ z≤P⊗Q)
+          ◅◅ (bwd (`⅋-comm _ _) ◅ ε)
+          ◅◅ (step `switch ◅ ε)
+          ◅◅ (P `⊗⟩⋆ ((bwd (`⅋-comm _ _) ◅ ε) ◅◅ (ϕ₁ {Q} ((leaf Q (lift ε)) , ε)) .lower))
+          ◅◅ fwd (`⊗-identityʳ _) ◅ ε)
+
+  interact : ∀ P Q → (ηⁱ Q MS.⊸ⁱ M◁.ιⁱ) MS.∙ⁱ ηⁱ (P `⊗ Q) ≤ⁱ ηⁱ P
+  interact P Q =
+      ≤ⁱ-trans (MS.∙ⁱ-mono counit⁻¹ ≤ⁱ-refl)
+     (≤ⁱ-trans (MS.α-monoidal .proj₁)
+     (α-mono (≤ᵖ-trans (M.∙ᵖ-mono MS.U⊸ⁱ ≤ᵖ-refl) (interactᵖ P Q))))
 
 mutual
   reflect : ∀ P → ηⁱ P S.≤ⁱ ⟦ P ⟧ .neg
@@ -85,13 +81,19 @@ mutual
   reify0 (P `◁ Q) = ≤ⁱ-trans (M◁.◁ⁱ-mono (reify0 P) (reify0 Q)) {!!}
 -}
 
+open _==>_
 
-morphism : ∀ P → ⟦ P ⟧ ==> ⟦¬⟧ (embed P)
-morphism P ._==>_.fpos = reify' P
-morphism P ._==>_.fneg = reflect P
+main-lemma : ∀ P → ⟦ P ⟧ ==> ⟦¬⟧ (embed P)
+main-lemma P .fpos = reify' P
+main-lemma P .fneg = reflect P
 
 sem-cut-elim : ∀ P → ⟦I⟧ ==> ⟦ P ⟧ → P ⟶⋆ `I
-sem-cut-elim P I==>P = tidyup (≤ⁱ-trans (reflect P) (I==>P ._==>_.fneg) .*≤ⁱ* (leaf P (lift ε) , ε))
+sem-cut-elim P I==>P = q ._≤ⁱ_.*≤ⁱ* (leaf P (lift ε) , ε) .lower
+  where p : ⟦I⟧ ==> ⟦¬⟧ (embed P)
+        p = ==>-trans I==>P (main-lemma P)
+
+        q : ηⁱ P ≤ⁱ M◁.ιⁱ
+        q = ≤ⁱ-trans (p .fneg) D.εⁱ≤ιⁱ
 
 cut-elim : (P : Formula) → (P SMAV.⟶⋆ `I) → P ⟶⋆ `I
 cut-elim P prf = sem-cut-elim P ⟦ prf ⟧steps

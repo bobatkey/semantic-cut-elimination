@@ -72,6 +72,7 @@ module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
                 S.∨ⁱ-isJoinSemilattice
                 MS.εⁱ
       using (Chu; _==>_; module SelfDual; _≅_;
+             ==>-trans;
              ⊗-isCommutativePomonoid;
              ⊗-isStarAutonomous;
              &-isMeet)
@@ -101,9 +102,6 @@ module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
   I-eq-J .proj₁ .fneg = S.≤ⁱ-reflexive (S.Eq.sym units-iso)
   I-eq-J .proj₂ .fpos = S.≤ⁱ-reflexive (S.Eq.sym units-iso)
   I-eq-J .proj₂ .fneg = S.≤ⁱ-reflexive units-iso
-
-  tidyup : ∀ {x} → MS.εⁱ .ICarrier x → x ≲ I
-  tidyup {x} (t , x≤t) = D.εⁱ≤ιⁱ .*≤ⁱ* (t , x≤t) .lower
 
   model : Model (suc (suc (a ⊔ ℓ₂))) (a ⊔ ℓ₂) (a ⊔ ℓ₂)
   model .Model.Carrier = Chu
