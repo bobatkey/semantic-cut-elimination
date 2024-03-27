@@ -31,13 +31,22 @@
 \end{definition}
 
 \begin{definition}
-  \bob{residuation}
+  A pomonoid $(\bullet, i)$ on a poset $(A, \leq)$ is \emph{left
+    residuated} if there is a function
+  $\leftblackspoon : A \times A \to A$ such that $x \bullet y \leq z$
+  iff $x \leq z \leftblackspoon y$. The same structure is \emph{right
+    residuated} if there is a function
+  $\rightblackspoon : A \times A \to A$ such that $x \bullet y \leq z$
+  iff $y \leq x \rightblackspoon z$. When $(\bullet, i)$ is
+  commutative, the two definitions coincide, and we just say that the
+  pomonoid is residuated.
 \end{definition}
+\bob{Check that the residuation definitions are the right way round}
 
 The definition of $*$-autonomous category is due to Barr
-\cite{Barr_1979}. For our purposes, we need the partial order
-analogue, also called a CL algebra by Troelstra
-\cite{Troelstra92:lll}.
+\cite{Barr_1979}, and predates the introduction of Linear Logic. For
+our purposes, we need the partial order analogue, also called a CL
+algebra by Troelstra \cite{Troelstra92:lll}.
 
 \begin{definition}
   A \emph{$*$-autonomous partial order} is a structure
@@ -82,8 +91,7 @@ analogue, also called a CL algebra by Troelstra
 
 \begin{remark}
   If $\bullet$ is a join, or $\lhd$ is a meet, then all the conditions
-  for a duoidal relationship are automatically met for any other
-  monoid. \bob{fwd ref to where we use this.}
+  for a duoidal relationship are automatically met.
 \end{remark}
 
 \begin{remark}
@@ -92,22 +100,24 @@ analogue, also called a CL algebra by Troelstra
 
 \subsection{MAV-algebras}
 
-\bob{Change $;$ to $\lhd$}
+We define MAV-algebras as the algebraic semantics of MAV. The
+definition is a direct translation of the rules of MAV into
+order-theoretic language, using the definitions we have seen so far.
 
 \begin{definition}\label{defn:mav-algebra}
   An \emph{MAV-algebra} is a structure
-  $(A, \leq, \otimes, ;, I, \lnot)$ with the following properties:
+  $(A, \leq, \otimes, \lhd, I, \lnot)$ with the following properties:
   \begin{enumerate}
   \item $(A, \leq, \otimes, I, \lnot)$ is $*$-autonomous and satisfies \emph{mix}.
-  \item $(A, \leq, ;, I)$ is a pomonoid.
-  \item $;$ is self dual: $\lnot (x ; y) = (\lnot x); (\lnot y)$.
-  \item $(\otimes, I)$ is duoidal over $(;, I)$.
+  \item $(A, \leq, \lhd, I)$ is a pomonoid.
+  \item $\lhd$ is self dual: $\lnot (x \lhd y) = (\lnot x)\lhd (\lnot y)$.
+  \item $(\otimes, I)$ is duoidal over $(\lhd, I)$.
   \item $(A, \leq)$ has binary meets, which we write as $x \with y$.
   \end{enumerate}
 \end{definition}
 
 \begin{proposition}\label{prop:mav-algebra-consequences}
-  Let $(A, \leq, \otimes, ;, I, \lnot)$ be a MAV-algebra.
+  Let $(A, \leq, \otimes, \lhd, I, \lnot)$ be a MAV-algebra.
   \begin{enumerate}
     \item There is another pomonoid structure $(\parr, I)$ on
           $(A, \leq)$, defined as
@@ -121,12 +131,12 @@ analogue, also called a CL algebra by Troelstra
           $x \otimes (y \oplus z) = ((x \otimes y) \oplus (x \otimes z)$.
     \item $\with$ distributes over $\parr$:
           $(x \parr z) \with (y \parr z) = (x \with y) \parr z$.
-    \item $;$ is entropic over $\parr$:
-          $(w \parr x); (y \parr z) \leq (w;y) \parr (x;z)$.
-    \item $;$ is entropic over $\with$:
-          $(w \with x); (y \with z) \leq (w ; y) \with (x; z)$.
-    \item $\oplus$ is entropic over $;$:
-          $(w ; x) \oplus (y ; z) \leq (x \oplus y) ; (x \oplus z)$.
+    \item $\lhd$ is entropic over $\parr$:
+          $(w \parr x)\lhd (y \parr z) \leq (w\lhd y) \parr (x\lhd z)$.
+    \item $\lhd$ is entropic over $\with$:
+          $(w \with x)\lhd (y \with z) \leq (w \lhd y) \with (x\lhd z)$.
+    \item $\oplus$ is entropic over $\lhd$:
+          $(w \lhd x) \oplus (y \lhd z) \leq (x \oplus y) \lhd (x \oplus z)$.
   \end{enumerate}
 \end{proposition}
 
@@ -140,7 +150,7 @@ analogue, also called a CL algebra by Troelstra
   $\sem{\vDual \alpha} = \lnot V(\alpha)$,
   $\sem{\vP\vTens\vQ} = \sem{\vP} \otimes \sem{\vQ}$,
   $\sem{\vP\vParr\vQ} = \sem{\vP} \parr \sem{\vQ}$,
-  $\sem{\vP\vSeq\vQ} = \sem{\vP};\sem{\vQ}$,
+  $\sem{\vP\vSeq\vQ} = \sem{\vP}\lhd\sem{\vQ}$,
   $\sem{\vP\vWith\vQ} = \sem{\vP} \with \sem{\vQ}$, and
   $\sem{\vP\vPlus\vQ} = \sem{\vP} \oplus \sem{\vQ}$.
 \end{definition}
@@ -536,12 +546,12 @@ interact well with $k$:
 \begin{proposition}\label{prop:chu-self-dual}
   Let $(\lhd, j)$ be a pomonoid on $(A, \leq)$ such that $(\bullet, i)$ is entropic over 
   $k \lhd k \leq k$ and $j \leq k$, then
-  $x ; y = (x^+ \lhd y^+, x^- \lhd y^-)$ and $J = (j, j)$ form a
+  $x \lhd y = (x^+ \lhd y^+, x^- \lhd y^-)$ and $J = (j, j)$ form a
   self-dual pomonoid on $\Chu(A, k)$.
 \end{proposition}
 
 \begin{proof}
-  $x;y$ is well-defined because
+  $x\lhd y$ is well-defined because
   $(x^+ \lhd y^+) \bullet (x^- \lhd y^-) \leq (x^+ \bullet x^-) \lhd
   (y^+ \bullet y^-) \leq k \lhd k \leq k$. $J$ is well defined because
   $j \bullet j \leq j \leq k$. The pomonoid laws all transfer directly.
@@ -578,7 +588,7 @@ pomonoids:
 \begin{proposition}
   If $(\bullet, i)$ is entropic over $(\lhd, j)$ on $(A, \leq)$, and
   $(\lhd, j)$ satisfies the conditions of Proposition
-  \ref{prop:chu-self-dual}, then $(\otimes, I)$ and $(;, J)$ are in a
+  \ref{prop:chu-self-dual}, then $(\otimes, I)$ and $(\lhd, J)$ are in a
   duoidal relationship on $\Chu(A, k)$.
 \end{proposition}
 
