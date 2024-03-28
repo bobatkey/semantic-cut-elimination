@@ -14,7 +14,6 @@ open import Relation.Binary.PropositionalEquality.Core as ≡ using (_≡_)
 
 module MAV.Base.Reasoning {a} (Atom : Set a) where
 
-open import MAV.Frame
 open import MAV.Formula Atom
 import MAV.Base Atom as MAV
 
