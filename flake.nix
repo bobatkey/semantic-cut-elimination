@@ -18,6 +18,7 @@
             mathcommand foreign xpunctuate cleveref
             fdsymbol stmaryrd
             vntex enumitem
+            parskip
           ;
         };
 
