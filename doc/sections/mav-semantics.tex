@@ -116,7 +116,7 @@ order-theoretic language, using the definitions we have seen so far.
 \begin{proposition}\label{prop:mav-algebra-consequences}
   Let $(A, \leq, \otimes, \lhd, I, \lnot)$ be a MAV-algebra.
   \begin{enumerate}
-    \item There is another pomonoid structure $(\parr, I)$ on
+    \item There is another commutative pomonoid structure $(\parr, I)$ on
           $(A, \leq)$, defined as
           $x \parr y = \lnot(\lnot x \otimes \lnot y)$.
     \item $(\otimes, I)$ and $(\parr, I)$ are linearly distributive
@@ -125,7 +125,7 @@ order-theoretic language, using the definitions we have seen so far.
     \item $(A, \leq)$ has binary joins, given by
           $x \oplus y = \lnot (\lnot x \with \lnot y)$.
     \item $\oplus$ distributes over $\otimes$:
-          $x \otimes (y \oplus z) = ((x \otimes y) \oplus (x \otimes z)$.
+          $x \otimes (y \oplus z) = (x \otimes y) \oplus (x \otimes z)$.
     \item $\with$ distributes over $\parr$:
           $(x \parr z) \with (y \parr z) = (x \with y) \parr z$.
     \item $\lhd$ is duoidal over $\parr$:
