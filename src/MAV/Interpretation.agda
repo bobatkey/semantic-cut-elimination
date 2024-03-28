@@ -55,15 +55,15 @@ dual-ok (P `◁ Q) = Eq.trans (◁-cong (dual-ok P) (dual-ok Q)) (Eq.sym ◁-sel
 
 -- Interpret the equivalence axioms
 ⟦_⟧eq-ax : P ∼ Q → ⟦ P ⟧ ≈ ⟦ Q ⟧
-⟦ `⊗-assoc _ _ _ ⟧eq-ax = ⊗-assoc _ _ _
-⟦ `⊗-comm _ _    ⟧eq-ax = ⊗-comm _ _
-⟦ `⊗-identityʳ _ ⟧eq-ax = ⊗-identityʳ _
-⟦ `⅋-assoc _ _ _ ⟧eq-ax = ⅋-assoc _ _ _
-⟦ `⅋-comm _ _    ⟧eq-ax = ⅋-comm _ _
-⟦ `⅋-identityʳ P ⟧eq-ax = Eq.trans (⅋-cong Eq.refl mix) (⅋-identityʳ _)
-⟦ `◁-assoc _ _ _ ⟧eq-ax = ◁-assoc _ _ _
-⟦ `◁-identityʳ _ ⟧eq-ax = Eq.trans (◁-cong Eq.refl I-eq-J) (◁-identityʳ _)
-⟦ `◁-identityˡ _ ⟧eq-ax = Eq.trans (◁-cong I-eq-J Eq.refl) (◁-identityˡ _)
+⟦ `⊗-assoc     ⟧eq-ax = ⊗-assoc _ _ _
+⟦ `⊗-comm      ⟧eq-ax = ⊗-comm _ _
+⟦ `⊗-identityʳ ⟧eq-ax = ⊗-identityʳ _
+⟦ `⅋-assoc     ⟧eq-ax = ⅋-assoc _ _ _
+⟦ `⅋-comm      ⟧eq-ax = ⅋-comm _ _
+⟦ `⅋-identityʳ ⟧eq-ax = Eq.trans (⅋-cong Eq.refl mix) (⅋-identityʳ _)
+⟦ `◁-assoc     ⟧eq-ax = ◁-assoc _ _ _
+⟦ `◁-identityʳ ⟧eq-ax = Eq.trans (◁-cong Eq.refl I-eq-J) (◁-identityʳ _)
+⟦ `◁-identityˡ ⟧eq-ax = Eq.trans (◁-cong I-eq-J Eq.refl) (◁-identityˡ _)
 
 -- The interpretation is closed under congruence
 module _ {ℓ} {_𝓡_ : Rel Formula ℓ} where

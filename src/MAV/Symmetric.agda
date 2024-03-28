@@ -26,26 +26,28 @@ private
     R R′ : Formula
     S S′ : Formula
 
-mutual
-  infix 5 _∼_ 
+infix 5 _∼_
 
-  data _∼_ : Rel Formula a where
-    `⊗-assoc     : Associative _`⊗_
-    `⊗-comm      : Commutative _`⊗_
-    `⊗-identityʳ : RightIdentity `I _`⊗_
-    `⅋-assoc     : Associative _`⅋_
-    `⅋-comm      : Commutative _`⅋_
-    `⅋-identityʳ : RightIdentity `I _`⅋_
-    `◁-assoc     : Associative _`◁_
-    `◁-identityʳ : RightIdentity `I _`◁_
-    `◁-identityˡ : LeftIdentity `I _`◁_
+data _∼_ : Rel Formula a where
+  `⊗-assoc     : ((P `⊗ Q) `⊗ R) ∼ (P `⊗ (Q `⊗ R))
+  `⊗-comm      : (P `⊗ Q) ∼ (Q `⊗ P)
+  `⊗-identityʳ : (P `⊗ `I) ∼ P
+  `⅋-assoc     : ((P `⅋ Q) `⅋ R) ∼ (P `⅋ (Q `⅋ R))
+  `⅋-comm      : (P `⅋ Q) ∼ (Q `⅋ P)
+  `⅋-identityʳ : (P `⅋ `I) ∼ P
+  `◁-assoc     : ((P `◁ Q) `◁ R) ∼ (P `◁ (Q `◁ R))
+  `◁-identityʳ : (P `◁ `I) ∼ P
+  `◁-identityˡ : (`I `◁ P) ∼ P
 
-  open import Algebra.Definitions _∼_
+infix 5 _∼ᶜ_
+
+_∼ᶜ_ : Rel Formula (suc a)
+_∼ᶜ_ = CongClosure _∼_
 
 infix 5 _≃_
 
 _≃_ : Rel Formula (suc a)
-_≃_ = EqClosure (CongClosure _∼_)
+_≃_ = EqClosure _∼ᶜ_
 
 infix 5 _⟶_
 
@@ -60,10 +62,15 @@ data _⟶_ : Rel Formula a where
   `external : (P `& Q) `⅋ R ⟶ (P `⅋ R) `& (Q `⅋ R)
   `medial   : (P `◁ Q) `& (R `◁ S) ⟶ (P `& R) `◁ (Q `& S)
 
+infix 5 _⟶ᶜ_
+
+_⟶ᶜ_ : Rel Formula (suc a)
+_⟶ᶜ_ = CongClosure _⟶_
+
 infix 5 _⟶₌_
 
 _⟶₌_ : Rel Formula (suc a)
-_⟶₌_ = _≃_ ∪ CongClosure _⟶_
+_⟶₌_ = _≃_ ∪ _⟶ᶜ_
 
 infix  5 _⟶⋆_
 

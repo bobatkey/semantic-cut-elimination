@@ -35,22 +35,18 @@ private
     R R′ : Formula
     S S′ : Formula
 
-module _ where
-  infix 5 _∼_
+infix 5 _∼_
 
-  mutual
-    data _∼_ : Rel Formula a where
-      `⊗-assoc     : ((P `⊗ Q) `⊗ R) ∼ (P `⊗ (Q `⊗ R))
-      `⊗-comm      : (P `⊗ Q) ∼ (Q `⊗ P)
-      `⊗-identityʳ : (P `⊗ `I) ∼ P
-      `⅋-assoc     : ((P `⅋ Q) `⅋ R) ∼ (P `⅋ (Q `⅋ R))
-      `⅋-comm      : (P `⅋ Q) ∼ (Q `⅋ P)
-      `⅋-identityʳ : (P `⅋ `I) ∼ P
-      `◁-assoc     : ((P `◁ Q) `◁ R) ∼ (P `◁ (Q `◁ R))
-      `◁-identityʳ : (P `◁ `I) ∼ P
-      `◁-identityˡ : (`I `◁ P) ∼ P
-
-    open import Algebra.Definitions _∼_
+data _∼_ : Rel Formula a where
+  -- `⊗-assoc     : ((P `⊗ Q) `⊗ R) ∼ (P `⊗ (Q `⊗ R))
+  `⊗-comm      : (P `⊗ Q) ∼ (Q `⊗ P)
+  `⊗-identityʳ : (P `⊗ `I) ∼ P
+  `⅋-assoc     : ((P `⅋ Q) `⅋ R) ∼ (P `⅋ (Q `⅋ R))
+  `⅋-comm      : (P `⅋ Q) ∼ (Q `⅋ P)
+  `⅋-identityʳ : (P `⅋ `I) ∼ P
+  `◁-assoc     : ((P `◁ Q) `◁ R) ∼ (P `◁ (Q `◁ R))
+  `◁-identityʳ : (P `◁ `I) ∼ P
+  `◁-identityˡ : (`I `◁ P) ∼ P
 
 infix 5 _∼ᶜ_
 

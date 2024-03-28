@@ -14,7 +14,6 @@ Atom = ⊥
 
 open import MAV.Formula Atom
 open import MAV.CutElim Atom using (cut-elim)
--- import MAV.Base Atom as MAV
 import MAV.Base.Reasoning Atom as MAV
 import MAV.Symmetric Atom as SMAV
 
@@ -29,6 +28,7 @@ SMAV-proof-of-example₁ : (example₁ `⅋ `¬ example₁) SMAV.⟶⋆ `I
 SMAV-proof-of-example₁ = SMAV.step (`axiom example₁) ◅ ε
   where open SMAV
 
+-- MAV-proof-of-example₁ : (example₁ `⅋ `¬ example₁) MAV.Deep.⟶⋆ `I
 MAV-proof-of-example₁ : (example₁ `⅋ `¬ example₁) MAV.⟶⋆ `I
 MAV-proof-of-example₁ =
   begin 
@@ -110,6 +110,7 @@ MAV-proof-of-example₁ =
   ⟶⟨ emb `tidy ⟩
     `I
   ∎
+  -- where open MAV.Deep
   where open MAV
 
 _ : cut-elim _ SMAV-proof-of-example₁ ≡ MAV-proof-of-example₁
