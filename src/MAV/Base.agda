@@ -131,41 +131,38 @@ open IsEquivalence ⟷⋆-isEquivalence
 ⟶⋆-map : (f : Op₁ Formula) (g : ∀ {R} → CongClosure R =[ f ]⇒ CongClosure R) → P ⟶⋆ P′ → f P ⟶⋆ f P′ 
 ⟶⋆-map f g = Star.gmap f (Sum.map (EqClosure.gmap f g) g)
 
-_`⊗⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `⊗ Q) ⟶⋆ (P `⊗ Q′)
-P `⊗⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ (P `⊗⟩_) Q⟶⋆Q′
+`⊗⟩⋆_ : Q ⟶⋆ Q′ → (P `⊗ Q) ⟶⋆ (P `⊗ Q′)
+`⊗⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ `⊗⟩_ Q⟶⋆Q′
 
-_`⟨⊗⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⊗ Q ⟶⋆ P′ `⊗ Q
-P⟶⋆P′ `⟨⊗⋆ Q = ⟶⋆-map _ (_`⟨⊗ Q) P⟶⋆P′
+_`⟨⊗⋆ : P ⟶⋆ P′ → P `⊗ Q ⟶⋆ P′ `⊗ Q
+P⟶⋆P′ `⟨⊗⋆ = ⟶⋆-map _ _`⟨⊗ P⟶⋆P′
 
--- _`⟨⊗⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⊗ Q ⟶⋆ P′ `⊗ Q
--- f `⟨⊗⋆ Q = `⊗-comm ◅ Q `⊗⟩⋆ f ◅◅ `⊗-comm ◅ ε
+`⅋⟩⋆_ : Q ⟶⋆ Q′ → (P `⅋ Q) ⟶⋆ (P `⅋ Q′)
+`⅋⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ `⅋⟩_ Q⟶⋆Q′
 
-_`⅋⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `⅋ Q) ⟶⋆ (P `⅋ Q′)
-P `⅋⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ (P `⅋⟩_) Q⟶⋆Q′
+_`⟨⅋⋆ : P ⟶⋆ P′ → P `⅋ Q ⟶⋆ P′ `⅋ Q
+P⟶⋆P′ `⟨⅋⋆ = ⟶⋆-map _ _`⟨⅋ P⟶⋆P′
 
-_`⟨⅋⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⅋ Q ⟶⋆ P′ `⅋ Q
-P⟶⋆P′ `⟨⅋⋆ Q = ⟶⋆-map _ (_`⟨⅋ Q) P⟶⋆P′
+-- _`⟨⅋⋆ : P ⟶⋆ P′ → P `⅋ Q ⟶⋆ P′ `⅋ Q
+-- f `⟨⅋⋆ = `⅋-comm ◅ Q `⅋⟩⋆ f ◅◅ `⅋-comm ◅ ε
 
--- _`⟨⅋⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⅋ Q ⟶⋆ P′ `⅋ Q
--- f `⟨⅋⋆ Q = `⅋-comm ◅ Q `⅋⟩⋆ f ◅◅ `⅋-comm ◅ ε
+`◁⟩⋆_ : Q ⟶⋆ Q′ → (P `◁ Q) ⟶⋆ (P `◁ Q′)
+`◁⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ `◁⟩_ Q⟶⋆Q′
 
-_`◁⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `◁ Q) ⟶⋆ (P `◁ Q′)
-P `◁⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ (P `◁⟩_) Q⟶⋆Q′
+_`⟨◁⋆ : P ⟶⋆ P′ → P `◁ Q ⟶⋆ P′ `◁ Q
+P⟶⋆P′ `⟨◁⋆ = ⟶⋆-map _ _`⟨◁ P⟶⋆P′
 
-_`⟨◁⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `◁ Q ⟶⋆ P′ `◁ Q
-P⟶⋆P′ `⟨◁⋆ Q = ⟶⋆-map _ (_`⟨◁ Q) P⟶⋆P′
+`&⟩⋆_ : Q ⟶⋆ Q′ → (P `& Q) ⟶⋆ (P `& Q′)
+`&⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ `&⟩_ Q⟶⋆Q′
 
-_`&⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `& Q) ⟶⋆ (P `& Q′)
-P `&⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ (P `&⟩_) Q⟶⋆Q′
+_`⟨&⋆ : P ⟶⋆ P′ → P `& Q ⟶⋆ P′ `& Q
+P⟶⋆P′ `⟨&⋆ = ⟶⋆-map _ _`⟨& P⟶⋆P′
 
-_`⟨&⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `& Q ⟶⋆ P′ `& Q
-P⟶⋆P′ `⟨&⋆ Q = ⟶⋆-map _ (_`⟨& Q) P⟶⋆P′
+`⊕⟩⋆_ : Q ⟶⋆ Q′ → (P `⊕ Q) ⟶⋆ (P `⊕ Q′)
+`⊕⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ `⊕⟩_ Q⟶⋆Q′
 
-_`⊕⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `⊕ Q) ⟶⋆ (P `⊕ Q′)
-P `⊕⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ (P `⊕⟩_) Q⟶⋆Q′
-
-_`⟨⊕⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⊕ Q ⟶⋆ P′ `⊕ Q
-P⟶⋆P′ `⟨⊕⋆ Q = ⟶⋆-map _ (_`⟨⊕ Q) P⟶⋆P′
+_`⟨⊕⋆ : P ⟶⋆ P′ → P `⊕ Q ⟶⋆ P′ `⊕ Q
+P⟶⋆P′ `⟨⊕⋆ = ⟶⋆-map _ _`⟨⊕ P⟶⋆P′
 
 ------------------------------------------------------------------------------
 -- Deriving full versions of switch and sequence
@@ -187,7 +184,7 @@ P⟶⋆P′ `⟨⊕⋆ Q = ⟶⋆-map _ (_`⟨⊕ Q) P⟶⋆P′
 -- Turning ⊗ into a commutative pomonoid
 
 `⊗-mono : (P ⟶⋆ P′) → (Q ⟶⋆ Q′) → (P `⊗ Q) ⟶⋆ (P′ `⊗ Q′)
-`⊗-mono {P = P} {Q′ = Q′} f g = P `⊗⟩⋆ g ◅◅ f `⟨⊗⋆ Q′
+`⊗-mono f g = `⊗⟩⋆ g ◅◅ f `⟨⊗⋆
 
 `⊗-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`⊗_
 `⊗-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
@@ -212,7 +209,7 @@ P⟶⋆P′ `⟨⊕⋆ Q = ⟶⋆-map _ (_`⟨⊕ Q) P⟶⋆P′
 -- Turning ⅋ into a commutative pomonoid
 
 `⅋-mono : (P ⟶⋆ P′) → (Q ⟶⋆ Q′) → (P `⅋ Q) ⟶⋆ (P′ `⅋ Q′)
-`⅋-mono {P = P} {Q′ = Q′} f g = P `⅋⟩⋆ g ◅◅ f `⟨⅋⋆ Q′
+`⅋-mono f g = `⅋⟩⋆ g ◅◅ f `⟨⅋⋆
 
 `⅋-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`⅋_
 `⅋-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
@@ -237,7 +234,7 @@ P⟶⋆P′ `⟨⊕⋆ Q = ⟶⋆-map _ (_`⟨⊕ Q) P⟶⋆P′
 -- Turning ◁ into a pomonoid
 
 `◁-mono : (P ⟶⋆ P′) → (Q ⟶⋆ Q′) → (P `◁ Q) ⟶⋆ (P′ `◁ Q′)
-`◁-mono {P = P} {Q′ = Q′} f g = P `◁⟩⋆ g ◅◅ f `⟨◁⋆ Q′
+`◁-mono f g = `◁⟩⋆ g ◅◅ f `⟨◁⋆
 
 `◁-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`◁_
 `◁-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
@@ -269,7 +266,7 @@ P⟶⋆P′ `⟨⊕⋆ Q = ⟶⋆-map _ (_`⟨⊕ Q) P⟶⋆P′
 -- Turning & into a pomagma
 
 `&-mono : P ⟶⋆ P′ → Q ⟶⋆ Q′ → P `& Q ⟶⋆ P′ `& Q′
-`&-mono {P = P} {Q′ = Q′} f g = P `&⟩⋆ g ◅◅ f `⟨&⋆ Q′
+`&-mono f g = `&⟩⋆ g ◅◅ f `⟨&⋆
 
 `&-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`&_
 `&-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder
@@ -292,7 +289,7 @@ open import Algebra.Definitions _⟶⋆_ using (_DistributesOver_)
 -- Turning ⊕ into a pomagma
 
 `⊕-mono : P ⟶⋆ P′ → Q ⟶⋆ Q′ → P `⊕ Q ⟶⋆ P′ `⊕ Q′
-`⊕-mono {P = P} {Q′ = Q′} f g = P `⊕⟩⋆ g ◅◅ f `⟨⊕⋆ Q′
+`⊕-mono f g = `⊕⟩⋆ g ◅◅ f `⟨⊕⋆
 
 `⊕-isPomagma : IsPomagma _⟷⋆_ _⟶⋆_ _`⊕_
 `⊕-isPomagma .IsPomagma.isPartialOrder = ⟶⋆-isPartialOrder

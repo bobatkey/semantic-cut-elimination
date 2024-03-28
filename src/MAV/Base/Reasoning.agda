@@ -51,78 +51,78 @@ module Deep where
   from-⟶ : P ⟶ Q → P IsDerivableFrom Q
   from-⟶ {P} {Q} P⟶Q = P ⟶⟨ emb P⟶Q ⟩ Q ∎
 
-  _`⟨⊗ᵈ_ : P IsDerivableFrom P′ → (Q : Formula) → (P `⊗ Q) IsDerivableFrom (P′ `⊗ Q)
-  (P ⟶⟨ φ ⟩ ψ) `⟨⊗ᵈ Q = P `⊗ Q ⟶⟨ φ `⟨⊗ Q ⟩ ψ `⟨⊗ᵈ Q
-  (P ∼⟨ φ ⟩ ψ) `⟨⊗ᵈ Q = P `⊗ Q ∼⟨ φ `⟨⊗ Q ⟩ ψ `⟨⊗ᵈ Q
-  (P ∼⟨ φ ⟨ ψ) `⟨⊗ᵈ Q = P `⊗ Q ∼⟨ φ `⟨⊗ Q ⟨ ψ `⟨⊗ᵈ Q
-  (P ∎) `⟨⊗ᵈ Q = (P `⊗ Q) ∎
+  _`⟨⊗ᵈ : P IsDerivableFrom P′ → (P `⊗ Q) IsDerivableFrom (P′ `⊗ Q)
+  (_ ⟶⟨ φ ⟩ ψ) `⟨⊗ᵈ = _ ⟶⟨ φ `⟨⊗ ⟩ ψ `⟨⊗ᵈ
+  (_ ∼⟨ φ ⟩ ψ) `⟨⊗ᵈ = _ ∼⟨ φ `⟨⊗ ⟩ ψ `⟨⊗ᵈ
+  (_ ∼⟨ φ ⟨ ψ) `⟨⊗ᵈ = _ ∼⟨ φ `⟨⊗ ⟨ ψ `⟨⊗ᵈ
+  (_ ∎) `⟨⊗ᵈ = _ ∎
 
-  _`⊗⟩ᵈ_ : (P : Formula) → Q IsDerivableFrom Q′ → (P `⊗ Q) IsDerivableFrom (P `⊗ Q′)
-  P `⊗⟩ᵈ (Q ⟶⟨ φ ⟩ ψ) = P `⊗ Q ⟶⟨ P `⊗⟩ φ ⟩ P `⊗⟩ᵈ ψ
-  P `⊗⟩ᵈ (Q ∼⟨ φ ⟩ ψ) = P `⊗ Q ∼⟨ P `⊗⟩ φ ⟩ P `⊗⟩ᵈ ψ
-  P `⊗⟩ᵈ (Q ∼⟨ φ ⟨ ψ) = P `⊗ Q ∼⟨ P `⊗⟩ φ ⟨ P `⊗⟩ᵈ ψ
-  P `⊗⟩ᵈ (Q ∎) = P `⊗ Q ∎
+  `⊗⟩ᵈ_ : Q IsDerivableFrom Q′ → (P `⊗ Q) IsDerivableFrom (P `⊗ Q′)
+  `⊗⟩ᵈ (_ ⟶⟨ φ ⟩ ψ) = _ ⟶⟨ `⊗⟩ φ ⟩ `⊗⟩ᵈ ψ
+  `⊗⟩ᵈ (_ ∼⟨ φ ⟩ ψ) = _ ∼⟨ `⊗⟩ φ ⟩ `⊗⟩ᵈ ψ
+  `⊗⟩ᵈ (_ ∼⟨ φ ⟨ ψ) = _ ∼⟨ `⊗⟩ φ ⟨ `⊗⟩ᵈ ψ
+  `⊗⟩ᵈ (_ ∎) = _ ∎
 
-  _`⟨⅋ᵈ_ : P IsDerivableFrom P′ → (Q : Formula) → (P `⅋ Q) IsDerivableFrom (P′ `⅋ Q)
-  (P ⟶⟨ φ ⟩ ψ) `⟨⅋ᵈ Q = P `⅋ Q ⟶⟨ φ `⟨⅋ Q ⟩ ψ `⟨⅋ᵈ Q
-  (P ∼⟨ φ ⟩ ψ) `⟨⅋ᵈ Q = P `⅋ Q ∼⟨ φ `⟨⅋ Q ⟩ ψ `⟨⅋ᵈ Q
-  (P ∼⟨ φ ⟨ ψ) `⟨⅋ᵈ Q = P `⅋ Q ∼⟨ φ `⟨⅋ Q ⟨ ψ `⟨⅋ᵈ Q
-  (P ∎) `⟨⅋ᵈ Q = (P `⅋ Q) ∎
+  _`⟨⅋ᵈ : P IsDerivableFrom P′ → (P `⅋ Q) IsDerivableFrom (P′ `⅋ Q)
+  (_ ⟶⟨ φ ⟩ ψ) `⟨⅋ᵈ = _ ⟶⟨ φ `⟨⅋ ⟩ ψ `⟨⅋ᵈ
+  (_ ∼⟨ φ ⟩ ψ) `⟨⅋ᵈ = _ ∼⟨ φ `⟨⅋ ⟩ ψ `⟨⅋ᵈ
+  (_ ∼⟨ φ ⟨ ψ) `⟨⅋ᵈ = _ ∼⟨ φ `⟨⅋ ⟨ ψ `⟨⅋ᵈ
+  (_ ∎) `⟨⅋ᵈ = _ ∎
 
-  _`⅋⟩ᵈ_ : (P : Formula) → Q IsDerivableFrom Q′ → (P `⅋ Q) IsDerivableFrom (P `⅋ Q′)
-  P `⅋⟩ᵈ (Q ⟶⟨ φ ⟩ ψ) = P `⅋ Q ⟶⟨ P `⅋⟩ φ ⟩ P `⅋⟩ᵈ ψ
-  P `⅋⟩ᵈ (Q ∼⟨ φ ⟩ ψ) = P `⅋ Q ∼⟨ P `⅋⟩ φ ⟩ P `⅋⟩ᵈ ψ
-  P `⅋⟩ᵈ (Q ∼⟨ φ ⟨ ψ) = P `⅋ Q ∼⟨ P `⅋⟩ φ ⟨ P `⅋⟩ᵈ ψ
-  P `⅋⟩ᵈ (Q ∎) = P `⅋ Q ∎
+  `⅋⟩ᵈ_ : Q IsDerivableFrom Q′ → (P `⅋ Q) IsDerivableFrom (P `⅋ Q′)
+  `⅋⟩ᵈ (_ ⟶⟨ φ ⟩ ψ) = _ ⟶⟨ `⅋⟩ φ ⟩ `⅋⟩ᵈ ψ
+  `⅋⟩ᵈ (_ ∼⟨ φ ⟩ ψ) = _ ∼⟨ `⅋⟩ φ ⟩ `⅋⟩ᵈ ψ
+  `⅋⟩ᵈ (_ ∼⟨ φ ⟨ ψ) = _ ∼⟨ `⅋⟩ φ ⟨ `⅋⟩ᵈ ψ
+  `⅋⟩ᵈ (_ ∎) = _ ∎
 
-  _`⟨◁ᵈ_ : P IsDerivableFrom P′ → (Q : Formula) → (P `◁ Q) IsDerivableFrom (P′ `◁ Q)
-  (P ⟶⟨ φ ⟩ ψ) `⟨◁ᵈ Q = P `◁ Q ⟶⟨ φ `⟨◁ Q ⟩ ψ `⟨◁ᵈ Q
-  (P ∼⟨ φ ⟩ ψ) `⟨◁ᵈ Q = P `◁ Q ∼⟨ φ `⟨◁ Q ⟩ ψ `⟨◁ᵈ Q
-  (P ∼⟨ φ ⟨ ψ) `⟨◁ᵈ Q = P `◁ Q ∼⟨ φ `⟨◁ Q ⟨ ψ `⟨◁ᵈ Q
-  (P ∎) `⟨◁ᵈ Q = (P `◁ Q) ∎
+  _`⟨◁ᵈ : P IsDerivableFrom P′ → (P `◁ Q) IsDerivableFrom (P′ `◁ Q)
+  (_ ⟶⟨ φ ⟩ ψ) `⟨◁ᵈ = _ ⟶⟨ φ `⟨◁ ⟩ ψ `⟨◁ᵈ
+  (_ ∼⟨ φ ⟩ ψ) `⟨◁ᵈ = _ ∼⟨ φ `⟨◁ ⟩ ψ `⟨◁ᵈ
+  (_ ∼⟨ φ ⟨ ψ) `⟨◁ᵈ = _ ∼⟨ φ `⟨◁ ⟨ ψ `⟨◁ᵈ
+  (_ ∎) `⟨◁ᵈ = _ ∎
 
-  _`◁⟩ᵈ_ : (P : Formula) → Q IsDerivableFrom Q′ → (P `◁ Q) IsDerivableFrom (P `◁ Q′)
-  P `◁⟩ᵈ (Q ⟶⟨ φ ⟩ ψ) = P `◁ Q ⟶⟨ P `◁⟩ φ ⟩ P `◁⟩ᵈ ψ
-  P `◁⟩ᵈ (Q ∼⟨ φ ⟩ ψ) = P `◁ Q ∼⟨ P `◁⟩ φ ⟩ P `◁⟩ᵈ ψ
-  P `◁⟩ᵈ (Q ∼⟨ φ ⟨ ψ) = P `◁ Q ∼⟨ P `◁⟩ φ ⟨ P `◁⟩ᵈ ψ
-  P `◁⟩ᵈ (Q ∎) = P `◁ Q ∎
+  `◁⟩ᵈ_ : Q IsDerivableFrom Q′ → (P `◁ Q) IsDerivableFrom (P `◁ Q′)
+  `◁⟩ᵈ (_ ⟶⟨ φ ⟩ ψ) = _ ⟶⟨ `◁⟩ φ ⟩ `◁⟩ᵈ ψ
+  `◁⟩ᵈ (_ ∼⟨ φ ⟩ ψ) = _ ∼⟨ `◁⟩ φ ⟩ `◁⟩ᵈ ψ
+  `◁⟩ᵈ (_ ∼⟨ φ ⟨ ψ) = _ ∼⟨ `◁⟩ φ ⟨ `◁⟩ᵈ ψ
+  `◁⟩ᵈ (_ ∎) = _ ∎
 
-  _`⟨&ᵈ_ : P IsDerivableFrom P′ → (Q : Formula) → (P `& Q) IsDerivableFrom (P′ `& Q)
-  (P ⟶⟨ φ ⟩ ψ) `⟨&ᵈ Q = P `& Q ⟶⟨ φ `⟨& Q ⟩ ψ `⟨&ᵈ Q
-  (P ∼⟨ φ ⟩ ψ) `⟨&ᵈ Q = P `& Q ∼⟨ φ `⟨& Q ⟩ ψ `⟨&ᵈ Q
-  (P ∼⟨ φ ⟨ ψ) `⟨&ᵈ Q = P `& Q ∼⟨ φ `⟨& Q ⟨ ψ `⟨&ᵈ Q
-  (P ∎) `⟨&ᵈ Q = (P `& Q) ∎
+  _`⟨&ᵈ : P IsDerivableFrom P′ → (P `& Q) IsDerivableFrom (P′ `& Q)
+  (_ ⟶⟨ φ ⟩ ψ) `⟨&ᵈ = _ ⟶⟨ φ `⟨& ⟩ ψ `⟨&ᵈ
+  (_ ∼⟨ φ ⟩ ψ) `⟨&ᵈ = _ ∼⟨ φ `⟨& ⟩ ψ `⟨&ᵈ
+  (_ ∼⟨ φ ⟨ ψ) `⟨&ᵈ = _ ∼⟨ φ `⟨& ⟨ ψ `⟨&ᵈ
+  (_ ∎) `⟨&ᵈ = _ ∎
 
-  _`&⟩ᵈ_ : (P : Formula) → Q IsDerivableFrom Q′ → (P `& Q) IsDerivableFrom (P `& Q′)
-  P `&⟩ᵈ (Q ⟶⟨ φ ⟩ ψ) = P `& Q ⟶⟨ P `&⟩ φ ⟩ P `&⟩ᵈ ψ
-  P `&⟩ᵈ (Q ∼⟨ φ ⟩ ψ) = P `& Q ∼⟨ P `&⟩ φ ⟩ P `&⟩ᵈ ψ
-  P `&⟩ᵈ (Q ∼⟨ φ ⟨ ψ) = P `& Q ∼⟨ P `&⟩ φ ⟨ P `&⟩ᵈ ψ
-  P `&⟩ᵈ (Q ∎) = P `& Q ∎
+  `&⟩ᵈ_ : Q IsDerivableFrom Q′ → (P `& Q) IsDerivableFrom (P `& Q′)
+  `&⟩ᵈ (_ ⟶⟨ φ ⟩ ψ) = _ ⟶⟨ `&⟩ φ ⟩ `&⟩ᵈ ψ
+  `&⟩ᵈ (_ ∼⟨ φ ⟩ ψ) = _ ∼⟨ `&⟩ φ ⟩ `&⟩ᵈ ψ
+  `&⟩ᵈ (_ ∼⟨ φ ⟨ ψ) = _ ∼⟨ `&⟩ φ ⟨ `&⟩ᵈ ψ
+  `&⟩ᵈ (_ ∎) = _ ∎
 
-  _`⟨⊕ᵈ_ : P IsDerivableFrom P′ → (Q : Formula) → (P `⊕ Q) IsDerivableFrom (P′ `⊕ Q)
-  (P ⟶⟨ φ ⟩ ψ) `⟨⊕ᵈ Q = P `⊕ Q ⟶⟨ φ `⟨⊕ Q ⟩ ψ `⟨⊕ᵈ Q
-  (P ∼⟨ φ ⟩ ψ) `⟨⊕ᵈ Q = P `⊕ Q ∼⟨ φ `⟨⊕ Q ⟩ ψ `⟨⊕ᵈ Q
-  (P ∼⟨ φ ⟨ ψ) `⟨⊕ᵈ Q = P `⊕ Q ∼⟨ φ `⟨⊕ Q ⟨ ψ `⟨⊕ᵈ Q
-  (P ∎) `⟨⊕ᵈ Q = (P `⊕ Q) ∎
+  _`⟨⊕ᵈ : P IsDerivableFrom P′ → (P `⊕ Q) IsDerivableFrom (P′ `⊕ Q)
+  (_ ⟶⟨ φ ⟩ ψ) `⟨⊕ᵈ = _ ⟶⟨ φ `⟨⊕ ⟩ ψ `⟨⊕ᵈ
+  (_ ∼⟨ φ ⟩ ψ) `⟨⊕ᵈ = _ ∼⟨ φ `⟨⊕ ⟩ ψ `⟨⊕ᵈ
+  (_ ∼⟨ φ ⟨ ψ) `⟨⊕ᵈ = _ ∼⟨ φ `⟨⊕ ⟨ ψ `⟨⊕ᵈ
+  (_ ∎) `⟨⊕ᵈ = _ ∎
 
-  _`⊕⟩ᵈ_ : (P : Formula) → Q IsDerivableFrom Q′ → (P `⊕ Q) IsDerivableFrom (P `⊕ Q′)
-  P `⊕⟩ᵈ (Q ⟶⟨ φ ⟩ ψ) = P `⊕ Q ⟶⟨ P `⊕⟩ φ ⟩ P `⊕⟩ᵈ ψ
-  P `⊕⟩ᵈ (Q ∼⟨ φ ⟩ ψ) = P `⊕ Q ∼⟨ P `⊕⟩ φ ⟩ P `⊕⟩ᵈ ψ
-  P `⊕⟩ᵈ (Q ∼⟨ φ ⟨ ψ) = P `⊕ Q ∼⟨ P `⊕⟩ φ ⟨ P `⊕⟩ᵈ ψ
-  P `⊕⟩ᵈ (Q ∎) = P `⊕ Q ∎
+  `⊕⟩ᵈ_ : Q IsDerivableFrom Q′ → (P `⊕ Q) IsDerivableFrom (P `⊕ Q′)
+  `⊕⟩ᵈ (_ ⟶⟨ φ ⟩ ψ) = _ ⟶⟨ `⊕⟩ φ ⟩ `⊕⟩ᵈ ψ
+  `⊕⟩ᵈ (_ ∼⟨ φ ⟩ ψ) = _ ∼⟨ `⊕⟩ φ ⟩ `⊕⟩ᵈ ψ
+  `⊕⟩ᵈ (_ ∼⟨ φ ⟨ ψ) = _ ∼⟨ `⊕⟩ φ ⟨ `⊕⟩ᵈ ψ
+  `⊕⟩ᵈ (_ ∎) = _ ∎
 
   from-⟶ᶜ : P ⟶ᶜ Q → P IsDerivableFrom Q
   from-⟶ᶜ (emb φ) = from-⟶ φ
-  from-⟶ᶜ (φ `⟨⊗ Q) = from-⟶ᶜ φ `⟨⊗ᵈ Q
-  from-⟶ᶜ (P `⊗⟩ φ) = P `⊗⟩ᵈ from-⟶ᶜ φ
-  from-⟶ᶜ (φ `⟨⅋ Q) = from-⟶ᶜ φ `⟨⅋ᵈ Q
-  from-⟶ᶜ (P `⅋⟩ φ) = P `⅋⟩ᵈ from-⟶ᶜ φ
-  from-⟶ᶜ (φ `⟨◁ Q) = from-⟶ᶜ φ `⟨◁ᵈ Q
-  from-⟶ᶜ (P `◁⟩ φ) = P `◁⟩ᵈ from-⟶ᶜ φ
-  from-⟶ᶜ (φ `⟨& Q) = from-⟶ᶜ φ `⟨&ᵈ Q
-  from-⟶ᶜ (P `&⟩ φ) = P `&⟩ᵈ from-⟶ᶜ φ
-  from-⟶ᶜ (φ `⟨⊕ Q) = from-⟶ᶜ φ `⟨⊕ᵈ Q
-  from-⟶ᶜ (P `⊕⟩ φ) = P `⊕⟩ᵈ from-⟶ᶜ φ
+  from-⟶ᶜ (φ `⟨⊗) = from-⟶ᶜ φ `⟨⊗ᵈ
+  from-⟶ᶜ (`⊗⟩ φ) = `⊗⟩ᵈ from-⟶ᶜ φ
+  from-⟶ᶜ (φ `⟨⅋) = from-⟶ᶜ φ `⟨⅋ᵈ
+  from-⟶ᶜ (`⅋⟩ φ) = `⅋⟩ᵈ from-⟶ᶜ φ
+  from-⟶ᶜ (φ `⟨◁) = from-⟶ᶜ φ `⟨◁ᵈ
+  from-⟶ᶜ (`◁⟩ φ) = `◁⟩ᵈ from-⟶ᶜ φ
+  from-⟶ᶜ (φ `⟨&) = from-⟶ᶜ φ `⟨&ᵈ
+  from-⟶ᶜ (`&⟩ φ) = `&⟩ᵈ from-⟶ᶜ φ
+  from-⟶ᶜ (φ `⟨⊕) = from-⟶ᶜ φ `⟨⊕ᵈ
+  from-⟶ᶜ (`⊕⟩ φ) = `⊕⟩ᵈ from-⟶ᶜ φ
 
   from-⟶₌ : P ⟶₌ Q → P IsDerivableFrom Q
   from-⟶₌ (inj₁ φ) = from-≃ φ

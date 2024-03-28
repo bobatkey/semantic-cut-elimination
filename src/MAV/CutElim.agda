@@ -26,10 +26,10 @@ module _ where
   interactᵖ : ∀ P Q → (U (ηⁱ Q) M.⇨ᵖ U M◁.ιⁱ) M.∙ᵖ ηᵖ (P `⊗ Q) ≤ᵖ P.ηᵖ P
   interactᵖ P Q ._≤ᵖ_.*≤ᵖ* {x} (y , z , x≤y⅋z , ϕ₁ , lift z≤P⊗Q) =
     lift (x≤y⅋z
-          ◅◅ (y `⅋⟩⋆ z≤P⊗Q)
+          ◅◅ (`⅋⟩⋆ z≤P⊗Q)
           ◅◅ (bwd `⅋-comm ◅ ε)
           ◅◅ (step `switch ◅ ε)
-          ◅◅ (P `⊗⟩⋆ ((bwd `⅋-comm ◅ ε) ◅◅ (ϕ₁ {Q} ((leaf Q (lift ε)) , ε)) .lower))
+          ◅◅ (`⊗⟩⋆ ((bwd `⅋-comm ◅ ε) ◅◅ (ϕ₁ {Q} ((leaf Q (lift ε)) , ε)) .lower))
           ◅◅ fwd `⊗-identityʳ ◅ ε)
 
   interact : ∀ P Q → (ηⁱ Q MS.⊸ⁱ M◁.ιⁱ) MS.∙ⁱ ηⁱ (P `⊗ Q) ≤ⁱ ηⁱ P

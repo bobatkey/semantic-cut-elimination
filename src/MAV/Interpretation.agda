@@ -70,16 +70,16 @@ module _ {ℓ} {_𝓡_ : Rel Formula ℓ} where
 
   cong : (f : ∀ {P Q} → P 𝓡 Q → ⟦ P ⟧ ≈ ⟦ Q ⟧) → CongClosure _𝓡_ P Q → ⟦ P ⟧ ≈ ⟦ Q ⟧
   cong f (emb φ)   = f φ
-  cong f (φ `⟨⊗ Q) = ⊗-cong (cong f φ) Eq.refl
-  cong f (P `⊗⟩ φ) = ⊗-cong Eq.refl (cong f φ)
-  cong f (φ `⟨⅋ Q) = ⅋-cong (cong f φ) Eq.refl
-  cong f (P `⅋⟩ φ) = ⅋-cong Eq.refl (cong f φ)
-  cong f (φ `⟨◁ Q) = ◁-cong (cong f φ) Eq.refl
-  cong f (P `◁⟩ φ) = ◁-cong Eq.refl (cong f φ)
-  cong f (φ `⟨& Q) = &-cong (cong f φ) Eq.refl
-  cong f (P `&⟩ φ) = &-cong Eq.refl (cong f φ)
-  cong f (φ `⟨⊕ Q) = ⊕-cong (cong f φ) Eq.refl
-  cong f (P `⊕⟩ φ) = ⊕-cong Eq.refl (cong f φ)
+  cong f (φ `⟨⊗) = ⊗-cong (cong f φ) Eq.refl
+  cong f (`⊗⟩ φ) = ⊗-cong Eq.refl (cong f φ)
+  cong f (φ `⟨⅋) = ⅋-cong (cong f φ) Eq.refl
+  cong f (`⅋⟩ φ) = ⅋-cong Eq.refl (cong f φ)
+  cong f (φ `⟨◁) = ◁-cong (cong f φ) Eq.refl
+  cong f (`◁⟩ φ) = ◁-cong Eq.refl (cong f φ)
+  cong f (φ `⟨&) = &-cong (cong f φ) Eq.refl
+  cong f (`&⟩ φ) = &-cong Eq.refl (cong f φ)
+  cong f (φ `⟨⊕) = ⊕-cong (cong f φ) Eq.refl
+  cong f (`⊕⟩ φ) = ⊕-cong Eq.refl (cong f φ)
 
 -- -- Interpret the equivalence
 ⟦_⟧eq : P ≃ Q → ⟦ P ⟧ ≈ ⟦ Q ⟧
@@ -103,16 +103,16 @@ module _ {ℓ} {_𝓡_ : Rel Formula ℓ} where
 
   mono : (f : ∀ {P Q} → P 𝓡 Q → ⟦ Q ⟧ ≲ ⟦ P ⟧) → CongClosure _𝓡_ P Q → ⟦ Q ⟧ ≲ ⟦ P ⟧
   mono f (emb φ)   = f φ
-  mono f (φ `⟨⊗ Q) = ⊗-mono (mono f φ) refl
-  mono f (P `⊗⟩ φ) = ⊗-mono refl (mono f φ)
-  mono f (φ `⟨⅋ Q) = ⅋-mono (mono f φ) refl
-  mono f (P `⅋⟩ φ) = ⅋-mono refl (mono f φ)
-  mono f (φ `⟨◁ Q) = ◁-mono (mono f φ) refl
-  mono f (P `◁⟩ φ) = ◁-mono refl (mono f φ)
-  mono f (φ `⟨& Q) = &-mono (mono f φ) refl
-  mono f (P `&⟩ φ) = &-mono refl (mono f φ)
-  mono f (φ `⟨⊕ Q) = ⊕-mono (mono f φ) refl
-  mono f (P `⊕⟩ φ) = ⊕-mono refl (mono f φ)
+  mono f (φ `⟨⊗) = ⊗-mono (mono f φ) refl
+  mono f (`⊗⟩ φ) = ⊗-mono refl (mono f φ)
+  mono f (φ `⟨⅋) = ⅋-mono (mono f φ) refl
+  mono f (`⅋⟩ φ) = ⅋-mono refl (mono f φ)
+  mono f (φ `⟨◁) = ◁-mono (mono f φ) refl
+  mono f (`◁⟩ φ) = ◁-mono refl (mono f φ)
+  mono f (φ `⟨&) = &-mono (mono f φ) refl
+  mono f (`&⟩ φ) = &-mono refl (mono f φ)
+  mono f (φ `⟨⊕) = ⊕-mono (mono f φ) refl
+  mono f (`⊕⟩ φ) = ⊕-mono refl (mono f φ)
 
 -- Interpret the reduction modulo the equivalence
 ⟦_⟧step : P ⟶₌ Q → ⟦ Q ⟧ ≲ ⟦ P ⟧

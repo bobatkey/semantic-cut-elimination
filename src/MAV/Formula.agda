@@ -54,16 +54,16 @@ module _ {ℓ} (_∼_ : Rel Formula ℓ) where
 
     data CongClosure : Rel Formula (suc a ⊔ ℓ) where
       emb   : P ∼ P′ → P ≃ P′
-      _`⟨⊗_ : P ≃ P′ → (Q : Formula) → (P `⊗ Q) ≃ (P′ `⊗ Q)
-      _`⊗⟩_ : (P : Formula) → Q ≃ Q′ → (P `⊗ Q) ≃ (P `⊗ Q′)
-      _`⟨⅋_ : P ≃ P′ → (Q : Formula) → (P `⅋ Q) ≃ (P′ `⅋ Q)
-      _`⅋⟩_ : (P : Formula) → Q ≃ Q′ → (P `⅋ Q) ≃ (P `⅋ Q′)
-      _`⟨◁_ : P ≃ P′ → (Q : Formula) → (P `◁ Q) ≃ (P′ `◁ Q)
-      _`◁⟩_ : (P : Formula) → Q ≃ Q′ → (P `◁ Q) ≃ (P `◁ Q′)
-      _`⟨&_ : P ≃ P′ → (Q : Formula) → (P `& Q) ≃ (P′ `& Q)
-      _`&⟩_ : (P : Formula) → Q ≃ Q′ → (P `& Q) ≃ (P `& Q′)
-      _`⟨⊕_ : P ≃ P′ → (Q : Formula) → (P `⊕ Q) ≃ (P′ `⊕ Q)
-      _`⊕⟩_ : (P : Formula) → Q ≃ Q′ → (P `⊕ Q) ≃ (P `⊕ Q′)
+      _`⟨⊗ : P ≃ P′ → (P `⊗ Q) ≃ (P′ `⊗ Q)
+      `⊗⟩_ : Q ≃ Q′ → (P `⊗ Q) ≃ (P `⊗ Q′)
+      _`⟨⅋ : P ≃ P′ → (P `⅋ Q) ≃ (P′ `⅋ Q)
+      `⅋⟩_ : Q ≃ Q′ → (P `⅋ Q) ≃ (P `⅋ Q′)
+      _`⟨◁ : P ≃ P′ → (P `◁ Q) ≃ (P′ `◁ Q)
+      `◁⟩_ : Q ≃ Q′ → (P `◁ Q) ≃ (P `◁ Q′)
+      _`⟨& : P ≃ P′ → (P `& Q) ≃ (P′ `& Q)
+      `&⟩_ : Q ≃ Q′ → (P `& Q) ≃ (P `& Q′)
+      _`⟨⊕ : P ≃ P′ → (P `⊕ Q) ≃ (P′ `⊕ Q)
+      `⊕⟩_ : Q ≃ Q′ → (P `⊕ Q) ≃ (P `⊕ Q′)
 
 _≡ᵇ`I : (P : Formula) → Bool
 `I       ≡ᵇ`I = true
