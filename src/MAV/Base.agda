@@ -1,11 +1,12 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
+open import Algebra.Core using (Op₁)
 open import Algebra.Ordered
 open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
-open import Data.Sum as Sum using (_⊎_; inj₁; inj₂)
+open import Data.Sum as Sum using (_⊎_; inj₁; inj₂; [_,_])
 open import Level using (suc; _⊔_)
-open import Relation.Binary using (Rel; IsPartialOrder; Poset; IsEquivalence; Antisymmetric)
+open import Relation.Binary using (Rel; _=[_]⇒_; IsPartialOrder; Poset; IsEquivalence; Antisymmetric)
 open import Relation.Binary.Construct.Union using (_∪_)
 import Relation.Binary.Construct.Union as Union
 open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
@@ -51,10 +52,15 @@ module _ where
 
     open import Algebra.Definitions _∼_
 
+infix 5 _∼ᶜ_
+
+_∼ᶜ_ : Rel Formula (suc a)
+_∼ᶜ_ = CongClosure _∼_
+
 infix 5 _≃_
 
 _≃_ : Rel Formula (suc a)
-_≃_ = EqClosure (CongClosure _∼_)
+_≃_ = EqClosure _∼ᶜ_
 
 infix 5 _⟶_
 
@@ -72,10 +78,15 @@ data _⟶_ : Formula → Formula → Set a where
 ------------------------------------------------------------------------------
 -- Turning the proof system into a pre-order
 
+infix 5 _⟶ᶜ_
+
+_⟶ᶜ_ : Rel Formula (suc a)
+_⟶ᶜ_ = CongClosure _⟶_
+
 infix 5 _⟶₌_
 
 _⟶₌_ : Rel Formula (suc a)
-_⟶₌_ = CongClosure (_≃_ ∪ _⟶_)
+_⟶₌_ = _≃_ ∪ _⟶ᶜ_
 
 infix 5 _⟶⋆_
 
@@ -88,19 +99,16 @@ _⟷⋆_ : Rel Formula (suc a)
 _⟷⋆_ = SymCore _⟶⋆_
 
 fwd : P ∼ Q → P ⟶₌ Q
-fwd P∼Q = emb (inj₁ (SymClosure.fwd (emb P∼Q) ◅ ε))
-{-# DISPLAY emb (inj₁ (SymClosure.fwd (emb P∼Q) ◅ ε)) = fwd P∼Q #-}
+fwd P∼Q = inj₁ (SymClosure.fwd (emb P∼Q) ◅ ε)
 
 bwd : P ∼ Q → Q ⟶₌ P
-bwd P∼Q = emb (inj₁ (SymClosure.bwd (emb P∼Q) ◅ ε))
-{-# DISPLAY emb (inj₁ (SymClosure.bwd (emb P∼Q) ◅ ε)) = bwd P∼Q #-}
+bwd P∼Q = inj₁ (SymClosure.bwd (emb P∼Q) ◅ ε)
 
 fwd∧bwd : P ∼ Q → P ⟷⋆ Q
 fwd∧bwd P∼Q = (fwd P∼Q ◅ ε , bwd P∼Q ◅ ε)
 
 step : P ⟶ Q → P ⟶₌ Q
-step P⟶Q = emb (inj₂ P⟶Q)
-{-# DISPLAY emb (inj₂ P⟶Q) = step P⟶Q #-}
+step P⟶Q = inj₂ (emb P⟶Q)
 
 ⟶⋆-isPartialOrder : IsPartialOrder _⟷⋆_ _⟶⋆_
 ⟶⋆-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _⟶⋆_ (StarProps.isPreorder _)
@@ -124,41 +132,44 @@ open IsEquivalence ⟷⋆-isEquivalence
 ------------------------------------------------------------------------------
 -- Lift congruence rules to the preorder
 
+⟶⋆-map : (f : Op₁ Formula) (g : ∀ {R} → CongClosure R =[ f ]⇒ CongClosure R) → P ⟶⋆ P′ → f P ⟶⋆ f P′ 
+⟶⋆-map f g = Star.gmap f (Sum.map (EqClosure.gmap f g) g)
+
 _`⊗⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `⊗ Q) ⟶⋆ (P `⊗ Q′)
-P `⊗⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `⊗⟩_) Q⟶⋆Q′
+P `⊗⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ (P `⊗⟩_) Q⟶⋆Q′
 
 _`⟨⊗⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⊗ Q ⟶⋆ P′ `⊗ Q
-P⟶⋆P′ `⟨⊗⋆ Q = Star.gmap _ (_`⟨⊗ Q) P⟶⋆P′
+P⟶⋆P′ `⟨⊗⋆ Q = ⟶⋆-map _ (_`⟨⊗ Q) P⟶⋆P′
 
 -- _`⟨⊗⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⊗ Q ⟶⋆ P′ `⊗ Q
 -- f `⟨⊗⋆ Q = `⊗-comm ◅ Q `⊗⟩⋆ f ◅◅ `⊗-comm ◅ ε
 
 _`⅋⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `⅋ Q) ⟶⋆ (P `⅋ Q′)
-P `⅋⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `⅋⟩_) Q⟶⋆Q′
+P `⅋⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ (P `⅋⟩_) Q⟶⋆Q′
 
 _`⟨⅋⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⅋ Q ⟶⋆ P′ `⅋ Q
-P⟶⋆P′ `⟨⅋⋆ Q = Star.gmap _ (_`⟨⅋ Q) P⟶⋆P′
+P⟶⋆P′ `⟨⅋⋆ Q = ⟶⋆-map _ (_`⟨⅋ Q) P⟶⋆P′
 
 -- _`⟨⅋⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⅋ Q ⟶⋆ P′ `⅋ Q
 -- f `⟨⅋⋆ Q = `⅋-comm ◅ Q `⅋⟩⋆ f ◅◅ `⅋-comm ◅ ε
 
 _`◁⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `◁ Q) ⟶⋆ (P `◁ Q′)
-P `◁⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `◁⟩_) Q⟶⋆Q′
+P `◁⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ (P `◁⟩_) Q⟶⋆Q′
 
 _`⟨◁⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `◁ Q ⟶⋆ P′ `◁ Q
-P⟶⋆P′ `⟨◁⋆ Q = Star.gmap _ (_`⟨◁ Q) P⟶⋆P′
+P⟶⋆P′ `⟨◁⋆ Q = ⟶⋆-map _ (_`⟨◁ Q) P⟶⋆P′
 
 _`&⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `& Q) ⟶⋆ (P `& Q′)
-P `&⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `&⟩_) Q⟶⋆Q′
+P `&⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ (P `&⟩_) Q⟶⋆Q′
 
 _`⟨&⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `& Q ⟶⋆ P′ `& Q
-P⟶⋆P′ `⟨&⋆ Q = Star.gmap _ (_`⟨& Q) P⟶⋆P′
+P⟶⋆P′ `⟨&⋆ Q = ⟶⋆-map _ (_`⟨& Q) P⟶⋆P′
 
 _`⊕⟩⋆_ : (P : Formula) → Q ⟶⋆ Q′ → (P `⊕ Q) ⟶⋆ (P `⊕ Q′)
-P `⊕⟩⋆ Q⟶⋆Q′ = Star.gmap _ (P `⊕⟩_) Q⟶⋆Q′
+P `⊕⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ (P `⊕⟩_) Q⟶⋆Q′
 
 _`⟨⊕⋆_ : P ⟶⋆ P′ → (Q : Formula) → P `⊕ Q ⟶⋆ P′ `⊕ Q
-P⟶⋆P′ `⟨⊕⋆ Q = Star.gmap _ (_`⟨⊕ Q) P⟶⋆P′
+P⟶⋆P′ `⟨⊕⋆ Q = ⟶⋆-map _ (_`⟨⊕ Q) P⟶⋆P′
 
 ------------------------------------------------------------------------------
 -- Deriving full versions of switch and sequence

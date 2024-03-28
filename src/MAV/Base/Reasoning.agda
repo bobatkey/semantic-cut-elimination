@@ -1,18 +1,22 @@
-module MAV.Base.Reasoning {a} (Atom : Set a) where
+{-# OPTIONS --postfix-projections --safe --without-K #-}
 
-open import Level using (suc)
-open import Data.Sum using (inj₁; inj₂)
-open import Function using (flip)
-open import MAV.Frame
-open import MAV.Formula Atom
-open import MAV.Base Atom
+open import Level using (suc; _⊔_)
+open import Data.Product using (_×_; _,_)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Function using (const; flip; _∘_)
 open import Relation.Binary
 open import Relation.Binary.Definitions using (Reflexive; Trans)
-open import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star using (ε; _◅_; _◅◅_)
+open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star; ε; _◅_; _◅◅_)
+import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star
+import Relation.Binary.Construct.Closure.Symmetric as SymClosure
 import Relation.Binary.Construct.Closure.Equivalence as EqClosure
 open import Relation.Binary.PropositionalEquality.Core as ≡ using (_≡_)
 
-module ⟶⋆ = IsPartialOrder ⟶⋆-isPartialOrder
+module MAV.Base.Reasoning {a} (Atom : Set a) where
+
+open import MAV.Frame
+open import MAV.Formula Atom
+import MAV.Base Atom as MAV
 
 private
   variable
@@ -21,75 +25,133 @@ private
     R R′ : Formula
     S S′ : Formula
 
-infix 4 _IsRelatedTo_
+module Deep where
 
-data _IsRelatedTo_ (P Q : Formula) : Set (suc a) where
-  infers     : (P⟶Q : P ⟶ Q) → P IsRelatedTo Q
-  derives    : (P⟶⋆Q : P ⟶⋆ Q) → P IsRelatedTo Q
-  equals-fwd : (P∼Q : P ∼ Q) → P IsRelatedTo Q
-  equals-bwd : (Q∼P : Q ∼ P) → P IsRelatedTo Q
-  equals     : (P≃Q : P ≃ Q) → P IsRelatedTo Q
+  open MAV public hiding (_⟶⋆_)
+
+  infix  1 begin_
+  infixr 2 _⟶⟨_⟩_
+  infixr 2 _∼⟨_⟩_
+  infixr 2 _∼⟨_⟨_
+  infix  3 _∎
+
+  data _IsDerivableFrom_ : Formula → Formula → Set (suc a) where
+    _∼⟨_⟩_   : (P : Formula) → P ∼ᶜ Q → Q IsDerivableFrom R → P IsDerivableFrom R
+    _∼⟨_⟨_   : (P : Formula) → Q ∼ᶜ P → Q IsDerivableFrom R → P IsDerivableFrom R
+    _⟶⟨_⟩_  : (P : Formula) → P ⟶ᶜ Q → Q IsDerivableFrom R → P IsDerivableFrom R
+    _∎       : (P : Formula) → P IsDerivableFrom P
+
+  data _⟶⋆_ (P Q : Formula) : Set (suc a) where
+    begin_ : P IsDerivableFrom Q → P ⟶⋆ Q
+
+  from-≃ : P ≃ Q → P IsDerivableFrom Q
+  from-≃ {P} {.P} ε                     = P ∎
+  from-≃ {P} {Q} (SymClosure.fwd φ ◅ ψ) = P ∼⟨ φ ⟩ from-≃ ψ
+  from-≃ {P} {Q} (SymClosure.bwd φ ◅ ψ) = P ∼⟨ φ ⟨ from-≃ ψ
+  
+  from-⟶ : P ⟶ Q → P IsDerivableFrom Q
+  from-⟶ {P} {Q} P⟶Q = P ⟶⟨ emb P⟶Q ⟩ Q ∎
+
+  _`⟨⊗ᵈ_ : P IsDerivableFrom P′ → (Q : Formula) → (P `⊗ Q) IsDerivableFrom (P′ `⊗ Q)
+  (P ⟶⟨ φ ⟩ ψ) `⟨⊗ᵈ Q = P `⊗ Q ⟶⟨ φ `⟨⊗ Q ⟩ ψ `⟨⊗ᵈ Q
+  (P ∼⟨ φ ⟩ ψ) `⟨⊗ᵈ Q = P `⊗ Q ∼⟨ φ `⟨⊗ Q ⟩ ψ `⟨⊗ᵈ Q
+  (P ∼⟨ φ ⟨ ψ) `⟨⊗ᵈ Q = P `⊗ Q ∼⟨ φ `⟨⊗ Q ⟨ ψ `⟨⊗ᵈ Q
+  (P ∎) `⟨⊗ᵈ Q = (P `⊗ Q) ∎
+
+  _`⊗⟩ᵈ_ : (P : Formula) → Q IsDerivableFrom Q′ → (P `⊗ Q) IsDerivableFrom (P `⊗ Q′)
+  P `⊗⟩ᵈ (Q ⟶⟨ φ ⟩ ψ) = P `⊗ Q ⟶⟨ P `⊗⟩ φ ⟩ P `⊗⟩ᵈ ψ
+  P `⊗⟩ᵈ (Q ∼⟨ φ ⟩ ψ) = P `⊗ Q ∼⟨ P `⊗⟩ φ ⟩ P `⊗⟩ᵈ ψ
+  P `⊗⟩ᵈ (Q ∼⟨ φ ⟨ ψ) = P `⊗ Q ∼⟨ P `⊗⟩ φ ⟨ P `⊗⟩ᵈ ψ
+  P `⊗⟩ᵈ (Q ∎) = P `⊗ Q ∎
+
+  _`⟨⅋ᵈ_ : P IsDerivableFrom P′ → (Q : Formula) → (P `⅋ Q) IsDerivableFrom (P′ `⅋ Q)
+  (P ⟶⟨ φ ⟩ ψ) `⟨⅋ᵈ Q = P `⅋ Q ⟶⟨ φ `⟨⅋ Q ⟩ ψ `⟨⅋ᵈ Q
+  (P ∼⟨ φ ⟩ ψ) `⟨⅋ᵈ Q = P `⅋ Q ∼⟨ φ `⟨⅋ Q ⟩ ψ `⟨⅋ᵈ Q
+  (P ∼⟨ φ ⟨ ψ) `⟨⅋ᵈ Q = P `⅋ Q ∼⟨ φ `⟨⅋ Q ⟨ ψ `⟨⅋ᵈ Q
+  (P ∎) `⟨⅋ᵈ Q = (P `⅋ Q) ∎
+
+  _`⅋⟩ᵈ_ : (P : Formula) → Q IsDerivableFrom Q′ → (P `⅋ Q) IsDerivableFrom (P `⅋ Q′)
+  P `⅋⟩ᵈ (Q ⟶⟨ φ ⟩ ψ) = P `⅋ Q ⟶⟨ P `⅋⟩ φ ⟩ P `⅋⟩ᵈ ψ
+  P `⅋⟩ᵈ (Q ∼⟨ φ ⟩ ψ) = P `⅋ Q ∼⟨ P `⅋⟩ φ ⟩ P `⅋⟩ᵈ ψ
+  P `⅋⟩ᵈ (Q ∼⟨ φ ⟨ ψ) = P `⅋ Q ∼⟨ P `⅋⟩ φ ⟨ P `⅋⟩ᵈ ψ
+  P `⅋⟩ᵈ (Q ∎) = P `⅋ Q ∎
+
+  _`⟨◁ᵈ_ : P IsDerivableFrom P′ → (Q : Formula) → (P `◁ Q) IsDerivableFrom (P′ `◁ Q)
+  (P ⟶⟨ φ ⟩ ψ) `⟨◁ᵈ Q = P `◁ Q ⟶⟨ φ `⟨◁ Q ⟩ ψ `⟨◁ᵈ Q
+  (P ∼⟨ φ ⟩ ψ) `⟨◁ᵈ Q = P `◁ Q ∼⟨ φ `⟨◁ Q ⟩ ψ `⟨◁ᵈ Q
+  (P ∼⟨ φ ⟨ ψ) `⟨◁ᵈ Q = P `◁ Q ∼⟨ φ `⟨◁ Q ⟨ ψ `⟨◁ᵈ Q
+  (P ∎) `⟨◁ᵈ Q = (P `◁ Q) ∎
+
+  _`◁⟩ᵈ_ : (P : Formula) → Q IsDerivableFrom Q′ → (P `◁ Q) IsDerivableFrom (P `◁ Q′)
+  P `◁⟩ᵈ (Q ⟶⟨ φ ⟩ ψ) = P `◁ Q ⟶⟨ P `◁⟩ φ ⟩ P `◁⟩ᵈ ψ
+  P `◁⟩ᵈ (Q ∼⟨ φ ⟩ ψ) = P `◁ Q ∼⟨ P `◁⟩ φ ⟩ P `◁⟩ᵈ ψ
+  P `◁⟩ᵈ (Q ∼⟨ φ ⟨ ψ) = P `◁ Q ∼⟨ P `◁⟩ φ ⟨ P `◁⟩ᵈ ψ
+  P `◁⟩ᵈ (Q ∎) = P `◁ Q ∎
+
+  _`⟨&ᵈ_ : P IsDerivableFrom P′ → (Q : Formula) → (P `& Q) IsDerivableFrom (P′ `& Q)
+  (P ⟶⟨ φ ⟩ ψ) `⟨&ᵈ Q = P `& Q ⟶⟨ φ `⟨& Q ⟩ ψ `⟨&ᵈ Q
+  (P ∼⟨ φ ⟩ ψ) `⟨&ᵈ Q = P `& Q ∼⟨ φ `⟨& Q ⟩ ψ `⟨&ᵈ Q
+  (P ∼⟨ φ ⟨ ψ) `⟨&ᵈ Q = P `& Q ∼⟨ φ `⟨& Q ⟨ ψ `⟨&ᵈ Q
+  (P ∎) `⟨&ᵈ Q = (P `& Q) ∎
+
+  _`&⟩ᵈ_ : (P : Formula) → Q IsDerivableFrom Q′ → (P `& Q) IsDerivableFrom (P `& Q′)
+  P `&⟩ᵈ (Q ⟶⟨ φ ⟩ ψ) = P `& Q ⟶⟨ P `&⟩ φ ⟩ P `&⟩ᵈ ψ
+  P `&⟩ᵈ (Q ∼⟨ φ ⟩ ψ) = P `& Q ∼⟨ P `&⟩ φ ⟩ P `&⟩ᵈ ψ
+  P `&⟩ᵈ (Q ∼⟨ φ ⟨ ψ) = P `& Q ∼⟨ P `&⟩ φ ⟨ P `&⟩ᵈ ψ
+  P `&⟩ᵈ (Q ∎) = P `& Q ∎
+
+  _`⟨⊕ᵈ_ : P IsDerivableFrom P′ → (Q : Formula) → (P `⊕ Q) IsDerivableFrom (P′ `⊕ Q)
+  (P ⟶⟨ φ ⟩ ψ) `⟨⊕ᵈ Q = P `⊕ Q ⟶⟨ φ `⟨⊕ Q ⟩ ψ `⟨⊕ᵈ Q
+  (P ∼⟨ φ ⟩ ψ) `⟨⊕ᵈ Q = P `⊕ Q ∼⟨ φ `⟨⊕ Q ⟩ ψ `⟨⊕ᵈ Q
+  (P ∼⟨ φ ⟨ ψ) `⟨⊕ᵈ Q = P `⊕ Q ∼⟨ φ `⟨⊕ Q ⟨ ψ `⟨⊕ᵈ Q
+  (P ∎) `⟨⊕ᵈ Q = (P `⊕ Q) ∎
+
+  _`⊕⟩ᵈ_ : (P : Formula) → Q IsDerivableFrom Q′ → (P `⊕ Q) IsDerivableFrom (P `⊕ Q′)
+  P `⊕⟩ᵈ (Q ⟶⟨ φ ⟩ ψ) = P `⊕ Q ⟶⟨ P `⊕⟩ φ ⟩ P `⊕⟩ᵈ ψ
+  P `⊕⟩ᵈ (Q ∼⟨ φ ⟩ ψ) = P `⊕ Q ∼⟨ P `⊕⟩ φ ⟩ P `⊕⟩ᵈ ψ
+  P `⊕⟩ᵈ (Q ∼⟨ φ ⟨ ψ) = P `⊕ Q ∼⟨ P `⊕⟩ φ ⟨ P `⊕⟩ᵈ ψ
+  P `⊕⟩ᵈ (Q ∎) = P `⊕ Q ∎
+
+  from-⟶ᶜ : P ⟶ᶜ Q → P IsDerivableFrom Q
+  from-⟶ᶜ (emb φ) = from-⟶ φ
+  from-⟶ᶜ (φ `⟨⊗ Q) = from-⟶ᶜ φ `⟨⊗ᵈ Q
+  from-⟶ᶜ (P `⊗⟩ φ) = P `⊗⟩ᵈ from-⟶ᶜ φ
+  from-⟶ᶜ (φ `⟨⅋ Q) = from-⟶ᶜ φ `⟨⅋ᵈ Q
+  from-⟶ᶜ (P `⅋⟩ φ) = P `⅋⟩ᵈ from-⟶ᶜ φ
+  from-⟶ᶜ (φ `⟨◁ Q) = from-⟶ᶜ φ `⟨◁ᵈ Q
+  from-⟶ᶜ (P `◁⟩ φ) = P `◁⟩ᵈ from-⟶ᶜ φ
+  from-⟶ᶜ (φ `⟨& Q) = from-⟶ᶜ φ `⟨&ᵈ Q
+  from-⟶ᶜ (P `&⟩ φ) = P `&⟩ᵈ from-⟶ᶜ φ
+  from-⟶ᶜ (φ `⟨⊕ Q) = from-⟶ᶜ φ `⟨⊕ᵈ Q
+  from-⟶ᶜ (P `⊕⟩ φ) = P `⊕⟩ᵈ from-⟶ᶜ φ
+
+  from-⟶₌ : P ⟶₌ Q → P IsDerivableFrom Q
+  from-⟶₌ (inj₁ φ) = from-≃ φ
+  from-⟶₌ (inj₂ φ) = from-⟶ᶜ φ
+
+  from-⟶⋆ : P MAV.⟶⋆ Q → P IsDerivableFrom Q
+  from-⟶⋆ {P} {.P} ε       = P ∎
+  from-⟶⋆ {P} { Q} (φ ◅ ψ) = trans (from-⟶₌ φ) (from-⟶⋆ ψ)
+    where
+      trans : Transitive _IsDerivableFrom_
+      trans (P ⟶⟨ φ ⟩ ψ′) ψ = P ⟶⟨ φ ⟩ trans ψ′ ψ
+      trans (P ∼⟨ φ ⟩ ψ′) ψ = P ∼⟨ φ ⟩ trans ψ′ ψ
+      trans (P ∼⟨ φ ⟨ ψ′) ψ = P ∼⟨ φ ⟨ trans ψ′ ψ
+      trans (P ∎) ψ = ψ
+
+  from : P MAV.⟶⋆ Q → P ⟶⋆ Q
+  from φ = begin from-⟶⋆ φ
+
+  to : P IsDerivableFrom Q → P MAV.⟶⋆ Q
+  to (_ ⟶⟨ φ ⟩ ψ) = inj₂ φ ◅ to ψ
+  to (_ ∼⟨ φ ⟩ ψ) = inj₁ (SymClosure.fwd φ ◅ ε) ◅ to ψ
+  to (_ ∼⟨ φ ⟨ ψ) = inj₁ (SymClosure.bwd φ ◅ ε) ◅ to ψ
+  to (_ ∎) = ε
+
+open MAV public using (_⟶⋆_)
+open Deep public hiding (_⟶⋆_; begin_)
 
 infix 1 begin_
 
-begin_ : _IsRelatedTo_ ⇒ _⟶⋆_
-begin (infers P⟶Q) = step P⟶Q ◅ ε
-begin (derives P⟶⋆Q) = P⟶⋆Q
-begin (equals-fwd P∼Q) = fwd P∼Q ◅ ε
-begin (equals-bwd Q∼P) = bwd Q∼P ◅ ε
-begin (equals P≃Q) = emb (inj₁ P≃Q) ◅ ε
-
-infixr 2 ≡-step
-
-≡-step : P ≡ Q → Q IsRelatedTo R → P IsRelatedTo R
-≡-step ≡.refl Q-R = Q-R
-
-syntax ≡-step P Q-R P≡Q = P ≡⟨ P≡Q ⟩ Q-R
-
-infixr 2 ⟶-step
-
-⟶-step : P ⟶ Q → Q IsRelatedTo R → P IsRelatedTo R
-⟶-step P⟶Q Q-R = derives (step P⟶Q ◅ (begin Q-R))
-
-syntax ⟶-step P Q-R P⟶Q = P ⟶⟨ P⟶Q ⟩ Q-R
-
-infixr 2 ⟶⋆-step
-
-⟶⋆-step : P ⟶⋆ Q → Q IsRelatedTo R → P IsRelatedTo R
-⟶⋆-step P⟶⋆Q Q-R = derives (P⟶⋆Q ◅◅ (begin Q-R))
-
-syntax ⟶⋆-step P Q-R P⟶⋆Q = P ⟶⋆⟨ P⟶⋆Q ⟩ Q-R
-
-infixr 2 ∼-step-fwd
-
-∼-step-fwd : P ∼ Q → Q IsRelatedTo R → P IsRelatedTo R
-∼-step-fwd P∼Q Q-R = derives (fwd P∼Q ◅ (begin Q-R))
-
-syntax ∼-step-fwd P Q-R P∼Q = P ∼⟨ P∼Q ⟩ Q-R
-
-infixr 2 ∼-step-bwd
-
-∼-step-bwd : Q ∼ P → Q IsRelatedTo R → P IsRelatedTo R
-∼-step-bwd Q∼P Q-R = derives (bwd Q∼P ◅ (begin Q-R))
-
-syntax ∼-step-bwd P Q-R Q∼P = P ∼⟨ Q∼P ⟨ Q-R
-
-infixr 2 ≃-step-fwd
-
-≃-step-fwd : P ≃ Q → Q IsRelatedTo R → P IsRelatedTo R
-≃-step-fwd P≃Q Q-R = derives (emb (inj₁ P≃Q) ◅ (begin Q-R))
-
-syntax ≃-step-fwd P Q-R P≃Q = P ≃⟨ P≃Q ⟩ Q-R
-
-infixr 2 ≃-step-bwd
-
-≃-step-bwd : Q ≃ P → Q IsRelatedTo R → P IsRelatedTo R
-≃-step-bwd Q≃P Q-R = derives (emb (inj₁ (EqClosure.symmetric _ Q≃P)) ◅ (begin Q-R))
-
-syntax ≃-step-bwd P Q-R P≃Q = P ≃⟨ P≃Q ⟨ Q-R
-
-infix 3 _∎
-
-_∎ : Reflexive _IsRelatedTo_
-_∎ = derives ⟶⋆.refl
- 
+begin_ : _IsDerivableFrom_ ⇒ _⟶⋆_
+begin φ = to φ

@@ -116,7 +116,7 @@ module _ {ℓ} {_𝓡_ : Rel Formula ℓ} where
 
 -- Interpret the reduction modulo the equivalence
 ⟦_⟧step : P ⟶₌ Q → ⟦ Q ⟧ ≲ ⟦ P ⟧
-⟦_⟧step = mono [ reflexive ∘ Eq.sym ∘ ⟦_⟧eq , ⟦_⟧step-ax ]
+⟦_⟧step = [ reflexive ∘ Eq.sym ∘ ⟦_⟧eq , mono ⟦_⟧step-ax ]
 
 -- Interpret the reflexive-transitive closure of reduction
 ⟦_⟧steps : P ⟶⋆ Q → ⟦ Q ⟧ ≲ ⟦ P ⟧

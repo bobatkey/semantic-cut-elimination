@@ -63,11 +63,12 @@ data _⟶_ : Rel Formula a where
 infix 5 _⟶₌_
 
 _⟶₌_ : Rel Formula (suc a)
-_⟶₌_ = CongClosure (_≃_ ∪ _⟶_)
+_⟶₌_ = _≃_ ∪ CongClosure _⟶_
 
 infix  5 _⟶⋆_
 
 _⟶⋆_ : Rel Formula (suc a)
 _⟶⋆_ = Star _⟶₌_
 
-pattern step P⟶Q = emb (inj₂ P⟶Q)
+step : P ⟶ Q → P ⟶₌ Q
+step P⟶Q = inj₂ (emb P⟶Q)
