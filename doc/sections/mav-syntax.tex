@@ -220,16 +220,18 @@ Hence, in MAV, inference rules are presented as rewrite rules.
 \emph{Invertible derivation}, written $\vBiInfer*$, is the symmetric core of derivation, or, alternatively, the reflexive, transitive closure of invertible inference.
 \emph{Proofs} are derivations that terminate in the unit, \eg a derivation $\vP\vInferFrom*\vUnit$ is a proof of $\vP$.
 
-A derivation is in \emph{normal form} if it does not use \cref{rule:Cut} and \cref{rule:Axiom} is restricted to \cref{rule:AtomAxiom}.
-\begin{displaymath}
-  \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
-    \makebox[\vInferFromDefnWidthOfLHS][l]{$\vNeg\va\vParr\vPos\va$}
-     & \vInferFrom
-     & \makebox[\vInferFromDefnWidthOfRHS][l]{$\vUnit$}
-     & \RuleLabel{AtomAxiom}
-  \end{array}
-\end{displaymath}
-These restrictions correspond to the outcome of cut elimination and identity expansion, respectively.
+\begin{definition}\label{defn:normal}
+  A derivation is \emph{normal} when it does not use \cref{rule:Cut} and its uses of \cref{rule:Axiom} are restricted to \cref{rule:AtomAxiom}, as defined by the following axiom:
+  \begin{displaymath}
+    \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
+      \makebox[\vInferFromDefnWidthOfLHS][l]{$\vNeg\va\vParr\vPos\va$}
+       & \vInferFrom
+       & \makebox[\vInferFromDefnWidthOfRHS][l]{$\vUnit$}
+       & \RuleLabel{AtomAxiom}
+    \end{array}
+  \end{displaymath}
+\end{definition}
+(The restrictions on normal derivations correspond to the result of cut elimination and identity expansion.)
 \begin{remark}
   In BV, the structural connectives are usually presented as lists, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
   % The equations defining duality are usually included in the decidable equality on structures.
