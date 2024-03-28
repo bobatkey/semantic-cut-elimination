@@ -27,10 +27,10 @@ module _ where
   interactᵖ P Q ._≤ᵖ_.*≤ᵖ* {x} (y , z , x≤y⅋z , ϕ₁ , lift z≤P⊗Q) =
     lift (x≤y⅋z
           ◅◅ (y `⅋⟩⋆ z≤P⊗Q)
-          ◅◅ (bwd (`⅋-comm _ _) ◅ ε)
+          ◅◅ (bwd `⅋-comm ◅ ε)
           ◅◅ (step `switch ◅ ε)
-          ◅◅ (P `⊗⟩⋆ ((bwd (`⅋-comm _ _) ◅ ε) ◅◅ (ϕ₁ {Q} ((leaf Q (lift ε)) , ε)) .lower))
-          ◅◅ fwd (`⊗-identityʳ _) ◅ ε)
+          ◅◅ (P `⊗⟩⋆ ((bwd `⅋-comm ◅ ε) ◅◅ (ϕ₁ {Q} ((leaf Q (lift ε)) , ε)) .lower))
+          ◅◅ fwd `⊗-identityʳ ◅ ε)
 
   interact : ∀ P Q → (ηⁱ Q MS.⊸ⁱ M◁.ιⁱ) MS.∙ⁱ ηⁱ (P `⊗ Q) ≤ⁱ ηⁱ P
   interact P Q =
@@ -46,7 +46,7 @@ mutual
   reflect (`- A) = S.≤ⁱ-refl
   reflect (P `⅋ Q) = ≤ⁱ-trans MS.ηⁱ-preserve-∙ (MS.∙ⁱ-mono (reflect P) (reflect Q))
   reflect (P `⊗ Q) = ⟨ MS.⊸ⁱ-residual-to (≤ⁱ-trans (MS.∙ⁱ-mono (reify Q) ≤ⁱ-refl) (≤ⁱ-trans (interact P Q) (reflect P)))
-                      , MS.⊸ⁱ-residual-to (≤ⁱ-trans (MS.∙ⁱ-mono (reify P) (ηⁱ-mono (fwd (`⊗-comm _ _) ◅ ε))) (≤ⁱ-trans (interact Q P) (reflect Q))) ⟩ⁱ
+                      , MS.⊸ⁱ-residual-to (≤ⁱ-trans (MS.∙ⁱ-mono (reify P) (ηⁱ-mono (fwd `⊗-comm ◅ ε))) (≤ⁱ-trans (interact Q P) (reflect Q))) ⟩ⁱ
   reflect (P `& Q) = ≤ⁱ-trans η-preserve-+ [ (≤ⁱ-trans (reflect P) inj₁ⁱ) , (≤ⁱ-trans (reflect Q) inj₂ⁱ) ]ⁱ
   reflect (P `⊕ Q) = ⟨ ≤ⁱ-trans (ηⁱ-mono (step `left ◅ ε)) (reflect P) ,
                         ≤ⁱ-trans (ηⁱ-mono (step `right ◅ ε)) (reflect Q) ⟩ⁱ

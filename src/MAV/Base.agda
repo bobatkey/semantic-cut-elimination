@@ -40,15 +40,15 @@ module _ where
 
   mutual
     data _∼_ : Rel Formula a where
-      -- `⊗-assoc     : Associative _`⊗_
-      `⊗-comm      : Commutative _`⊗_
-      `⊗-identityʳ : RightIdentity `I _`⊗_
-      `⅋-assoc     : Associative _`⅋_
-      `⅋-comm      : Commutative _`⅋_
-      `⅋-identityʳ : RightIdentity `I _`⅋_
-      `◁-assoc     : Associative _`◁_
-      `◁-identityʳ : RightIdentity `I _`◁_
-      `◁-identityˡ : LeftIdentity `I _`◁_
+      `⊗-assoc     : ((P `⊗ Q) `⊗ R) ∼ (P `⊗ (Q `⊗ R))
+      `⊗-comm      : (P `⊗ Q) ∼ (Q `⊗ P)
+      `⊗-identityʳ : (P `⊗ `I) ∼ P
+      `⅋-assoc     : ((P `⅋ Q) `⅋ R) ∼ (P `⅋ (Q `⅋ R))
+      `⅋-comm      : (P `⅋ Q) ∼ (Q `⅋ P)
+      `⅋-identityʳ : (P `⅋ `I) ∼ P
+      `◁-assoc     : ((P `◁ Q) `◁ R) ∼ (P `◁ (Q `◁ R))
+      `◁-identityʳ : (P `◁ `I) ∼ P
+      `◁-identityˡ : (`I `◁ P) ∼ P
 
     open import Algebra.Definitions _∼_
 
@@ -224,18 +224,18 @@ P⟶⋆P′ `⟨⊕⋆ Q = ⟶⋆-map _ (_`⟨⊕ Q) P⟶⋆P′
 
 `⅋-isPosemigroup : IsPosemigroup  _⟷⋆_ _⟶⋆_ _`⅋_
 `⅋-isPosemigroup .IsPosemigroup.isPomagma = `⅋-isPomagma
-`⅋-isPosemigroup .IsPosemigroup.assoc P Q R = fwd∧bwd (`⅋-assoc P Q R)
+`⅋-isPosemigroup .IsPosemigroup.assoc P Q R = fwd∧bwd `⅋-assoc
 
 `⅋-isPomonoid : IsPomonoid _⟷⋆_ _⟶⋆_ _`⅋_ `I
 `⅋-isPomonoid .IsPomonoid.isPosemigroup = `⅋-isPosemigroup
 `⅋-isPomonoid .IsPomonoid.identity = identityˡ , identityʳ
   where
-    identityʳ = λ P → fwd∧bwd (`⅋-identityʳ P)
-    identityˡ = λ P → ⟷⋆-trans (fwd∧bwd (`⅋-comm `I P)) (identityʳ P)
+    identityʳ = λ P → fwd∧bwd `⅋-identityʳ
+    identityˡ = λ P → ⟷⋆-trans (fwd∧bwd `⅋-comm) (identityʳ P)
 
 `⅋-isCommutativePomonoid : IsCommutativePomonoid  _⟷⋆_ _⟶⋆_ _`⅋_ `I
 `⅋-isCommutativePomonoid .IsCommutativePomonoid.isPomonoid = `⅋-isPomonoid
-`⅋-isCommutativePomonoid .IsCommutativePomonoid.comm P Q = fwd∧bwd (`⅋-comm P Q)
+`⅋-isCommutativePomonoid .IsCommutativePomonoid.comm P Q = fwd∧bwd `⅋-comm
 
 ------------------------------------------------------------------------------
 -- Turning ◁ into a pomonoid
@@ -249,14 +249,14 @@ P⟶⋆P′ `⟨⊕⋆ Q = ⟶⋆-map _ (_`⟨⊕ Q) P⟶⋆P′
 
 `◁-isPosemigroup : IsPosemigroup  _⟷⋆_ _⟶⋆_ _`◁_
 `◁-isPosemigroup .IsPosemigroup.isPomagma = `◁-isPomagma
-`◁-isPosemigroup .IsPosemigroup.assoc P Q R = fwd∧bwd (`◁-assoc P Q R)
+`◁-isPosemigroup .IsPosemigroup.assoc P Q R = fwd∧bwd `◁-assoc
 
 `◁-isPomonoid : IsPomonoid _⟷⋆_ _⟶⋆_ _`◁_ `I
 `◁-isPomonoid .IsPomonoid.isPosemigroup = `◁-isPosemigroup
 `◁-isPomonoid .IsPomonoid.identity = (identityˡ , identityʳ)
   where
-    identityʳ = λ P → fwd∧bwd (`◁-identityʳ P)
-    identityˡ = λ P → fwd∧bwd (`◁-identityˡ P)
+    identityʳ = λ P → fwd∧bwd `◁-identityʳ
+    identityˡ = λ P → fwd∧bwd `◁-identityˡ
 
 ------------------------------------------------------------------------------
 -- Turning ⅋ and ◁ into a duoid
@@ -265,8 +265,8 @@ P⟶⋆P′ `⟨⊕⋆ Q = ⟶⋆-map _ (_`⟨⊕ Q) P⟶⋆P′
 `⅋-`◁-isDuoidal .IsDuoidal.∙-isPomonoid = `⅋-isPomonoid
 `⅋-`◁-isDuoidal .IsDuoidal.◁-isPomonoid = `◁-isPomonoid
 `⅋-`◁-isDuoidal .IsDuoidal.∙-◁-entropy P Q R S = step `sequence ◅ ε
-`⅋-`◁-isDuoidal .IsDuoidal.∙-idem-ι = fwd (`⅋-identityʳ `I) ◅ ε
-`⅋-`◁-isDuoidal .IsDuoidal.◁-idem-ε = bwd (`◁-identityʳ `I) ◅ ε
+`⅋-`◁-isDuoidal .IsDuoidal.∙-idem-ι = fwd `⅋-identityʳ ◅ ε
+`⅋-`◁-isDuoidal .IsDuoidal.◁-idem-ε = bwd `◁-identityʳ ◅ ε
 `⅋-`◁-isDuoidal .IsDuoidal.ε≲ι = ε
 
 ------------------------------------------------------------------------------
@@ -286,7 +286,7 @@ open import Algebra.Definitions _⟶⋆_ using (_DistributesOver_)
 
 -- FIXME: should probably have a left-external and a right-external
 `⅋-distrib-`& : _`⅋_ DistributesOver _`&_
-`⅋-distrib-`& .proj₁ P Q R = fwd (`⅋-comm _ _) ◅ step `external ◅ ε ◅◅ `&-mono (fwd (`⅋-comm _ _) ◅ ε) (fwd (`⅋-comm _ _) ◅ ε)
+`⅋-distrib-`& .proj₁ P Q R = fwd `⅋-comm ◅ step `external ◅ ε ◅◅ `&-mono (fwd `⅋-comm ◅ ε) (fwd `⅋-comm ◅ ε)
 `⅋-distrib-`& .proj₂ P Q R = step `external ◅ ε
 
 `&-`◁-entropy : Entropy _⟶⋆_ _`&_ _`◁_
