@@ -89,15 +89,18 @@ _⟷⋆_ = SymCore _⟶⋆_
 
 fwd : P ∼ Q → P ⟶₌ Q
 fwd P∼Q = emb (inj₁ (SymClosure.fwd (emb P∼Q) ◅ ε))
+{-# DISPLAY emb (inj₁ (SymClosure.fwd (emb P∼Q) ◅ ε)) = fwd P∼Q #-}
 
 bwd : P ∼ Q → Q ⟶₌ P
 bwd P∼Q = emb (inj₁ (SymClosure.bwd (emb P∼Q) ◅ ε))
+{-# DISPLAY emb (inj₁ (SymClosure.bwd (emb P∼Q) ◅ ε)) = bwd P∼Q #-}
 
 fwd∧bwd : P ∼ Q → P ⟷⋆ Q
 fwd∧bwd P∼Q = (fwd P∼Q ◅ ε , bwd P∼Q ◅ ε)
 
 step : P ⟶ Q → P ⟶₌ Q
 step P⟶Q = emb (inj₂ P⟶Q)
+{-# DISPLAY emb (inj₂ P⟶Q) = step P⟶Q #-}
 
 ⟶⋆-isPartialOrder : IsPartialOrder _⟷⋆_ _⟶⋆_
 ⟶⋆-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _⟶⋆_ (StarProps.isPreorder _)
@@ -303,4 +306,4 @@ frame .Frame.⅋-◁-isDuoidal = `⅋-`◁-isDuoidal
 frame .Frame.⅋-distrib-& = `⅋-distrib-`&
 frame .Frame.&-◁-entropy = `&-`◁-entropy
 frame .Frame.&-tidy = step `tidy ◅ ε
-  
+   
