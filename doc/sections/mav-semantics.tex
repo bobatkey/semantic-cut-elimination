@@ -7,18 +7,31 @@
 \newcommand{\Chu}{\mathrm{Chu}}
 \newcommand{\op}{\mathrm{op}}
 
-\bob{Short introduction to the section here}
+To prove the normalisation property for all MAV proofs, we use a
+semantic technique that is akin to Okada's phase space method and to
+Normalisation by Evaluation (NbE). We construct a semantics of the
+whole proof system from the system of normal proofs. This semantics is
+constructed in such a way that after interpreting a proof, the
+(existence of) a normal form can be extracted (or \emph{read back} or
+\emph{reified} in NbE terminology) from the semantic proof.
 
-\begin{itemize}
-\item We construct algebraic models of MAV
-\item MAV-algebras are algebras that MAV is sound for. In some
-  sense, this is straightforward, but we identify precisely the
-  structure that is needed.
-\item The key structure is duoidality.
-\item We develop some model theory here, and show that MAV-algebras
-  can be induced by the weaker structure of MAV-frames. This is
-  essential for the cut-free elimination proof.
-\end{itemize}
+To our knowledge, the semantics of MAV have not been previously
+studied in the literature. The rules are an extension of MALL, so an
+\emph{MAV-algebra} will partly xbe a $*$-autonomous partial order
+(Definition \ref{defn:star-autonomous}) with meets and joins. The
+additional structure for the $\vP \vSeq \vQ$ connective satisfies the
+conditions of a duoidal category \cite{hopf-book} (Definition
+\ref{defn:duoidal}). We show that MAV is sound for MAV-algebras in
+Theorem \ref{thm:soundness}.
+
+To build MAV-algebras from normal proofs, we define the weaker notion
+of an \emph{MAV-frame} (Definition \ref{defn:mav-frame}. We then show
+that a combination of certain closed lower sets (Section
+\ref{sec:closed-lower-sets}) and the Chu construction (Section
+\ref{sec:chu}) construct an MAV-algebra from any MAV-frame. Much of
+these constructions are well-known, but we have new results on lifting
+the Day construction of monoids on closed lower sets and the
+preservation of duoidal relationships that are required for MAV.
 
 \subsection{Pomonoidal, $*$-autonomous, and Duoidal Structure on Partial Orders}
 
@@ -26,7 +39,7 @@ At heart, the semantics of MAV is a collection of interacting monoids
 on a partial order. We collect here the basic definitions and kinds of
 interaction we will need.
 
-\begin{definition}
+\begin{definition}\label{defn:pomonoid}
   A \emph{partial order monoid (pomonoid)} $(\bullet, i)$ on a poset
   $(A, \leq)$ comprises a binary operator $\bullet : A \times A \to A$
   that is monotone in both arguments and an element $i \in A$ such
@@ -34,7 +47,7 @@ interaction we will need.
   pomonoid where additionally $x \bullet y = y \bullet x$.
 \end{definition}
 
-\begin{definition}
+\begin{definition}\label{defn:residual}
   A commutative pomonoid $(\bullet, i)$ on a poset $(A, \leq)$ is
   \emph{residuated} if there is a function
   $\rightblackspoon : A \times A \to A$ such that $x \bullet y \leq z$
@@ -48,7 +61,7 @@ captured in the definition of $*$-autonomous category is, due to Barr
 analogue, also called a CL algebra by Troelstra
 \cite{Troelstra92:lll}.
 
-\begin{definition}
+\begin{definition}\label{defn:star-autonomous}
   A \emph{$*$-autonomous partial order} is a structure
   $(A, \leq, \otimes, I, \lnot)$ where $(\otimes, I)$ is a pomonoid on
   $(A, \leq)$ and $\lnot : A^\op \to A$ is an anti-monotone and
@@ -74,7 +87,7 @@ structure. We find it useful to describe one pomonoid as being
 the relationship, and by analogy with one monoid distributing over
 another.
 
-\begin{definition}
+\begin{definition}\label{defn:duoidal}
   A pomonoid $(\bullet, i)$ is \emph{duoidal over} another pomonoid
   $(\lhd, j)$ on a partial order $(A, \leq)$ if the following
   inequalities hold:
@@ -178,7 +191,7 @@ MAV-frame. In Section \ref{sec:mav-cut-elimination} we will show that
 the MAV-algebra constructed from the normal proof MAV-frame allows us
 to prove that all proofs in MAV can be normalised to normal proofs.
 
-\begin{definition}
+\begin{definition}\label{defn:mav-frame}
   An \emph{MAV-frame} is a structure $(F, \leq, \parr, \lhd, I, +)$
   where $(F, \leq)$ is a partial order, $(F, \leq, \parr, I)$ is a
   commutative pomonoid, $(F, \leq, \lhd, I)$ is a pomonoid, $+$ is a
@@ -601,13 +614,21 @@ pomonoids:
 
 \subsection{Construction of MAV-algebras}
 
+The propositions in the preceeding three sections together prove that
+every MAV-frame yields an MAV-algebra:
+
 \begin{theorem}\label{thm:algebra-from-frame}
   If $(F, \leq, \parr, \lhd, I, +)$ is an MAV-frame, then
-  $(\Chu(\ClosedLowerSet{F}, I), \sqsubseteq)$ has the structure of an
+  $(\Chu(\ClosedLowerSet{F}, \ClosedDay{I}), \sqsubseteq)$ has the structure of an
   MAV-algebra.
 \end{theorem}
 
-\begin{proof}
-  Combining the propositions above, in the special case of the units
-  of the two pomonoids being equal.
-\end{proof}
+With this theorem we can define a notion of validity in MAV in terms
+of truth in all MAV-frame generated algebras. By Theorem
+\ref{thm:soundness}, MAV is sound for this notion of validity:
+
+\begin{theorem}\label{thm:mavframe-soundness}
+  MAV is sound for the MAV-frame semantics: if $P \longrightarrow^* I$
+  then for all MAV-frames $F$, $\sem{I} \sqsubseteq \sem{P}$ in
+  $(\Chu(\ClosedLowerSet{F}, \ClosedDay{I}), \sqsubseteq)$.
+\end{theorem}

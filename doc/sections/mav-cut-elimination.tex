@@ -103,3 +103,13 @@ the non-normal proof rules of MAV.
   by definition means that there is a normal proof
   $P \longrightarrow^* I$.
 \end{proof}
+
+Another consequence of Proposition \ref{prop:embedding-sem} is that
+MAV is complete for the MAV-frame semantics:
+
+\begin{theorem}\label{thm:completeness}
+  MAV is complete for the MAV-frame semantics: if, for all MAV-frames
+  $F$, $\sem{I} \sqsubseteq \sem{P}$ in
+  $(\Chu(\ClosedLowerSet{F}, \ClosedDay{I}), \sqsubseteq)$, then
+  $P \longrightarrow^* I$.
+\end{theorem}
