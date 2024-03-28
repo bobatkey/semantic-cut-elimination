@@ -79,6 +79,21 @@ Structures are considered equivalent modulo the decidable equality $\vEquiv$, wh
      & \RuleLabel*[parr-assoc]{\vParr-Assoc}
   \end{array}
 \end{displaymath}
+Structure contexts are one-hole contexts over structures. Plugging ($\vC\vPlug\vP$) replaces the hole in $\vC$ with $\vP$.
+\begin{displaymath}
+  \vC,\vD
+  \Coloneq \vEmpty
+  \mid     \vC\vSeq \vQ
+  \mid     \vP\vSeq \vD
+  \mid     \vC\vTens\vQ
+  \mid     \vP\vTens\vD
+  \mid     \vC\vParr\vQ
+  \mid     \vP\vParr\vD
+  \mid     \vC\vWith\vQ
+  \mid     \vP\vWith\vD
+  \mid     \vC\vPlus\vQ
+  \mid     \vP\vPlus\vD
+\end{displaymath}
 The inference rules of MAV are presented as a \emph{rewriting system} on structures. As this may be surprising to readers unfamiliar with deep inference, let us examine how this presentation relates to the usual presentation of linear logic.
 Rule~(\ref{rule:AxiomLL}), shown below, is the axiom rule in the usual one-sided presentation of linear logic.
 In the one-sided presentation, the turnstile is vestigial syntax, and can be removed.
@@ -229,4 +244,5 @@ These restrictions correspond to the outcome of cut elimination and identity exp
     $\inlineequation[notation:vlpr]{%
         \vlderivation{\vlpr{}{}{\vP}}}$
   \end{center}
+  The relation between the deductive system for BV and rewrite systems is well-known, \eg by Kahramanogullari~\cite{Kahramanogullari08:maude}, who implements proof search for several deep inference systems in Maude~\cite{ClavelDELMMQ02:maude}.
 \end{remark}
