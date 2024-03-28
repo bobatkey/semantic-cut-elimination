@@ -15,7 +15,7 @@ open import Relation.Binary.PropositionalEquality.Core as ≡ using (_≡_)
 module MAV.Base.Reasoning {a} (Atom : Set a) where
 
 open import MAV.Formula Atom
-import MAV.Base Atom as MAV
+open import MAV.Base Atom as MAV public hiding (_⟶⋆_)
 
 private
   variable
@@ -25,8 +25,6 @@ private
     S S′ : Formula
 
 module Deep where
-
-  open MAV public hiding (_⟶⋆_)
 
   infix  1 begin_
   infixr 2 _⟶⟨_⟩_
@@ -43,13 +41,13 @@ module Deep where
   data _⟶⋆_ (P Q : Formula) : Set (suc a) where
     begin_ : P IsDerivableFrom Q → P ⟶⋆ Q
 
-  from-≃ : P ≃ Q → P IsDerivableFrom Q
-  from-≃ {P} {.P} ε                     = P ∎
-  from-≃ {P} {Q} (SymClosure.fwd φ ◅ ψ) = P ∼⟨ φ ⟩ from-≃ ψ
-  from-≃ {P} {Q} (SymClosure.bwd φ ◅ ψ) = P ∼⟨ φ ⟨ from-≃ ψ
+  to-≃ : P ≃ Q → P IsDerivableFrom Q
+  to-≃ {P} {.P} ε                     = P ∎
+  to-≃ {P} {Q} (SymClosure.fwd φ ◅ ψ) = P ∼⟨ φ ⟩ to-≃ ψ
+  to-≃ {P} {Q} (SymClosure.bwd φ ◅ ψ) = P ∼⟨ φ ⟨ to-≃ ψ
   
-  from-⟶ : P ⟶ Q → P IsDerivableFrom Q
-  from-⟶ {P} {Q} P⟶Q = P ⟶⟨ emb P⟶Q ⟩ Q ∎
+  to-⟶ : P ⟶ Q → P IsDerivableFrom Q
+  to-⟶ {P} {Q} P⟶Q = P ⟶⟨ emb P⟶Q ⟩ Q ∎
 
   _`⟨⊗ᵈ : P IsDerivableFrom P′ → (P `⊗ Q) IsDerivableFrom (P′ `⊗ Q)
   (_ ⟶⟨ φ ⟩ ψ) `⟨⊗ᵈ = _ ⟶⟨ φ `⟨⊗ ⟩ ψ `⟨⊗ᵈ
@@ -111,26 +109,26 @@ module Deep where
   `⊕⟩ᵈ (_ ∼⟨ φ ⟨ ψ) = _ ∼⟨ `⊕⟩ φ ⟨ `⊕⟩ᵈ ψ
   `⊕⟩ᵈ (_ ∎) = _ ∎
 
-  from-⟶ᶜ : P ⟶ᶜ Q → P IsDerivableFrom Q
-  from-⟶ᶜ (emb φ) = from-⟶ φ
-  from-⟶ᶜ (φ `⟨⊗) = from-⟶ᶜ φ `⟨⊗ᵈ
-  from-⟶ᶜ (`⊗⟩ φ) = `⊗⟩ᵈ from-⟶ᶜ φ
-  from-⟶ᶜ (φ `⟨⅋) = from-⟶ᶜ φ `⟨⅋ᵈ
-  from-⟶ᶜ (`⅋⟩ φ) = `⅋⟩ᵈ from-⟶ᶜ φ
-  from-⟶ᶜ (φ `⟨◁) = from-⟶ᶜ φ `⟨◁ᵈ
-  from-⟶ᶜ (`◁⟩ φ) = `◁⟩ᵈ from-⟶ᶜ φ
-  from-⟶ᶜ (φ `⟨&) = from-⟶ᶜ φ `⟨&ᵈ
-  from-⟶ᶜ (`&⟩ φ) = `&⟩ᵈ from-⟶ᶜ φ
-  from-⟶ᶜ (φ `⟨⊕) = from-⟶ᶜ φ `⟨⊕ᵈ
-  from-⟶ᶜ (`⊕⟩ φ) = `⊕⟩ᵈ from-⟶ᶜ φ
+  to-⟶ᶜ : P ⟶ᶜ Q → P IsDerivableFrom Q
+  to-⟶ᶜ (emb φ) = to-⟶ φ
+  to-⟶ᶜ (φ `⟨⊗) = to-⟶ᶜ φ `⟨⊗ᵈ
+  to-⟶ᶜ (`⊗⟩ φ) = `⊗⟩ᵈ to-⟶ᶜ φ
+  to-⟶ᶜ (φ `⟨⅋) = to-⟶ᶜ φ `⟨⅋ᵈ
+  to-⟶ᶜ (`⅋⟩ φ) = `⅋⟩ᵈ to-⟶ᶜ φ
+  to-⟶ᶜ (φ `⟨◁) = to-⟶ᶜ φ `⟨◁ᵈ
+  to-⟶ᶜ (`◁⟩ φ) = `◁⟩ᵈ to-⟶ᶜ φ
+  to-⟶ᶜ (φ `⟨&) = to-⟶ᶜ φ `⟨&ᵈ
+  to-⟶ᶜ (`&⟩ φ) = `&⟩ᵈ to-⟶ᶜ φ
+  to-⟶ᶜ (φ `⟨⊕) = to-⟶ᶜ φ `⟨⊕ᵈ
+  to-⟶ᶜ (`⊕⟩ φ) = `⊕⟩ᵈ to-⟶ᶜ φ
 
-  from-⟶₌ : P ⟶₌ Q → P IsDerivableFrom Q
-  from-⟶₌ (inj₁ φ) = from-≃ φ
-  from-⟶₌ (inj₂ φ) = from-⟶ᶜ φ
+  to-⟶₌ : P ⟶₌ Q → P IsDerivableFrom Q
+  to-⟶₌ (inj₁ φ) = to-≃ φ
+  to-⟶₌ (inj₂ φ) = to-⟶ᶜ φ
 
-  from-⟶⋆ : P MAV.⟶⋆ Q → P IsDerivableFrom Q
-  from-⟶⋆ {P} {.P} ε       = P ∎
-  from-⟶⋆ {P} { Q} (φ ◅ ψ) = trans (from-⟶₌ φ) (from-⟶⋆ ψ)
+  to-⟶⋆ : P MAV.⟶⋆ Q → P IsDerivableFrom Q
+  to-⟶⋆ {P} {.P} ε       = P ∎
+  to-⟶⋆ {P} { Q} (φ ◅ ψ) = trans (to-⟶₌ φ) (to-⟶⋆ ψ)
     where
       trans : Transitive _IsDerivableFrom_
       trans (P ⟶⟨ φ ⟩ ψ′) ψ = P ⟶⟨ φ ⟩ trans ψ′ ψ
@@ -138,19 +136,19 @@ module Deep where
       trans (P ∼⟨ φ ⟨ ψ′) ψ = P ∼⟨ φ ⟨ trans ψ′ ψ
       trans (P ∎) ψ = ψ
 
-  from : P MAV.⟶⋆ Q → P ⟶⋆ Q
-  from φ = begin from-⟶⋆ φ
+  to : P MAV.⟶⋆ Q → P ⟶⋆ Q
+  to φ = begin to-⟶⋆ φ
 
-  to : P IsDerivableFrom Q → P MAV.⟶⋆ Q
-  to (_ ⟶⟨ φ ⟩ ψ) = inj₂ φ ◅ to ψ
-  to (_ ∼⟨ φ ⟩ ψ) = inj₁ (SymClosure.fwd φ ◅ ε) ◅ to ψ
-  to (_ ∼⟨ φ ⟨ ψ) = inj₁ (SymClosure.bwd φ ◅ ε) ◅ to ψ
-  to (_ ∎) = ε
+  from : P IsDerivableFrom Q → P MAV.⟶⋆ Q
+  from (_ ⟶⟨ φ ⟩ ψ) = inj₂ φ ◅ from ψ
+  from (_ ∼⟨ φ ⟩ ψ) = inj₁ (SymClosure.fwd φ ◅ ε) ◅ from ψ
+  from (_ ∼⟨ φ ⟨ ψ) = inj₁ (SymClosure.bwd φ ◅ ε) ◅ from ψ
+  from (_ ∎) = ε
 
 open MAV public using (_⟶⋆_)
-open Deep public hiding (_⟶⋆_; begin_)
+open Deep public using (_∼⟨_⟩_; _∼⟨_⟨_; _⟶⟨_⟩_; _∎)
 
 infix 1 begin_
 
-begin_ : _IsDerivableFrom_ ⇒ _⟶⋆_
-begin φ = to φ
+begin_ : Deep._IsDerivableFrom_ ⇒ _⟶⋆_
+begin φ = Deep.from φ

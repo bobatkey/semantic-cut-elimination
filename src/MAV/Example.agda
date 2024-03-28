@@ -30,7 +30,8 @@ SMAV-proof-of-example₁ = SMAV.step (`axiom example₁) ◅ ε
 
 -- MAV-proof-of-example₁ : (example₁ `⅋ `¬ example₁) MAV.Deep.⟶⋆ `I
 MAV-proof-of-example₁ : (example₁ `⅋ `¬ example₁) MAV.⟶⋆ `I
-MAV-proof-of-example₁ =
+MAV-proof-of-example₁ = 
+  -- {! Deep.to (cut-elim _ SMAV-proof-of-example₁) !}
   begin
     ((`I `⊕ `I) `◁ (`I `& `I)) `⅋ ((`I `& `I) `◁ (`I `⊕ `I)) 
   ∼⟨ emb `⅋-comm ⟨ 
