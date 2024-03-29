@@ -24,11 +24,11 @@ relatively straightforward to formalise in Agda.
 As well as giving confidence in our results, a key benefit of
 formalising the development in a proof assistant like Agda is that the
 proof normalisation process (\Cref{thm:cut-elim}) is executable. For
-example, we can normalise the one step SMAV proof using
+example, we can normalise the one step MAV proof using
 \cref{rule:Axiom} of $\vP \vParr \vDual{\vP}$ where
 $\vP = (\vUnit \vPlus \vUnit) \vSeq (\vUnit \vWith \vUnit)$ to a 38
-step (of which 9 are $\vInferFrom$ steps) MAV proof, presented online
-here:
+step (of which 9 are $\vInferFrom$ steps) normal proof, presented
+online in Agda notation here:
 \begin{center}
   \url{https://bobatkey.github.io/semantic-cut-elimination/MAV.Example.html#908}
 \end{center}
