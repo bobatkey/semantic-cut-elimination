@@ -218,11 +218,11 @@ to prove that all proofs in MAV can be normalised to normal proofs.
   process algebra.
 \end{remark}
 
-\begin{remark}
+\begin{remark}\label[remark]{remark:cka}
   MAV-frames (and MAV-algebras) are also very similar to the
   definition of a \emph{Concurrent Kleene Algebra} (CKA) due to Hoare,
   M{\"o}ller, Struth and Wehrman \cite[Definition
-  4.1]{HoareMSW09}. One difference is that we do not assume that $+$
+  4.1]{Hoare_2011}. One difference is that we do not assume that $+$
   is a join, nor do we assume the existence of infinitary
   joins. Consequently, we have no analogue of the Kleene Star. Another
   difference is that the duoidal relationship is reversed in
@@ -233,11 +233,13 @@ to prove that all proofs in MAV can be normalised to normal proofs.
 
 \begin{proposition}\label[prop]{prop:nmav-frame}
   The \emph{normal proof MAV-frame} \NMAV is the partial order arising
-  as the quotient of the preorder formed from the structures of MAV and
-  $\vP\leq\vQ$ if there is a normal derivation $\vP\vInferFrom*\vQ$,
-  defined as $(\vSS, \vInferFrom*, \vParr, \vSeq, \vUnit, \vWith)$,
-  where $\vSS$ is the set of all MAV structures.
-  The required (in)equalities follow directly from the definition of $\longrightarrow^*$.
+  as the quotient of the preorder formed from the structures of MAV
+  and $\vP\leq\vQ$ if there is a normal derivation
+  $\vP\vInferFrom*\vQ$, defined as
+  $(\vSS, \vInferFrom*, \vParr, \vSeq, \vUnit, \vWith)$, where $\vSS$
+  is the set of all MAV structures.  The required (in)equalities
+  follow directly from the definition of $\vInferFrom*$ for normal
+  proofs.
 \end{proposition}
 
 \begin{remark}

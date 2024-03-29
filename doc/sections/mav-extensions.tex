@@ -1,43 +1,41 @@
 \section{Conclusions and Future Work}\label{sec:future-work}
 
-\bob{Summarise what we've done here}
+We have presented semantic proof of generalised Cut elimination for
+the Multiplicative-Additive System Virtual (MAV), reducing Horne's
+approximately 41 page proof to 7 and also providing an Agda
+mechanisation. Our proof technique also restricts easily to BV (we
+simply skip the use of $+$-closed lower sets and use lower sets
+directly instead). We believe that adding additive units ($\top$ and
+$0$ in Girard's notation) will be straightforward.
 
-\bob{This is all just notes for now}
+This work opens up several paths for future work. The theory developed
+here for lifting Day pomonoids to $+$-closed lower sets should also
+enable alternative Cut-elimination proofs for other substructural
+logics, such as MALL and Bunched Implications (Okada's technique has
+already been applied here by Frumin \cite{Frumin22:psc}). We find the
+technique of using $+$-closed lower sets rather than more opaque
+closure operators more revealing in how the
 
-\subsection{Future Work: Extensions to MAV}
+We also plan to investigate extensions of MAV with exponentials, as in
+the System NEL \cite{GuglielmiS11}, and Kleene Star operators which
+can be seen as the exponential for the $\vSeq$ connective. Adding a
+Kleene Star would tighten the connection with Concurrent Kleene
+Algebras we highlighted in \Cref{remark:cka}. More generally, fixpoint
+operators following Baelde \cite{Baelde12} and De, Jafarrahmani and
+Saurin \cite{De22:psc}. The latters' use of Okada's technique is not
+compatible with Agda's logic because it relies on impredicativity to
+construct fixpoints with the double negation closure. We believe that
+our more direct predicative technique will be able to use Agda's
+inductive and coinductive types.
 
-\subsubsection{Additive Units}
-
-I think this will be easy.
-
-\subsubsection{Probabilistic Additives}
-
-Ross's CSL paper.
-
-\subsubsection{Exponentials, Kleene Star, and Inductive Propositions}
-
-Adding $\oc P$ and $\wn P$, as in System NEL. Adding a Kleene Star as
-exponential for $\vSeq$, which could bring us close to Concurrent
-Kleene Algebra (Hoare et al.).
-
-Baelde's fixpoint logic.
-
-\subsection{Future work: Other Substructural Logics}
-
-\subsubsection{Multiplicative-Additive Linear Logic}
-
-Can probably recreate Okada's result using $+$-closed
-
-\subsubsection{Bunched Implications}
-
-I'm pretty sure that the sheaf construction here can be used to do
-bunched implications too, reproducing Frumin's result in a different
-way.
-
-\subsubsection{Display Calculus}
-
-Cut-elimination for a Display calculus?
-
-\subsection{Future Work: Proof Semantics and Categorical Coherence}
-
-We have done provability semantics of MAV.
+We also plan to extend our semantics of BV and MAV to a categorical
+semantics that considers equalities between proofs as well as
+provability. Such a semantics ought to be useful for treating MAV as a
+session-types style language, as considered by Ciobanu and Horne
+\cite{Ciobanu_2016}. The necessary analogue of MAV-algebras has
+already been investigated by Blute, Panangaden and Slavnov
+\cite{Blute_2010} as BV-categories, which are Aguiar and Mahajan's
+2-monoidal, or duoidal, categories \cite{Aguiar_2010} extended with
+duality. The key task will be to categorify the constructions in this
+paper to show how the categorical analogue of MAV-frames induces
+MAV-categories.
