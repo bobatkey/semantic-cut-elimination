@@ -325,10 +325,10 @@
     self-dual non-commutative operator expressing the concept of
     ``before'' or ``sequencing''. MAV is also an extenson of the the
     logic \emph{Basic System Virtual} (BV) with additives. Formulas in
-    MAV and BV have an appealing reading as processes, and these
-    logics have found application in reasoning about combinations of
-    parallel and sequential behaviour. They are closely related to
-    \emph{Concurrent Kleene Algebras}.
+    BV have an appealing reading as processes with parallel and
+    sequential composition. MAV adds internal and external choice
+    operators. They are also closely related to \emph{Concurrent
+      Kleene Algebras}.
 
     \medskip
 
@@ -350,7 +350,7 @@
     Proofs of Cut elimination for BV and MAV present in the literature
     have relied on intrincate syntactic reasoning and complex
     termination measures. For Linear Logic, Okada has pioneered
-    semantic proofs of cut elimination, using the Phase Space model of
+    semantic proofs of cut elimination, using Girard's Phase Space model of
     Linear Logic and techniques akin to Normalisation by Evaluation in
     $\lambda$-calculus, which avoid this intrincate reasoning, but
     these have not been extended to the Deep Inference systems for BV
@@ -361,13 +361,13 @@
     In this work, we present a concise semantic proof that all MAV
     proofs can be reduced to a normal form avoid the Cut rule and
     other ``non analytic'' rules. Due to the self-dual ``before''
-    connective, we cannot use Okada's Phase Space semantics and have
-    to build the require model using closed lower sets and the Chu
-    construction. As a consequence, we also develop soundness and
-    completeness proofs of MAV (and BV) with respect to a certain
-    class of models. We have mechanised all our proofs in the Agda
-    proof assistant, which provides both assurance of their
-    correctness as well as yielding an executable proof normalisation
+    connective, we cannot use Okada's Phase Space technique, which
+    relies on closure under double negation. We build the model more
+    directly using closed lower sets and the Chu construction. We also
+    develop soundness and completeness proofs of MAV (and BV) with
+    respect to a class of models. We have mechanised all our proofs in
+    the Agda proof assistant, which provides both assurance of their
+    correctness as well as yielding an executable normalisation
     procedure.
   \end{abstract}
   \begin{keyword}
