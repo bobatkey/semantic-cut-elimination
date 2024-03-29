@@ -167,40 +167,70 @@ Hence, in MAV, inference rules are presented as rewrite rules.
      & \vP\vTens\vDual\vP
      & \RuleLabel{Cut}
     \\
+    (\vP\vTens\vQ)\vParr\vR
+     & \vInferFrom
+     & \vP\vTens(\vQ\vParr\vR)
+     & \RuleLabel{Switch}
+    \\
     \vUnit\vWith\vUnit
      & \vInferFrom
      & \vUnit
      & \RuleLabel{Tidy}
     \\
-    (\vP\vTens\vQ)\vParr\vR
+    \vUnit
      & \vInferFrom
-     & \vP\vTens(\vQ\vParr\vR)
-     & \RuleLabel{Switch}
+     & \vUnit \vPlus \vUnit
+     & \RuleLabel{CoTidy}
     \\
     (\vP\vSeq\vQ)\vParr(\vR\vSeq\vS)
      & \vInferFrom
      & (\vP\vParr\vR)\vSeq(\vQ\vParr\vS)
      & \RuleLabel{Sequence}
     \\
+    (\vP\vTens\vR)\vSeq(\vQ\vTens\vS)
+     & \vInferFrom
+     & (\vP\vSeq\vQ)\vTens(\vR\vSeq\vS)
+     & \RuleLabel{CoSequence}
+    \\
     \vP\vPlus\vQ
      & \vInferFrom
      & \vP
      & \RuleLabel{Left}
+    \\
+    \vP
+     & \vInferFrom
+     & \vP\vWith\vQ
+     & \RuleLabel{CoLeft}
     \\
     \vP\vPlus\vQ
      & \vInferFrom
      & \vQ
      & \RuleLabel{Right}
     \\
+    \vQ
+     & \vInferFrom
+     & \vP\vWith\vQ
+     & \RuleLabel{CoRight}
+    \\
     (\vP\vWith\vQ)\vParr\vR
      & \vInferFrom
      & (\vP\vParr\vR)\vWith(\vQ\vParr\vR)
      & \RuleLabel{External}
     \\
+    (\vP \vTens \vR) \vPlus (\vQ \vTens \vR)
+     & \vInferFrom
+     & (\vP \vPlus \vQ) \vTens \vR
+     & \RuleLabel{CoExternal}
+    \\
     (\vP\vSeq\vQ)\vWith(\vR\vSeq\vS)
      & \vInferFrom
      & (\vP\vWith\vR)\vSeq(\vQ\vWith\vS)
      & \RuleLabel{Medial}
+    \\
+    (\vP \vPlus \vR) \vSeq (\vQ \vPlus \vS)
+     & \vInferFrom
+     & (\vP \vSeq \vQ) \vPlus (\vR \vSeq \vS)
+     & \RuleLabel{CoMedial}
     \\
     \vC\vPlug\vP\vInferFrom\vC\vPlug\vQ
      & \text{if}
@@ -215,23 +245,20 @@ Hence, in MAV, inference rules are presented as rewrite rules.
 \end{displaymath}
 (If $\vP\vInferFrom\vQ$, we say that $\vP$ can be inferred from $\vQ$, \ie the arrow points from conclusion to premise.)
 
-\emph{Derivation}, written $\vInferFrom*$ is the reflexive, transitive closure of inference.
-\emph{Invertible inference}, written $\vBiInfer$, is the symmetric core of $\vInferFrom$, \ie ${\vBiInfer} = {\vInferFrom\cap\vInferTo}$.
-\emph{Invertible derivation}, written $\vBiInfer*$, is the symmetric core of derivation, or, alternatively, the reflexive, transitive closure of invertible inference.
-\emph{Proofs} are derivations that terminate in the unit, \eg a derivation $\vP\vInferFrom*\vUnit$ is a proof of $\vP$.
+Note that, except for \cref{rule:Switch}, the rules come in pairs that are dual, in the sense that if a rule is of the form $P \vInferFrom Q$, then its partner is of the form $\vDual{P} \vInferFrom \vDual{Q}$. The \cref{rule:Switch} rule is, up to commutativity, already its own dual. The \cref{rule:Cut}, \cref{rule:CoLeft}, and \cref{rule:CoRight} rules introduce of new formulas going left-to-right. Normal proofs, which we define below, avoid these \emph{synthetic} rules.
 
-\begin{definition}\label{defn:normal}
-  A derivation is \emph{normal} when it does not use \cref{rule:Cut} and its uses of \cref{rule:Axiom} are restricted to \cref{rule:AtomAxiom}, as defined by the following axiom:
-  \begin{displaymath}
-    \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
-      \makebox[\vInferFromDefnWidthOfLHS][l]{$\vNeg\va\vParr\vPos\va$}
-       & \vInferFrom
-       & \makebox[\vInferFromDefnWidthOfRHS][l]{$\vUnit$}
-       & \RuleLabel{AtomAxiom}
-    \end{array}
-  \end{displaymath}
+\begin{definition}
+  \emph{Derivation}, written $\vInferFrom*$ is the reflexive,
+  transitive closure of inference.  \emph{Invertible inference},
+  written $\vBiInfer$, is the symmetric core of $\vInferFrom$, \ie
+  ${\vBiInfer} = {\vInferFrom\cap\vInferTo}$.  \emph{Invertible
+    derivation}, written $\vBiInfer*$, is the symmetric core of
+  derivation, or, alternatively, the reflexive, transitive closure of
+  invertible inference.  \emph{Proofs} are derivations that terminate
+  in the unit, \eg a derivation $\vP\vInferFrom*\vUnit$ is a proof of
+  $\vP$.
 \end{definition}
-(The restrictions on normal derivations correspond to the result of cut elimination and identity expansion.)
+
 \begin{remark}
   In BV, the structural connectives are usually presented as lists, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
   % The equations defining duality are usually included in the decidable equality on structures.
@@ -248,3 +275,18 @@ Hence, in MAV, inference rules are presented as rewrite rules.
   \end{center}
   The relation between the deductive system for BV and rewrite systems is well-known, \eg by Kahramanogullari~\cite{Kahramanogullari08:maude}, who implements proof search for several deep inference systems in Maude~\cite{ClavelDELMMQ02:maude}.
 \end{remark}
+
+\begin{definition}\label{defn:normal}
+  A derivation is \emph{normal} when it does not use \cref{rule:Cut} or any of the (\textsc{Co-X}) rules and its uses of \cref{rule:Axiom} are restricted to \cref{rule:AtomAxiom}, as defined by the following axiom:
+  \begin{displaymath}
+    \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
+      \makebox[\vInferFromDefnWidthOfLHS][l]{$\vNeg\va\vParr\vPos\va$}
+       & \vInferFrom
+       & \makebox[\vInferFromDefnWidthOfRHS][l]{$\vUnit$}
+       & \RuleLabel{AtomAxiom}
+    \end{array}
+  \end{displaymath}
+\end{definition}
+Normal derivations avoid the use of rules that introduce new formulas into proofs, and so can be termed \emph{analytic} in contrast to the need for the synthetic rules to synthesise new formulas.
+
+Our main result, Theorem \ref{thm:cut-elim}, is that every formula that is provable in full MAV also has a normal proof. Therefore, the system with only analytic rules is complete for MAV provability. Horne \cite{Horne15:mav} proves this result via a syntactic proof involving rewriting and termination measures. In the following sections, we construct a semantic proof that normal proofs are complete for MAV.

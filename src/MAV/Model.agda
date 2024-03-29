@@ -3,8 +3,10 @@
 module MAV.Model where
 
 open import Level using (suc; _⊔_)
+open import Algebra using (_DistributesOver_)
 open import Algebra.Ordered using (IsCommutativePomonoid)
-open import Algebra.Ordered.Consequences using (supremum∧residualʳ⇒distribˡ)
+open import Algebra.Ordered.Consequences
+  using (supremum∧residuated⇒distrib) -- supremum∧residualʳ⇒distribˡ; supremum∧residualˡ⇒distribʳ)
 open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
 open import Algebra.Ordered.Structures.StarAuto using (IsStarAuto)
 open import Data.Product using (_,_; proj₁; proj₂)
@@ -84,16 +86,15 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
                   (trans (◁-mono (reflexive involution) (reflexive involution))
                          (reflexive (Eq.sym ◁-self-dual))))))
 
-  ⊕-⊗-distrib : ∀ {x y z} → (x ⊗ (y ⊕ z)) ≲ ((x ⊗ y) ⊕ (x ⊗ z))
+  ⊕-⊗-distrib : _DistributesOver_ _≲_ _⊗_ _⊕_
   ⊕-⊗-distrib =
-    supremum∧residualʳ⇒distribˡ isPreorder {_⊕_} {_⊗_} {_⊸_} supremum residualʳ _ _ _
+    supremum∧residuated⇒distrib isPreorder supremum ⊗-⊸-residuated
     where open IsJoinSemilattice ⊕-isJoinSemilattice using (supremum)
 
   &-⅋-distrib : ∀ {x y z} → ((x ⅋ z) & (y ⅋ z)) ≲ ((x & y) ⅋ z)
   &-⅋-distrib =
     trans (reflexive involution)
-          (¬-mono (trans (reflexive (⊗-comm _ _))
-                  (trans (⊗-mono refl (¬-mono (&-mono (reflexive (Eq.sym involution))
-                                                      (reflexive (Eq.sym involution)))))
-                  (trans ⊕-⊗-distrib
-                         (¬-mono (&-mono (reflexive (⅋-comm _ _)) (reflexive (⅋-comm _ _))))))))
+          (¬-mono (trans (⊗-mono (¬-mono (&-mono (reflexive (Eq.sym involution))
+                                                 (reflexive (Eq.sym involution))))
+                                 refl)
+                         (⊕-⊗-distrib .proj₂ _ _ _)))

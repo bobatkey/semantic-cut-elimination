@@ -53,7 +53,6 @@ infix 5 _⟶_
 
 data _⟶_ : Rel Formula a where
   `axiom    : ∀ P → P `⅋ `¬ P ⟶ `I
-  `cut      : ∀ P → `I ⟶ P `⊗ `¬ P
   `tidy     : `I `& `I ⟶ `I
   `switch   : (P `⊗ Q) `⅋ R ⟶ P `⊗ (Q `⅋ R)
   `sequence : (P `◁ Q) `⅋ (R `◁ S) ⟶ (P `⅋ R) `◁ (Q `⅋ S)
@@ -61,6 +60,14 @@ data _⟶_ : Rel Formula a where
   `right    : P `⊕ Q ⟶ Q
   `external : (P `& Q) `⅋ R ⟶ (P `⅋ R) `& (Q `⅋ R)
   `medial   : (P `◁ Q) `& (R `◁ S) ⟶ (P `& R) `◁ (Q `& S)
+
+  `cut        : ∀ P → `I ⟶ P `⊗ `¬ P
+  `cotidy     : `I ⟶ `I `⊕ `I
+  `cosequence : (P `⊗ R) `◁ (Q `⊗ S) ⟶ (P `◁ Q) `⊗ (R `◁ S)
+  `coleft     : P ⟶ P `& Q
+  `coright    : Q ⟶ P `& Q
+  `coexternal : (P `⊗ R) `⊕ (Q `⊗ R) ⟶ (P `⊕ Q) `⊗ R
+  `comedial   : (P `⊕ R) `◁ (Q `⊕ S) ⟶ (P `◁ Q) `⊕ (R `◁ S)
 
 infix 5 _⟶ᶜ_
 
