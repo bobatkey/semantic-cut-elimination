@@ -15,25 +15,34 @@ The structures of MAV are formed from positive and negative atoms ($\vPos\va$ an
 Duality ($\vDual\vP$) is an involutive function on structures that obeys the De Morgan laws for the multiplicative and additive connectives and preserves the self-dual connective seq.
 \begin{displaymath}
   \begin{array}{
-      l@{\;=\;}l @{\hspace{1cm}}
-      l@{\;=\;}l @{\hspace{1cm}}
-      l@{\;=\;}l @{\hspace{1cm}}
-      l@{\;=\;}l}
-    \vDual{\vPos\va}     & \vNeg\va
-                         &
-    \vDual{\vUnit}       & \vUnit
-                         &
-    \vDual{\vP\vTens\vQ} & \vDual\vP \vParr \vDual\vQ
-                         &
-    \vDual{\vP\vParr\vQ} & \vDual\vP \vTens \vDual\vQ
+      lcl @{\hspace{1cm}}
+      lcl @{\hspace{1cm}}
+      lcl @{\hspace{1cm}}
+      lcl}
+    \multicolumn{3}{l}{}
+    % \vDual{\vPos\va}
+    %  & =
+    %  & \vNeg\va
+     & \vDual{\vUnit}
+     & =
+     & \vUnit
+     & \vDual{\vP\vTens\vQ}
+     & =
+     & \vDual\vP \vParr \vDual\vQ
+     & \vDual{\vP\vParr\vQ}
+     & \vDual\vP \vTens \vDual\vQ
     \\
-    \vDual{\vNeg\va}     & \vPos\va
-                         &
-    \vDual{\vP\vSeq \vQ} & \vDual\vP \vSeq  \vDual\vQ
-                         &
-    \vDual{\vP\vWith\vQ} & \vDual\vP \vPlus \vDual\vQ
-                         &
-    \vDual{\vP\vPlus\vQ} & \vDual\vP \vWith \vDual\vQ
+    \vDual{\vNeg\va}
+     & =
+     & \vPos\va
+     & \vDual{\vP\vSeq \vQ}
+     & =
+     & \vDual\vP \vSeq  \vDual\vQ
+     & \vDual{\vP\vWith\vQ}
+     & =
+     & \vDual\vP \vPlus \vDual\vQ
+     & \vDual{\vP\vPlus\vQ}
+     & \vDual\vP \vWith \vDual\vQ
   \end{array}
 \end{displaymath}
 Structures are considered equivalent modulo the decidable equality $\vEquiv$, which is the smallest congruence defined by the associativity, commutativity, and identity laws that ensure that $(\vSeq,\vUnit)$ forms a monoid, and $(\vTens,\vUnit)$ and $(\vParr,\vUnit)$ form commutative monoids.
