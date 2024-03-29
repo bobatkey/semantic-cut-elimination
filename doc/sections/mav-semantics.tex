@@ -11,10 +11,10 @@ constructed in such a way that after interpreting a proof, the
 To our knowledge, the semantics of MAV have not been previously
 studied in the literature. The rules are an extension of MALL, so an
 \emph{MAV-algebra} will partly be a $*$-autonomous partial order
-(\Cref{defn:star-autonomous}) with meets and joins. The
-additional structure for seq satisfies the
-conditions of a duoidal category \cite{hopf-book} (\Cref{defn:duoidal}). We show that MAV is sound for MAV-algebras in
-\Cref{thm:soundness}.
+(\Cref{defn:star-autonomous}) with meets and joins. The additional
+structure for seq satisfies the conditions of a duoidal category
+\cite[Definition 6.1]{Aguiar_2010} (\Cref{defn:duoidal}). We show that
+MAV is sound for MAV-algebras in \Cref{thm:soundness}.
 
 To build MAV-algebras from normal proofs, we define the weaker notion
 of an \emph{MAV-frame} (\Cref{defn:mav-frame}). We show
@@ -64,15 +64,15 @@ analogue, also called a CL algebra by Troelstra~\cite{Troelstra92:lll}.
   after the definition of MAV-algebra in \Cref{defn:mav-algebra}.
 \end{remark}
 
-BV and MAV extend linear logic by adding a non-commutative pomonoid structure
-that interacts with the existing pomonoid via a kind of interchange
-law (the \cref{rule:Sequence} rule in the proof system). We follow
-\cite{hopf-book} generalising these to the case of monoids with
-differing units. Their terminology is of a category having duoidal
-structure. We find it useful to describe one pomonoid as being
-\emph{duoidal over} another to emphasise the non-symmetric nature of
-the relationship, and by analogy with one monoid distributing over
-another.
+BV and MAV extend linear logic by adding a non-commutative pomonoid
+structure that interacts with the existing pomonoid via a kind of
+interchange law (the \cref{rule:Sequence} rule in the proof
+system). We follow \cite[Definition 6.1]{Aguiar_2010} generalising
+these to the case of monoids with differing units. Their terminology
+is of a category having duoidal structure. We find it useful to
+describe one pomonoid as being \emph{duoidal over} another to
+emphasise the non-symmetric nature of the relationship, and by analogy
+with one monoid distributing over another.
 
 \begin{definition}\label[defn]{defn:duoidal}
   A pomonoid $(\bullet, i)$ is \emph{duoidal over} another pomonoid
@@ -120,7 +120,7 @@ order-theoretic language, using the definitions we have seen so far.
           $(A, \leq)$, defined as
           $x \parr y = \lnot(\lnot x \otimes \lnot y)$.
     \item $(\otimes, I)$ and $(\parr, I)$ are linearly distributive
-          \cite{cockett}:
+          \cite{Cockett_1999}:
           $x \otimes (y \parr z) \leq (x \otimes y) \parr z$.
     \item $(A, \leq)$ has binary joins, given by
           $x \oplus y = \lnot (\lnot x \with \lnot y)$.
@@ -180,16 +180,16 @@ the MAV-algebra constructed from the normal proof MAV-frame allows us
 to prove that all proofs in MAV can be normalised to normal proofs.
 
 \begin{definition}\label[defn]{defn:mav-frame}
-  An \emph{MAV-frame} is a structure $(F, \leq, \parr, \lhd, I, +)$
-  where $(F, \leq)$ is a partial order, $(F, \leq, \parr, I)$ is a
-  commutative pomonoid, $(F, \leq, \lhd, I)$ is a pomonoid, $+$ is a
+  An \emph{MAV-frame} is a structure $(F, \leq, \parr, \lhd, i, +)$
+  where $(F, \leq)$ is a partial order, $(F, \leq, \parr, i)$ is a
+  commutative pomonoid, $(F, \leq, \lhd, i)$ is a pomonoid, $+$ is a
   binary monotone function on $(F, \leq)$, and these data satisfy the
   following inequalities:
   \begin{enumerate}
     \item $(w \lhd x) \parr (y \lhd z) \leq (w \parr y) \lhd (x \parr z)$
     \item $(x + y) \parr z \leq (x \parr z) + (y \parr z)$
     \item $(w \lhd x) + (y \lhd z) \leq (w + y) \lhd (x + z)$
-    \item $I + I \leq I$
+    \item $i + i \leq i$
   \end{enumerate}
 \end{definition}
 
@@ -278,8 +278,9 @@ structure is maintained through each construction.
 \end{proposition}
 
 \begin{remark}
-  This is the Day monoidal product \cite{day} restricted to the case
-  of partial orders.
+  \Cref{prop:day-construction} is the Day monoidal product on functor
+  categories \cite{Day_1970} restricted to the case of partial orders
+  and lower sets.
 \end{remark}
 
 \begin{remark}
@@ -365,7 +366,7 @@ that $+$ is a join or even a pomonoid.)
 
 \begin{remark}
   By this proposition, $U \circ \alpha$ is a closure operator on
-  $\LowerSet{A}$ \cite{davey-priestley}, and the closed elements are
+  $\LowerSet{A}$ \cite{Davey_2002}, and the closed elements are
   those of $\ClosedLowerSet{A}$. The next proposition is standard for
   showing that meets and joins exist on the closed elements for some
   closure operator.
@@ -477,10 +478,11 @@ that $+$ is a join or even a pomonoid.)
 \label{sec:chu}
 
 To construct suitable MAV-algebras, we use the partial order version
-of the Chu construction \cite{barr}. The Chu construction builds
-$*$-autonomous categories from symmetric monoidal closed categories
-with pullbacks. In the partial order case, the requirement for
-pullbacks simplifies to binary meets. For this section, we let
+of the Chu construction \cite[Appendix by Po-Hsiang
+Chu]{Barr_1979}. The Chu construction builds $*$-autonomous categories
+from symmetric monoidal closed categories with pullbacks. In the
+partial order case, the requirement for pullbacks simplifies to binary
+meets. For this section, we let
 $(A, \leq, \bullet, i, \rightblackspoon)$ be a partial order with a
 residuated pomonoid structure and all binary meets.
 
@@ -600,7 +602,7 @@ With this theorem we can define a notion of validity in MAV in terms
 of truth in all MAV-frame generated algebras. By \Cref{thm:soundness}, MAV is sound for this notion of validity:
 
 \begin{theorem}\label[thm]{thm:mavframe-soundness}
-  MAV is sound for the MAV-frame semantics: if $P \longrightarrow^* I$
+  MAV is sound for the MAV-frame semantics: if $P \vInferFrom* \vUnit$
   then for all MAV-frames $F$, $\sem{I} \sqsubseteq \sem{P}$ in
   $(\Chu(\ClosedLowerSet{F}, \ClosedDay{I}), \sqsubseteq)$.
 \end{theorem}
