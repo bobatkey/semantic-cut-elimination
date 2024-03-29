@@ -201,15 +201,28 @@ to prove that all proofs in MAV can be normalised to normal proofs.
 
 \begin{remark}
   MAV-frames have a intuitive reading as CCS-like process algebras
-  (see Milner \cite{milner89} for an introduction to CCS). If we
+  (see Milner \cite{Milner89:CC} for an introduction to CCS). If we
   assume the existence of a collection of ``action'' elements
   $a \in F$ and their duals $\overline{a} \in F$, satisfying
-  $a \parr \overline{a} \leq I$, then we can read the constructs of an
+  $a \parr \overline{a} \leq i$, then we can read the constructs of an
   MAV-frame as parallel composition, sequential composition, and
   choice. The ordering is interpreted as a reduction relation. An
   interesting avenue for future work would be to discover to what
   extent MAV can be thought of as a logic for processes in this
   process algebra.
+\end{remark}
+
+\begin{remark}
+  MAV-frames (and MAV-algebras) are also very similar to the
+  definition of a \emph{Concurrent Kleene Algebra} (CKA) due to Hoare,
+  M{\"o}ller, Struth and Wehrman \cite[Definition
+  4.1]{HoareMSW09}. One difference is that we do not assume that $+$
+  is a join, nor do we assume the existence of infinitary
+  joins. Consequently, we have no analogue of the Kleene Star. Another
+  difference is that the duoidal relationship is reversed in
+  MAV-frames, indicating that MAV-frames capture evolution of
+  processes while MAV-algebras and CKA capture properties of
+  processes.
 \end{remark}
 
 \begin{proposition}\label[prop]{prop:nmav-frame}
@@ -222,24 +235,30 @@ to prove that all proofs in MAV can be normalised to normal proofs.
 \end{proposition}
 
 \begin{remark}
-  The construction of the MAV-frame \NMAV does not use the
-  $\vTens$ and $\vPlus$ structure of MAV directly.
-  This structure is recovered by duality from the other connectives by the constructions in the rest of this section.
+  The construction of the MAV-frame \NMAV does not use the $\vTens$
+  and $\vPlus$ structure of MAV directly.  This structure is recovered
+  by duality from the other connectives by the constructions in the
+  rest of this section. This corresponds to the fact that the
+  \textsc{Co-X} rules in MAV that we wish to show admissible are the
+  ones that mention the $\otimes$ and $\oplus$ connectives, with the
+  exception of \cref{rule:Switch}, which has a special role to play in
+  \Cref{prop:embedding-sem} in mediating interaction.
 \end{remark}
 
 \subsection{Constructing MAV-algebras from MAV-frames}
 
 We construct MAV-algebras from MAV-frames in a three step process. In
-\Cref{sec:lower-sets}, we use lower sets and the Day
-construction to add meets, joins and residuals for pomonoids to a
-partial order. This construction creates joins freely, so we restrict
-to $+$-closed lower sets in \Cref{sec:closed-lower-sets} to
-turn the $+$ operation in MAV-frames into joins. Restricting to
-$+$-closed lower sets separates the Day construction of pomonoids into
-two separate cases, depending on how the original pomonoid interacts
-with $+$. Finally, we create the $*$-autonomous structure using the
-Chu construction in \Cref{sec:chu}. The necessary duoidal
-structure is maintained through each construction.
+\Cref{sec:lower-sets}, we use lower sets and the Day construction to
+add meets, joins and residuals for pomonoids to a partial order. This
+construction creates joins freely, so we restrict to $+$-closed lower
+sets (\ie, order ideals, but not necessarily over a
+$\lor$-semilattice) in \Cref{sec:closed-lower-sets} to turn the $+$
+operation in MAV-frames into joins. Restricting to $+$-closed lower
+sets separates the Day construction of pomonoids into two separate
+cases, depending on how the original pomonoid interacts with
+$+$. Finally, we create the $*$-autonomous structure using the Chu
+construction in \Cref{sec:chu}. The necessary duoidal structure is
+maintained through each construction.
 
 \subsubsection{Lower Sets and Day pomonoids}
 \label{sec:lower-sets}
@@ -300,7 +319,7 @@ structure is maintained through each construction.
 \subsubsection{$+$-closed Lower Sets}
 \label{sec:closed-lower-sets}
 
-In the phase semantics, structures are interpreted as elements that are
+In the Phase Semantics, structures are interpreted as elements that are
 fixed points of a closure operator defined by a double negation with
 respect to the monoid on the original frame. This closure operator
 generates a partial order of ``facts'' whose meets and joins exactly
@@ -588,22 +607,23 @@ pomonoids:
   always duoidal.
 \end{proof}
 
-\subsection{Construction of MAV-algebras}
+\subsection{Construction of MAV-algebras from MAV-frames}
 
 The propositions in the preceeding three sections together prove that
 every MAV-frame yields an MAV-algebra:
 
 \begin{theorem}\label[thm]{thm:algebra-from-frame}
-  If $(F, \leq, \parr, \lhd, I, +)$ is an MAV-frame, then
-  $(\Chu(\ClosedLowerSet{F}, \ClosedDay{I}), \sqsubseteq)$ has the structure of an
-  MAV-algebra.
+  If $(F, \leq, \parr, \lhd, i, +)$ is an MAV-frame, then
+  $(\Chu(\ClosedLowerSet{F}, \ClosedDay{i}), \sqsubseteq)$ has the
+  structure of an MAV-algebra.
 \end{theorem}
 
 With this theorem we can define a notion of validity in MAV in terms
-of truth in all MAV-frame generated algebras. By \Cref{thm:soundness}, MAV is sound for this notion of validity:
+of truth in all MAV-frame generated algebras. By \Cref{thm:soundness},
+MAV is sound for this notion of validity:
 
 \begin{theorem}\label[thm]{thm:mavframe-soundness}
   MAV is sound for the MAV-frame semantics: if $P \vInferFrom* \vUnit$
-  then for all MAV-frames $F$, $\sem{I} \sqsubseteq \sem{P}$ in
-  $(\Chu(\ClosedLowerSet{F}, \ClosedDay{I}), \sqsubseteq)$.
+  then for all MAV-frames $F$, $I \sqsubseteq \sem{P}$ in
+  $(\Chu(\ClosedLowerSet{F}, \ClosedDay{i}), \sqsubseteq)$.
 \end{theorem}

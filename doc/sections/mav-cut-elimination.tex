@@ -1,7 +1,7 @@
 \section{Semantic Cut-Elimination and Proof Normalisation}
 \label{sec:mav-cut-elimination}
 
-Let $\Chu(\ClosedLowerSet{\NMAV}, \ClosedDay{I})$ be the MAV-algebra
+Let $\Chu(\ClosedLowerSet{\NMAV}, \ClosedDay{\vUnit})$ be the MAV-algebra
 constructed (\Cref{thm:algebra-from-frame}) from the normal
 proof MAV-frame (\Cref{prop:nmav-frame}), where elements
 are positive/negative pairs of $+$-closed lower sets of structures. We
@@ -15,11 +15,11 @@ proofs \NMAV{} that will allow us to derive the admissibility of all
 the non-normal proof rules of MAV.
 
 \begin{proposition}\label[prop]{prop:embedding-sem}
-  $\sem{\vP} \sqsubseteq \lnot (\ChuEmbed(\ClosedLowerEmbed(P)))$
+  For all structures $\vP$, $\sem{\vP} \sqsubseteq \lnot (\ChuEmbed(\ClosedLowerEmbed(P)))$.
 \end{proposition}
 
 \begin{proof}
-  By \Cref{defn:chu}, this statement is two inclusions
+  By \Cref{defn:chu}, this statement comprises two inclusions
   between pairs of $+$-closed lower sets:
   \begin{enumerate}
     \item $\ClosedLowerEmbed(P) \subseteq \sem{\vP}^-$
