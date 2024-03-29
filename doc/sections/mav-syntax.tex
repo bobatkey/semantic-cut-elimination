@@ -12,7 +12,7 @@ The structures of MAV are formed from positive and negative atoms ($\vPos\va$ an
   \mid     \vP\vWith\vQ
   \mid     \vP\vPlus\vQ
 \end{displaymath}
-Duality ($\vDual\vP$) is an involutive function on structures that obeys the De Morgan laws for the multiplicative and additive connectives and preserves the self-dual connective seq.
+Duality ($\vDual\vP$) is an involutive function on structures that obeys the De Morgan laws for the multiplicative and additive connectives and preserves the self-dual connective $\vSeq$.
 \begin{displaymath}
   \begin{array}{
       lcl @{\hspace{1cm}}
@@ -29,7 +29,8 @@ Duality ($\vDual\vP$) is an involutive function on structures that obeys the De 
      & \vDual{\vP\vTens\vQ}
      & =
      & \vDual\vP \vParr \vDual\vQ
-     & \vDual{\vP\vParr\vQ}
+    & \vDual{\vP\vParr\vQ}
+      & =
      & \vDual\vP \vTens \vDual\vQ
     \\
     \vDual{\vNeg\va}
@@ -41,11 +42,12 @@ Duality ($\vDual\vP$) is an involutive function on structures that obeys the De 
      & \vDual{\vP\vWith\vQ}
      & =
      & \vDual\vP \vPlus \vDual\vQ
-     & \vDual{\vP\vPlus\vQ}
+    & \vDual{\vP\vPlus\vQ}
+      & =
      & \vDual\vP \vWith \vDual\vQ
   \end{array}
 \end{displaymath}
-Structures are considered equivalent modulo the decidable equality $\vEquiv$, which is the smallest congruence defined by the associativity, commutativity, and identity laws that ensure that $(\vSeq,\vUnit)$ forms a monoid, and $(\vTens,\vUnit)$ and $(\vParr,\vUnit)$ form commutative monoids.
+Structures are considered equivalent modulo the equality $\vEquiv$, which is the smallest congruence defined by the associativity, commutativity, and identity laws that ensure that $(\vSeq,\vUnit)$ forms a monoid, and $(\vTens,\vUnit)$ and $(\vParr,\vUnit)$ form commutative monoids.
 \begin{displaymath}
   \begin{array}{
       l@{\;\vEquiv\;}ll @{\hspace{1cm}}
