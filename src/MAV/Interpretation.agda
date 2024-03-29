@@ -88,22 +88,25 @@ module _ {ℓ} {_𝓡_ : Rel Formula ℓ} where
 
 -- Interpret the reduction axioms
 ⟦_⟧step-ax : P ⟶ Q → ⟦ Q ⟧ ≲ ⟦ P ⟧
-⟦ `axiom P   ⟧step-ax = trans coev (⅋-mono refl (reflexive (Eq.sym (dual-ok P))))
-⟦ `cut P     ⟧step-ax = trans (⊗-mono refl (reflexive (dual-ok P))) (trans ev (reflexive (Eq.sym mix)))
+⟦ `axiom P   ⟧step-ax = 
+  trans coev (⅋-mono refl (reflexive (Eq.sym (dual-ok P))))
+⟦ `cut P     ⟧step-ax = 
+  trans (⊗-mono refl (reflexive (dual-ok P))) (trans ev (reflexive (Eq.sym mix)))
 ⟦ `tidy      ⟧step-ax = &-greatest refl refl
 ⟦ `switch    ⟧step-ax = linear-distrib
 ⟦ `sequence  ⟧step-ax = sequence
 ⟦ `left      ⟧step-ax = x≲x⊕y _ _
 ⟦ `right     ⟧step-ax = y≲x⊕y _ _
 ⟦ `external  ⟧step-ax = &-⅋-distrib
-⟦ `medial    ⟧step-ax = &-greatest (◁-mono (x&y≲x _ _) (x&y≲x _ _)) (◁-mono (x&y≲y _ _) (x&y≲y _ _))
+⟦ `medial    ⟧step-ax = 
+  &-greatest (◁-mono (x&y≲x _ _) (x&y≲x _ _)) (◁-mono (x&y≲y _ _) (x&y≲y _ _))
 ⟦ `cotidy    ⟧step-ax = ⊕-least refl refl
 ⟦ `cosequence ⟧step-ax = ⊗-◁-entropy _ _ _ _
 ⟦ `coleft     ⟧step-ax = x&y≲x _ _
 ⟦ `coright    ⟧step-ax = x&y≲y _ _
 ⟦ `coexternal ⟧step-ax = ⊕-⊗-distrib .proj₂ _ _ _
-⟦ `comedial   ⟧step-ax = ⊕-least (◁-mono (x≲x⊕y _ _) (x≲x⊕y _ _))
-                                  (◁-mono (y≲x⊕y _ _) (y≲x⊕y _ _))
+⟦ `comedial   ⟧step-ax = 
+  ⊕-least (◁-mono (x≲x⊕y _ _) (x≲x⊕y _ _)) (◁-mono (y≲x⊕y _ _) (y≲x⊕y _ _))
 
 -- The interpretation is closed under monotonicity
 module _ {ℓ} {_𝓡_ : Rel Formula ℓ} where

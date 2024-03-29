@@ -171,11 +171,6 @@ Hence, in MAV, inference rules are presented as rewrite rules.
      & \vUnit
      & \makebox[\vInferFromDefnWidthOfLBL][l]{$\RuleLabel{Axiom}$}
     \\
-    \vUnit
-     & \vInferFrom
-     & \vP\vTens\vDual\vP
-     & \RuleLabel{Cut}
-    \\
     (\vP\vTens\vQ)\vParr\vR
      & \vInferFrom
      & \vP\vTens(\vQ\vParr\vR)
@@ -186,60 +181,73 @@ Hence, in MAV, inference rules are presented as rewrite rules.
      & \vUnit
      & \RuleLabel{Tidy}
     \\
-    \vUnit
-     & \vInferFrom
-     & \vUnit \vPlus \vUnit
-     & \RuleLabel{CoTidy}
-    \\
     (\vP\vSeq\vQ)\vParr(\vR\vSeq\vS)
      & \vInferFrom
      & (\vP\vParr\vR)\vSeq(\vQ\vParr\vS)
      & \RuleLabel{Sequence}
-    \\
-    (\vP\vTens\vR)\vSeq(\vQ\vTens\vS)
-     & \vInferFrom
-     & (\vP\vSeq\vQ)\vTens(\vR\vSeq\vS)
-     & \RuleLabel{CoSequence}
     \\
     \vP\vPlus\vQ
      & \vInferFrom
      & \vP
      & \RuleLabel{Left}
     \\
-    \vP
-     & \vInferFrom
-     & \vP\vWith\vQ
-     & \RuleLabel{CoLeft}
-    \\
     \vP\vPlus\vQ
      & \vInferFrom
      & \vQ
      & \RuleLabel{Right}
-    \\
-    \vQ
-     & \vInferFrom
-     & \vP\vWith\vQ
-     & \RuleLabel{CoRight}
     \\
     (\vP\vWith\vQ)\vParr\vR
      & \vInferFrom
      & (\vP\vParr\vR)\vWith(\vQ\vParr\vR)
      & \RuleLabel{External}
     \\
-    (\vP \vTens \vR) \vPlus (\vQ \vTens \vR)
-     & \vInferFrom
-     & (\vP \vPlus \vQ) \vTens \vR
-     & \RuleLabel{CoExternal}
-    \\
     (\vP\vSeq\vQ)\vWith(\vR\vSeq\vS)
      & \vInferFrom
      & (\vP\vWith\vR)\vSeq(\vQ\vWith\vS)
      & \RuleLabel{Medial}
     \\
+     &
+     &
+     &
+    \\
+    \vUnit
+     & \vInferFrom
+     & \vP\vTens\vDual\vP
+     & \RuleLabel{Cut}
+    \\
+    \vUnit
+     & \vInferFrom
+     & \vUnit \vPlus \vUnit
+     & \RuleLabel{CoTidy}
+    \\
+    (\vP\vTens\vR)\vSeq(\vQ\vTens\vS)
+     & \vInferFrom
+     & (\vP\vSeq\vQ)\vTens(\vR\vSeq\vS)
+     & \RuleLabel{CoSequence}
+    \\
+    \vP
+     & \vInferFrom
+     & \vP\vWith\vQ
+     & \RuleLabel{CoLeft}
+    \\
+    \vQ
+     & \vInferFrom
+     & \vP\vWith\vQ
+     & \RuleLabel{CoRight}
+    \\
+    (\vP \vTens \vR) \vPlus (\vQ \vTens \vR)
+     & \vInferFrom
+     & (\vP \vPlus \vQ) \vTens \vR
+     & \RuleLabel{CoExternal}
+    \\
     (\vP \vPlus \vR) \vSeq (\vQ \vPlus \vS)
      & \vInferFrom
      & (\vP \vSeq \vQ) \vPlus (\vR \vSeq \vS)
      & \RuleLabel{CoMedial}
+    \\
+     &
+     &
+     &
     \\
     \vC\vPlug\vP\vInferFrom\vC\vPlug\vQ
      & \text{if}
@@ -252,7 +260,7 @@ Hence, in MAV, inference rules are presented as rewrite rules.
     %  & \RuleLabel{Equiv}
   \end{array}
 \end{displaymath}
-(If $\vP\vInferFrom\vQ$, we say that $\vP$ can be inferred from $\vQ$, \ie the arrow points from conclusion to premise.)
+If $\vP\vInferFrom\vQ$, we say that $\vP$ can be inferred from $\vQ$, \ie the arrow points from conclusion to premise.
 
 Note that, except for \cref{rule:Switch}, the rules come in pairs that are dual, in the sense that if a rule is of the form $\vP\vInferFrom\vQ$, then its partner is of the form $\vDual\vP\vInferFrom\vDual\vQ$. The \cref{rule:Switch} rule is, up to commutativity, already its own dual. The \cref{rule:Cut}, \cref{rule:CoLeft}, and \cref{rule:CoRight} rules introduce of new formulas going left-to-right. Normal proofs, which we define below, avoid these \emph{synthetic} rules.
 
