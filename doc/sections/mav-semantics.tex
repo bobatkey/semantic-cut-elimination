@@ -137,14 +137,14 @@ order-theoretic language, using the definitions we have seen so far.
   \end{enumerate}
 \end{proposition}
 
-\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
-
 \begin{definition}\label[defn]{defn:mav-interpretation}
   Let $\mathit{At}$ be a set of atomic propositions. Given an
   MAV-algebra $(A, \leq, \otimes, \lhd, I, \lnot)$ and valuation
   $V : \mathit{At} \to A$, define the interpretation of MAV Formulas
-  as follows: $\sem{\vUnit} = I$, $\sem{\alpha} = V(\alpha)$,
-  $\sem{\vDual \alpha} = \lnot V(\alpha)$,
+  as follows:
+  $\sem{\vUnit} = I$,
+  $\sem{\va} = V(\va)$,
+  $\sem{\vDual \va} = \lnot V(\va)$,
   $\sem{\vP\vTens\vQ} = \sem{\vP} \otimes \sem{\vQ}$,
   $\sem{\vP\vParr\vQ} = \sem{\vP} \parr \sem{\vQ}$,
   $\sem{\vP\vSeq\vQ} = \sem{\vP}\lhd\sem{\vQ}$,
