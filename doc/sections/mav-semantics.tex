@@ -169,6 +169,12 @@ order-theoretic language, using the definitions we have seen so far.
   \Cref{prop:mav-algebra-consequences}.
 \end{proof}
 
+\begin{remark}
+  More generally, if $P \vInferFrom* Q$ in MAV, then
+  $\sem{Q} \leq \sem{P}$ in an MAV-algebra. Note that the ordering is
+  reversed! It will be reversed again in the definition of MAV-frame.
+\end{remark}
+
 \subsection{MAV-frames}
 
 To prove completeness of the normal proofs of MAV, we will construct a
@@ -335,7 +341,7 @@ $+$-closed lower sets form a lattice. We also preserve the
 Day-pomonoids from lower sets, but in two different ways, depending on
 how the original pomonoid interacts with $+$. In \Cref{prop:closed-monoid-distrib} we handle pomonoids that distribute
 over $+$, and in \Cref{prop:closed-monoid-duoidal} we
-handle pomonoids that are entopic under $+$. We need these
+handle pomonoids that are duoidal under $+$. We need these
 constructions to lift the $\parr$ and $\lhd$ pomonoids from
 MAV-frames to $+$-closed lower sets. Finally in this section, we show
 that duoidal structure on lower sets from
