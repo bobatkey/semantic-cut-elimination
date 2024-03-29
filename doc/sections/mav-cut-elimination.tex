@@ -2,114 +2,112 @@
 \label{sec:mav-cut-elimination}
 
 Let $\Chu(\ClosedLowerSet{\NMAV}, \ClosedDay{I})$ be the MAV-algebra
-constructed (Theorem \ref{thm:algebra-from-frame}) from the normal
-proof MAV-frame (Proposition \ref{prop:nmav-frame}), where elements
+constructed (\Cref{thm:algebra-from-frame}) from the normal
+proof MAV-frame (\Cref{prop:nmav-frame}), where elements
 are positive/negative pairs of $+$-closed lower sets of formulas. We
 define the valuation of atoms as
-$V(\alpha) = \ChuEmbed(\ClosedLowerEmbed(\vDual{\alpha}))$. By Theorem
-\ref{thm:soundness}, we have an interpretation of MAV formulas
-$\sem{P}$ such that if $P \longrightarrow^* I$, then
-$I \sqsubseteq \sem{P}$. We now prove our main proposition about this
+$V(\va) = \ChuEmbed(\ClosedLowerEmbed(\vDual\va))$. By
+\Cref{thm:soundness}, we have an interpretation of MAV formulas
+$\sem{\vP}$ such that if $\vP\vInferFrom*\vUnit$, then
+$I \sqsubseteq \sem{\vP}$. We now prove our main proposition about this
 interpretation in the MAV-algebra derived from the MAV-frame of normal
 proofs \NMAV{} that will allow us to derive the admissibility of all
 the non-normal proof rules of MAV.
 
-\begin{proposition}\label{prop:embedding-sem}
-  $\sem{P} \sqsubseteq \lnot (\ChuEmbed(\ClosedLowerEmbed(P)))$
+\begin{proposition}\label[prop]{prop:embedding-sem}
+  $\sem{\vP} \sqsubseteq \lnot (\ChuEmbed(\ClosedLowerEmbed(P)))$
 \end{proposition}
 
 \begin{proof}
-  By Definition \ref{defn:chu}, this statement is two inclusions
+  By \Cref{defn:chu}, this statement is two inclusions
   between pairs of $+$-closed lower sets:
   \begin{enumerate}
-  \item $\ClosedLowerEmbed(P) \subseteq \sem{\vP}^-$
-  \item $\sem{\vP}^+ \subseteq \ClosedLowerEmbed(P) \rightblackspoon^+ \ClosedDay{I}$
+    \item $\ClosedLowerEmbed(P) \subseteq \sem{\vP}^-$
+    \item $\sem{\vP}^+ \subseteq \ClosedLowerEmbed(P) \rightblackspoon^+ \ClosedDay{I}$
   \end{enumerate}
   We prove the second assuming the first. It suffices to prove that
   $\sem{\vP}^+ \ClosedDay{\bullet} \ClosedLowerEmbed(P) \subseteq
-  \ClosedDay{I}$, which follows from the first part and the property
+    \ClosedDay{I}$, which follows from the first part and the property
   of all Chu-elements that
   $\sem{\vP}^+ \ClosedDay{\bullet} \sem{\vP}^- \subseteq \ClosedDay{I}$.
 
-  We prove the first part by induction on $P$. In the cases when
-  $P = \vUnit$ or $P = \vDual{\alpha}$, we already have
-  $\sem{P}^- = \ClosedLowerEmbed(P)$. When $P = \alpha$, we have
-  $\sem{\alpha}^- = \ClosedLowerEmbed(\vDual{\alpha})
-  \rightblackspoon^+ \ClosedDay{I}$. It suffices to prove that
-  $\ClosedLowerEmbed(\alpha) \ClosedDay{\bullet}
-  \ClosedLowerEmbed(\vDual{\alpha}) \subseteq \ClosedDay{I}$, which
+  We prove the first part by induction on $\vP$.
+  In the cases when $\vP = \vUnit$ or $\vP = \vDual\va$, we already have
+  $\sem{\vP}^- = \ClosedLowerEmbed(P)$. When $\vP = \va$, we have
+  $\sem{\va}^- = \ClosedLowerEmbed(\vDual\va)
+    \rightblackspoon^+ \ClosedDay{I}$. It suffices to prove that
+  $\ClosedLowerEmbed(\va) \ClosedDay{\bullet}
+    \ClosedLowerEmbed(\vDual\va) \subseteq \ClosedDay{I}$, which
   follows from the preservation of monoid operations by
-  $\ClosedLowerEmbed$ and the \RuleLabel{AtomAxiom} rule.
+  $\ClosedLowerEmbed$ and the \cref{rule:AtomAxiom} rule.
 
-  When $P = Q \vParr R$, $Q \vWith R$, or $Q \vSeq R$, the result
+  When $\vP = \vQ\vParr\vR$, $\vQ\vWith\vR$, or $\vQ\vSeq\vR$, the result
   follows from preservation of the corresponding monoid structure by
   $\ClosedLowerEmbed$. For example,
-  $\ClosedLowerEmbed(Q \vParr R) \subseteq \ClosedLowerEmbed(Q)
-  \ClosedDay{\bullet} \ClosedLowerEmbed(R) \subseteq \sem{Q}^-
-  \ClosedDay{\bullet} \sem{R}^- = \sem{Q \vParr R}^-$.
+  $\ClosedLowerEmbed(\vQ\vParr\vR) \subseteq \ClosedLowerEmbed(\vQ)
+    \ClosedDay{\bullet} \ClosedLowerEmbed(\vR) \subseteq \sem{\vQ}^-
+    \ClosedDay{\bullet} \sem{\vR}^- = \sem{\vQ\vParr\vR}^-$.
 
-  When $P = Q \vPlus R$, we have
-  $\ClosedLowerEmbed(Q \vPlus R) \subseteq \ClosedLowerEmbed(Q)$ and
-  $\ClosedLowerEmbed(Q \vPlus R) \subseteq \ClosedLowerEmbed(R)$, by the
-  \RuleLabel{Left} and \RuleLabel{Right} rules. Therefore,
-  $\ClosedLowerEmbed(Q \vPlus R) \subseteq \ClosedLowerEmbed(Q) \lor
-  \ClosedLowerEmbed(R) \subseteq \sem{Q}^- \lor \sem{R}^- = \sem{Q \vPlus
-    R}^-$.
+  When $\vP = \vQ\vPlus\vR$, we have
+  $\ClosedLowerEmbed(\vQ\vPlus\vR) \subseteq \ClosedLowerEmbed(\vQ)$ and
+  $\ClosedLowerEmbed(\vQ\vPlus\vR) \subseteq \ClosedLowerEmbed(\vR)$, by the
+  \cref{rule:Left} and \cref{rule:Right} rules. Therefore,
+  $\ClosedLowerEmbed(\vQ\vPlus\vR) \subseteq \ClosedLowerEmbed(\vQ) \lor
+    \ClosedLowerEmbed(\vR) \subseteq \sem{\vQ}^- \lor \sem{\vR}^- = \sem{\vQ\vPlus\vR}^-$.
 
-  When $P = Q \vTens R$, we have
-  $\sem{Q \vTens R}^- = (\sem{Q}^+ \rightblackspoon \sem{R}^-) \land
-  (\sem{R}^+ \rightblackspoon \sem{Q}^-)$. We prove inclusion in the
+  When $\vP = \vQ\vTens\vR$, we have
+  $\sem{\vQ\vTens\vR}^- = (\sem{\vQ}^+ \rightblackspoon \sem{\vR}^-) \land
+    (\sem{\vR}^+ \rightblackspoon \sem{\vQ}^-)$. We prove inclusion in the
   left-hand side, the right-hand side is similar. The key property we
   need to prove is:
   \begin{equation}\label{eq:interaction-leq}
-    \ClosedLowerEmbed(Q \vTens R) \ClosedDay{\bullet} (\ClosedLowerEmbed(Q) \rightblackspoon^+ \ClosedDay{I})
+    \ClosedLowerEmbed(\vQ\vTens\vR) \ClosedDay{\bullet} (\ClosedLowerEmbed(Q) \rightblackspoon^+ \ClosedDay{I})
     \subseteq
     \ClosedLowerEmbed(R)
   \end{equation}
-  Using the monoidality and monotonicity of $\alpha$, this inclusion
+  Using the monoidality and monotonicity of $\va$, this inclusion
   is implied by the following inclusion in $\LowerSet{\NMAV}$:
   \begin{displaymath}
-    \LowerEmbed(Q \vTens R) \Day{\bullet} (U(\ClosedLowerEmbed(Q)) \rightblackspoon \Day{I})
+    \LowerEmbed(\vQ\vTens\vR) \Day{\bullet} (U(\ClosedLowerEmbed(Q)) \rightblackspoon \Day{I})
     \subseteq
     \LowerEmbed(R)
   \end{displaymath}
-  which follows from the \RuleLabel{Switch} rule of MAV and
+  which follows from the \cref{rule:Switch} rule of MAV and
   calculation. Using \ref{eq:interaction-leq}, and inclusion (ii)
   above, we can prove the inequality we need:
   \begin{displaymath}
-    \ClosedLowerEmbed(Q \vTens R) \ClosedDay{\bullet} \sem{Q}^+
+    \ClosedLowerEmbed(\vQ\vTens\vR) \ClosedDay{\bullet} \sem{\vQ}^+
     \subseteq
-    \ClosedLowerEmbed(Q \vTens R) \ClosedDay{\bullet} (\ClosedLowerEmbed(Q) \rightblackspoon^+ \ClosedDay{I})
+    \ClosedLowerEmbed(\vQ\vTens\vR) \ClosedDay{\bullet} (\ClosedLowerEmbed(Q) \rightblackspoon^+ \ClosedDay{I})
     \subseteq
     \ClosedLowerEmbed(R)
     \subseteq
-    \sem{R}^-
+    \sem{\vR}^-
   \end{displaymath}
   Using the residuation property of $\ClosedDay{\bullet}$ we can conclude.
 \end{proof}
 
-\begin{theorem}\label{thm:cut-elim}
-  If $P \longrightarrow^* I$ in MAV, then there is a normal proof $P \longrightarrow^* I$.
+\begin{theorem}\label[thm]{thm:cut-elim}
+  If $\vP\vInferFrom*\vUnit$ in MAV, then there is a normal proof $\vP\vInferFrom*\vUnit$.
 \end{theorem}
 
 \begin{proof}
-  By Theorem \ref{thm:soundness}, $P \longrightarrow^* I$ in MAV
-  implies $I \sqsubseteq \sem{P}$. Combined with Proposition
-  \ref{prop:embedding-sem}, we have
-  $I \sqsubseteq \lnot \ChuEmbed(\LowerEmbed(P)$. By Definition
-  \ref{defn:chu} of the ordering of Chu elements, we have
-  $\ClosedLowerEmbed(P) \subseteq \ClosedDay{I}$. Since
-  $P \in \ClosedLowerEmbed(P)$, we have $P \in \ClosedDay{I}$, which
+  By \Cref{thm:soundness}, $\vP\vInferFrom*\vUnit$ in MAV
+  implies $I \sqsubseteq \sem{\vP}$. Combined with \Cref{prop:embedding-sem}, we have
+  $I \sqsubseteq \lnot \ChuEmbed(\LowerEmbed(\vP)$. By
+  \Cref{defn:chu} of the ordering of Chu elements, we have
+  $\ClosedLowerEmbed(\vP) \subseteq \ClosedDay{I}$. Since
+  $P \in \ClosedLowerEmbed(\vP)$, we have $\vP \in \ClosedDay{I}$, which
   by definition means that there is a normal proof
-  $P \longrightarrow^* I$.
+  $\vP\vInferFrom*\vUnit$.
 \end{proof}
 
-Another consequence of Proposition \ref{prop:embedding-sem} is that
+Another consequence of \Cref{prop:embedding-sem} is that
 MAV is complete for the MAV-frame semantics:
 
-\begin{theorem}\label{thm:completeness}
+\begin{theorem}\label[thm]{thm:completeness}
   MAV is complete for the MAV-frame semantics: if, for all MAV-frames
-  $F$, $\sem{I} \sqsubseteq \sem{P}$ in
+  $F$, $\sem{\vUnit} \sqsubseteq \sem{\vP}$ in
   $(\Chu(\ClosedLowerSet{F}, \ClosedDay{I}), \sqsubseteq)$, then
-  $P \longrightarrow^* I$.
+  $\vP\vInferFrom*\vUnit$.
 \end{theorem}
