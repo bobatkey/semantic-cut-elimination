@@ -157,8 +157,10 @@ order-theoretic language, using the definitions we have seen so far.
 \end{lemma}
 
 \begin{theorem}\label[thm]{thm:soundness}
-  The interpretation defined in \Cref{defn:mav-interpretation} is sound: for all formulas $P$, if
-  $P \longrightarrow^* I$, then $I \leq \sem{P}$.
+  The interpretation in \Cref{defn:mav-interpretation} is sound:
+  for all structures $\vP$,
+  if $\vP\vInferFrom*\vUnit$,
+  then $I \leq \sem{\vP}$.
 \end{theorem}
 
 \begin{proof}
@@ -170,7 +172,7 @@ order-theoretic language, using the definitions we have seen so far.
 
 To prove completeness of the normal proofs of MAV, we will construct a
 particular MAV-algebra from the formulas and normal proofs. Since
-normal proofs do not {\it a priori} have all the necessary structure
+normal proofs do not \emph{a priori} have all the necessary structure
 for an MAV-algebra, in the following sections we develop a procedure
 to construct MAV-algebra from the lighter requirements of an
 MAV-frame. In \Cref{sec:mav-cut-elimination} we will show that
@@ -211,19 +213,17 @@ to prove that all proofs in MAV can be normalised to normal proofs.
 
 \begin{proposition}\label[prop]{prop:nmav-frame}
   The \emph{normal proof MAV-frame} \NMAV is the partial order arising
-  as the quotient of the preorder formed from the formulas of MAV and
-  $P \leq Q$ if there is a normal derivation $P \longrightarrow^*
-    Q$. Define $P \parr Q = P \vParr Q$, $P \lhd Q = P \vSeq Q$,
-  $P + Q = P \vWith Q$ and $I = \vUnit$. The required (in)equalities
-  follow directly from the definition of $\longrightarrow^*$.
+  as the quotient of the preorder formed from the structures of MAV and
+  $\vP\leq\vQ$ if there is a normal derivation $\vP\vInferFrom*\vQ$,
+  defined as $(\vSS, \vInferFrom*, \vParr, \vSeq, \vUnit, \vWith)$,
+  where $\vSS$ is the set of all MAV structures.
+  The required (in)equalities follow directly from the definition of $\longrightarrow^*$.
 \end{proposition}
 
 \begin{remark}
-  The construction of the MAV-frame \textsc{CFMav} does not use the
-  $\otimes$ and $\oplus$ structure of MAV directly. We will see in
-  \Cref{sec:mav-cut-elimination} that this structure is
-  recovered by duality from the other connectives by the constructions
-  in the rest of this section.
+  The construction of the MAV-frame \NMAV does not use the
+  $\vTens$ and $\vPlus$ structure of MAV directly.
+  This structure is recovered by duality from the other connectives by the constructions in the rest of this section.
 \end{remark}
 
 \subsection{Constructing MAV-algebras from MAV-frames}
