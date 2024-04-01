@@ -31,16 +31,16 @@ open import BV.Interpretation Atom analyticModel (λ A → embed (`- A))
 open Chu
 open P
 
--- module _ where
-
---   interactᵖ : ∀ P Q → (U (ηⁱ Q) M.⇨ᵖ U M◁.ιⁱ) M.∙ᵖ ηᵖ (P `⊗ Q) ≤ᵖ P.ηᵖ P
---   interactᵖ P Q ._≤ᵖ_.*≤ᵖ* {x} (y , z , x≤y⅋z , ϕ₁ , lift z≤P⊗Q) =
---     lift (x≤y⅋z
---           ◅◅ (`⅋⟩⋆ z≤P⊗Q)
---           ◅◅ (bwd `⅋-comm ◅ ε)
---           ◅◅ (step `switch ◅ ε)
---           ◅◅ (`⊗⟩⋆ ((bwd `⅋-comm ◅ ε) ◅◅ (ϕ₁ {Q} ((leaf Q (lift ε)) , ε)) .lower))
---           ◅◅ fwd `⊗-identityʳ ◅ ε)
+interactᵖ : ∀ P Q → ((ηᵖ Q) M.⇨ᵖ M.εᵖ) M.∙ᵖ (ηᵖ (P `⊗ Q)) ≤ᵖ ηᵖ P
+interactᵖ P Q ._≤ᵖ_.*≤ᵖ* {x} (y , z , x≤y⅋z , ϕ₁ , lift z≤P⊗Q) = 
+  lift {! !}
+  -- interactᵖ P Q ._≤ᵖ_.*≤ᵖ* {x} (y , z , x≤y⅋z , ϕ₁ , lift z≤P⊗Q) =
+  --   lift (x≤y⅋z
+  --         ◅◅ (`⅋⟩⋆ z≤P⊗Q)
+  --         ◅◅ (bwd `⅋-comm ◅ ε)
+  --         ◅◅ (step `switch ◅ ε)
+  --         ◅◅ (`⊗⟩⋆ ((bwd `⅋-comm ◅ ε) ◅◅ (ϕ₁ {Q} ((leaf Q (lift ε)) , ε)) .lower))
+  --         ◅◅ fwd `⊗-identityʳ ◅ ε)
 
 --   interact : ∀ P Q → (ηⁱ Q MS.⊸ⁱ M◁.ιⁱ) MS.∙ⁱ ηⁱ (P `⊗ Q) ≤ⁱ ηⁱ P
 --   interact P Q =

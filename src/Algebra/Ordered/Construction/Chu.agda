@@ -41,7 +41,6 @@ module Construction {a b c}
   open IsMeetSemilattice ∧-isMeet using (x∧y≤x; x∧y≤y; ∧-greatest)
   open IsJoinSemilattice ∨-isJoin using (supremum; ∨-least; x≤x∨y; y≤x∨y)
 
-
   record Chu : Set (suc (a ⊔ b ⊔ c)) where
     no-eta-equality
     field
