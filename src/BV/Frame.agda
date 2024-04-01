@@ -32,12 +32,12 @@ record Frame c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
 
 module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
 
-  import Algebra.Ordered.Construction.LowerSet as LowerSet
-  import Algebra.Ordered.Construction.Chu as Chu
+  import Algebra.Ordered.Construction.LowerSet
+  import Algebra.Ordered.Construction.Chu
 
   open Frame F
 
-  module P = LowerSet (record { isPartialOrder = isPartialOrder })
+  module P = Algebra.Ordered.Construction.LowerSet (record { isPartialOrder = isPartialOrder })
   module M = P.LiftIsCommutativePomonoid ⅋-isCommutativePomonoid
   module D = P.LiftIsDuoidal ⅋-◁-isDuoidal
 
@@ -48,62 +48,68 @@ module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
   units-iso .proj₁ = D.εᵖ≤ιᵖ
   units-iso .proj₂ .*≤ᵖ* x≤I = x≤I
 
-  -- FIXME: Separate Chu construction from additives
+  open Algebra.Ordered.Construction.Chu.Construction
+                M.⇨ᵖ-∙ᵖ-isResiduatedCommutativePomonoid
+                P.∧ᵖ-isMeetSemilattice
+                P.∨ᵖ-isJoinSemilattice
+                M.εᵖ
+      using
+        ( Chu
+        ; _==>_
+        ; module SelfDual
+        ; _≅_
+        ; ==>-trans
+        ; ⊗-isCommutativePomonoid
+        ; ⊗-isStarAutonomous
+        ; &-isMeet
+        )
+      renaming
+        ( _⊗_ to _⟦⊗⟧_
+        ; _&_ to _⟦&⟧_
+        ; I to ⟦I⟧
+        ; ¬ to ⟦¬⟧
+        ; embed to Chu-embed
+        )
+      public
 
-  -- open Algebra.Ordered.Construction.Chu.Construction
-  --               MS.⊸ⁱ-∙ⁱ-isResiduatedCommutativePomonoid
-  --               S.∧ⁱ-isMeetSemilattice
-  --               S.∨ⁱ-isJoinSemilattice
-  --               MS.εⁱ
-  --     using (Chu; _==>_; module SelfDual; _≅_;
-  --            ==>-trans;
-  --            ⊗-isCommutativePomonoid;
-  --            ⊗-isStarAutonomous;
-  --            &-isMeet)
-  --     renaming (_⊗_ to _⟦⊗⟧_;
-  --               _&_ to _⟦&⟧_;
-  --               I to ⟦I⟧;
-  --               ¬ to ⟦¬⟧;
-  --               embed to Chu-embed)
-  --     public
+  open Chu
+  open _==>_
 
-  -- open Chu
-  -- open _==>_
-  -- open SelfDual
-  --     D.∙ⁱ-◁ⁱ-isDuoidal
-  --     (S.≤ⁱ-trans (M◁.◁ⁱ-mono (S.≤ⁱ-reflexive units-iso) S.≤ⁱ-refl)
-  --                 (S.≤ⁱ-reflexive (M◁.◁ⁱ-identityˡ _)))
-  --     (S.≤ⁱ-reflexive (S.Eq.sym units-iso))
+  K-m : (M.εᵖ D.◁ᵖ M.εᵖ) P.≤ᵖ M.εᵖ
+  K-m = P.≤ᵖ-trans (D.◁ᵖ-mono P.≤ᵖ-refl P.≤ᵖ-refl) (P.≤ᵖ-reflexive (D.◁ᵖ-identityˡ _))
+  K-u : D.ιᵖ P.≤ᵖ M.εᵖ
+  K-u = P.≤ᵖ-refl
 
-  -- Chu-mix : ⟦I⟧ ≅ ⟦¬⟧ ⟦I⟧
-  -- Chu-mix .proj₁ .fpos = S.≤ⁱ-refl
-  -- Chu-mix .proj₁ .fneg = S.≤ⁱ-refl
-  -- Chu-mix .proj₂ .fpos = S.≤ⁱ-refl
-  -- Chu-mix .proj₂ .fneg = S.≤ⁱ-refl
+  open SelfDual D.∙ᵖ-◁ᵖ-isDuoidal K-m K-u
 
-  -- I-eq-J : ⟦I⟧ ≅ J
-  -- I-eq-J .proj₁ .fpos = S.≤ⁱ-reflexive units-iso
-  -- I-eq-J .proj₁ .fneg = S.≤ⁱ-reflexive (S.Eq.sym units-iso)
-  -- I-eq-J .proj₂ .fpos = S.≤ⁱ-reflexive (S.Eq.sym units-iso)
-  -- I-eq-J .proj₂ .fneg = S.≤ⁱ-reflexive units-iso
 
-  -- model : Model (suc (suc (a ⊔ ℓ₂))) (a ⊔ ℓ₂) (a ⊔ ℓ₂)
-  -- model .Model.Carrier = Chu
-  -- model .Model._≈_ = _≅_
-  -- model .Model._≲_ = _==>_
-  -- model .Model.¬ = ⟦¬⟧
-  -- model .Model.I = ⟦I⟧
-  -- model .Model.J = J
-  -- model .Model._⊗_ = _⟦⊗⟧_
-  -- model .Model._◁_ = _⍮_
-  -- model .Model._&_ = _⟦&⟧_
-  -- model .Model.⊗-isCommutativePomonoid = ⊗-isCommutativePomonoid
-  -- model .Model.⊗-isStarAutonomous = ⊗-isStarAutonomous
-  -- model .Model.mix = Chu-mix
-  -- model .Model.&-isMeet = &-isMeet
-  -- model .Model.⊗-◁-isDuoidal = ⊗-⍮-isDuoidal
-  -- model .Model.I-eq-J = I-eq-J
-  -- model .Model.◁-self-dual = self-dual
+  Chu-mix : ⟦I⟧ ≅ ⟦¬⟧ ⟦I⟧
+  Chu-mix .proj₁ .fpos = P.≤ᵖ-refl
+  Chu-mix .proj₁ .fneg = P.≤ᵖ-refl
+  Chu-mix .proj₂ .fpos = P.≤ᵖ-refl
+  Chu-mix .proj₂ .fneg = P.≤ᵖ-refl
 
-  -- embed : Carrier → Chu
-  -- embed x = Chu-embed (S.ηⁱ x)
+  I-eq-J : ⟦I⟧ ≅ J
+  I-eq-J .proj₁ .fpos = P.≤ᵖ-reflexive units-iso
+  I-eq-J .proj₁ .fneg = P.≤ᵖ-reflexive (P.Eq.sym units-iso)
+  I-eq-J .proj₂ .fpos = P.≤ᵖ-reflexive (P.Eq.sym units-iso)
+  I-eq-J .proj₂ .fneg = P.≤ᵖ-reflexive units-iso
+
+  model : Model (suc (suc (a ⊔ ℓ₂))) (a ⊔ ℓ₂) (a ⊔ ℓ₂)
+  model .Model.Carrier = Chu
+  model .Model._≈_ = _≅_
+  model .Model._≲_ = _==>_
+  model .Model.¬ = ⟦¬⟧
+  model .Model.I = ⟦I⟧
+  model .Model.J = J
+  model .Model._⊗_ = _⟦⊗⟧_
+  model .Model._◁_ = _⍮_
+  model .Model.⊗-isCommutativePomonoid = ⊗-isCommutativePomonoid
+  model .Model.⊗-isStarAutonomous = ⊗-isStarAutonomous
+  model .Model.mix = Chu-mix
+  model .Model.⊗-◁-isDuoidal = ⊗-⍮-isDuoidal
+  model .Model.I-eq-J = I-eq-J
+  model .Model.◁-self-dual = self-dual
+
+  embed : Carrier → Chu
+  embed x = Chu-embed (P.ηᵖ x)

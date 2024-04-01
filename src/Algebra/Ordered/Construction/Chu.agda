@@ -245,10 +245,13 @@ module Construction {a b c}
   ------------------------------------------------------------------------------
   -- Self-dual operators on Chu, arising from duoidal structures on
   -- the underlying order.
-  module SelfDual {_◁_ : A → A → A} {ι : A}
-                  (∙-◁-isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _◁_ ε ι)
-                  (K-m : (K ◁ K) ≤ K) (K-u : ι ≤ K) -- K is a ◁-monoid
-                where
+  module SelfDual
+      {_◁_ : A → A → A}
+      {ι : A}
+      (∙-◁-isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _◁_ ε ι)
+      (K-m : (K ◁ K) ≤ K)
+      (K-u : ι ≤ K) -- K is a ◁-monoid
+    where
 
     open IsDuoidal ∙-◁-isDuoidal hiding (refl; module Eq)
 

@@ -83,10 +83,14 @@ _≈ᵖ_ = SymCore _≤ᵖ_
       ; trans = ≤ᵖ-trans
       }
 
-open IsPartialOrder ≤ᵖ-isPartialOrder
-  using ()
+open IsPartialOrder ≤ᵖ-isPartialOrder public
+  using
+    ( module Eq
+    )
   renaming
-    ( isPreorder to ≤ᵖ-isPreorder
+    ( ≤-respˡ-≈  to ≤ᵖ-respˡ-≈ⁱ
+    ; reflexive  to ≤ᵖ-reflexive
+    ; isPreorder to ≤ᵖ-isPreorder
     )
 
 ≤ᵖ-poset : Poset _ _ _

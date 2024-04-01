@@ -49,14 +49,15 @@ module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
 
   module M = P.LiftIsCommutativePomonoid ⅋-isCommutativePomonoid
 
-  module S = Algebra.Ordered.Construction.Ideal
-                 (record { isPomagma = record { isPartialOrder = isPartialOrder
-                                              ; mono = &-mono } })
+  &-isPomagma : IsPomagma _≈_ _≲_ _&_
+  &-isPomagma = record
+    { isPartialOrder = isPartialOrder
+    ; mono = &-mono
+    }
 
+  module S = Algebra.Ordered.Construction.Ideal (record { isPomagma = &-isPomagma })
   module MS = S.DayDistributive ⅋-isCommutativePomonoid ⅋-distrib-&
-
   module M◁ = S.DayEntropic ◁-isPomonoid &-◁-entropy &-tidy
-
   module D = S.DayDuoidal ⅋-◁-isDuoidal comm ⅋-distrib-& &-◁-entropy &-tidy
 
   open S._≤ⁱ_

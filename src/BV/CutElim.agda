@@ -11,17 +11,27 @@ open import BV.Base Atom as BV
 import BV.Symmetric Atom as SBV
 import BV.Frame
 
--- open BV.Frame.FrameModel BV.frame
---   using (Chu; ==>-trans; module S; module P; ⟦I⟧; _==>_; module MS; module M◁; module M; module D; embed; ⟦¬⟧)
---   renaming (model to analyticModel)
+open BV.Frame.FrameModel BV.frame
+  using
+    ( Chu
+    ; ==>-trans
+    ; ⟦I⟧
+    ; _==>_
+    ; module P
+    ; module M
+    ; module D
+    ; embed
+    ; ⟦¬⟧)
+  renaming
+    ( model to analyticModel
+    )
 
--- open import BV.Interpretation Atom analyticModel (λ A → embed (`- A))
+open import BV.Interpretation Atom analyticModel (λ A → embed (`- A))
 
--- open Chu
--- open S
+open Chu
+open P
 
 -- module _ where
---   open P
 
 --   interactᵖ : ∀ P Q → (U (ηⁱ Q) M.⇨ᵖ U M◁.ιⁱ) M.∙ᵖ ηᵖ (P `⊗ Q) ≤ᵖ P.ηᵖ P
 --   interactᵖ P Q ._≤ᵖ_.*≤ᵖ* {x} (y , z , x≤y⅋z , ϕ₁ , lift z≤P⊗Q) =
