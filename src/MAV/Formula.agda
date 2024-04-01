@@ -12,21 +12,21 @@ module MAV.Formula {a} (Atom : Set a) where
 infix 20 `+_ 
 infix 20 `-_ 
 infix 15 `¬_
+infix 10 _`◁_
 infix 10 _`⅋_
 infix 10 _`⊗_
 infix 10 _`&_
 infix 10 _`⊕_
-infix 10 _`◁_
 
 data Formula : Set a where
   `I   : Formula
   `+_  : Atom → Formula
   `-_  : Atom → Formula
+  _`◁_ : Formula → Formula → Formula
   _`⅋_ : Formula → Formula → Formula
   _`⊗_ : Formula → Formula → Formula
   _`&_ : Formula → Formula → Formula
   _`⊕_ : Formula → Formula → Formula
-  _`◁_ : Formula → Formula → Formula
 
 private
   variable
@@ -39,11 +39,11 @@ private
 `¬ `I = `I
 `¬ (`+ A) = `- A
 `¬ (`- A) = `+ A
+`¬ (P `◁ Q) = `¬ P `◁ `¬ Q
 `¬ (P `⅋ Q) = `¬ P `⊗ `¬ Q
 `¬ (P `⊗ Q) = `¬ P `⅋ `¬ Q
 `¬ (P `& Q) = `¬ P `⊕ `¬ Q
 `¬ (P `⊕ Q) = `¬ P `& `¬ Q
-`¬ (P `◁ Q) = `¬ P `◁ `¬ Q
 
 
 module _ {ℓ} (_∼_ : Rel Formula ℓ) where
@@ -54,12 +54,12 @@ module _ {ℓ} (_∼_ : Rel Formula ℓ) where
 
     data CongClosure : Rel Formula (suc a ⊔ ℓ) where
       emb   : P ∼ P′ → P ≃ P′
+      _`⟨◁ : P ≃ P′ → (P `◁ Q) ≃ (P′ `◁ Q)
+      `◁⟩_ : Q ≃ Q′ → (P `◁ Q) ≃ (P `◁ Q′)
       _`⟨⊗ : P ≃ P′ → (P `⊗ Q) ≃ (P′ `⊗ Q)
       `⊗⟩_ : Q ≃ Q′ → (P `⊗ Q) ≃ (P `⊗ Q′)
       _`⟨⅋ : P ≃ P′ → (P `⅋ Q) ≃ (P′ `⅋ Q)
       `⅋⟩_ : Q ≃ Q′ → (P `⅋ Q) ≃ (P `⅋ Q′)
-      _`⟨◁ : P ≃ P′ → (P `◁ Q) ≃ (P′ `◁ Q)
-      `◁⟩_ : Q ≃ Q′ → (P `◁ Q) ≃ (P `◁ Q′)
       _`⟨& : P ≃ P′ → (P `& Q) ≃ (P′ `& Q)
       `&⟩_ : Q ≃ Q′ → (P `& Q) ≃ (P `& Q′)
       _`⟨⊕ : P ≃ P′ → (P `⊕ Q) ≃ (P′ `⊕ Q)
@@ -69,11 +69,11 @@ _≡ᵇ`I : (P : Formula) → Bool
 `I       ≡ᵇ`I = true
 (`+ A)   ≡ᵇ`I = false
 (`- A)   ≡ᵇ`I = false
+(P `◁ Q) ≡ᵇ`I = false
 (P `⅋ Q) ≡ᵇ`I = false
 (P `⊗ Q) ≡ᵇ`I = false
 (P `& Q) ≡ᵇ`I = false
 (P `⊕ Q) ≡ᵇ`I = false
-(P `◁ Q) ≡ᵇ`I = false
 
 record NonUnit (P : Formula) : Set where
   field
@@ -84,6 +84,8 @@ instance
   `+-nonUnit = _
   `--nonUnit : ∀ {A}   → NonUnit (`- A)
   `--nonUnit = _
+  `◁-nonUnit : ∀ {P Q} → NonUnit (P `◁ Q)
+  `◁-nonUnit = _
   `⅋-nonUnit : ∀ {P Q} → NonUnit (P `⅋ Q)
   `⅋-nonUnit = _
   `⊗-nonUnit : ∀ {P Q} → NonUnit (P `⊗ Q)
@@ -92,25 +94,23 @@ instance
   `&-nonUnit = _
   `⊕-nonUnit : ∀ {P Q} → NonUnit (P `⊕ Q)
   `⊕-nonUnit = _
-  `◁-nonUnit : ∀ {P Q} → NonUnit (P `◁ Q)
-  `◁-nonUnit = _
 
 _≟`I : (P : Formula) → Dec (P ≡ `I)
 `I       ≟`I = yes refl
 (`+ A)   ≟`I = no (λ ())
 (`- A)   ≟`I = no (λ ())
+(P `◁ Q) ≟`I = no (λ ())
 (P `⅋ Q) ≟`I = no (λ ())
 (P `⊗ Q) ≟`I = no (λ ())
 (P `& Q) ≟`I = no (λ ())
 (P `⊕ Q) ≟`I = no (λ ())
-(P `◁ Q) ≟`I = no (λ ())
 
 ≢-nonUnit : ∀ {P} → P ≢ `I → NonUnit P
 ≢-nonUnit {`I}     P≢`I = contradiction refl P≢`I 
 ≢-nonUnit {`+ A}   P≢`I = _
 ≢-nonUnit {`- A}   P≢`I = _
+≢-nonUnit {P `◁ Q} P≢`I = _
 ≢-nonUnit {P `⅋ Q} P≢`I = _
 ≢-nonUnit {P `⊗ Q} P≢`I = _
 ≢-nonUnit {P `& Q} P≢`I = _
 ≢-nonUnit {P `⊕ Q} P≢`I = _
-≢-nonUnit {P `◁ Q} P≢`I = _

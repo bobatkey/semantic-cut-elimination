@@ -113,12 +113,12 @@ module _ {ℓ} {_𝓡_ : Rel Formula ℓ} where
 
   mono : (f : ∀ {P Q} → P 𝓡 Q → ⟦ Q ⟧ ≲ ⟦ P ⟧) → CongClosure _𝓡_ P Q → ⟦ Q ⟧ ≲ ⟦ P ⟧
   mono f (emb φ)   = f φ
+  mono f (φ `⟨◁) = ◁-mono (mono f φ) refl
+  mono f (`◁⟩ φ) = ◁-mono refl (mono f φ)
   mono f (φ `⟨⊗) = ⊗-mono (mono f φ) refl
   mono f (`⊗⟩ φ) = ⊗-mono refl (mono f φ)
   mono f (φ `⟨⅋) = ⅋-mono (mono f φ) refl
   mono f (`⅋⟩ φ) = ⅋-mono refl (mono f φ)
-  mono f (φ `⟨◁) = ◁-mono (mono f φ) refl
-  mono f (`◁⟩ φ) = ◁-mono refl (mono f φ)
   mono f (φ `⟨&) = &-mono (mono f φ) refl
   mono f (`&⟩ φ) = &-mono refl (mono f φ)
   mono f (φ `⟨⊕) = ⊕-mono (mono f φ) refl

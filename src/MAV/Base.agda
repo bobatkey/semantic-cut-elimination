@@ -38,15 +38,15 @@ private
 infix 5 _∼_
 
 data _∼_ : Rel Formula a where
+  `◁-assoc     : ((P `◁ Q) `◁ R) ∼ (P `◁ (Q `◁ R))
+  `◁-identityʳ : (P `◁ `I) ∼ P
+  `◁-identityˡ : (`I `◁ P) ∼ P
   -- `⊗-assoc     : ((P `⊗ Q) `⊗ R) ∼ (P `⊗ (Q `⊗ R))
   `⊗-comm      : (P `⊗ Q) ∼ (Q `⊗ P)
   `⊗-identityʳ : (P `⊗ `I) ∼ P
   `⅋-assoc     : ((P `⅋ Q) `⅋ R) ∼ (P `⅋ (Q `⅋ R))
   `⅋-comm      : (P `⅋ Q) ∼ (Q `⅋ P)
   `⅋-identityʳ : (P `⅋ `I) ∼ P
-  `◁-assoc     : ((P `◁ Q) `◁ R) ∼ (P `◁ (Q `◁ R))
-  `◁-identityʳ : (P `◁ `I) ∼ P
-  `◁-identityˡ : (`I `◁ P) ∼ P
 
 infix 5 _∼ᶜ_
 
@@ -131,6 +131,12 @@ open IsEquivalence ⟷⋆-isEquivalence
 ⟶⋆-map : (f : Op₁ Formula) (g : ∀ {R} → CongClosure R =[ f ]⇒ CongClosure R) → P ⟶⋆ P′ → f P ⟶⋆ f P′ 
 ⟶⋆-map f g = Star.gmap f (Sum.map (EqClosure.gmap f g) g)
 
+`◁⟩⋆_ : Q ⟶⋆ Q′ → (P `◁ Q) ⟶⋆ (P `◁ Q′)
+`◁⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ `◁⟩_ Q⟶⋆Q′
+
+_`⟨◁⋆ : P ⟶⋆ P′ → P `◁ Q ⟶⋆ P′ `◁ Q
+P⟶⋆P′ `⟨◁⋆ = ⟶⋆-map _ _`⟨◁ P⟶⋆P′
+
 `⊗⟩⋆_ : Q ⟶⋆ Q′ → (P `⊗ Q) ⟶⋆ (P `⊗ Q′)
 `⊗⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ `⊗⟩_ Q⟶⋆Q′
 
@@ -145,12 +151,6 @@ P⟶⋆P′ `⟨⅋⋆ = ⟶⋆-map _ _`⟨⅋ P⟶⋆P′
 
 -- _`⟨⅋⋆ : P ⟶⋆ P′ → P `⅋ Q ⟶⋆ P′ `⅋ Q
 -- f `⟨⅋⋆ = `⅋-comm ◅ Q `⅋⟩⋆ f ◅◅ `⅋-comm ◅ ε
-
-`◁⟩⋆_ : Q ⟶⋆ Q′ → (P `◁ Q) ⟶⋆ (P `◁ Q′)
-`◁⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ `◁⟩_ Q⟶⋆Q′
-
-_`⟨◁⋆ : P ⟶⋆ P′ → P `◁ Q ⟶⋆ P′ `◁ Q
-P⟶⋆P′ `⟨◁⋆ = ⟶⋆-map _ _`⟨◁ P⟶⋆P′
 
 `&⟩⋆_ : Q ⟶⋆ Q′ → (P `& Q) ⟶⋆ (P `& Q′)
 `&⟩⋆ Q⟶⋆Q′ = ⟶⋆-map _ `&⟩_ Q⟶⋆Q′

@@ -16,10 +16,10 @@ record Frame c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
     Carrier : Set c
     _≈_     : Carrier → Carrier → Set ℓ₁
     _≲_     : Carrier → Carrier → Set ℓ₂
-
+    
     I       : Carrier
-    _⅋_     : Carrier → Carrier → Carrier
     _◁_     : Carrier → Carrier → Carrier
+    _⅋_     : Carrier → Carrier → Carrier
     _&_     : Carrier → Carrier → Carrier
 
     ⅋-isCommutativePomonoid : IsCommutativePomonoid _≈_ _≲_ _⅋_ I

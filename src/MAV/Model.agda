@@ -22,8 +22,8 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
     ¬       : Carrier → Carrier
     I       : Carrier
     J       : Carrier
-    _⊗_     : Carrier → Carrier → Carrier
     _◁_     : Carrier → Carrier → Carrier
+    _⊗_     : Carrier → Carrier → Carrier
     _&_     : Carrier → Carrier → Carrier
 
     ⊗-isCommutativePomonoid : IsCommutativePomonoid _≈_ _≲_ _⊗_ I
