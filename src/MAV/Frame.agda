@@ -2,9 +2,9 @@
 
 module MAV.Frame where
 
-open import Level using (suc; _⊔_; Lift; lift; 0ℓ; lower)
-open import Algebra.Ordered
-open import Algebra.Ordered.Structures.Duoidal
+open import Level using (suc; _⊔_)
+open import Algebra.Ordered using (IsCommutativePomonoid; Entropy)
+open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
 open import Algebra using (_DistributesOver_)
 open import Data.Product as Product using (_×_; _,_)
 open import Relation.Binary.Bundles using (Poset)
