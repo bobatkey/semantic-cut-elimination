@@ -163,9 +163,26 @@ module Construction
 
   ⊗-mono : X₁ ≤ X₂ → Y₁ ≤ Y₂ → (X₁ ⊗ Y₁) ≤ (X₂ ⊗ Y₂)
   ⊗-mono f g .fpos = C.mono (f .fpos) (g .fpos)
-  ⊗-mono f g .fneg =
-    C.∧-greatest (C.x∧y≤x _ _ >> C.anti-monoʳ (g .fpos) (f .fneg))
-                 (C.x∧y≤y _ _ >> C.anti-monoʳ (f .fpos) (g .fneg))
+  ⊗-mono {X₁} {X₂} {Y₁} {Y₂} f g .fneg = C.∧-greatest lem₁ lem₂
+    where
+      lem₁ = 
+        begin
+          (Y₂ .pos -∙ᶜ X₂ .neg) ∧ᶜ (X₂ .pos -∙ᶜ Y₂ .neg)
+        ≤⟨ C.x∧y≤x _ _ ⟩
+          (Y₂ .pos -∙ᶜ X₂ .neg)
+        ≤⟨ C.anti-monoʳ (g .fpos) (f .fneg) ⟩
+          (Y₁ .pos -∙ᶜ X₁ .neg)
+        ∎
+        where open PosetReasoning C.poset
+      lem₂ =
+        begin
+          (Y₂ .pos -∙ᶜ X₂ .neg) ∧ᶜ (X₂ .pos -∙ᶜ Y₂ .neg)
+        ≤⟨ C.x∧y≤y _ _ ⟩
+          (X₂ .pos -∙ᶜ Y₂ .neg)
+        ≤⟨ C.anti-monoʳ (f .fpos) (g .fneg) ⟩
+          (X₁ .pos -∙ᶜ Y₁ .neg)
+        ∎
+        where open PosetReasoning C.poset
 
 
   ⊗-sym : (X ⊗ Y) ≤ (Y ⊗ X)
@@ -190,9 +207,7 @@ module Construction
 
   ⊗-identityˡ : LeftIdentity _≈_ ε _⊗_
   ⊗-identityˡ X .Product.proj₁ .fpos = C.reflexive (C.identityˡ _)
-  ⊗-identityˡ X .Product.proj₁ .fneg =
-    C.∧-greatest (C.residualʳ .Equivalence.to (X .int))
-                 (C.residualʳ .Equivalence.to (C.reflexive (C.identityˡ _)))
+  ⊗-identityˡ X .Product.proj₁ .fneg = C.∧-greatest (Λʳ (X .int)) (Λʳ (C.reflexive (C.identityˡ _)))
   ⊗-identityˡ X .Product.proj₂ .fpos = C.reflexive (C.Eq.sym (C.identityˡ (X .pos)))
   ⊗-identityˡ X .Product.proj₂ .fneg = C.x∧y≤y _ _ >> C.reflexive (C.Eq.sym (C.identityʳ _)) >> C.evalˡ
 
@@ -405,3 +420,4 @@ module Construction
     ⊗-◁-isDuoidal .IsDuoidal.∙-idem-ι = ⊗-idem-ι
     ⊗-◁-isDuoidal .IsDuoidal.◁-idem-ε = ◁-idem-ε
     ⊗-◁-isDuoidal .IsDuoidal.ε≲ι = ε≤ι
+ 
