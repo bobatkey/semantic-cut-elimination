@@ -42,7 +42,7 @@ module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
   module D = P.LiftIsDuoidal ⅋-◁-isDuoidal
 
   open P._≤ᵖ_
-  open P.PreSheaf
+  open P.LowerSet
 
   units-iso : M.εᵖ P.≈ᵖ D.ιᵖ
   units-iso .proj₁ = D.εᵖ≤ιᵖ

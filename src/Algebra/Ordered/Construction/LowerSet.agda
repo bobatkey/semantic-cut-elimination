@@ -20,37 +20,38 @@ open import Relation.Unary using (Pred; _⊆_)
 
 module Algebra.Ordered.Construction.LowerSet {c ℓ₁ ℓ₂} (poset : Poset c ℓ₁ ℓ₂) where
 
-open Poset poset
+private
+  module Carrier = Poset poset
+  
+open Carrier
   using
     ( Carrier
-    ; _≈_
-    ; _≤_
     )
   renaming
-    ( refl  to ≤-refl
-    ; trans to ≤-trans
+    ( _≈_   to _≈ᶜ_
+    ; _≤_   to _≤ᶜ_
     )
 
 private
   variable
     w x y z : Carrier
 
-record PreSheaf : Set (suc (c ⊔ ℓ₂)) where
+record LowerSet : Set (suc (c ⊔ ℓ₂)) where
   no-eta-equality
   field
     ICarrier : Pred Carrier (c ⊔ ℓ₂)
-    ≤-closed : x ≤ y → ICarrier y → ICarrier x
-open PreSheaf public
+    ≤-closed : x ≤ᶜ y → ICarrier y → ICarrier x
+open LowerSet public
 
 private
   variable
-    F F₁ F₂ : PreSheaf
-    G G₁ G₂ : PreSheaf
-    H H₁ H₂ : PreSheaf
+    F F₁ F₂ : LowerSet
+    G G₁ G₂ : LowerSet
+    H H₁ H₂ : LowerSet
 
 infix 4 _≤ᵖ_
 
-record _≤ᵖ_ (F G : PreSheaf) : Set (c ⊔ ℓ₂) where
+record _≤ᵖ_ (F G : LowerSet) : Set (c ⊔ ℓ₂) where
   no-eta-equality
   constructor mk-≤ᵖ
   field
@@ -59,12 +60,12 @@ open _≤ᵖ_ public
 
 infix 4 _≥ᵖ_
 
-_≥ᵖ_ : PreSheaf → PreSheaf → Set (c ⊔ ℓ₂)
+_≥ᵖ_ : LowerSet → LowerSet → Set (c ⊔ ℓ₂)
 _≥ᵖ_ = flip _≤ᵖ_
 
 infix 4 _≈ᵖ_
 
-_≈ᵖ_ : PreSheaf → PreSheaf → Set (c ⊔ ℓ₂)
+_≈ᵖ_ : LowerSet → LowerSet → Set (c ⊔ ℓ₂)
 _≈ᵖ_ = SymCore _≤ᵖ_
 
 ≤ᵖ-refl : Reflexive _≤ᵖ_
@@ -116,17 +117,17 @@ module Reasoning where
 ≥ᵖ-isPartialOrder : IsPartialOrder _≈ᵖ_ _≥ᵖ_
 ≥ᵖ-isPartialOrder = Flip.isPartialOrder ≤ᵖ-isPartialOrder
 
-ηᵖ : Carrier → PreSheaf
-ηᵖ x .ICarrier y = Lift c (y ≤ x)
-ηᵖ x .≤-closed z≤y y≤x = lift (≤-trans z≤y (y≤x .lower))
+ηᵖ : Carrier → LowerSet
+ηᵖ x .ICarrier y = Lift c (y ≤ᶜ x)
+ηᵖ x .≤-closed z≤y y≤x = lift (Carrier.trans z≤y (y≤x .lower))
 
-ηᵖ-mono : x ≤ y → ηᵖ x ≤ᵖ ηᵖ y
-ηᵖ-mono x≤y .*≤ᵖ* (lift z≤x) = lift (≤-trans z≤x x≤y)
+ηᵖ-mono : x ≤ᶜ y → ηᵖ x ≤ᵖ ηᵖ y
+ηᵖ-mono x≤y .*≤ᵖ* (lift z≤x) = lift (Carrier.trans z≤x x≤y)
 
 ------------------------------------------------------------------------------
 -- Construct a meet semilattice for presheaves
 
-_∧ᵖ_ : PreSheaf → PreSheaf → PreSheaf
+_∧ᵖ_ : LowerSet → LowerSet → LowerSet
 (F ∧ᵖ G) .ICarrier x = F .ICarrier x × G .ICarrier x
 (F ∧ᵖ G) .≤-closed x≤y (Fy , Gy) = (F .≤-closed x≤y Fy , G .≤-closed x≤y Gy)
 
@@ -167,7 +168,7 @@ open import Relation.Binary.Lattice.Properties.MeetSemilattice ∧ᵖ-meetSemila
   ; assoc = ∧ᵖ-assoc
   }
 
-⊤ᵖ : PreSheaf
+⊤ᵖ : LowerSet
 ⊤ᵖ .ICarrier x = Lift (c ⊔ ℓ₂) ⊤
 ⊤ᵖ .≤-closed x Fx = Fx
 
@@ -200,7 +201,7 @@ open import Relation.Binary.Lattice.Properties.BoundedMeetSemilattice ∧ᵖ-⊤
 -- ------------------------------------------------------------------------------
 -- -- Construct a join semilattice for presheaves
 
-_∨ᵖ_ : PreSheaf → PreSheaf → PreSheaf
+_∨ᵖ_ : LowerSet → LowerSet → LowerSet
 (F ∨ᵖ G) .ICarrier x = F .ICarrier x ⊎ G .ICarrier x
 (F ∨ᵖ G) .≤-closed x≤y (inj₁ Fy) = inj₁ (F .≤-closed x≤y Fy)
 (F ∨ᵖ G) .≤-closed x≤y (inj₂ Gy) = inj₂ (G .≤-closed x≤y Gy)
@@ -229,15 +230,15 @@ open IsJoinSemilattice ∨ᵖ-isJoinSemilattice
 -- ------------------------------------------------------------------------------
 -- -- Construct a residuated pomonoid for presheaves
 
-_⇒ᵖ_ : PreSheaf → PreSheaf → PreSheaf
-(F ⇒ᵖ G) .ICarrier x = ∀ {y} → y ≤ x → F .ICarrier y → G .ICarrier y
-(F ⇒ᵖ G) .≤-closed x≤y f z≤x Fz = f (≤-trans z≤x x≤y) Fz
+_⇒ᵖ_ : LowerSet → LowerSet → LowerSet
+(F ⇒ᵖ G) .ICarrier x = ∀ {y} → y ≤ᶜ x → F .ICarrier y → G .ICarrier y
+(F ⇒ᵖ G) .≤-closed x≤y f z≤x Fz = f (Carrier.trans z≤x x≤y) Fz
 
 ⇒ᵖ-residualʳ-to : (F ∧ᵖ G) ≤ᵖ H → G ≤ᵖ (F ⇒ᵖ H)
 ⇒ᵖ-residualʳ-to {F} {G} {H} F∧G≤H .*≤ᵖ* Gx y≤x Fy = F∧G≤H .*≤ᵖ* (Fy , G .≤-closed y≤x Gx)
 
 ⇒ᵖ-residualʳ-from : G ≤ᵖ (F ⇒ᵖ H) → (F ∧ᵖ G) ≤ᵖ H
-⇒ᵖ-residualʳ-from G≤F⇒H .*≤ᵖ* (Fx , Gx) = G≤F⇒H .*≤ᵖ* Gx ≤-refl Fx
+⇒ᵖ-residualʳ-from G≤F⇒H .*≤ᵖ* (Fx , Gx) = G≤F⇒H .*≤ᵖ* Gx Carrier.refl Fx
 
 ⇒ᵖ-residualʳ : RightResidual _≤ᵖ_ _∧ᵖ_ _⇒ᵖ_
 ⇒ᵖ-residualʳ .Function.Equivalence.to        = ⇒ᵖ-residualʳ-to
@@ -254,53 +255,57 @@ _⇒ᵖ_ : PreSheaf → PreSheaf → PreSheaf
 ------------------------------------------------------------------------------
 -- Lift monoids to presheaves
 
-module LiftIsPomonoid {_∙_} {ε} (isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε) where
+module LiftIsPomonoid
+    {_∙ᶜ_}
+    {εᶜ}
+    (isPomonoid : IsPomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ)
+  where
 
   open IsPomonoid isPomonoid
 
-  _∙ᵖ_ : PreSheaf → PreSheaf → PreSheaf
+  _∙ᵖ_ : LowerSet → LowerSet → LowerSet
   (F ∙ᵖ G) .ICarrier x =
-    ∃[ y ] ∃[ z ] (x ≤ (y ∙ z) × F .ICarrier y × G .ICarrier z)
+    ∃[ y ] ∃[ z ] (x ≤ᶜ (y ∙ᶜ z) × F .ICarrier y × G .ICarrier z)
   (F ∙ᵖ G) .≤-closed x≤w (y , z , w≤yz , ϕ₁ , ϕ₂) =
-    (-, -, ≤-trans x≤w w≤yz , ϕ₁ , ϕ₂)
+    (-, -, Carrier.trans x≤w w≤yz , ϕ₁ , ϕ₂)
 
   ∙ᵖ-mono : Monotonic₂ _≤ᵖ_ _≤ᵖ_ _≤ᵖ_ _∙ᵖ_
   ∙ᵖ-mono F₁≤F₂ G₁≤G₂ .*≤ᵖ* (y , z , x≤yz , F₁y , G₁z) =
     (-, -, x≤yz , F₁≤F₂ .*≤ᵖ* F₁y , G₁≤G₂ .*≤ᵖ* G₁z)
 
-  ηᵖ-preserve-∙ᵖ : ηᵖ (x ∙ y) ≤ᵖ ηᵖ x ∙ᵖ ηᵖ y
-  ηᵖ-preserve-∙ᵖ {x} {y} .*≤ᵖ* {z} (lift z≤xy) = x , y , z≤xy , lift ≤-refl , lift ≤-refl
+  ηᵖ-preserve-∙ᵖ : ηᵖ (x ∙ᶜ y) ≤ᵖ ηᵖ x ∙ᵖ ηᵖ y
+  ηᵖ-preserve-∙ᵖ {x} {y} .*≤ᵖ* {z} (lift z≤xy) = x , y , z≤xy , lift Carrier.refl , lift Carrier.refl
 
-  ηᵖ-preserve-∙ᵖ⁻¹ : ηᵖ x ∙ᵖ ηᵖ y ≤ᵖ ηᵖ (x ∙ y)
+  ηᵖ-preserve-∙ᵖ⁻¹ : ηᵖ x ∙ᵖ ηᵖ y ≤ᵖ ηᵖ (x ∙ᶜ y)
   ηᵖ-preserve-∙ᵖ⁻¹ {x} {y} .*≤ᵖ* {z} (z₁ , z₂ , z≤z₁z₂ , lift z₁≤x , lift z₂≤y) =
-    lift (≤-trans z≤z₁z₂ (mono z₁≤x z₂≤y))
+    lift (Carrier.trans z≤z₁z₂ (mono z₁≤x z₂≤y))
 
-  εᵖ : PreSheaf
-  εᵖ = ηᵖ ε
+  εᵖ : LowerSet
+  εᵖ = ηᵖ εᶜ
 
   ∙ᵖ-identityˡ : LeftIdentity _≈ᵖ_ εᵖ _∙ᵖ_
   ∙ᵖ-identityˡ F .proj₁ .*≤ᵖ* (y , z , x≤yz , lift y≤ε , Fz) =
-    F .≤-closed (≤-trans x≤yz (≤-trans (mono y≤ε ≤-refl) (≤-respʳ-≈ (identityˡ z) ≤-refl) )) Fz
+    F .≤-closed (Carrier.trans x≤yz (Carrier.trans (mono y≤ε Carrier.refl) (≤-respʳ-≈ (identityˡ z) Carrier.refl) )) Fz
   ∙ᵖ-identityˡ F .proj₂ .*≤ᵖ* Fx =
-    (-, -, ≤-respˡ-≈ (identityˡ _) ≤-refl , lift ≤-refl , Fx)
+    (-, -, ≤-respˡ-≈ (identityˡ _) Carrier.refl , lift Carrier.refl , Fx)
 
   ∙ᵖ-identityʳ : RightIdentity _≈ᵖ_ εᵖ _∙ᵖ_
   ∙ᵖ-identityʳ F .proj₁ .*≤ᵖ* (y , z , x≤yz , Fy , lift z≤ε) =
-    F .≤-closed (≤-trans x≤yz (≤-trans (mono ≤-refl z≤ε) (≤-respʳ-≈ (identityʳ y) ≤-refl) )) Fy
+    F .≤-closed (Carrier.trans x≤yz (Carrier.trans (mono Carrier.refl z≤ε) (≤-respʳ-≈ (identityʳ y) Carrier.refl) )) Fy
   ∙ᵖ-identityʳ F .proj₂ .*≤ᵖ* Fx =
-    (-, -, ≤-respˡ-≈ (identityʳ _) ≤-refl , Fx , lift ≤-refl)
+    (-, -, ≤-respˡ-≈ (identityʳ _) Carrier.refl , Fx , lift Carrier.refl)
 
   ∙ᵖ-identity : Identity _≈ᵖ_ εᵖ _∙ᵖ_
   ∙ᵖ-identity = (∙ᵖ-identityˡ , ∙ᵖ-identityʳ)
 
   ∙ᵖ-assoc : Associative _≈ᵖ_ _∙ᵖ_
   ∙ᵖ-assoc F G H .proj₁ .*≤ᵖ* (y , z , x≤yz , (u , v , y≤uv , Fu , Gv) , Hz) =
-    let x≤u∙v∙z = ≤-trans x≤yz (≤-trans (mono y≤uv ≤-refl) (≤-respʳ-≈ (assoc u v z)  ≤-refl)) in
-      (-, -, x≤u∙v∙z , Fu , (-, -, ≤-refl , Gv , Hz))
+    let x≤u∙v∙z = Carrier.trans x≤yz (Carrier.trans (mono y≤uv Carrier.refl) (≤-respʳ-≈ (assoc u v z)  Carrier.refl)) in
+      (-, -, x≤u∙v∙z , Fu , (-, -, Carrier.refl , Gv , Hz))
 
   ∙ᵖ-assoc F G H .proj₂ .*≤ᵖ* (y , z , x≤yz , Fy , (u , v , z≤uv , Gu , Hv)) =
-    let x≤y∙u∙v = ≤-trans x≤yz (≤-trans (mono ≤-refl z≤uv) (≤-respˡ-≈ (assoc y u v) ≤-refl)) in
-      (-, -, x≤y∙u∙v , (-, -, ≤-refl , Fy , Gu) , Hv)
+    let x≤y∙u∙v = Carrier.trans x≤yz (Carrier.trans (mono Carrier.refl z≤uv) (≤-respˡ-≈ (assoc y u v) Carrier.refl)) in
+      (-, -, x≤y∙u∙v , (-, -, Carrier.refl , Fy , Gu) , Hv)
 
   ∙ᵖ-isPomonoid : IsPomonoid _≈ᵖ_ _≤ᵖ_ _∙ᵖ_ εᵖ
   ∙ᵖ-isPomonoid = record
@@ -326,16 +331,20 @@ module LiftIsPomonoid {_∙_} {ε} (isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε
       ; ∙-congʳ to ∙ᵖ-congʳ
       )
 
-module LiftIsCommutativePomonoid {_∙_} {ε} (isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _∙_ ε) where
+module LiftIsCommutativePomonoid
+    {_∙ᶜ_}
+    {εᶜ}
+    (isCommutativePomonoid : IsCommutativePomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ)
+  where
 
   open IsCommutativePomonoid isCommutativePomonoid
   open LiftIsPomonoid isPomonoid public
 
   ∙ᵖ-comm : Commutative _≈ᵖ_ _∙ᵖ_
   ∙ᵖ-comm F G .proj₁ .*≤ᵖ* (y , z , x≤yz , Fy , Gz) = 
-    (-, -, trans x≤yz (≤-respˡ-≈ (comm z y) ≤-refl) , Gz , Fy)
+    (-, -, trans x≤yz (≤-respˡ-≈ (comm z y) Carrier.refl) , Gz , Fy)
   ∙ᵖ-comm F G .proj₂ .*≤ᵖ* (y , z , x≤yz , Gy , Fz) = 
-    (-, -, trans x≤yz (≤-respˡ-≈ (comm z y) ≤-refl) , Fz , Gy)
+    (-, -, trans x≤yz (≤-respˡ-≈ (comm z y) Carrier.refl) , Fz , Gy)
 
   ∙ᵖ-isCommutativePomonoid : IsCommutativePomonoid _≈ᵖ_ _≤ᵖ_ _∙ᵖ_ εᵖ
   ∙ᵖ-isCommutativePomonoid = record
@@ -343,17 +352,17 @@ module LiftIsCommutativePomonoid {_∙_} {ε} (isCommutativePomonoid : IsCommuta
     ; comm       = ∙ᵖ-comm 
     }
 
-  _⇨ᵖ_ : PreSheaf → PreSheaf → PreSheaf
-  (F ⇨ᵖ G) .ICarrier x        = ∀ {y} → F .ICarrier y → G .ICarrier (x ∙ y)
+  _⇨ᵖ_ : LowerSet → LowerSet → LowerSet
+  (F ⇨ᵖ G) .ICarrier x        = ∀ {y} → F .ICarrier y → G .ICarrier (x ∙ᶜ y)
   (F ⇨ᵖ G) .≤-closed x≤z f Fy = G .≤-closed (mono x≤z refl) (f Fy)
 
   ⇨ᵖ-residual-to : (F ∙ᵖ G) ≤ᵖ H → G ≤ᵖ (F ⇨ᵖ H)
   ⇨ᵖ-residual-to F∙G≤H .*≤ᵖ* Gx Fy = 
-    F∙G≤H .*≤ᵖ* (-, -, ≤-respˡ-≈ (comm _ _) ≤-refl , Fy , Gx)
+    F∙G≤H .*≤ᵖ* (-, -, ≤-respˡ-≈ (comm _ _) Carrier.refl , Fy , Gx)
 
   ⇨ᵖ-residual-from : G ≤ᵖ (F ⇨ᵖ H) → (F ∙ᵖ G) ≤ᵖ H
   ⇨ᵖ-residual-from {G} {F} {H} G≤F⇨H .*≤ᵖ* (_ , _ , x≤y∙z , Fy , Gz) = 
-    H .≤-closed (trans x≤y∙z (≤-respˡ-≈ (comm _ _) ≤-refl)) (G≤F⇨H .*≤ᵖ* Gz Fy)
+    H .≤-closed (trans x≤y∙z (≤-respˡ-≈ (comm _ _) Carrier.refl)) (G≤F⇨H .*≤ᵖ* Gz Fy)
 
   ⇨ᵖ-residual : RightResidual _≤ᵖ_ _∙ᵖ_ _⇨ᵖ_
   ⇨ᵖ-residual .Function.Equivalence.to        = ⇨ᵖ-residual-to
@@ -371,7 +380,13 @@ module LiftIsCommutativePomonoid {_∙_} {ε} (isCommutativePomonoid : IsCommuta
   ∙ᵖ-∨ᵖ-distrib = supremum∧residuated⇒distrib ≤ᵖ-isPreorder ∨ᵖ-supremum 
     (IsResiduatedCommutativePomonoid.residuated ⇨ᵖ-∙ᵖ-isResiduatedCommutativePomonoid)
 
-module LiftIsDuoidal {_∙_} {_◁_} {ε} {ι} (isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _◁_ ε ι) where
+module LiftIsDuoidal
+    {_∙ᶜ_} 
+    {_◁ᶜ_} 
+    {εᶜ} 
+    {ιᶜ}
+    (isDuoidal : IsDuoidal _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ _◁ᶜ_ εᶜ ιᶜ)
+  where
 
   open IsDuoidal isDuoidal
   open LiftIsPomonoid ∙-isPomonoid public
@@ -423,3 +438,4 @@ module LiftIsDuoidal {_∙_} {_◁_} {ε} {ι} (isDuoidal : IsDuoidal _≈_ _≤
     ; ◁-idem-ε     = ◁ᵖ-idem-εᵖ
     ; ε≲ι          = εᵖ≤ιᵖ
     }
+ 

@@ -21,7 +21,7 @@ open import Relation.Unary using (Pred; _⊆_)
 import Relation.Binary.Reasoning.PartialOrder as PosetReasoning
 import Relation.Binary.Reasoning.Setoid as SetoidReasoning
 
--- FIXME: not sheaves! we do not necessarily know that α : PreSheaf →
+-- FIXME: not sheaves! we do not necessarily know that α : LowerSet →
 -- Sheaf defined below preserves finite limits. This is an extra
 -- property that would turn it into a preorder Grothendieck topos. I
 -- guess that this would need _∨_ to distribute over meets in A (if we
@@ -49,9 +49,9 @@ open Pomagma pomagma
     ; trans      to ≤-trans
     )
 
-open import Algebra.PreSheaf poset as P
+open import Algebra.LowerSet poset as P
   using
-    ( PreSheaf
+    ( LowerSet
     ; ICarrier
     ; ≤-closed
     ; _≤ᵖ_
@@ -71,9 +71,9 @@ private
     X : Pred Carrier ℓx
     Y : Pred Carrier ℓy
     Z : Pred Carrier ℓz
-    F F₁ F₂ : PreSheaf
-    G G₁ G₂ : PreSheaf
-    H H₁ H₂ : PreSheaf
+    F F₁ F₂ : LowerSet
+    G G₁ G₂ : LowerSet
+    H H₁ H₂ : LowerSet
 
 data Tree {a} (A : Set a) : Set a where
   leaf : A → Tree A
@@ -89,7 +89,7 @@ infix 2 ∃ᵗ-syntax
 
 syntax ∃ᵗ-syntax (λ x → B) = ∃ᵗ[ x ] B
 
-∃ᵗᵖ : PreSheaf → Set (c ⊔ ℓ₂)
+∃ᵗᵖ : LowerSet → Set (c ⊔ ℓ₂)
 ∃ᵗᵖ F = ∃ᵗ[ x ] (F .ICarrier x)
 
 mapᵗ : (f : X ⊆ Y) → ∃ᵗ X → ∃ᵗ Y
@@ -187,7 +187,7 @@ open IsPartialOrder ≤ˢ-isPartialOrder
 ------------------------------------------------------------------------------
 -- Turn a presheaf into a sheaf by closing under imaginary ⋁ᵗs
 
-α : PreSheaf → Sheaf
+α : LowerSet → Sheaf
 α F .ICarrier x = Σ[ t ∈ ∃ᵗᵖ F ] (x ≤ ⋁ᵗ t)
 α F .≤-closed x≤y (t , y≤⋁t) = t , ≤-trans x≤y y≤⋁t
 α F .∨-closed t = joinᵗ t , joinᵗ-⋁ᵗ t
@@ -201,7 +201,7 @@ open IsPartialOrder ≤ˢ-isPartialOrder
 ------------------------------------------------------------------------------
 -- Turn a sheaf into a presheaf
 
-U : Sheaf → PreSheaf
+U : Sheaf → LowerSet
 U F .ICarrier = F .ICarrier
 U F .≤-closed = F .≤-closed
 
@@ -392,8 +392,8 @@ module LiftIsCommutativePomonoid
   εˢ : Sheaf
   εˢ = α εᵖ
 
-  -- α is strong monoidal from PreSheaf to Sheaf
-  module _ {F G : PreSheaf} where
+  -- α is strong monoidal from LowerSet to Sheaf
+  module _ {F G : LowerSet} where
 
     _∙ᵗ_ : ∃ᵗᵖ F → ∃ᵗᵖ G → ∃ᵗᵖ (F ∙ᵖ G)
     (leaf (x , Fx)) ∙ᵗ (leaf (y , Gy)) = leaf (-, -, -, refl , Fx , Gy)

@@ -6,6 +6,7 @@ open import Algebra.Definitions
 open import Algebra.Ordered
 open import Algebra.Ordered.Definitions
 open import Algebra.Ordered.Consequences
+import Algebra.Ordered.Construction.LowerSet
 open import Algebra.Ordered.Structures.Residuated
 open import Algebra.Ordered.Structures.Duoidal
 open import Function using (const; flip)
@@ -23,39 +24,41 @@ import Relation.Binary.Reasoning.Setoid as SetoidReasoning
 
 module Algebra.Ordered.Construction.Ideal {c ℓ₁ ℓ₂} (pomagma : Pomagma c ℓ₁ ℓ₂) where
 
+private
+  module Carrier = Pomagma pomagma
+
 open Pomagma pomagma
   using
     ( Carrier
-    ; _≈_
-    ; _≤_
-    ; poset
     )
   renaming
-    ( _∙_        to _+_
-    ; mono       to +-mono
-    ; monoˡ      to +-monoˡ
-    ; monoʳ      to +-monoʳ
-    ; refl       to ≤-refl
-    ; trans      to ≤-trans
+    ( _∙_   to _+ᶜ_
+    ; mono  to +ᶜ-mono
+    ; monoˡ to +ᶜ-monoˡ
+    ; monoʳ to +ᶜ-monoʳ
+    ; _≈_   to _≈ᶜ_
+    ; _≤_   to _≤ᶜ_
     )
 
-open import Algebra.Ordered.Construction.LowerSet poset as P
-  using
-    ( PreSheaf
-    ; ICarrier
-    ; ≤-closed
-    ; _≤ᵖ_
-    ; *≤ᵖ*
-    ; ≤ᵖ-refl
-    ; ≤ᵖ-trans
-    ; _≈ᵖ_
-    ; ηᵖ
-    ; ηᵖ-mono
-    ; _∨ᵖ_
-    ; inj₁ᵖ
-    ; inj₂ᵖ
-    ; [_,_]ᵖ
-    )
+private
+  module LowerSet = Algebra.Ordered.Construction.LowerSet Carrier.poset
+
+open LowerSet using
+  ( LowerSet
+  ; ICarrier
+  ; ≤-closed
+  ; _≤ᵖ_
+  ; *≤ᵖ*
+  ; ≤ᵖ-refl
+  ; ≤ᵖ-trans
+  ; _≈ᵖ_
+  ; ηᵖ
+  ; ηᵖ-mono
+  ; _∨ᵖ_
+  ; inj₁ᵖ
+  ; inj₂ᵖ
+  ; [_,_]ᵖ
+  )
 
 private
   variable
@@ -64,16 +67,16 @@ private
     X : Pred Carrier ℓx
     Y : Pred Carrier ℓy
     Z : Pred Carrier ℓz
-    F F₁ F₂ : PreSheaf
-    G G₁ G₂ : PreSheaf
-    H H₁ H₂ : PreSheaf
+    F F₁ F₂ : LowerSet
+    G G₁ G₂ : LowerSet
+    H H₁ H₂ : LowerSet
 
 record Ideal : Set (suc (c ⊔ ℓ₂)) where
   no-eta-equality
   field
     ICarrier : Carrier → Set (c ⊔ ℓ₂)
-    ≤-closed : x ≤ y → ICarrier y → ICarrier x
-    +-closed : ICarrier x → ICarrier y → ICarrier (x + y)
+    ≤-closed : x ≤ᶜ y → ICarrier y → ICarrier x
+    +-closed : ICarrier x → ICarrier y → ICarrier (x +ᶜ y)
 open Ideal
 
 private
@@ -135,7 +138,7 @@ open IsPartialOrder ≤ⁱ-isPartialOrder
 
 ------------------------------------------------------------------------------
 -- From ideals to lower sets
-U : Ideal → PreSheaf
+U : Ideal → LowerSet
 U 𝓕 .ICarrier = 𝓕 .ICarrier
 U 𝓕 .≤-closed = 𝓕 .≤-closed
 
@@ -148,29 +151,29 @@ U-cong (𝓖≤𝓕 , 𝓕≤𝓖) = U-mono 𝓖≤𝓕 , U-mono 𝓕≤𝓖
 ------------------------------------------------------------------------------
 -- Turn a lower set into an ideal by closing under +
 
-data ctxt (F : PreSheaf) : Set (c ⊔ ℓ₂) where
-  leaf : (x : Carrier) → F .ICarrier x → ctxt F
-  node : ctxt F → ctxt F → ctxt F
+data Tree (F : LowerSet) : Set (c ⊔ ℓ₂) where
+  leaf : (x : Carrier) → F .ICarrier x → Tree F
+  node : Tree F → Tree F → Tree F
 
-sum : ctxt F → Carrier
+sum : Tree F → Carrier
 sum (leaf x _) = x
-sum (node c d) = sum c + sum d
+sum (node c d) = sum c +ᶜ sum d
 
-ctxt-map : F ≤ᵖ G → ctxt F → ctxt G
-ctxt-map F≤G (leaf x Fx) = leaf x (F≤G .*≤ᵖ* Fx)
-ctxt-map F≤G (node c d)  = node (ctxt-map F≤G c) (ctxt-map F≤G d)
+mapᵗ : F ≤ᵖ G → Tree F → Tree G
+mapᵗ F≤G (leaf x Fx) = leaf x (F≤G .*≤ᵖ* Fx)
+mapᵗ F≤G (node c d)  = node (mapᵗ F≤G c) (mapᵗ F≤G d)
 
-ctxt-map-sum : (F≤G : F ≤ᵖ G) (c : ctxt F) → sum c ≤ sum (ctxt-map F≤G c)
-ctxt-map-sum F≤G (leaf x Fx) = ≤-refl
-ctxt-map-sum F≤G (node c d) = +-mono (ctxt-map-sum F≤G c) (ctxt-map-sum F≤G d)
+map-sumᵗ : (F≤G : F ≤ᵖ G) (c : Tree F) → sum c ≤ᶜ sum (mapᵗ F≤G c)
+map-sumᵗ F≤G (leaf x Fx) = Carrier.refl
+map-sumᵗ F≤G (node c d) = +ᶜ-mono (map-sumᵗ F≤G c) (map-sumᵗ F≤G d)
 
-α : PreSheaf → Ideal
-α F .ICarrier x = Σ[ t ∈ ctxt F ] (x ≤ sum t)
-α F .≤-closed x≤y (t , y≤t) = t , ≤-trans x≤y y≤t
-α F .+-closed (s , x≤s) (t , y≤t) = node s t , +-mono x≤s y≤t
+α : LowerSet → Ideal
+α F .ICarrier x = Σ[ t ∈ Tree F ] (x ≤ᶜ sum t)
+α F .≤-closed x≤y (t , y≤t) = t , Carrier.trans x≤y y≤t
+α F .+-closed (s , x≤s) (t , y≤t) = node s t , +ᶜ-mono x≤s y≤t
 
 α-mono : F ≤ᵖ G → α F ≤ⁱ α G
-α-mono F≤G .*≤ⁱ* (t , x≤t) = ctxt-map F≤G t , ≤-trans x≤t (ctxt-map-sum F≤G t)
+α-mono F≤G .*≤ⁱ* (t , x≤t) = mapᵗ F≤G t , Carrier.trans x≤t (map-sumᵗ F≤G t)
 
 α-cong : ∀ {F G} → F ≈ᵖ G → α F ≈ⁱ α G
 α-cong (G≤F , F≤G) = (α-mono G≤F , α-mono F≤G)
@@ -179,27 +182,27 @@ ctxt-map-sum F≤G (node c d) = +-mono (ctxt-map-sum F≤G c) (ctxt-map-sum F≤
 ηⁱ : Carrier → Ideal
 ηⁱ x = α (ηᵖ x)
 
-ηⁱ-mono : x ≤ y → ηⁱ x ≤ⁱ ηⁱ y
+ηⁱ-mono : x ≤ᶜ y → ηⁱ x ≤ⁱ ηⁱ y
 ηⁱ-mono x≤y = α-mono (ηᵖ-mono x≤y)
 
 ------------------------------------------------------------------------------
 -- U and α form a Galois connection
 
-ideal-ctxt-closed : (t : ctxt (U 𝓕)) → 𝓕 .ICarrier (sum t)
-ideal-ctxt-closed {𝓕} (leaf x ϕ) = ϕ
-ideal-ctxt-closed {𝓕} (node c d) = 𝓕 .+-closed (ideal-ctxt-closed c) (ideal-ctxt-closed d)
+ideal-Tree-closed : (t : Tree (U 𝓕)) → 𝓕 .ICarrier (sum t)
+ideal-Tree-closed {𝓕} (leaf x ϕ) = ϕ
+ideal-Tree-closed {𝓕} (node c d) = 𝓕 .+-closed (ideal-Tree-closed c) (ideal-Tree-closed d)
 
 counit : α (U 𝓕) ≤ⁱ 𝓕
-counit {𝓕} .*≤ⁱ* (t , x≤t) = 𝓕 .≤-closed x≤t (ideal-ctxt-closed t)
+counit {𝓕} .*≤ⁱ* (t , x≤t) = 𝓕 .≤-closed x≤t (ideal-Tree-closed t)
 
 counit⁻¹ : 𝓕 ≤ⁱ α (U 𝓕)
-counit⁻¹ .*≤ⁱ* 𝓕x = leaf _ 𝓕x , ≤-refl
+counit⁻¹ .*≤ⁱ* 𝓕x = leaf _ 𝓕x , Carrier.refl
 
 counit-≈ⁱ : 𝓕 ≈ⁱ α (U 𝓕)
 counit-≈ⁱ = counit⁻¹ , counit
 
 unit : F ≤ᵖ U (α F)
-unit .*≤ᵖ* Fx = leaf _ Fx , ≤-refl
+unit .*≤ᵖ* Fx = leaf _ Fx , Carrier.refl
 
 ------------------------------------------------------------------------------
 -- Binary meets
@@ -240,7 +243,7 @@ inj₂ⁱ = ≤ⁱ-trans counit⁻¹ (α-mono inj₂ᵖ)
 
 [_,_]ⁱ : 𝓕 ≤ⁱ 𝓗 → 𝓖 ≤ⁱ 𝓗 → (𝓕 ∨ⁱ 𝓖) ≤ⁱ 𝓗
 [_,_]ⁱ {𝓕} {𝓗} {𝓖} 𝓕≤𝓗 𝓖≤𝓗 .*≤ⁱ* (t , x≤t) =
-  𝓗 .≤-closed (≤-trans x≤t (ctxt-map-sum _ t)) (ideal-ctxt-closed (ctxt-map [ U-mono 𝓕≤𝓗 , U-mono 𝓖≤𝓗 ]ᵖ t))
+  𝓗 .≤-closed (Carrier.trans x≤t (map-sumᵗ _ t)) (ideal-Tree-closed (mapᵗ [ U-mono 𝓕≤𝓗 , U-mono 𝓖≤𝓗 ]ᵖ t))
 
 ∨ⁱ-isJoinSemilattice : IsJoinSemilattice _≈ⁱ_ _≤ⁱ_ _∨ⁱ_
 ∨ⁱ-isJoinSemilattice = record
@@ -249,45 +252,47 @@ inj₂ⁱ = ≤ⁱ-trans counit⁻¹ (α-mono inj₂ᵖ)
   }
 
 
-hulp : (c : ctxt (ηᵖ (x + y))) → Σ[ d ∈ ctxt (U (α (ηᵖ x) ∨ⁱ α (ηᵖ y))) ] (sum c ≤ sum d)
+hulp : (c : Tree (ηᵖ (x +ᶜ y))) → Σ[ d ∈ Tree (U (α (ηᵖ x) ∨ⁱ α (ηᵖ y))) ] (sum c ≤ᶜ sum d)
 hulp {x}{y} (leaf z (lift z≤x+y)) =
-  (node (leaf x (inj₁ⁱ .*≤ⁱ* ((leaf x (lift ≤-refl)) , ≤-refl)))
-        (leaf y (inj₂ⁱ .*≤ⁱ* ((leaf y (lift ≤-refl)) , ≤-refl)))) ,
+  (node (leaf x (inj₁ⁱ .*≤ⁱ* ((leaf x (lift Carrier.refl)) , Carrier.refl)))
+        (leaf y (inj₂ⁱ .*≤ⁱ* ((leaf y (lift Carrier.refl)) , Carrier.refl)))) ,
   z≤x+y
 hulp (node c₁ c₂) =
   let (d₁ , c₁≤d₁) , (d₂ , c₂≤d₂) = hulp c₁ , hulp c₂
-  in node d₁ d₂ , +-mono c₁≤d₁ c₂≤d₂
+  in node d₁ d₂ , +ᶜ-mono c₁≤d₁ c₂≤d₂
 
-η-preserve-+ : α (ηᵖ (x + y)) ≤ⁱ α (ηᵖ x) ∨ⁱ α (ηᵖ y)
+η-preserve-+ : α (ηᵖ (x +ᶜ y)) ≤ⁱ α (ηᵖ x) ∨ⁱ α (ηᵖ y)
 η-preserve-+ {x}{y} .*≤ⁱ* {z} (c , z≤c) =
-  let d , c≤d = hulp c in down-closed (≤-trans z≤c c≤d) (ideal-ctxt-closed d)
+  let d , c≤d = hulp c in down-closed (Carrier.trans z≤c c≤d) (ideal-Tree-closed d)
   where open Ideal (α (ηᵖ x) ∨ⁱ α (ηᵖ y)) renaming (≤-closed to down-closed)
 
 
 ------------------------------------------------------------------------------
-module DayEntropic {_∙_ ε}
-    (isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε)
-    (+-entropy : Entropy _≤_ _+_ _∙_)
-    (+-tidy    : ε + ε ≤ ε)
+module DayEntropic
+    {_∙ᶜ_}
+    {εᶜ}
+    (isPomonoid : IsPomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ)
+    (+-entropy : Entropy _≤ᶜ_ _+ᶜ_ _∙ᶜ_)
+    (+-tidy    : εᶜ +ᶜ εᶜ ≤ᶜ εᶜ)
     where
 
   _◁ⁱ_ : Ideal → Ideal → Ideal
   (𝓕 ◁ⁱ 𝓖) .ICarrier x =
-    ∃[ y ] ∃[ z ] (x ≤ (y ∙ z) × 𝓕 .ICarrier y × 𝓖 .ICarrier z)
+    ∃[ y ] ∃[ z ] (x ≤ᶜ (y ∙ᶜ z) × 𝓕 .ICarrier y × 𝓖 .ICarrier z)
   (𝓕 ◁ⁱ 𝓖) .≤-closed x≤w (y , z , w≤yz , 𝓕y , 𝓖z) =
-    (-, -, ≤-trans x≤w w≤yz , 𝓕y , 𝓖z)
+    (-, -, Carrier.trans x≤w w≤yz , 𝓕y , 𝓖z)
   (𝓕 ◁ⁱ 𝓖) .+-closed (y₁ , z₁ , x₁≤y₁z₁ , ϕ₁ , ψ₁) (y₂ , z₂ , x₂≤y₂z₂ , ϕ₂ , ψ₂) =
-    y₁ + y₂ , z₁ + z₂ ,
-    ≤-trans (+-mono x₁≤y₁z₁ x₂≤y₂z₂) (+-entropy _ _ _ _) ,
+    y₁ +ᶜ y₂ , z₁ +ᶜ z₂ ,
+    Carrier.trans (+ᶜ-mono x₁≤y₁z₁ x₂≤y₂z₂) (+-entropy _ _ _ _) ,
     𝓕 .+-closed ϕ₁ ϕ₂ ,
     𝓖 .+-closed ψ₁ ψ₂
 
   ιⁱ : Ideal
-  ιⁱ .ICarrier x = Lift c (x ≤ ε)
-  ιⁱ .≤-closed x≤y (lift y≤ε) = lift (≤-trans x≤y y≤ε)
-  ιⁱ .+-closed (lift x≤ε) (lift y≤ε) = lift (≤-trans (+-mono x≤ε y≤ε) +-tidy)
+  ιⁱ .ICarrier x = Lift c (x ≤ᶜ εᶜ)
+  ιⁱ .≤-closed x≤y (lift y≤ε) = lift (Carrier.trans x≤y y≤ε)
+  ιⁱ .+-closed (lift x≤ε) (lift y≤ε) = lift (Carrier.trans (+ᶜ-mono x≤ε y≤ε) +-tidy)
 
-  open P.LiftIsPomonoid isPomonoid
+  open LowerSet.LiftIsPomonoid isPomonoid
 
   ◁ⁱ-mono : Monotonic₂ _≤ⁱ_ _≤ⁱ_ _≤ⁱ_ _◁ⁱ_
   ◁ⁱ-mono 𝓕₁≤𝓖₁ 𝓕₂≤𝓖₂ .*≤ⁱ* = ∙ᵖ-mono (U-mono 𝓕₁≤𝓖₁) (U-mono 𝓕₂≤𝓖₂) .*≤ᵖ*
@@ -327,51 +332,52 @@ module DayEntropic {_∙_ ε}
   U-monoidal-ι .proj₁ .*≤ᵖ* x≤ε = x≤ε
   U-monoidal-ι .proj₂ .*≤ᵖ* x≤ε = x≤ε
 
-  ηⁱ-preserve-◁ : ηⁱ (x ∙ y) ≤ⁱ ηⁱ x ◁ⁱ ηⁱ y
+  ηⁱ-preserve-◁ : ηⁱ (x ∙ᶜ y) ≤ⁱ ηⁱ x ◁ⁱ ηⁱ y
   ηⁱ-preserve-◁ {x}{y} .*≤ⁱ* {z} (c , z≤c) =
     down-closed
-      (≤-trans z≤c (ctxt-map-sum _ c))
-      (ideal-ctxt-closed {α (ηᵖ x) ◁ⁱ α (ηᵖ y)}
-         (ctxt-map (≤ᵖ-trans ηᵖ-preserve-∙ᵖ (≤ᵖ-trans (∙ᵖ-mono unit unit) (U-monoidal .proj₂))) c))
+      (Carrier.trans z≤c (map-sumᵗ _ c))
+      (ideal-Tree-closed {α (ηᵖ x) ◁ⁱ α (ηᵖ y)}
+         (mapᵗ (≤ᵖ-trans ηᵖ-preserve-∙ᵖ (≤ᵖ-trans (∙ᵖ-mono unit unit) (U-monoidal .proj₂))) c))
     where open Ideal (α (ηᵖ x) ◁ⁱ α (ηᵖ y)) renaming (≤-closed to down-closed)
 
 {-
   -- FIXME: this doesn't work
-  module _ (idem : ∀ {x} → x + x ≤ x) where
+  module _ (idem : ∀ {x} → x +ᶜ x ≤ᶜ x) where
 
     open IsPomonoid isPomonoid using (mono)
 
     -- FIXME: this is the same combination function as below
-    _∙ᶜ'_ : ctxt F → ctxt G → ctxt (F ∙ᵖ G)
-    leaf x Fx  ∙ᶜ' leaf y Gy  = leaf (x ∙ y) (x , y , ≤-refl , Fx , Gy)
+    _∙ᶜ'_ : Tree F → Tree G → Tree (F ∙ᵖ G)
+    leaf x Fx  ∙ᶜ' leaf y Gy  = leaf (x ∙ᶜ y) (x , y , Carrier.refl , Fx , Gy)
     leaf x Fx  ∙ᶜ' node d₁ d₂ = node (leaf x Fx ∙ᶜ' d₁) (leaf x Fx ∙ᶜ' d₂)
     node c₁ c₂ ∙ᶜ' d          = node (c₁ ∙ᶜ' d) (c₂ ∙ᶜ' d)
 
-    ∙ᶜ-sum : (c : ctxt F)(d : ctxt G) → sum (c ∙ᶜ' d) ≤ sum c ∙ sum d
-    ∙ᶜ-sum (leaf x Fx)  (leaf y Gy)  = ≤-refl
-    ∙ᶜ-sum (leaf x Fx)  (node d₁ d₂) =
-       ≤-trans (+-mono (∙ᶜ-sum (leaf x Fx) d₁) (∙ᶜ-sum (leaf x Fx) d₂))
-      (≤-trans (+-entropy _ _ _ _)
-               (mono idem ≤-refl))
-    ∙ᶜ-sum (node c₁ c₂) d =
-      ≤-trans (+-mono (∙ᶜ-sum c₁ d) (∙ᶜ-sum c₂ d))
-      (≤-trans (+-entropy _ _ _ _)
-      (mono ≤-refl idem))
+    ∙ᵗ-sum : (c : Tree F)(d : Tree G) → sum (c ∙ᶜ' d) ≤ᶜ sum c ∙ᶜ sum d
+    ∙ᵗ-sum (leaf x Fx)  (leaf y Gy)  = Carrier.refl
+    ∙ᵗ-sum (leaf x Fx)  (node d₁ d₂) =
+       Carrier.trans (+ᶜ-mono (∙ᵗ-sum (leaf x Fx) d₁) (∙ᵗ-sum (leaf x Fx) d₂))
+      (Carrier.trans (+-entropy _ _ _ _)
+               (mono idem Carrier.refl))
+    ∙ᵗ-sum (node c₁ c₂) d =
+      Carrier.trans (+ᶜ-mono (∙ᵗ-sum c₁ d) (∙ᵗ-sum c₂ d))
+      (Carrier.trans (+-entropy _ _ _ _)
+      (mono Carrier.refl idem))
 
-    ηⁱ-preserve-◁⁻¹ : α (ηᵖ x) ◁ⁱ α (ηᵖ y) ≤ⁱ α (ηᵖ (x ∙ y))
+    ηⁱ-preserve-◁⁻¹ : α (ηᵖ x) ◁ⁱ α (ηᵖ y) ≤ⁱ α (ηᵖ (x ∙ᶜ y))
     ηⁱ-preserve-◁⁻¹ {x}{y} .*≤ⁱ* {z} (z₁ , z₂ , z≤z₁z₂ , (c₁ , z₁≤c) , (c₂ , z₂≤c)) =
-      ctxt-map ηᵖ-preserve-∙ᵖ⁻¹ (c₁ ∙ᶜ' c₂) ,
-      ≤-trans z≤z₁z₂ {!!}
+      mapᵗ ηᵖ-preserve-∙ᵖ⁻¹ (c₁ ∙ᶜ' c₂) ,
+      Carrier.trans z≤z₁z₂ {!!}
 -}
 
 module DayDistributive
-    {_∙_} {ε}
-    (isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _∙_ ε)
-    (distrib : _DistributesOver_ _≤_ _∙_ _+_)
+    {_∙ᶜ_}
+    {εᶜ}
+    (isCommutativePomonoid : IsCommutativePomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ)
+    (distrib : _DistributesOver_ _≤ᶜ_ _∙ᶜ_ _+ᶜ_)
   where
 
   open IsCommutativePomonoid isCommutativePomonoid
-  open P.LiftIsCommutativePomonoid isCommutativePomonoid
+  open LowerSet.LiftIsCommutativePomonoid isCommutativePomonoid
 
   distribˡ = distrib .proj₁
   distribʳ = distrib .proj₂
@@ -382,22 +388,22 @@ module DayDistributive
   εⁱ : Ideal
   εⁱ = α εᵖ
 
-  _∙ᶜ_ : ctxt F → ctxt G → ctxt (F ∙ᵖ G)
-  leaf x Fx  ∙ᶜ leaf y Gy  = leaf (x ∙ y) (x , y , ≤-refl , Fx , Gy)
-  leaf x Fx  ∙ᶜ node d₁ d₂ = node (leaf x Fx ∙ᶜ d₁) (leaf x Fx ∙ᶜ d₂)
-  node c₁ c₂ ∙ᶜ d          = node (c₁ ∙ᶜ d) (c₂ ∙ᶜ d)
+  _∙ᵗ_ : Tree F → Tree G → Tree (F ∙ᵖ G)
+  leaf x Fx  ∙ᵗ leaf y Gy  = leaf (x ∙ᶜ y) (x , y , Carrier.refl , Fx , Gy)
+  leaf x Fx  ∙ᵗ node d₁ d₂ = node (leaf x Fx ∙ᵗ d₁) (leaf x Fx ∙ᵗ d₂)
+  node c₁ c₂ ∙ᵗ d          = node (c₁ ∙ᵗ d) (c₂ ∙ᵗ d)
 
-  ∙ᶜ-sum : (c : ctxt F)(d : ctxt G) → sum c ∙ sum d ≤ sum (c ∙ᶜ d)
-  ∙ᶜ-sum (leaf x Fx)  (leaf y Gy)  = ≤-refl
-  ∙ᶜ-sum (leaf x Fx)  (node d₁ d₂) = ≤-trans (distribˡ _ _ _) (+-mono (∙ᶜ-sum (leaf x Fx) d₁) (∙ᶜ-sum (leaf x Fx) d₂))
-  ∙ᶜ-sum (node c₁ c₂) d            = ≤-trans (distribʳ _ _ _) (+-mono (∙ᶜ-sum c₁ d) (∙ᶜ-sum c₂ d))
+  ∙ᵗ-sum : (c : Tree F)(d : Tree G) → sum c ∙ᶜ sum d ≤ᶜ sum (c ∙ᵗ d)
+  ∙ᵗ-sum (leaf x Fx)  (leaf y Gy)  = Carrier.refl
+  ∙ᵗ-sum (leaf x Fx)  (node d₁ d₂) = Carrier.trans (distribˡ _ _ _) (+ᶜ-mono (∙ᵗ-sum (leaf x Fx) d₁) (∙ᵗ-sum (leaf x Fx) d₂))
+  ∙ᵗ-sum (node c₁ c₂) d            = Carrier.trans (distribʳ _ _ _) (+ᶜ-mono (∙ᵗ-sum c₁ d) (∙ᵗ-sum c₂ d))
 
-  α-helper : (c : ctxt (U (α F) ∙ᵖ U (α G))) → x ≤ sum c → Σ[ d ∈ ctxt (F ∙ᵖ G) ] (x ≤ sum d)
+  α-helper : (c : Tree (U (α F) ∙ᵖ U (α G))) → x ≤ᶜ sum c → Σ[ d ∈ Tree (F ∙ᵖ G) ] (x ≤ᶜ sum d)
   α-helper (leaf y (y₁ , y₂ , y≤y₁y₂ , (c , y₁≤c) , (d , y₂≤d))) x≤y =
-    (c ∙ᶜ d) , ≤-trans x≤y (≤-trans y≤y₁y₂ (≤-trans (mono y₁≤c y₂≤d) (∙ᶜ-sum c d)))
+    (c ∙ᵗ d) , Carrier.trans x≤y (Carrier.trans y≤y₁y₂ (Carrier.trans (mono y₁≤c y₂≤d) (∙ᵗ-sum c d)))
   α-helper (node c d) x≤cd =
-    let (c' , c≤c') , (d' , d≤d') = α-helper c ≤-refl , α-helper d ≤-refl
-    in (node c' d') , (≤-trans x≤cd (+-mono c≤c' d≤d'))
+    let (c' , c≤c') , (d' , d≤d') = α-helper c Carrier.refl , α-helper d Carrier.refl
+    in (node c' d') , (Carrier.trans x≤cd (+ᶜ-mono c≤c' d≤d'))
 
   α-monoidal : (α F ∙ⁱ α G) ≈ⁱ α (F ∙ᵖ G)
   α-monoidal .proj₁ .*≤ⁱ* (c , x≤c)  = α-helper c x≤c
@@ -406,10 +412,10 @@ module DayDistributive
   ∙ⁱ-mono : Monotonic₂ _≤ⁱ_ _≤ⁱ_ _≤ⁱ_ _∙ⁱ_
   ∙ⁱ-mono 𝓕₁≤𝓕₂ 𝓖₁≤𝓖₂ = α-mono (∙ᵖ-mono (U-mono 𝓕₁≤𝓕₂) (U-mono 𝓖₁≤𝓖₂))
 
-  ηⁱ-preserve-∙ : ηⁱ (x ∙ y) ≤ⁱ ηⁱ x ∙ⁱ ηⁱ y
+  ηⁱ-preserve-∙ : ηⁱ (x ∙ᶜ y) ≤ⁱ ηⁱ x ∙ⁱ ηⁱ y
   ηⁱ-preserve-∙ = α-mono (≤ᵖ-trans ηᵖ-preserve-∙ᵖ (∙ᵖ-mono unit unit))
 
-  ηⁱ-preserve-∙⁻¹ : ηⁱ x ∙ⁱ ηⁱ y ≤ⁱ ηⁱ (x ∙ y)
+  ηⁱ-preserve-∙⁻¹ : ηⁱ x ∙ⁱ ηⁱ y ≤ⁱ ηⁱ (x ∙ᶜ y)
   ηⁱ-preserve-∙⁻¹ = ≤ⁱ-trans (α-monoidal .proj₁) (α-mono ηᵖ-preserve-∙ᵖ⁻¹)
 
   ∙ⁱ-assoc : Associative _≈ⁱ_ _∙ⁱ_
@@ -493,7 +499,7 @@ module DayDistributive
   -- Residuals
 
   _⊸ⁱ_ : Ideal → Ideal → Ideal
-  (𝓕 ⊸ⁱ 𝓖) .ICarrier x = ∀ {y} → 𝓕 .ICarrier y → 𝓖 .ICarrier (x ∙ y)
+  (𝓕 ⊸ⁱ 𝓖) .ICarrier x = ∀ {y} → 𝓕 .ICarrier y → 𝓖 .ICarrier (x ∙ᶜ y)
   (𝓕 ⊸ⁱ 𝓖) .≤-closed x≤z f 𝓕y = 𝓖 .≤-closed (monoˡ x≤z) (f 𝓕y)
   (𝓕 ⊸ⁱ 𝓖) .+-closed 𝓕⊸𝓖x 𝓕⊸𝓖y {z} 𝓕z =
     𝓖 .≤-closed (distribʳ _ _ _) (𝓖 .+-closed (𝓕⊸𝓖x 𝓕z) (𝓕⊸𝓖y 𝓕z))
@@ -540,25 +546,28 @@ module DayDistributive
     }
 
 module DayDuoidal
-    {_∙_} {_◁_} {ε} {ι}
-    (isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _◁_ ε ι)
-    (comm : Commutative _≈_ _∙_)
-    (distrib : _DistributesOver_ _≤_ _∙_ _+_)
-    (+-entropy : Entropy _≤_ _+_ _◁_)
-    (+-tidy : ι + ι ≤ ι)
+    {_∙ᶜ_} 
+    {_◁ᶜ_} 
+    {εᶜ}
+    {ιᶜ}
+    (isDuoidal : IsDuoidal _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ _◁ᶜ_ εᶜ ιᶜ)
+    (comm : Commutative _≈ᶜ_ _∙ᶜ_)
+    (distrib : _DistributesOver_ _≤ᶜ_ _∙ᶜ_ _+ᶜ_)
+    (+ᶜ-entropy : Entropy _≤ᶜ_ _+ᶜ_ _◁ᶜ_)
+    (+ᶜ-tidy : ιᶜ +ᶜ ιᶜ ≤ᶜ ιᶜ)
   where
 
   open IsDuoidal isDuoidal
 
-  ∙-isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _∙_ ε
+  ∙-isCommutativePomonoid : IsCommutativePomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ
   ∙-isCommutativePomonoid = record
     { isPomonoid = ∙-isPomonoid
     ; comm       = comm
     }
 
   open DayDistributive ∙-isCommutativePomonoid distrib
-  open DayEntropic ◁-isPomonoid +-entropy +-tidy
-  open P.LiftIsDuoidal isDuoidal
+  open DayEntropic ◁-isPomonoid +ᶜ-entropy +ᶜ-tidy
+  open LowerSet.LiftIsDuoidal isDuoidal
 
   ∙ⁱ-◁ⁱ-entropy : Entropy _≤ⁱ_ _∙ⁱ_ _◁ⁱ_
   ∙ⁱ-◁ⁱ-entropy 𝓕₁ 𝓖₁ 𝓕₂ 𝓖₂ =
@@ -581,12 +590,12 @@ module DayDuoidal
     ∎
     where open PosetReasoning ≤ⁱ-poset
 
-  tidy : (c : ctxt ιᵖ) → sum c ≤ ι
+  tidy : (c : Tree ιᵖ) → sum c ≤ᶜ ιᶜ
   tidy (leaf x (lift x≤ι)) = x≤ι
-  tidy (node c d) = ≤-trans (+-mono (tidy c) (tidy d)) +-tidy
+  tidy (node c d) = Carrier.trans (+ᶜ-mono (tidy c) (tidy d)) +ᶜ-tidy
 
   εⁱ≤ιⁱ : εⁱ ≤ⁱ ιⁱ
-  εⁱ≤ιⁱ .*≤ⁱ* (t , x≤t) = lift (≤-trans x≤t (≤-trans (ctxt-map-sum εᵖ≤ιᵖ t) (tidy (ctxt-map εᵖ≤ιᵖ t))))
+  εⁱ≤ιⁱ .*≤ⁱ* (t , x≤t) = lift (Carrier.trans x≤t (Carrier.trans (map-sumᵗ εᵖ≤ιᵖ t) (tidy (mapᵗ εᵖ≤ιᵖ t))))
 
   ∙ⁱ-◁ⁱ-isDuoidal : IsDuoidal _≈ⁱ_ _≤ⁱ_ _∙ⁱ_ _◁ⁱ_ εⁱ ιⁱ
   ∙ⁱ-◁ⁱ-isDuoidal = record
