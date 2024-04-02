@@ -235,20 +235,21 @@ inj₂ = ≤-trans counit⁻¹ (α-mono L.inj₂)
   ; supremum       = λ I J → (inj₁ , inj₂ , λ K → [_,_])
   }
 
-
-hulp : (c : Tree (L.η (x +ᶜ y))) → Σ[ d ∈ Tree (U (α (L.η x) ∨ α (L.η y))) ] (sum c ≤ᶜ sum d)
-hulp {x}{y} (leaf z (lift z≤x+y)) =
-  (node (leaf x (inj₁ .*≤* ((leaf x (lift ≤ᶜ.refl)) , ≤ᶜ.refl)))
-        (leaf y (inj₂ .*≤* ((leaf y (lift ≤ᶜ.refl)) , ≤ᶜ.refl)))) ,
-  z≤x+y
-hulp (node c₁ c₂) =
-  let (d₁ , c₁≤d₁) , (d₂ , c₂≤d₂) = hulp c₁ , hulp c₂
-  in node d₁ d₂ , +ᶜ.mono c₁≤d₁ c₂≤d₂
+private
+  helper : (c : Tree (L.η (x +ᶜ y))) → Σ[ d ∈ Tree (U (α (L.η x) ∨ α (L.η y))) ] (sum c ≤ᶜ sum d)
+  helper {x}{y} (leaf z (lift z≤x+y)) =
+    (node (leaf x (inj₁ .*≤* ((leaf x (lift ≤ᶜ.refl)) , ≤ᶜ.refl)))
+          (leaf y (inj₂ .*≤* ((leaf y (lift ≤ᶜ.refl)) , ≤ᶜ.refl)))) ,
+    z≤x+y
+  helper (node c₁ c₂) =
+    let (d₁ , c₁≤d₁) , (d₂ , c₂≤d₂) = helper c₁ , helper c₂
+    in node d₁ d₂ , +ᶜ.mono c₁≤d₁ c₂≤d₂
 
 η-preserve-∨ : α (L.η (x +ᶜ y)) ≤ α (L.η x) ∨ α (L.η y)
 η-preserve-∨ {x}{y} .*≤* {z} (c , z≤c) =
-  let d , c≤d = hulp c in down-closed (≤ᶜ.trans z≤c c≤d) (ideal-Tree-closed d)
-  where open Ideal (α (L.η x) ∨ α (L.η y)) renaming (≤-closed to down-closed)
+  let d , c≤d = helper c in 
+    Ideal.≤-closed (α (L.η x) ∨ α (L.η y)) 
+      (≤ᶜ.trans z≤c c≤d) (ideal-Tree-closed d)
 
 
 ------------------------------------------------------------------------------
@@ -319,14 +320,13 @@ module DayEntropic
 
   η-preserve-◁ : η (x ∙ᶜ y) ≤ η x ◁ η y
   η-preserve-◁ {x} {y} .*≤* {z} (c , z≤c) =
-    down-closed
-      (≤ᶜ.trans z≤c (map-sumᵗ _ c))
-      (ideal-Tree-closed {α (L.η x) ◁ α (L.η y)} 
-        (mapᵗ 
-          (L.≤-trans LMon.η-preserve-∙ 
-            (L.≤-trans (LMon.∙-mono unit unit) (U-monoidal .Product.proj₂))) c))
-    where
-      open Ideal (α (L.η x) ◁ α (L.η y)) renaming (≤-closed to down-closed)
+    Ideal.≤-closed
+      (α (L.η x) ◁ α (L.η y))
+        (≤ᶜ.trans z≤c (map-sumᵗ _ c))
+          (ideal-Tree-closed {α (L.η x) ◁ α (L.η y)} 
+            (mapᵗ 
+              (L.≤-trans LMon.η-preserve-∙ 
+                (L.≤-trans (LMon.∙-mono unit unit) (U-monoidal .Product.proj₂))) c))
 
 {-
   -- FIXME: this doesn't work

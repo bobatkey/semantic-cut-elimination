@@ -155,11 +155,11 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
       ; *≤*
       )
 
-  units-iso : L.ε L.≈ L.ι
-  units-iso .proj₁ = L.ε≤ι
-  units-iso .proj₂ .*≤* x≤I = x≤I
-
   module C where
+    units-iso : L.ε L.≈ L.ι
+    units-iso .proj₁ = L.ε≤ι
+    units-iso .proj₂ .*≤* x≤I = x≤I
+
     private 
       module C where
         open Algebra.Ordered.Construction.Chu.Construction
