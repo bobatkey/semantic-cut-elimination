@@ -21,7 +21,7 @@ open FrameModel MAV.frame
   renaming
     ( model to analyticModel
     )
-open C using (Chu; pos; neg; int; _==>_; fpos; fneg)
+open C using (Chu; pos; neg; int; _≤_; fpos; fneg)
 open import MAV.Interpretation Atom analyticModel (λ A → embed (`- A))
 
 interactᴾ : (P Q : Formula) → (I.U (I.η Q) L.⊸ I.U I.ι) L.⅋ L.η (P `⊗ Q) L.≤ L.η P
@@ -87,14 +87,14 @@ mutual
 --   reify0 (P `◁ Q) = I.≤-trans (I.◁-mono (reify0 P) (reify0 Q)) {!!}
 -- -}
 
-main-lemma : (P : Formula) → ⟦ P ⟧ ==> C.¬ (embed P)
+main-lemma : (P : Formula) → ⟦ P ⟧ ≤ C.¬ (embed P)
 main-lemma P .fpos = reify' P
 main-lemma P .fneg = reflect P
 
-sem-cut-elim : (P : Formula) → C.ε ==> ⟦ P ⟧ → P ⟶⋆ `I
-sem-cut-elim P I==>P = q .I.*≤* (I.leaf P (lift ε) , ε) .lower
-  where p : C.ε ==> C.¬ (embed P)
-        p = C.==>-trans I==>P (main-lemma P)
+sem-cut-elim : (P : Formula) → C.ε ≤ ⟦ P ⟧ → P ⟶⋆ `I
+sem-cut-elim P I≤P = q .I.*≤* (I.leaf P (lift ε) , ε) .lower
+  where p : C.ε ≤ C.¬ (embed P)
+        p = C.≤-trans I≤P (main-lemma P)
         q : I.η P I.≤ I.ι
         q = I.≤-trans (p .fneg) I.ε≤ι
 

@@ -20,7 +20,7 @@ open FrameModel BV.frame
   renaming
     ( model to analyticModel
     )
-open C using (Chu; pos; neg; int; _==>_; fpos; fneg)
+open C using (Chu; pos; neg; int; _≤_; fpos; fneg)
 open import BV.Interpretation Atom analyticModel (λ A → embed (`- A))
 
 interact : ∀ P Q → ((L.η Q) L.⊸ L.ε) L.⅋ (L.η (P `⊗ Q)) L.≤ L.η P
@@ -63,14 +63,14 @@ mutual
       (L.≤-trans (L.⅋-comm _ _ .proj₁) 
         (L.≤-trans (L.⅋-mono L.≤-refl (reflect P)) (⟦ P ⟧ .int)))
 
-main-lemma : ∀ P → ⟦ P ⟧ ==> C.¬ (embed P)
+main-lemma : ∀ P → ⟦ P ⟧ ≤ C.¬ (embed P)
 main-lemma P .fpos = reify′ P
 main-lemma P .fneg = reflect P
 
-sem-cut-elim : ∀ P → C.ε ==> ⟦ P ⟧ → P ⟶⋆ `I
-sem-cut-elim P I==>P = q .L.*≤* (lift ε) .lower
-  where p : C.ε ==> C.¬ (embed P)
-        p = C.==>-trans I==>P (main-lemma P)
+sem-cut-elim : ∀ P → C.ε ≤ ⟦ P ⟧ → P ⟶⋆ `I
+sem-cut-elim P I≤P = q .L.*≤* (lift ε) .lower
+  where p : C.ε ≤ C.¬ (embed P)
+        p = C.≤-trans I≤P (main-lemma P)
         q : L.η P L.≤ L.ι
         q = L.≤-trans (p .fneg) L.ε≤ι
 

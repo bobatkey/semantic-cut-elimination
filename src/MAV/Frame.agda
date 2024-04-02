@@ -189,7 +189,7 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
     ε-eq-ι .proj₂ .C.fpos = I.≤-reflexive (I.Eq.sym units-iso)
     ε-eq-ι .proj₂ .C.fneg = I.≤-reflexive units-iso
 
-    ⊗-⍮-isCommutativeDuoidal : IsCommutativeDuoidal C._≈_ C._==>_ C._⊗_ C._⍮_ C.ε C.ι
+    ⊗-⍮-isCommutativeDuoidal : IsCommutativeDuoidal C._≈_ C._≤_ C._⊗_ C._⍮_ C.ε C.ι
     ⊗-⍮-isCommutativeDuoidal = record
       { isDuoidal = C.⊗-⍮-isDuoidal 
       ; ∙-comm    = C.⊗-isCommutativePomonoid .IsCommutativePomonoid.comm 
@@ -200,7 +200,7 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
   model : Model (suc (suc (a ⊔ ℓ₂))) (a ⊔ ℓ₂) (a ⊔ ℓ₂)
   model .Model.Carrier = C.Chu
   model .Model._≈_ = C._≈_
-  model .Model._≲_ = C._==>_
+  model .Model._≲_ = C._≤_
   model .Model.¬ = C.¬
   model .Model.I = C.ε
   model .Model.J = C.ι
