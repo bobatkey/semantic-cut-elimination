@@ -212,7 +212,7 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
   model .Model.⊗-◁-isCommutativeDuoidal = C.⊗-◁-isCommutativeDuoidal
   model .Model.I-eq-J = C.ε-eq-ι
   model .Model.◁-self-dual = C.self-dual
-  model .Model.⊗-isStarAuto = C.⊗-isStarAuto
+  model .Model.⊗-isStarAutonomous = C.⊗-isStarAutonomous
 
   embed : Carrier → Chu
   embed x = C.embed (L.η x)

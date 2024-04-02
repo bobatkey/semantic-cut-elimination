@@ -15,8 +15,8 @@ open import Algebra.Ordered using (IsCommutativePomonoid; IsPomonoid; IsPosemigr
 open import Algebra.Ordered.Consequences using (supremum∧residualʳ⇒distribˡ)
 open import Algebra.Ordered.Definitions using (Entropy)
 open import Algebra.Ordered.Structures.Residuated
-open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
-open import Algebra.Ordered.Structures.StarAuto using (IsStarAuto)
+open import Algebra.Ordered.Structures.Duoidal
+open import Algebra.Ordered.Structures.StarAutonomous
 open import Relation.Binary.Construct.Core.Symmetric as SymCore using (SymCore)
 open import Relation.Binary.Bundles using (Poset)
 open import Relation.Binary.Core
@@ -253,14 +253,14 @@ module Construction
   *-aut⁻¹ m .fneg =
     C.∧-greatest (Λʳ (m .fneg)) (Λʳ (C.mono (m .fpos >> C.x∧y≤x _ _) C.refl >> C.evalˡ))
 
-  ⊗-isStarAuto : IsStarAuto _≈_ _≤_ _⊗_ ε ¬
-  ⊗-isStarAuto .IsStarAuto.isCommutativePomonoid = ⊗-isCommutativePomonoid
-  ⊗-isStarAuto .IsStarAuto.¬-mono = ¬-mono
-  ⊗-isStarAuto .IsStarAuto.¬-involutive = ¬-involutive
-  ⊗-isStarAuto .IsStarAuto.*-aut = *-aut
-  ⊗-isStarAuto .IsStarAuto.*-aut⁻¹ = *-aut⁻¹
+  ⊗-isStarAutonomous : IsStarAutonomous _≈_ _≤_ _⊗_ ε ¬
+  ⊗-isStarAutonomous .IsStarAutonomous.isCommutativePomonoid = ⊗-isCommutativePomonoid
+  ⊗-isStarAutonomous .IsStarAutonomous.¬-mono = ¬-mono
+  ⊗-isStarAutonomous .IsStarAutonomous.¬-involutive = ¬-involutive
+  ⊗-isStarAutonomous .IsStarAutonomous.*-aut = *-aut
+  ⊗-isStarAutonomous .IsStarAutonomous.*-aut⁻¹ = *-aut⁻¹
 
-  open IsStarAuto ⊗-isStarAuto public
+  open IsStarAutonomous ⊗-isStarAutonomous public
     using
       ( _⅋_
       ; ⅋-cong

@@ -12,7 +12,7 @@
 
 open import Relation.Binary.Core using (Rel; _⇒_)
 
-module Algebra.Ordered.Structures.StarAuto
+module Algebra.Ordered.Structures.StarAutonomous
   {a ℓ₁ ℓ₂} {A : Set a}  -- The underlying set
   (_≈_ : Rel A ℓ₁)       -- The underlying equality relation
   (_≲_ : Rel A ℓ₂)       -- The underlying order relation
@@ -33,7 +33,7 @@ open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 import Relation.Binary.Reasoning.Setoid as SetoidReasoning
 import Relation.Binary.Reasoning.PartialOrder as PosetReasoning
 
-record IsStarAuto (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+record IsStarAutonomous (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   field
     isCommutativePomonoid : IsCommutativePomonoid _⊗_ ε
     ¬-mono                : Antitonic₁ _≲_ _≲_ ¬

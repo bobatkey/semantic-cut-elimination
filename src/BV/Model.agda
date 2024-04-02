@@ -7,7 +7,7 @@ open import Algebra using (_DistributesOver_)
 open import Algebra.Ordered using (IsCommutativePomonoid)
 open import Algebra.Ordered.Consequences using (supremum∧residuated⇒distrib)
 open import Algebra.Ordered.Structures.Duoidal
-open import Algebra.Ordered.Structures.StarAuto using (IsStarAuto)
+open import Algebra.Ordered.Structures.StarAutonomous
 open import Data.Product using (_,_; proj₁; proj₂)
 open import Relation.Binary using (IsEquivalence; IsPartialOrder)
 open import Relation.Binary.Lattice using (IsMeetSemilattice; IsJoinSemilattice)
@@ -25,7 +25,7 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
     _⊗_     : Carrier → Carrier → Carrier
 
     ⊗-◁-isCommutativeDuoidal : IsCommutativeDuoidal _≈_ _≲_ _⊗_ _◁_ I J
-    ⊗-isStarAuto       : IsStarAuto _≈_ _≲_ _⊗_ I ¬
+    ⊗-isStarAutonomous       : IsStarAutonomous _≈_ _≲_ _⊗_ I ¬
     mix                      : I ≈ ¬ I
 
     I-eq-J                   : I ≈ J
@@ -91,7 +91,7 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
       ; ∙-comm                  to ⊗-comm
       )
 
-  open IsStarAuto ⊗-isStarAuto public
+  open IsStarAutonomous ⊗-isStarAutonomous public
     using
       ( ¬-involutive
       ; ¬-mono

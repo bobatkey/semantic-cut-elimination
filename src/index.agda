@@ -23,7 +23,7 @@ import Algebra.Ordered.Construction.LowerSet
 
 import Algebra.Ordered.Structures.Duoidal
 import Algebra.Ordered.Structures.Residuated
-import Algebra.Ordered.Structures.StarAuto
+import Algebra.Ordered.Structures.StarAutonomous
 
 import Algebra.Ordered
 import Algebra.Ordered.Bundles
