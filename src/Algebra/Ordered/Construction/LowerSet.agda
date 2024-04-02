@@ -359,33 +359,33 @@ module LiftIsCommutativePomonoid
     ; comm       = ∙ᵖ-comm 
     }
 
-  _⇨ᵖ_ : LowerSet → LowerSet → LowerSet
-  (F ⇨ᵖ G) .ICarrier x        = ∀ {y} → F .ICarrier y → G .ICarrier (x ∙ᶜ y)
-  (F ⇨ᵖ G) .≤-closed x≤z f Fy = G .≤-closed (Mon.mono x≤z ≤ᶜ.refl) (f Fy)
+  _⊸ᵖ_ : LowerSet → LowerSet → LowerSet
+  (F ⊸ᵖ G) .ICarrier x        = ∀ {y} → F .ICarrier y → G .ICarrier (x ∙ᶜ y)
+  (F ⊸ᵖ G) .≤-closed x≤z f Fy = G .≤-closed (Mon.mono x≤z ≤ᶜ.refl) (f Fy)
 
-  ⇨ᵖ-residual-to : (F ∙ᵖ G) ≤ᵖ H → G ≤ᵖ (F ⇨ᵖ H)
-  ⇨ᵖ-residual-to F∙G≤H .*≤ᵖ* Gx Fy = 
+  ⊸ᵖ-residual-to : (F ∙ᵖ G) ≤ᵖ H → G ≤ᵖ (F ⊸ᵖ H)
+  ⊸ᵖ-residual-to F∙G≤H .*≤ᵖ* Gx Fy = 
     F∙G≤H .*≤ᵖ* (-, -, ≤ᶜ.≤-respˡ-≈ (Mon.comm _ _) ≤ᶜ.refl , Fy , Gx)
 
-  ⇨ᵖ-residual-from : G ≤ᵖ (F ⇨ᵖ H) → (F ∙ᵖ G) ≤ᵖ H
-  ⇨ᵖ-residual-from {G} {F} {H} G≤F⇨H .*≤ᵖ* (_ , _ , x≤y∙z , Fy , Gz) = 
-    H .≤-closed (≤ᶜ.trans x≤y∙z (≤ᶜ.≤-respˡ-≈ (Mon.comm _ _) ≤ᶜ.refl)) (G≤F⇨H .*≤ᵖ* Gz Fy)
+  ⊸ᵖ-residual-from : G ≤ᵖ (F ⊸ᵖ H) → (F ∙ᵖ G) ≤ᵖ H
+  ⊸ᵖ-residual-from {G} {F} {H} G≤F⊸H .*≤ᵖ* (_ , _ , x≤y∙z , Fy , Gz) = 
+    H .≤-closed (≤ᶜ.trans x≤y∙z (≤ᶜ.≤-respˡ-≈ (Mon.comm _ _) ≤ᶜ.refl)) (G≤F⊸H .*≤ᵖ* Gz Fy)
 
-  ⇨ᵖ-residual : RightResidual _≤ᵖ_ _∙ᵖ_ _⇨ᵖ_
-  ⇨ᵖ-residual .Function.Equivalence.to        = ⇨ᵖ-residual-to
-  ⇨ᵖ-residual .Function.Equivalence.from      = ⇨ᵖ-residual-from
-  ⇨ᵖ-residual .Function.Equivalence.to-cong   = λ { PropEq.refl → PropEq.refl }
-  ⇨ᵖ-residual .Function.Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
+  ⊸ᵖ-residual : RightResidual _≤ᵖ_ _∙ᵖ_ _⊸ᵖ_
+  ⊸ᵖ-residual .Function.Equivalence.to        = ⊸ᵖ-residual-to
+  ⊸ᵖ-residual .Function.Equivalence.from      = ⊸ᵖ-residual-from
+  ⊸ᵖ-residual .Function.Equivalence.to-cong   = λ { PropEq.refl → PropEq.refl }
+  ⊸ᵖ-residual .Function.Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
 
-  ⇨ᵖ-∙ᵖ-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈ᵖ_ _≤ᵖ_ _∙ᵖ_ _⇨ᵖ_ εᵖ
-  ⇨ᵖ-∙ᵖ-isResiduatedCommutativePomonoid = record 
+  ⊸ᵖ-∙ᵖ-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈ᵖ_ _≤ᵖ_ _∙ᵖ_ _⊸ᵖ_ εᵖ
+  ⊸ᵖ-∙ᵖ-isResiduatedCommutativePomonoid = record 
     { isCommutativePomonoid = ∙ᵖ-isCommutativePomonoid 
-    ; residuated = comm∧residual⇒residuated ≤ᵖ-isPreorder ∙ᵖ-comm ⇨ᵖ-residual 
+    ; residuated = comm∧residual⇒residuated ≤ᵖ-isPreorder ∙ᵖ-comm ⊸ᵖ-residual 
     }
 
   ∙ᵖ-∨ᵖ-distrib : _DistributesOver_ _≤ᵖ_ _∙ᵖ_ _∨ᵖ_
   ∙ᵖ-∨ᵖ-distrib = supremum∧residuated⇒distrib ≤ᵖ-isPreorder ∨ᵖ-supremum 
-    (IsResiduatedCommutativePomonoid.residuated ⇨ᵖ-∙ᵖ-isResiduatedCommutativePomonoid)
+    (IsResiduatedCommutativePomonoid.residuated ⊸ᵖ-∙ᵖ-isResiduatedCommutativePomonoid)
 
 module LiftIsDuoidal
     {_∙ᶜ_} 
