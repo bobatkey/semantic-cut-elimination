@@ -40,9 +40,9 @@ open +ᶜ
     )
 
 private
-  module LowerSet = Algebra.Ordered.Construction.LowerSet +ᶜ.poset
+  module L = Algebra.Ordered.Construction.LowerSet +ᶜ.poset
 
-open LowerSet using
+open L using
   ( LowerSet
   ; ICarrier
   ; ≤-closed
@@ -76,7 +76,7 @@ record Ideal : Set (suc (c ⊔ ℓ₂)) where
     ICarrier : Carrier → Set (c ⊔ ℓ₂)
     ≤-closed : x ≤ᶜ y → ICarrier y → ICarrier x
     +-closed : ICarrier x → ICarrier y → ICarrier (x +ᶜ y)
-open Ideal
+open Ideal public
 
 private
   variable
@@ -90,7 +90,7 @@ record _≤ⁱ_ (𝓕 𝓖 : Ideal) : Set (c ⊔ ℓ₂) where
   no-eta-equality
   field
     *≤ⁱ* : 𝓕 .ICarrier ⊆ 𝓖 .ICarrier
-open _≤ⁱ_
+open _≤ⁱ_ public
 
 infix 4 _≈ⁱ_
 
@@ -260,8 +260,8 @@ hulp (node c₁ c₂) =
   let (d₁ , c₁≤d₁) , (d₂ , c₂≤d₂) = hulp c₁ , hulp c₂
   in node d₁ d₂ , +ᶜ.mono c₁≤d₁ c₂≤d₂
 
-η-preserve-+ : α (ηᵖ (x +ᶜ y)) ≤ⁱ α (ηᵖ x) ∨ⁱ α (ηᵖ y)
-η-preserve-+ {x}{y} .*≤ⁱ* {z} (c , z≤c) =
+ηᵖ-preserve-∨ⁱ : α (ηᵖ (x +ᶜ y)) ≤ⁱ α (ηᵖ x) ∨ⁱ α (ηᵖ y)
+ηᵖ-preserve-∨ⁱ {x}{y} .*≤ⁱ* {z} (c , z≤c) =
   let d , c≤d = hulp c in down-closed (≤ᶜ.trans z≤c c≤d) (ideal-Tree-closed d)
   where open Ideal (α (ηᵖ x) ∨ⁱ α (ηᵖ y)) renaming (≤-closed to down-closed)
 
@@ -276,7 +276,7 @@ module DayEntropic
     where
 
   private
-    module LMon = LowerSet.LiftIsPomonoid isPomonoid
+    module LMon = L.LiftIsPomonoid isPomonoid
 
   _◁ⁱ_ : Ideal → Ideal → Ideal
   (𝓕 ◁ⁱ 𝓖) .ICarrier x =
@@ -381,7 +381,7 @@ module DayDistributive
 
   private
     module Mon = IsCommutativePomonoid isCommutativePomonoid
-    module LMon = LowerSet.LiftIsCommutativePomonoid isCommutativePomonoid
+    module LMon = L.LiftIsCommutativePomonoid isCommutativePomonoid
 
   distribˡ = distrib .proj₁
   distribʳ = distrib .proj₂
@@ -562,7 +562,7 @@ module DayDuoidal
 
   private
     module Duo = IsCommutativeDuoidal isCommutativeDuoidal
-    module LDuo = LowerSet.LiftIsDuoidal Duo.isDuoidal
+    module LDuo = L.LiftIsDuoidal Duo.isDuoidal
 
   open DayDistributive Duo.∙-isCommutativePomonoid distrib
   open DayEntropic Duo.◁-isPomonoid +ᶜ-entropy +ᶜ-tidy

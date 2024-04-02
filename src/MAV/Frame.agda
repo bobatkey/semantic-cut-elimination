@@ -110,93 +110,105 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
 
   open Frame frame
 
-  module LSet = Algebra.Ordered.Construction.LowerSet poset
-  module LMon = LSet.LiftIsCommutativePomonoid ⅋-isCommutativePomonoid
-
-  module ISet = Algebra.Ordered.Construction.Ideal &-pomagma
-  module IDDMon = ISet.DayDistributive ⅋-isCommutativePomonoid ⅋-distrib-&
-  module IDEMon = ISet.DayEntropic ◁-isPomonoid &-◁-entropy &-tidy
-  module IDuo = ISet.DayDuoidal ⅋-◁-isCommutativeDuoidal ⅋-distrib-& &-◁-entropy &-tidy
-
-  open ISet._≤ⁱ_
-  open ISet.Ideal
-
-  units-iso : IDDMon.εⁱ ISet.≈ⁱ IDEMon.ιⁱ
-  units-iso .proj₁ = IDuo.εⁱ≤ιⁱ
-  units-iso .proj₂ .*≤ⁱ* {x} x≤I = ISet.leaf x x≤I , refl
-
-  module CSet = Algebra.Ordered.Construction.Chu.Construction
-                  IDDMon.⊸ⁱ-∙ⁱ-isResiduatedCommutativePomonoid
-                  ISet.∧ⁱ-isMeetSemilattice
-                  ISet.∨ⁱ-isJoinSemilattice
-                  IDDMon.εⁱ
-  open CSet public
-      using
-        ( Chu
-        ; _==>_
-        ; module SelfDual
-        ; _≅_
-        ; ==>-trans
-        ; ⊗-isCommutativePomonoid
-        ; ⊗-isStarAutonomous
-        ; &-isMeet
-        )
+  module L where
+    open Algebra.Ordered.Construction.LowerSet poset public
+    open LiftIsCommutativePomonoid ⅋-isCommutativePomonoid public
       renaming
-        ( _⊗_ to _⟦⊗⟧_
-        ; _&_ to _⟦&⟧_
-        ; I to ⟦I⟧
-        ; ¬ to ⟦¬⟧
-        ; embed to Chu-embed
+        ( _∙ᵖ_             to _⅋ᵖ_
+        ; ∙ᵖ-mono          to ⅋ᵖ-mono
+        ; ∙ᵖ-monoˡ         to ⅋ᵖ-monoˡ
+        ; ∙ᵖ-monoʳ         to ⅋ᵖ-monoʳ
+        ; ∙ᵖ-cong          to ⅋ᵖ-cong
+        ; ∙ᵖ-congˡ         to ⅋ᵖ-congˡ
+        ; ∙ᵖ-congʳ         to ⅋ᵖ-congʳ
+        ; ∙ᵖ-assoc         to ⅋ᵖ-assoc
+        ; ∙ᵖ-identity      to ⅋ᵖ-identity
+        ; ∙ᵖ-identityˡ     to ⅋ᵖ-identityˡ
+        ; ∙ᵖ-identityʳ     to ⅋ᵖ-identityʳ
+        ; ∙ᵖ-isPomonoid    to ⅋ᵖ-isPomonoid
         )
 
-  open Chu
-  open _==>_
+  module I where
+    open Algebra.Ordered.Construction.Ideal &-pomagma public
+    open DayDistributive ⅋-isCommutativePomonoid ⅋-distrib-& public
+      renaming
+        ( _∙ⁱ_             to _⅋ⁱ_
+        ; ∙ⁱ-mono          to ⅋ⁱ-mono
+        ; ∙ⁱ-comm          to ⅋ⁱ-comm
+        ; ∙ⁱ-assoc         to ⅋ⁱ-assoc
+        ; ∙ⁱ-identityˡ     to ⅋ⁱ-identityˡ
+        ; ∙ⁱ-identityʳ     to ⅋ⁱ-identityʳ
+        )
+    open DayEntropic ◁-isPomonoid &-◁-entropy &-tidy public
+    open DayDuoidal ⅋-◁-isCommutativeDuoidal ⅋-distrib-& &-◁-entropy &-tidy public
 
-  K-m : (IDDMon.εⁱ IDEMon.◁ⁱ IDDMon.εⁱ) ISet.≤ⁱ IDDMon.εⁱ
-  K-m = ISet.≤ⁱ-trans (IDEMon.◁ⁱ-mono (ISet.≤ⁱ-reflexive units-iso) ISet.≤ⁱ-refl) (ISet.≤ⁱ-reflexive (IDEMon.◁ⁱ-identityˡ _))
-  K-u : IDEMon.ιⁱ ISet.≤ⁱ IDDMon.εⁱ
-  K-u = ISet.≤ⁱ-reflexive (ISet.Eq.sym units-iso)
-
-  open SelfDual IDuo.∙ⁱ-◁ⁱ-isDuoidal K-m K-u
-    renaming
-      ( J   to ⟦J⟧
-      ; _⍮_ to _⟦⍮⟧_
+  open I
+    public
+    using
+      ( Ideal
+      ; ICarrier
+      ; ≤-closed
+      ; +-closed
+      ; _≤ⁱ_
+      ; *≤ⁱ*
       )
 
-  Chu-mix : ⟦I⟧ ≅ ⟦¬⟧ ⟦I⟧
-  Chu-mix .proj₁ .fpos = ISet.≤ⁱ-refl
-  Chu-mix .proj₁ .fneg = ISet.≤ⁱ-refl
-  Chu-mix .proj₂ .fpos = ISet.≤ⁱ-refl
-  Chu-mix .proj₂ .fneg = ISet.≤ⁱ-refl
+  units-iso : I.εⁱ I.≈ⁱ I.ιⁱ
+  units-iso .proj₁ = I.εⁱ≤ιⁱ
+  units-iso .proj₂ .*≤ⁱ* {x} x≤I = I.leaf x x≤I , refl
 
-  I-eq-J : ⟦I⟧ ≅ ⟦J⟧
-  I-eq-J .proj₁ .fpos = ISet.≤ⁱ-reflexive units-iso
-  I-eq-J .proj₁ .fneg = ISet.≤ⁱ-reflexive (ISet.Eq.sym units-iso)
-  I-eq-J .proj₂ .fpos = ISet.≤ⁱ-reflexive (ISet.Eq.sym units-iso)
-  I-eq-J .proj₂ .fneg = ISet.≤ⁱ-reflexive units-iso
+  module C where
+    open Algebra.Ordered.Construction.Chu.Construction
+          I.⊸ⁱ-∙ⁱ-isResiduatedCommutativePomonoid
+          I.∧ⁱ-isMeetSemilattice
+          I.∨ⁱ-isJoinSemilattice
+          I.εⁱ
+      public
 
-  ⊗-⍮-isCommutativeDuoidal : IsCommutativeDuoidal _≅_ _==>_ _⟦⊗⟧_ _⟦⍮⟧_ ⟦I⟧ ⟦J⟧
-  ⊗-⍮-isCommutativeDuoidal = record
-    { isDuoidal = ⊗-⍮-isDuoidal 
-    ; ∙-comm    = ⊗-isCommutativePomonoid .IsCommutativePomonoid.comm 
-    }
+    K-m : (I.εⁱ I.◁ⁱ I.εⁱ) I.≤ⁱ I.εⁱ
+    K-m = I.≤ⁱ-trans (I.◁ⁱ-mono (I.≤ⁱ-reflexive units-iso) I.≤ⁱ-refl) (I.≤ⁱ-reflexive (I.◁ⁱ-identityˡ _))
+    
+    K-u : I.ιⁱ I.≤ⁱ I.εⁱ
+    K-u = I.≤ⁱ-reflexive (I.Eq.sym units-iso)
+
+    open SelfDual I.∙ⁱ-◁ⁱ-isDuoidal K-m K-u public
+
+    mix : ε ≅ ¬ ε
+    mix .proj₁ .fpos = I.≤ⁱ-refl
+    mix .proj₁ .fneg = I.≤ⁱ-refl
+    mix .proj₂ .fpos = I.≤ⁱ-refl
+    mix .proj₂ .fneg = I.≤ⁱ-refl
+
+    ε-eq-ι : ε ≅ ι
+    ε-eq-ι .proj₁ .fpos = I.≤ⁱ-reflexive units-iso
+    ε-eq-ι .proj₁ .fneg = I.≤ⁱ-reflexive (I.Eq.sym units-iso)
+    ε-eq-ι .proj₂ .fpos = I.≤ⁱ-reflexive (I.Eq.sym units-iso)
+    ε-eq-ι .proj₂ .fneg = I.≤ⁱ-reflexive units-iso
+
+    ⊗-⍮-isCommutativeDuoidal : IsCommutativeDuoidal _≅_ _==>_ _⊗_ _⍮_ ε ι
+    ⊗-⍮-isCommutativeDuoidal = record
+      { isDuoidal = ⊗-⍮-isDuoidal 
+      ; ∙-comm    = ⊗-isCommutativePomonoid .IsCommutativePomonoid.comm 
+      }
+  
+  open C public using (Chu)
 
   model : Model (suc (suc (a ⊔ ℓ₂))) (a ⊔ ℓ₂) (a ⊔ ℓ₂)
-  model .Model.Carrier = Chu
-  model .Model._≈_ = _≅_
-  model .Model._≲_ = _==>_
-  model .Model.¬ = ⟦¬⟧
-  model .Model.I = ⟦I⟧
-  model .Model.J = ⟦J⟧
-  model .Model._⊗_ = _⟦⊗⟧_
-  model .Model._◁_ = _⟦⍮⟧_
-  model .Model._&_ = _⟦&⟧_
-  model .Model.mix = Chu-mix
-  model .Model.&-isMeet = &-isMeet
-  model .Model.⊗-◁-isCommutativeDuoidal = ⊗-⍮-isCommutativeDuoidal
-  model .Model.I-eq-J = I-eq-J
-  model .Model.◁-self-dual = self-dual
-  model .Model.⊗-isStarAutonomous = ⊗-isStarAutonomous
+  model .Model.Carrier = C.Chu
+  model .Model._≈_ = C._≅_
+  model .Model._≲_ = C._==>_
+  model .Model.¬ = C.¬
+  model .Model.I = C.ε
+  model .Model.J = C.ι
+  model .Model._⊗_ = C._⊗_
+  model .Model._◁_ = C._⍮_
+  model .Model._&_ = C._&_
+  model .Model.mix = C.mix
+  model .Model.&-isMeet = C.&-isMeet
+  model .Model.⊗-◁-isCommutativeDuoidal = C.⊗-⍮-isCommutativeDuoidal
+  model .Model.I-eq-J = C.ε-eq-ι
+  model .Model.◁-self-dual = C.self-dual
+  model .Model.⊗-isStarAutonomous = C.⊗-isStarAutonomous
 
   embed : Carrier → Chu
-  embed x = Chu-embed (ISet.ηⁱ x)
+  embed x = C.embed (I.ηⁱ x)
