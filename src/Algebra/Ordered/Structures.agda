@@ -52,7 +52,12 @@ record IsPromagma (∙ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   isMagma : IsMagma ∙
   isMagma = record { isEquivalence = isEquivalence ; ∙-cong = ∙-cong }
 
-  open IsMagma isMagma public using (setoid; ∙-congˡ; ∙-congʳ)
+  open IsMagma isMagma public
+    using
+      ( setoid
+      ; ∙-congˡ
+      ; ∙-congʳ
+      )
 
 -- Preordered semigroups (prosemigroups)
 
@@ -141,18 +146,20 @@ record IsProsemiring (+ * : Op₂ A) (0# 1# : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂)
     }
 
   open IsPromonoid *-isPromonoid public
-    using ()
+    using
+      (
+      )
     renaming
-    ( ∙-congˡ     to *-congˡ
-    ; ∙-congʳ     to *-congʳ
-    ; monoˡ       to *-monoˡ
-    ; monoʳ       to *-monoʳ
-    ; identityˡ   to *-identityˡ
-    ; identityʳ   to *-identityʳ
-    ; isMagma     to *-isMagma
-    ; isSemigroup to *-isSemigroup
-    ; isMonoid    to *-isMonoid
-    )
+      ( ∙-congˡ     to *-congˡ
+      ; ∙-congʳ     to *-congʳ
+      ; monoˡ       to *-monoˡ
+      ; monoʳ       to *-monoʳ
+      ; identityˡ   to *-identityˡ
+      ; identityʳ   to *-identityʳ
+      ; isMagma     to *-isMagma
+      ; isSemigroup to *-isSemigroup
+      ; isMonoid    to *-isMonoid
+      )
 
   isSemiring : IsSemiring + * 0# 1#
   isSemiring = record
@@ -191,7 +198,14 @@ record IsPomagma (∙ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
     }
 
   open IsPromagma isPromagma public
-    using (setoid; ∙-congˡ; ∙-congʳ; monoˡ; monoʳ; isMagma)
+    using
+      ( setoid
+      ; ∙-congˡ
+      ; ∙-congʳ
+      ; monoˡ
+      ; monoʳ
+      ; isMagma
+      )
 
 -- Partially ordered semigroups (posemigroups)
 
@@ -223,7 +237,11 @@ record IsPomonoid (∙ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
     }
 
   open IsPromonoid isPromonoid public
-    using (isMonoid; identityˡ; identityʳ)
+    using
+      ( isMonoid
+      ; identityˡ
+      ; identityʳ
+      )
 
 -- Partially ordered commutative monoids (commutative pomonoids)
 
@@ -238,7 +256,10 @@ record IsCommutativePomonoid (∙ : Op₂ A) (ε : A) : Set (a ⊔ ℓ₁ ⊔ �
   isCommutativePromonoid = record { isPromonoid = isPromonoid ; comm = comm }
 
   open IsCommutativePromonoid isCommutativePromonoid public
-    using (isCommutativeMonoid; isCommutativeSemigroup)
+    using
+      ( isCommutativeMonoid
+      ; isCommutativeSemigroup
+      )
 
 -- Partially ordered semirings (posemirings)
 

@@ -47,6 +47,9 @@ record IsStarAuto (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ ℓ₁ 
       ; trans
       ; reflexive
       ; antisym
+      ; ≤-resp-≈
+      ; ≤-respˡ-≈
+      ; ≤-respʳ-≈
       ; module Eq
       ; setoid
       ; isEquivalence
@@ -72,6 +75,30 @@ record IsStarAuto (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ ℓ₁ 
 
   ¬-cong : ∀ {x y} → x ≈ y → ¬ x ≈ ¬ y
   ¬-cong x≈y = antisym (¬-mono (reflexive (Eq.sym x≈y))) (¬-mono (reflexive x≈y))
+
+  -- NOTE: `*-aut` is the LEFT *-autonomous property.
+  *-autʳ : ∀ {x y z} → (x ⊗ y) ≲ ¬ z → y ≲ ¬ (z ⊗ x)
+  *-autʳ {x} {y} {z} x⊗y≲¬z =
+    begin
+      y
+    ≤⟨ *-aut (≤-respˡ-≈ (⊗-comm x y) x⊗y≲¬z) ⟩
+      ¬ (x ⊗ z)
+    ≈⟨ ¬-cong (⊗-comm _ _) ⟩
+      ¬ (z ⊗ x)
+    ∎
+    where open PosetReasoning poset
+  
+  -- NOTE: `*-aut⁻¹` is the LEFT inverse *-autonomous property.
+  *-autʳ⁻¹ : ∀ {x y z} → y ≲ ¬ (z ⊗ x) → (x ⊗ y) ≲ ¬ z
+  *-autʳ⁻¹ {x} {y} {z} y≲¬z⊗x =
+    begin
+      x ⊗ y
+    ≈⟨ ⊗-comm _ _ ⟩
+      y ⊗ x
+    ≤⟨ *-aut⁻¹ (≤-respʳ-≈ (¬-cong (⊗-comm _ _)) y≲¬z⊗x) ⟩
+      ¬ z
+    ∎
+    where open PosetReasoning poset
 
   ⊥ : A
   ⊥ = ¬ ε
@@ -167,7 +194,7 @@ record IsStarAuto (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ ℓ₁ 
   residualʳ-to {x} {y} {z} xy≲z = *-aut $
     begin
       y ⊗ ¬ (¬ x)
-    ≈⟨ ⊗-cong Eq.refl (¬-involutive _) ⟩
+    ≈⟨ ⊗-congˡ (¬-involutive _) ⟩
       y ⊗ x
     ≈⟨ ⊗-comm _ _ ⟩
       x ⊗ y
@@ -184,7 +211,7 @@ record IsStarAuto (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ ℓ₁ 
       x ⊗ y
     ≈⟨ ⊗-comm _ _ ⟩ 
       y ⊗ x
-    ≤⟨ *-aut⁻¹ (trans y≲x⊸z (¬-mono ((⊗-mono (reflexive (Eq.sym (¬-involutive _))) refl)))) ⟩
+    ≤⟨ *-aut⁻¹ (≤-respʳ-≈ (¬-cong (⊗-congʳ (¬-involutive _))) y≲x⊸z) ⟩
       ¬ (¬ z)
     ≈⟨ ¬-involutive _ ⟩ 
       z
@@ -241,35 +268,46 @@ record IsStarAuto (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ ℓ₁ 
     ∎
     where open PosetReasoning poset
 
+  linear-distribˡ : ∀ {x y z} → (x ⊗ (z ⅋ y)) ≲ (z ⅋ (x ⊗ y))
+  linear-distribˡ {x} {y} {z} = *-aut {x ⊗ (z ⅋ y)} {¬ z} {¬ (x ⊗ y)} $
+    begin
+      (x ⊗ (z ⅋ y)) ⊗ ¬ z
+    ≈⟨ ⊗-assoc _ _ _ ⟩ 
+      (x ⊗ ((z ⅋ y) ⊗ ¬ z))
+    ≈⟨ ⊗-congˡ (⊗-congʳ (⅋-congʳ (¬-involutive _))) ⟨
+      (x ⊗ ((¬ (¬ z) ⅋ y) ⊗ ¬ z))
+    ≤⟨ ⊗-monoʳ evalˡ ⟩
+      (x ⊗ y)
+    ≈⟨ ¬-involutive _ ⟨
+      ¬ (¬ (x ⊗ y))
+    ∎
+    where open PosetReasoning poset
+
+  linear-distribʳ : ∀ {x y z} → ((z ⅋ y) ⊗ x) ≲ ((y ⊗ x) ⅋ z)
+  linear-distribʳ {x} {y} {z} = *-autʳ $
+    begin
+      ¬ z ⊗ ((z ⅋ y) ⊗ x)
+    ≈⟨ ⊗-assoc _ _ _ ⟨
+      (¬ z ⊗ (z ⅋ y)) ⊗ x
+    ≈⟨ ⊗-congʳ (⊗-congˡ (⅋-congʳ (¬-involutive _))) ⟨
+      (¬ z ⊗ (¬ (¬ z) ⅋ y)) ⊗ x
+    ≤⟨ ⊗-monoˡ (evalʳ {¬ z} {y}) ⟩
+      (y ⊗ x)
+    ≈⟨ ¬-involutive _ ⟨
+      ¬ (¬ (y ⊗ x))
+    ∎
+    where open PosetReasoning poset
+
   linear-distrib : ∀ {x y z} → (x ⊗ (y ⅋ z)) ≲ ((x ⊗ y) ⅋ z)
   linear-distrib {x} {y} {z} =
-    let lem₁ =
-          begin
-            (y ⅋ z) ⊗ ¬ z
-          ≡⟨⟩
-            ¬ (¬ y ⊗ ¬ z) ⊗ ¬ z
-          ≈⟨ ⊗-congʳ (¬-cong (⊗-comm _ _)) ⟩
-            ¬ (¬ z ⊗ ¬ y) ⊗ ¬ z
-          ≈⟨ ⊗-congʳ (¬-cong (⊗-congʳ (¬-cong (¬-involutive z)))) ⟨
-            ¬ (¬ (¬ (¬ z)) ⊗ ¬ y) ⊗ ¬ z
-          ≤⟨ evalˡ ⟩
-            y
-          ∎
-        lem₂ =
-          begin
-            (x ⊗ ¬ (¬ y ⊗ ¬ z)) ⊗ ¬ z
-          ≈⟨ ⊗-assoc _ _ _ ⟩ 
-            (x ⊗ (¬ (¬ y ⊗ ¬ z) ⊗ ¬ z))
-          ≤⟨ ⊗-monoʳ lem₁ ⟩
-            (x ⊗ y)
-          ≈⟨ ¬-involutive _ ⟨
-            ¬ (¬ (x ⊗ y))
-          ∎
-    in    begin
-            x ⊗ (y ⅋ z)
-          ≤⟨ *-aut lem₂ ⟩
-            z ⅋ (x ⊗ y)
-          ≈⟨ ⅋-comm _ _ ⟩
-            (x ⊗ y) ⅋ z
-          ∎
+    begin
+      (x ⊗ (y ⅋ z))
+    ≈⟨ ⊗-congˡ (⅋-comm _ _) ⟩
+      (x ⊗ (z ⅋ y))
+    ≤⟨ linear-distribˡ ⟩
+      (z ⅋ (x ⊗ y))
+    ≈⟨ ⅋-comm _ _ ⟩
+      ((x ⊗ y) ⅋ z)
+    ∎
     where open PosetReasoning poset
+ 
