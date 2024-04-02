@@ -36,8 +36,8 @@ import Relation.Binary.Reasoning.PartialOrder as PosetReasoning
 record IsStarAuto (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   field
     isCommutativePomonoid : IsCommutativePomonoid _⊗_ ε
-    ¬-mono                : ∀ {x y} → x ≲ y → ¬ y ≲ ¬ x
-    involution            : ∀ {x} → x ≈ ¬ (¬ x)
+    ¬-mono                : Antitonic₁ _≲_ _≲_ ¬
+    ¬-involutive          : Involutive ¬
     *-aut                 : ∀ {x y z} → (x ⊗ y) ≲ ¬ z → x ≲ ¬ (y ⊗ z)
     *-aut⁻¹               : ∀ {x y z} → x ≲ ¬ (y ⊗ z) → (x ⊗ y) ≲ ¬ z
 
@@ -87,33 +87,49 @@ record IsStarAuto (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ ℓ₁ 
 
   ⅋-assoc : Associative _⅋_
   ⅋-assoc x y z =
-      begin
-        (x ⅋ y) ⅋ z            ≡⟨⟩
-        ¬ (¬ (x ⅋ y) ⊗ ¬ z)     ≈˘⟨ ¬-cong (⊗-cong involution Eq.refl) ⟩
-        ¬ ((¬ x ⊗ ¬ y) ⊗ ¬ z)   ≈⟨ ¬-cong (⊗-assoc _ _ _) ⟩
-        ¬ (¬ x ⊗ (¬ y ⊗ ¬ z))   ≈⟨ ¬-cong (⊗-cong Eq.refl involution) ⟩
-        ¬ (¬ x ⊗ ¬ (y ⅋ z))     ≡⟨⟩
-        x ⅋ (y ⅋ z)            ∎
-     where open SetoidReasoning setoid
+    begin
+      (x ⅋ y) ⅋ z
+    ≡⟨⟩
+      ¬ (¬ (x ⅋ y) ⊗ ¬ z)
+    ≈⟨ ¬-cong (⊗-cong (¬-involutive _) Eq.refl) ⟩
+      ¬ ((¬ x ⊗ ¬ y) ⊗ ¬ z)
+    ≈⟨ ¬-cong (⊗-assoc _ _ _) ⟩
+      ¬ (¬ x ⊗ (¬ y ⊗ ¬ z))
+    ≈⟨ ¬-cong (⊗-cong Eq.refl (¬-involutive _)) ⟨
+      ¬ (¬ x ⊗ ¬ (y ⅋ z))
+    ≡⟨⟩
+      x ⅋ (y ⅋ z)
+    ∎
+    where open SetoidReasoning setoid
 
   ⅋-identityˡ : LeftIdentity ⊥ _⅋_
   ⅋-identityˡ x =
       begin
-        ⊥ ⅋ x             ≡⟨⟩
-        ¬ (¬ (¬ ε) ⊗ ¬ x)  ≈˘⟨ ¬-cong (⊗-cong involution Eq.refl) ⟩
-        ¬ (ε ⊗ ¬ x)        ≈⟨ ¬-cong (⊗-identityˡ _) ⟩
-        ¬ (¬ x)            ≈˘⟨ involution ⟩
-        x                  ∎
+        ⊥ ⅋ x
+      ≡⟨⟩
+        ¬ (¬ (¬ ε) ⊗ ¬ x)
+      ≈⟨ ¬-cong (⊗-cong (¬-involutive _) Eq.refl) ⟩
+        ¬ (ε ⊗ ¬ x)
+      ≈⟨ ¬-cong (⊗-identityˡ _) ⟩
+        ¬ (¬ x)
+      ≈⟨ ¬-involutive _ ⟩
+        x
+      ∎
       where open SetoidReasoning setoid
 
   ⅋-identityʳ : RightIdentity ⊥ _⅋_
   ⅋-identityʳ x =
       begin
-        x ⅋ ⊥             ≡⟨⟩
-        ¬ (¬ x ⊗ ¬ (¬ ε))  ≈˘⟨ ¬-cong (⊗-cong Eq.refl involution) ⟩
-        ¬ (¬ x ⊗ ε)        ≈⟨ ¬-cong (⊗-identityʳ _) ⟩
-        ¬ (¬ x)            ≈˘⟨ involution ⟩
-        x                  ∎
+        x ⅋ ⊥
+      ≡⟨⟩
+        ¬ (¬ x ⊗ ¬ (¬ ε))
+      ≈⟨ ¬-cong (⊗-cong Eq.refl (¬-involutive _)) ⟩
+        ¬ (¬ x ⊗ ε)
+      ≈⟨ ¬-cong (⊗-identityʳ _) ⟩
+        ¬ (¬ x)
+      ≈⟨ ¬-involutive _ ⟩
+        x
+      ∎
       where open SetoidReasoning setoid
 
   ⅋-isCommutativePomonoid : IsCommutativePomonoid _⅋_ ⊥
@@ -124,8 +140,7 @@ record IsStarAuto (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ ℓ₁ 
           { isPartialOrder = isPartialOrder
           ; mono = ⅋-mono
           }
-          ;
-          assoc = ⅋-assoc
+        ; assoc = ⅋-assoc
         }
       ; identity = ⅋-identityˡ , ⅋-identityʳ
       }
@@ -145,20 +160,36 @@ record IsStarAuto (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ ℓ₁ 
       ; identity  to ⅋-identity
       )
 
-  ev : ∀ {x} → (x ⊗ ¬ x) ≲ ⊥
-  ev = *-aut⁻¹ (trans (reflexive involution) (¬-mono (reflexive (⊗-identityʳ _))))
-
   _⊸_ : A → A → A
   x ⊸ y = ¬ x ⅋ y
 
   residualʳ-to : ∀ {x y z} → (x ⊗ y) ≲ z → y ≲ (x ⊸ z)
-  residualʳ-to xy≲z =
-    *-aut (trans (reflexive (⊗-comm _ _)) (trans (⊗-mono (reflexive (Eq.sym involution)) refl) (trans xy≲z (reflexive involution))))
+  residualʳ-to {x} {y} {z} xy≲z = *-aut $
+    begin
+      y ⊗ ¬ (¬ x)
+    ≈⟨ ⊗-cong Eq.refl (¬-involutive _) ⟩
+      y ⊗ x
+    ≈⟨ ⊗-comm _ _ ⟩
+      x ⊗ y
+    ≤⟨ xy≲z ⟩
+      z
+    ≈⟨ ¬-involutive _ ⟨
+      ¬ (¬ z)
+    ∎
+    where open PosetReasoning poset
 
   residualʳ-from : ∀ {x y z} → y ≲ (x ⊸ z) → (x ⊗ y) ≲ z
-  residualʳ-from y≲x⊸z =
-    trans (reflexive (⊗-comm _ _))
-          (trans (*-aut⁻¹ (trans y≲x⊸z (¬-mono (⊗-mono (reflexive involution) refl)))) (reflexive (Eq.sym involution)))
+  residualʳ-from {x} {y} {z} y≲x⊸z =
+    begin
+      x ⊗ y
+    ≈⟨ ⊗-comm _ _ ⟩ 
+      y ⊗ x
+    ≤⟨ *-aut⁻¹ (trans y≲x⊸z (¬-mono ((⊗-mono (reflexive (Eq.sym (¬-involutive _))) refl)))) ⟩
+      ¬ (¬ z)
+    ≈⟨ ¬-involutive _ ⟩ 
+      z
+    ∎
+    where open PosetReasoning poset
 
   residualʳ : RightResidual _⊗_ _⊸_
   residualʳ .Function.Equivalence.to = residualʳ-to
@@ -184,20 +215,61 @@ record IsStarAuto (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ ℓ₁ 
       ( residuated to ⊗-⊸-residuated
       )
 
-  -- FIXME: This is related to evalˡ and evalʳ, but contains an additional involution.
-  eval : ∀ {x y} → ((x ⅋ y) ⊗ ¬ y) ≲ x
-  eval = trans (reflexive (⊗-comm _ _))
-               (residualʳ-from (trans (reflexive (⅋-comm _ _))
-                                         (⅋-mono (reflexive involution) refl)))
+  -- FIXME: This is contraction.
+  ev : ∀ {x} → (x ⊗ ¬ x) ≲ ⊥
+  ev {x} = *-aut⁻¹ $
+    begin
+      x
+    ≈⟨ ¬-involutive x ⟨
+      ¬ (¬ x)
+    ≈⟨ ¬-cong (⊗-identityʳ (¬ x)) ⟨
+      ¬ (¬ x ⊗ ε)
+    ∎
+    where open PosetReasoning poset
 
   -- FIXME: This is expansion.
   coev : ∀ {x} → ε ≲ (x ⅋ ¬ x)
-  coev {x} = trans (residualʳ-to (reflexive (⊗-identityʳ x))) (reflexive (⅋-comm _ _))
+  coev {x} = 
+    begin
+      ε
+    ≤⟨ residualʳ-to (reflexive (⊗-identityʳ x)) ⟩
+      ¬ (¬ (¬ x) ⊗ ¬ x)
+    ≈⟨ ⅋-comm _ _ ⟩
+      ¬ (¬ x ⊗ ¬ (¬ x))
+    ≡⟨⟩
+      x ⅋ ¬ x
+    ∎
+    where open PosetReasoning poset
 
-  -- FIXME: There must be a shorter proof of this?
   linear-distrib : ∀ {x y z} → (x ⊗ (y ⅋ z)) ≲ ((x ⊗ y) ⅋ z)
-  linear-distrib =
-    trans (*-aut (trans (reflexive (⊗-assoc _ _ _))
-                  (trans (⊗-mono refl eval)
-                          (reflexive involution))))
-          (reflexive (⅋-comm _ _))
+  linear-distrib {x} {y} {z} =
+    let lem₁ =
+          begin
+            (y ⅋ z) ⊗ ¬ z
+          ≡⟨⟩
+            ¬ (¬ y ⊗ ¬ z) ⊗ ¬ z
+          ≈⟨ ⊗-congʳ (¬-cong (⊗-comm _ _)) ⟩
+            ¬ (¬ z ⊗ ¬ y) ⊗ ¬ z
+          ≈⟨ ⊗-congʳ (¬-cong (⊗-congʳ (¬-cong (¬-involutive z)))) ⟨
+            ¬ (¬ (¬ (¬ z)) ⊗ ¬ y) ⊗ ¬ z
+          ≤⟨ evalˡ ⟩
+            y
+          ∎
+        lem₂ =
+          begin
+            (x ⊗ ¬ (¬ y ⊗ ¬ z)) ⊗ ¬ z
+          ≈⟨ ⊗-assoc _ _ _ ⟩ 
+            (x ⊗ (¬ (¬ y ⊗ ¬ z) ⊗ ¬ z))
+          ≤⟨ ⊗-monoʳ lem₁ ⟩
+            (x ⊗ y)
+          ≈⟨ ¬-involutive _ ⟨
+            ¬ (¬ (x ⊗ y))
+          ∎
+    in    begin
+            x ⊗ (y ⅋ z)
+          ≤⟨ *-aut lem₂ ⟩
+            z ⅋ (x ⊗ y)
+          ≈⟨ ⅋-comm _ _ ⟩
+            (x ⊗ y) ⅋ z
+          ∎
+    where open PosetReasoning poset

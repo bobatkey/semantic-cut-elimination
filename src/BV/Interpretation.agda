@@ -44,11 +44,11 @@ open Model M
 dual-ok : ∀ P → ⟦ `¬ P ⟧ ≈ ¬ ⟦ P ⟧
 dual-ok `I = mix
 dual-ok (`+ x) = Eq.refl
-dual-ok (`- x) = involution
+dual-ok (`- x) = Eq.sym (¬-involutive _)
 dual-ok (P `◁ Q) = Eq.trans (◁-cong (dual-ok P) (dual-ok Q)) (Eq.sym ◁-self-dual)
-dual-ok (P `⅋ Q) = Eq.trans (⊗-cong (dual-ok P) (dual-ok Q)) involution
+dual-ok (P `⅋ Q) = Eq.trans (⊗-cong (dual-ok P) (dual-ok Q)) (Eq.sym (¬-involutive _))
 dual-ok (P `⊗ Q) =
-  Eq.trans (⅋-cong (dual-ok P) (dual-ok Q)) (¬-cong (⊗-cong (Eq.sym involution) (Eq.sym involution)))
+  Eq.trans (⅋-cong (dual-ok P) (dual-ok Q)) (¬-cong (⊗-cong (¬-involutive _) (¬-involutive _)))
 
 -- Interpret the equivalence axioms
 ⟦_⟧eq-ax : P ∼ Q → ⟦ P ⟧ ≈ ⟦ Q ⟧

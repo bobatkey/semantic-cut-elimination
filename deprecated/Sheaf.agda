@@ -54,14 +54,14 @@ open import Algebra.LowerSet poset as P
     ( LowerSet
     ; ICarrier
     ; ≤-closed
-    ; _≤ᵖ_
-    ; *≤ᵖ*
-    ; ≤ᵖ-refl
-    ; ≤ᵖ-trans
-    ; _≈ᵖ_
-    ; _∨ᵖ_
-    ; inj₁ᵖ
-    ; inj₂ᵖ
+    ; _≤_
+    ; *≤*
+    ; ≤-refl
+    ; ≤-trans
+    ; _≈_
+    ; _∨_
+    ; inj₁
+    ; inj₂
     )
 
 private
@@ -89,8 +89,8 @@ infix 2 ∃ᵗ-syntax
 
 syntax ∃ᵗ-syntax (λ x → B) = ∃ᵗ[ x ] B
 
-∃ᵗᵖ : LowerSet → Set (c ⊔ ℓ₂)
-∃ᵗᵖ F = ∃ᵗ[ x ] (F .ICarrier x)
+∃ᵗ : LowerSet → Set (c ⊔ ℓ₂)
+∃ᵗ F = ∃ᵗ[ x ] (F .ICarrier x)
 
 mapᵗ : (f : X ⊆ Y) → ∃ᵗ X → ∃ᵗ Y
 mapᵗ f (leaf (x , Xx)) = leaf (x , f Xx)
@@ -188,14 +188,14 @@ open IsPartialOrder ≤ˢ-isPartialOrder
 -- Turn a presheaf into a sheaf by closing under imaginary ⋁ᵗs
 
 α : LowerSet → Sheaf
-α F .ICarrier x = Σ[ t ∈ ∃ᵗᵖ F ] (x ≤ ⋁ᵗ t)
+α F .ICarrier x = Σ[ t ∈ ∃ᵗ F ] (x ≤ ⋁ᵗ t)
 α F .≤-closed x≤y (t , y≤⋁t) = t , ≤-trans x≤y y≤⋁t
 α F .∨-closed t = joinᵗ t , joinᵗ-⋁ᵗ t
 
-α-mono : F ≤ᵖ G → α F ≤ˢ α G
-α-mono F≤G .*≤ˢ* (t , x≤⋁t) = (mapᵗ (F≤G .*≤ᵖ*) t , ≤-trans x≤⋁t (mapᵗ-⋁ᵗ t))
+α-mono : F ≤ G → α F ≤ˢ α G
+α-mono F≤G .*≤ˢ* (t , x≤⋁t) = (mapᵗ (F≤G .*≤*) t , ≤-trans x≤⋁t (mapᵗ-⋁ᵗ t))
 
-α-cong : ∀ {F G} → F ≈ᵖ G → α F ≈ˢ α G
+α-cong : ∀ {F G} → F ≈ G → α F ≈ˢ α G
 α-cong (G≤F , F≤G) = (α-mono G≤F , α-mono F≤G)
 
 ------------------------------------------------------------------------------
@@ -205,10 +205,10 @@ U : Sheaf → LowerSet
 U F .ICarrier = F .ICarrier
 U F .≤-closed = F .≤-closed
 
-U-mono : 𝓕 ≤ˢ 𝓖 → U 𝓕 ≤ᵖ U 𝓖
-U-mono 𝓕≤𝓖 .*≤ᵖ* = 𝓕≤𝓖 .*≤ˢ*
+U-mono : 𝓕 ≤ˢ 𝓖 → U 𝓕 ≤ U 𝓖
+U-mono 𝓕≤𝓖 .*≤* = 𝓕≤𝓖 .*≤ˢ*
 
-U-cong : 𝓕 ≈ˢ 𝓖 → U 𝓕 ≈ᵖ U 𝓖
+U-cong : 𝓕 ≈ˢ 𝓖 → U 𝓕 ≈ U 𝓖
 U-cong (𝓖≤𝓕 , 𝓕≤𝓖) = (U-mono 𝓖≤𝓕 , U-mono 𝓕≤𝓖)
 
 -- We have a reflective sub order
@@ -221,8 +221,8 @@ counit⁻¹ .*≤ˢ* 𝓕x = (leaf (_ , 𝓕x) , ≤-refl)
 counit-≈ˢ : 𝓕 ≈ˢ α (U 𝓕)
 counit-≈ˢ = (counit⁻¹ , counit)
 
-unit : F ≤ᵖ U (α F)
-unit .*≤ᵖ* Fx = (leaf (-, Fx) , ≤-refl)
+unit : F ≤ U (α F)
+unit .*≤* Fx = (leaf (-, Fx) , ≤-refl)
 
 ------------------------------------------------------------------------------
 -- Construct a meet semilattice for presheaves
@@ -251,7 +251,7 @@ proj₂ˢ .*≤ˢ* = proj₂
 
 -- -- FIXME: work out what is needed here; probably going to have to
 -- -- work out how to state stability of _∨_ under pullbacks.
--- preserveMeets : ∀ {F G} → α (F ∧ᵖ G) ≈ˢ (α F ∧ᵖS α G)
+-- preserveMeets : ∀ {F G} → α (F ∧ G) ≈ˢ (α F ∧S α G)
 -- preserveMeets .proj₁ = ⟨ (α-mono proj₁ˢ) , (α-mono proj₂ˢ) ⟩
 -- preserveMeets .proj₂ .*≤ˢ* = {!!} -- this would be true if _∨_ distributed across meets, which we are not assuming here
 
@@ -259,13 +259,13 @@ proj₂ˢ .*≤ˢ* = proj₂
 -- Construct a joinᵗ semilattice for presheaves
 
 _∨ˢ_ : Sheaf → Sheaf → Sheaf
-𝓕 ∨ˢ 𝓖 = α (U 𝓕 ∨ᵖ U 𝓖)
+𝓕 ∨ˢ 𝓖 = α (U 𝓕 ∨ U 𝓖)
 
 inj₁ˢ : 𝓕 ≤ˢ (𝓕 ∨ˢ 𝓖)
-inj₁ˢ = ≤ˢ-trans counit⁻¹ (α-mono inj₁ᵖ)
+inj₁ˢ = ≤ˢ-trans counit⁻¹ (α-mono inj₁)
 
 inj₂ˢ : 𝓖 ≤ˢ (𝓕 ∨ˢ 𝓖)
-inj₂ˢ = ≤ˢ-trans counit⁻¹ (α-mono inj₂ᵖ)
+inj₂ˢ = ≤ˢ-trans counit⁻¹ (α-mono inj₂)
 
 [_,_]ˢ : 𝓕 ≤ˢ 𝓗 → 𝓖 ≤ˢ 𝓗 → (𝓕 ∨ˢ 𝓖) ≤ˢ 𝓗
 [_,_]ˢ {𝓕} {𝓗} {𝓖} 𝓕≤𝓗 𝓖≤𝓗 .*≤ˢ* (t , x≤t) =
@@ -297,7 +297,7 @@ module LiftSubidempotent (∨-idem : Subidempotent _≤_ _∨_) where
 --
 -- If we have an entropic monoid, then the presheaf monoid is already a sheaf:
 --
---   U (α (F ∙ᵖ G)) ≈ᵖ U (α F) ∙ᵖ U (α G)
+--   U (α (F ∙ G)) ≈ U (α F) ∙ U (α G)
 --
 module LiftIsPomonoid
     {_∙_} {ε}
@@ -335,19 +335,19 @@ module LiftIsPomonoid
     open P.LiftIsPomonoid isPomonoid
 
     ◁ˢ-mono : Monotonic₂ _≤ˢ_ _≤ˢ_ _≤ˢ_ _◁ˢ_
-    ◁ˢ-mono 𝓕₁≤𝓖₁ 𝓕₂≤𝓖₂ .*≤ˢ* = ∙ᵖ-mono (U-mono 𝓕₁≤𝓖₁) (U-mono 𝓕₂≤𝓖₂) .*≤ᵖ*
+    ◁ˢ-mono 𝓕₁≤𝓖₁ 𝓕₂≤𝓖₂ .*≤ˢ* = ∙-mono (U-mono 𝓕₁≤𝓖₁) (U-mono 𝓕₂≤𝓖₂) .*≤*
 
     ◁ˢ-assoc : Associative _≈ˢ_ _◁ˢ_
-    ◁ˢ-assoc 𝓕 𝓖 𝓗 .proj₁ .*≤ˢ* = ∙ᵖ-assoc (U 𝓕) (U 𝓖) (U 𝓗) .proj₁ .*≤ᵖ*
-    ◁ˢ-assoc 𝓕 𝓖 𝓗 .proj₂ .*≤ˢ* = ∙ᵖ-assoc (U 𝓕) (U 𝓖) (U 𝓗) .proj₂ .*≤ᵖ*
+    ◁ˢ-assoc 𝓕 𝓖 𝓗 .proj₁ .*≤ˢ* = ∙-assoc (U 𝓕) (U 𝓖) (U 𝓗) .proj₁ .*≤*
+    ◁ˢ-assoc 𝓕 𝓖 𝓗 .proj₂ .*≤ˢ* = ∙-assoc (U 𝓕) (U 𝓖) (U 𝓗) .proj₂ .*≤*
 
     ◁ˢ-identityˡ : LeftIdentity _≈ˢ_ ιˢ _◁ˢ_
-    ◁ˢ-identityˡ 𝓕 .proj₁ .*≤ˢ* = ∙ᵖ-identityˡ (U 𝓕) .proj₁ .*≤ᵖ*
-    ◁ˢ-identityˡ 𝓕 .proj₂ .*≤ˢ* = ∙ᵖ-identityˡ (U 𝓕) .proj₂ .*≤ᵖ*
+    ◁ˢ-identityˡ 𝓕 .proj₁ .*≤ˢ* = ∙-identityˡ (U 𝓕) .proj₁ .*≤*
+    ◁ˢ-identityˡ 𝓕 .proj₂ .*≤ˢ* = ∙-identityˡ (U 𝓕) .proj₂ .*≤*
 
     ◁ˢ-identityʳ : RightIdentity _≈ˢ_ ιˢ _◁ˢ_
-    ◁ˢ-identityʳ 𝓕 .proj₁ .*≤ˢ* = ∙ᵖ-identityʳ (U 𝓕) .proj₁ .*≤ᵖ*
-    ◁ˢ-identityʳ 𝓕 .proj₂ .*≤ˢ* = ∙ᵖ-identityʳ (U 𝓕) .proj₂ .*≤ᵖ*
+    ◁ˢ-identityʳ 𝓕 .proj₁ .*≤ˢ* = ∙-identityʳ (U 𝓕) .proj₁ .*≤*
+    ◁ˢ-identityʳ 𝓕 .proj₂ .*≤ˢ* = ∙-identityʳ (U 𝓕) .proj₂ .*≤*
 
     ◁ˢ-identity : Identity _≈ˢ_ ιˢ _◁ˢ_
     ◁ˢ-identity = (◁ˢ-identityˡ , ◁ˢ-identityʳ)
@@ -364,13 +364,13 @@ module LiftIsPomonoid
       ; identity = ◁ˢ-identity
       }
 
-    U-monoidal : U (𝓕 ◁ˢ 𝓖) ≈ᵖ (U 𝓕 ∙ᵖ U 𝓖)
-    U-monoidal .proj₁ .*≤ᵖ* 𝓕x = 𝓕x
-    U-monoidal .proj₂ .*≤ᵖ* 𝓕x = 𝓕x
+    U-monoidal : U (𝓕 ◁ˢ 𝓖) ≈ (U 𝓕 ∙ U 𝓖)
+    U-monoidal .proj₁ .*≤* 𝓕x = 𝓕x
+    U-monoidal .proj₂ .*≤* 𝓕x = 𝓕x
 
-    U-monoidal-ι : U ιˢ ≈ᵖ εᵖ
-    U-monoidal-ι .proj₁ .*≤ᵖ* x≤ε = x≤ε
-    U-monoidal-ι .proj₂ .*≤ᵖ* x≤ε = x≤ε
+    U-monoidal-ι : U ιˢ ≈ ε
+    U-monoidal-ι .proj₁ .*≤* x≤ε = x≤ε
+    U-monoidal-ι .proj₂ .*≤* x≤ε = x≤ε
 
 ------------------------------------------------------------------------------
 -- Lift commutative pomonoids that distribute with the join to presheaves
@@ -387,20 +387,20 @@ module LiftIsCommutativePomonoid
   distribʳ = distrib .proj₂
 
   _⊗ˢ_ : Sheaf → Sheaf → Sheaf
-  𝓕 ⊗ˢ 𝓖 = α (U 𝓕 ∙ᵖ U 𝓖)
+  𝓕 ⊗ˢ 𝓖 = α (U 𝓕 ∙ U 𝓖)
 
   εˢ : Sheaf
-  εˢ = α εᵖ
+  εˢ = α ε
 
   -- α is strong monoidal from LowerSet to Sheaf
   module _ {F G : LowerSet} where
 
-    _∙ᵗ_ : ∃ᵗᵖ F → ∃ᵗᵖ G → ∃ᵗᵖ (F ∙ᵖ G)
+    _∙ᵗ_ : ∃ᵗ F → ∃ᵗ G → ∃ᵗ (F ∙ G)
     (leaf (x , Fx)) ∙ᵗ (leaf (y , Gy)) = leaf (-, -, -, refl , Fx , Gy)
     (leaf ∃F)       ∙ᵗ (node l r)      = node (leaf ∃F ∙ᵗ l) (leaf ∃F ∙ᵗ r)
     (node l r)      ∙ᵗ t               = node (l ∙ᵗ t) (r ∙ᵗ t)
 
-    ∙ᵗ-⋁ᵗ-distrib : (t₁ : ∃ᵗᵖ F) (t₂ : ∃ᵗᵖ G) → (⋁ᵗ t₁ ∙ ⋁ᵗ t₂) ≤ ⋁ᵗ (t₁ ∙ᵗ t₂)
+    ∙ᵗ-⋁ᵗ-distrib : (t₁ : ∃ᵗ F) (t₂ : ∃ᵗ G) → (⋁ᵗ t₁ ∙ ⋁ᵗ t₂) ≤ ⋁ᵗ (t₁ ∙ᵗ t₂)
     ∙ᵗ-⋁ᵗ-distrib (leaf _) (leaf _) = refl
     ∙ᵗ-⋁ᵗ-distrib (leaf ∃F@(x , _)) (node l r) =
       begin
@@ -431,12 +431,12 @@ module LiftIsCommutativePomonoid
 
     -- FIXME: This is essentially a map-and-⋁ operation that preserves the first components.
     α-monoidal-helper
-      : Σ[ t  ∈ ∃ᵗᵖ (U (α F) ∙ᵖ U (α G)) ] (x ≤ ⋁ᵗ t) →
-        Σ[ t′ ∈ ∃ᵗᵖ (F ∙ᵖ G) ] (x ≤ ⋁ᵗ t′)
+      : Σ[ t  ∈ ∃ᵗ (U (α F) ∙ U (α G)) ] (x ≤ ⋁ᵗ t) →
+        Σ[ t′ ∈ ∃ᵗ (F ∙ G) ] (x ≤ ⋁ᵗ t′)
     α-monoidal-helper (t , x≤⋁t) = go t x≤⋁t
       where
         -- The first argument is unpacked to satisty the termination checker.
-        go : (t : ∃ᵗᵖ ((U (α F) ∙ᵖ U (α G)))) → x ≤ ⋁ᵗ t →  Σ[ t′ ∈ ∃ᵗᵖ (F ∙ᵖ G) ] (x ≤ ⋁ᵗ t′)
+        go : (t : ∃ᵗ ((U (α F) ∙ U (α G)))) → x ≤ ⋁ᵗ t →  Σ[ t′ ∈ ∃ᵗ (F ∙ G) ] (x ≤ ⋁ᵗ t′)
         go {x} (leaf (y , y₁ , y₂ , y≤y₁y₂ , (t₁ , y₁≤⋁t₁) , (t₂ , y₂≤⋁t₂))) x≤y =
           (t₁ ∙ᵗ t₂ , x≤⋁[t₁∙t₂])
           where
@@ -459,29 +459,29 @@ module LiftIsCommutativePomonoid
           let (t₁ , ⋁l≤⋁t₁) , (t₂ , ⋁l≤⋁t₂) = go l refl , go r refl
           in (node t₁ t₂ , trans x≤⋁l∨r (∨-mono ⋁l≤⋁t₁ ⋁l≤⋁t₂))
 
-    α-monoidal : (α F ⊗ˢ α G) ≈ˢ α (F ∙ᵖ G)
+    α-monoidal : (α F ⊗ˢ α G) ≈ˢ α (F ∙ G)
     α-monoidal .proj₁ .*≤ˢ* = α-monoidal-helper
-    α-monoidal .proj₂ = α-mono (∙ᵖ-mono unit unit)
+    α-monoidal .proj₂ = α-mono (∙-mono unit unit)
 
   ⊗ˢ-mono : Monotonic₂ _≤ˢ_ _≤ˢ_ _≤ˢ_ _⊗ˢ_
-  ⊗ˢ-mono 𝓕₁≤𝓕₂ 𝓖₁≤𝓖₂ = α-mono (∙ᵖ-mono (U-mono 𝓕₁≤𝓕₂) (U-mono 𝓖₁≤𝓖₂))
+  ⊗ˢ-mono 𝓕₁≤𝓕₂ 𝓖₁≤𝓖₂ = α-mono (∙-mono (U-mono 𝓕₁≤𝓕₂) (U-mono 𝓖₁≤𝓖₂))
 
   ⊗ˢ-assoc : Associative _≈ˢ_ _⊗ˢ_
   ⊗ˢ-assoc 𝓕 𝓖 𝓗 =
     begin
       (𝓕 ⊗ˢ 𝓖) ⊗ˢ 𝓗
     ≡⟨⟩
-      α (U (α (U 𝓕 ∙ᵖ U 𝓖)) ∙ᵖ U 𝓗)
-    ≈⟨ α-cong (∙ᵖ-congˡ (U-cong counit-≈ˢ)) ⟩
-      α (U (α (U 𝓕 ∙ᵖ U 𝓖)) ∙ᵖ U (α (U 𝓗)))
+      α (U (α (U 𝓕 ∙ U 𝓖)) ∙ U 𝓗)
+    ≈⟨ α-cong (∙-congˡ (U-cong counit-≈ˢ)) ⟩
+      α (U (α (U 𝓕 ∙ U 𝓖)) ∙ U (α (U 𝓗)))
     ≈⟨ α-monoidal ⟩
-      α ((U 𝓕 ∙ᵖ U 𝓖) ∙ᵖ U 𝓗)
-    ≈⟨ α-cong (∙ᵖ-assoc (U 𝓕) (U 𝓖) (U 𝓗)) ⟩
-      α (U 𝓕 ∙ᵖ (U 𝓖 ∙ᵖ U 𝓗))
+      α ((U 𝓕 ∙ U 𝓖) ∙ U 𝓗)
+    ≈⟨ α-cong (∙-assoc (U 𝓕) (U 𝓖) (U 𝓗)) ⟩
+      α (U 𝓕 ∙ (U 𝓖 ∙ U 𝓗))
     ≈⟨ α-monoidal ⟨
-      α (U (α (U 𝓕)) ∙ᵖ U (α (U 𝓖 ∙ᵖ U 𝓗)))
-    ≈⟨ α-cong (∙ᵖ-congʳ (U-cong counit-≈ˢ)) ⟨
-      α (U 𝓕 ∙ᵖ U (α (U 𝓖 ∙ᵖ U 𝓗)))
+      α (U (α (U 𝓕)) ∙ U (α (U 𝓖 ∙ U 𝓗)))
+    ≈⟨ α-cong (∙-congʳ (U-cong counit-≈ˢ)) ⟨
+      α (U 𝓕 ∙ U (α (U 𝓖 ∙ U 𝓗)))
     ≡⟨⟩
       𝓕 ⊗ˢ (𝓖 ⊗ˢ 𝓗)
     ∎
@@ -492,12 +492,12 @@ module LiftIsCommutativePomonoid
     begin
       εˢ ⊗ˢ 𝓕
     ≡⟨⟩
-      α (U (α εᵖ) ∙ᵖ U 𝓕)
-    ≈⟨ α-cong (∙ᵖ-congˡ (U-cong counit-≈ˢ)) ⟩
-      α (U (α εᵖ) ∙ᵖ U (α (U 𝓕)))
+      α (U (α ε) ∙ U 𝓕)
+    ≈⟨ α-cong (∙-congˡ (U-cong counit-≈ˢ)) ⟩
+      α (U (α ε) ∙ U (α (U 𝓕)))
     ≈⟨ α-monoidal ⟩
-      α (εᵖ ∙ᵖ U 𝓕)
-    ≈⟨ α-cong (∙ᵖ-identityˡ (U 𝓕)) ⟩
+      α (ε ∙ U 𝓕)
+    ≈⟨ α-cong (∙-identityˡ (U 𝓕)) ⟩
       α (U 𝓕)
     ≈⟨ counit-≈ˢ ⟨
       𝓕
@@ -509,12 +509,12 @@ module LiftIsCommutativePomonoid
     begin
       𝓕 ⊗ˢ εˢ
     ≡⟨⟩
-      α (U 𝓕 ∙ᵖ U (α εᵖ))
-    ≈⟨ α-cong (∙ᵖ-congʳ (U-cong counit-≈ˢ)) ⟩
-      α (U (α (U 𝓕)) ∙ᵖ U (α εᵖ))
+      α (U 𝓕 ∙ U (α ε))
+    ≈⟨ α-cong (∙-congʳ (U-cong counit-≈ˢ)) ⟩
+      α (U (α (U 𝓕)) ∙ U (α ε))
     ≈⟨ α-monoidal ⟩
-      α (U 𝓕 ∙ᵖ εᵖ)
-    ≈⟨ α-cong (∙ᵖ-identityʳ (U 𝓕)) ⟩
+      α (U 𝓕 ∙ ε)
+    ≈⟨ α-cong (∙-identityʳ (U 𝓕)) ⟩
       α (U 𝓕)
     ≈⟨ counit-≈ˢ ⟨
       𝓕
@@ -522,7 +522,7 @@ module LiftIsCommutativePomonoid
     where open SetoidReasoning ≈ˢ-setoid
 
   ⊗ˢ-comm : Commutative _≈ˢ_ _⊗ˢ_
-  ⊗ˢ-comm 𝓕 𝓖 = α-cong (∙ᵖ-comm (U 𝓕) (U 𝓖))
+  ⊗ˢ-comm 𝓕 𝓖 = α-cong (∙-comm (U 𝓕) (U 𝓖))
 
   ⊗ˢ-isCommutativePomonoid : IsCommutativePomonoid _≈ˢ_ _≤ˢ_ _⊗ˢ_ εˢ
   ⊗ˢ-isCommutativePomonoid = record
@@ -562,14 +562,14 @@ module LiftIsCommutativePomonoid
     let (t′ , ⋁t∙y≤⋁t′) = ⊸ˢ-helper {𝓕} {𝓖} t {y} 𝓕y in
       𝓖 .≤-closed ⋁t∙y≤⋁t′ (𝓖 .∨-closed t′)
 
-  U⊸ˢ : U (𝓕 ⊸ˢ 𝓖) ≤ᵖ (U 𝓕 ⇨ᵖ U 𝓖)
-  U⊸ˢ .*≤ᵖ* f = f
+  U⊸ˢ : U (𝓕 ⊸ˢ 𝓖) ≤ (U 𝓕 ⇨ U 𝓖)
+  U⊸ˢ .*≤* f = f
 
-  U⊸ˢ⁻¹ : (U 𝓕 ⇨ᵖ U 𝓖) ≤ᵖ U (𝓕 ⊸ˢ 𝓖)
-  U⊸ˢ⁻¹ .*≤ᵖ* f = f
+  U⊸ˢ⁻¹ : (U 𝓕 ⇨ U 𝓖) ≤ U (𝓕 ⊸ˢ 𝓖)
+  U⊸ˢ⁻¹ .*≤* f = f
 
-  U⊸ˢ-≈ᵖ : U (𝓕 ⊸ˢ 𝓖) ≈ᵖ (U 𝓕 ⇨ᵖ U 𝓖)
-  U⊸ˢ-≈ᵖ = (U⊸ˢ , U⊸ˢ⁻¹)
+  U⊸ˢ-≈ : U (𝓕 ⊸ˢ 𝓖) ≈ (U 𝓕 ⇨ U 𝓖)
+  U⊸ˢ-≈ = (U⊸ˢ , U⊸ˢ⁻¹)
 
   -- FIXME: Find a more abstract way of doing this.
   ⊸ˢ-residual-to : (𝓕 ⊗ˢ 𝓖) ≤ˢ 𝓗 → 𝓖 ≤ˢ (𝓕 ⊸ˢ 𝓗)
@@ -583,8 +583,8 @@ module LiftIsCommutativePomonoid
     begin
       𝓕 ⊗ˢ 𝓖
     ≡⟨⟩
-      α (U 𝓕 ∙ᵖ U 𝓖)
-    ≤⟨ α-mono (⇨ᵖ-residual-from (≤ᵖ-trans (U-mono 𝓖≤𝓕⇨𝓗) U⊸ˢ)) ⟩
+      α (U 𝓕 ∙ U 𝓖)
+    ≤⟨ α-mono (⇨-residual-from (≤-trans (U-mono 𝓖≤𝓕⇨𝓗) U⊸ˢ)) ⟩
       α (U 𝓗)
     ≈⟨ counit-≈ˢ ⟨
       𝓗
@@ -631,17 +631,17 @@ module LiftIsDuoidal
     begin
       (𝓕₁ ◁ˢ 𝓖₁) ⊗ˢ (𝓕₂ ◁ˢ 𝓖₂)
     ≡⟨⟩
-      α (U (𝓕₁ ◁ˢ 𝓖₁) ∙ᵖ U (𝓕₂ ◁ˢ 𝓖₂))
-    ≈⟨ α-cong (∙ᵖ-cong U-monoidal U-monoidal) ⟩
-      α ((U 𝓕₁ ◁ᵖ U 𝓖₁) ∙ᵖ (U 𝓕₂ ◁ᵖ U 𝓖₂))
-    ≤⟨ α-mono (∙ᵖ-◁ᵖ-entropy (U 𝓕₁) (U 𝓖₁) (U 𝓕₂) (U 𝓖₂)) ⟩
-      α ((U 𝓕₁ ∙ᵖ U 𝓕₂) ◁ᵖ (U 𝓖₁ ∙ᵖ U 𝓖₂))
-    ≤⟨ α-mono (◁ᵖ-mono unit unit) ⟩
-      α (U (α (U 𝓕₁ ∙ᵖ U 𝓕₂)) ◁ᵖ U (α (U 𝓖₁ ∙ᵖ U 𝓖₂)))
+      α (U (𝓕₁ ◁ˢ 𝓖₁) ∙ U (𝓕₂ ◁ˢ 𝓖₂))
+    ≈⟨ α-cong (∙-cong U-monoidal U-monoidal) ⟩
+      α ((U 𝓕₁ ◁ U 𝓖₁) ∙ (U 𝓕₂ ◁ U 𝓖₂))
+    ≤⟨ α-mono (∙-◁-entropy (U 𝓕₁) (U 𝓖₁) (U 𝓕₂) (U 𝓖₂)) ⟩
+      α ((U 𝓕₁ ∙ U 𝓕₂) ◁ (U 𝓖₁ ∙ U 𝓖₂))
+    ≤⟨ α-mono (◁-mono unit unit) ⟩
+      α (U (α (U 𝓕₁ ∙ U 𝓕₂)) ◁ U (α (U 𝓖₁ ∙ U 𝓖₂)))
     ≈⟨ α-cong U-monoidal ⟨
-      α (U (α (U 𝓕₁ ∙ᵖ U 𝓕₂) ◁ˢ α (U 𝓖₁ ∙ᵖ U 𝓖₂)))
+      α (U (α (U 𝓕₁ ∙ U 𝓕₂) ◁ˢ α (U 𝓖₁ ∙ U 𝓖₂)))
     ≈⟨ counit-≈ˢ ⟨
-      α (U 𝓕₁ ∙ᵖ U 𝓕₂) ◁ˢ α (U 𝓖₁ ∙ᵖ U 𝓖₂)
+      α (U 𝓕₁ ∙ U 𝓕₂) ◁ˢ α (U 𝓖₁ ∙ U 𝓖₂)
     ≡⟨⟩
       (𝓕₁ ⊗ˢ 𝓕₂) ◁ˢ (𝓖₁ ⊗ˢ 𝓖₂)
     ∎
@@ -658,12 +658,12 @@ module LiftIsDuoidal
     { ∙-isPomonoid = IsCommutativePomonoid.isPomonoid ⊗ˢ-isCommutativePomonoid
     ; ◁-isPomonoid = ◁ˢ-isPomonoid
     ; ∙-◁-entropy = ⊗ˢ-◁ˢ-entropy
-    ; ∙-idem-ι = ≤ˢ-trans (α-mono (∙ᵖ-mono (U-monoidal-ι .proj₁) (U-monoidal-ι .proj₁)))
-                (≤ˢ-trans (α-mono ∙ᵖ-idem-ιᵖ)
+    ; ∙-idem-ι = ≤ˢ-trans (α-mono (∙-mono (U-monoidal-ι .proj₁) (U-monoidal-ι .proj₁)))
+                (≤ˢ-trans (α-mono ∙-idem-ι)
                 (≤ˢ-trans (α-mono (U-monoidal-ι .proj₂))
                           counit))
-    ; ◁-idem-ε = ≤ˢ-trans (α-mono ◁ᵖ-idem-εᵖ)
-                (≤ˢ-trans (α-mono (◁ᵖ-mono unit unit))
+    ; ◁-idem-ε = ≤ˢ-trans (α-mono ◁-idem-ε)
+                (≤ˢ-trans (α-mono (◁-mono unit unit))
                 (≤ˢ-trans (α-mono (U-monoidal .proj₂))
                 counit))
     ; ε≲ι = εˢ≤ιˢ
