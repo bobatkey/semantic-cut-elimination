@@ -8,7 +8,7 @@ module Algebra.Ordered.Construction.Chu where
 -- ◁-monoid, then Chu(A,K) is duoidal.
 
 open import Level
-open import Data.Product using (proj₁; proj₂; _,_; swap)
+open import Data.Product as Product using (_×_; _,_; swap)
 open import Function using (Equivalence)
 open import Algebra.Core using (Op₁; Op₂)
 open import Algebra.Ordered using (IsCommutativePomonoid; IsPomonoid; IsPosemigroup; IsPomagma)
@@ -82,10 +82,10 @@ module Construction
   _≈_ = SymCore _≤_
 
   mk-≈ : X .pos ≈ᶜ Y .pos → X .neg ≈ᶜ Y .neg → X ≈ Y
-  mk-≈ pos-eq neg-eq .proj₁ .fpos = C.reflexive pos-eq
-  mk-≈ pos-eq neg-eq .proj₁ .fneg = C.reflexive (C.Eq.sym neg-eq)
-  mk-≈ pos-eq neg-eq .proj₂ .fpos = C.reflexive (C.Eq.sym pos-eq)
-  mk-≈ pos-eq neg-eq .proj₂ .fneg = C.reflexive neg-eq
+  mk-≈ pos-eq neg-eq .Product.proj₁ .fpos = C.reflexive pos-eq
+  mk-≈ pos-eq neg-eq .Product.proj₁ .fneg = C.reflexive (C.Eq.sym neg-eq)
+  mk-≈ pos-eq neg-eq .Product.proj₂ .fpos = C.reflexive (C.Eq.sym pos-eq)
+  mk-≈ pos-eq neg-eq .Product.proj₂ .fneg = C.reflexive neg-eq
 
   ≤-refl : Reflexive _≤_
   ≤-refl .fpos = C.refl
@@ -120,12 +120,12 @@ module Construction
   ¬ X .int = C.trans (C.reflexive (C.comm _ _)) (X .int)
 
   ¬-involutive : Involutive _≈_ ¬
-  ¬-involutive X .proj₁ .fpos = C.refl
-  ¬-involutive X .proj₁ .fneg = C.refl
-  ¬-involutive X .proj₂ .fpos = C.refl
-  ¬-involutive X .proj₂ .fneg = C.refl
+  ¬-involutive X .Product.proj₁ .fpos = C.refl
+  ¬-involutive X .Product.proj₁ .fneg = C.refl
+  ¬-involutive X .Product.proj₂ .fpos = C.refl
+  ¬-involutive X .Product.proj₂ .fneg = C.refl
 
-  ¬-mono : Antitonic₁ _≤_ _≤_ ¬ -- X ≤ Y → ¬ Y ≤ ¬ X
+  ¬-mono : Antitonic₁ _≤_ _≤_ ¬
   ¬-mono f .fpos = f .fneg
   ¬-mono f .fneg = f .fpos
 
@@ -133,7 +133,7 @@ module Construction
   ε : Chu
   ε .pos = εᶜ
   ε .neg = K
-  ε .int = C.reflexive (C.identity .proj₁ _)
+  ε .int = C.reflexive (C.identity .Product.proj₁ _)
 
   _⊗_ : Chu → Chu → Chu
   (X ⊗ Y) .pos = X .pos ∙ᶜ Y .pos
@@ -151,7 +151,6 @@ module Construction
                  (C.x∧y≤y _ _ >> C.anti-monoʳ (f .fpos) (g .fneg))
 
 
-  -- ⊗-sym : (X ⊗ Y) ≤ (Y ⊗ X)
   ⊗-sym : (X ⊗ Y) ≤ (Y ⊗ X)
   ⊗-sym .fpos = C.reflexive (C.comm _ _)
   ⊗-sym .fneg = C.∧-greatest (C.x∧y≤y _ _) (C.x∧y≤x _ _)
@@ -172,21 +171,24 @@ module Construction
   Λʳ : ∀ {x y z} → (x ∙ᶜ y) ≤ᶜ z → y ≤ᶜ (x -∙ᶜ z)
   Λʳ = C.residualʳ .Equivalence.to
 
-  ⊗-lunit : ∀ X → (ε ⊗ X) ≈ X
-  ⊗-lunit X .proj₁ .fpos = C.reflexive (C.identityˡ _)
-  ⊗-lunit X .proj₁ .fneg =
+  ⊗-identityˡ : LeftIdentity _≈_ ε _⊗_
+  ⊗-identityˡ X .Product.proj₁ .fpos = C.reflexive (C.identityˡ _)
+  ⊗-identityˡ X .Product.proj₁ .fneg =
     C.∧-greatest (C.residualʳ .Equivalence.to (X .int))
                  (C.residualʳ .Equivalence.to (C.reflexive (C.identityˡ _)))
-  ⊗-lunit X .proj₂ .fpos = C.reflexive (C.Eq.sym (C.identityˡ (X .pos)))
-  ⊗-lunit X .proj₂ .fneg = C.x∧y≤y _ _ >> C.reflexive (C.Eq.sym (C.identityʳ _)) >> C.evalˡ
+  ⊗-identityˡ X .Product.proj₂ .fpos = C.reflexive (C.Eq.sym (C.identityˡ (X .pos)))
+  ⊗-identityˡ X .Product.proj₂ .fneg = C.x∧y≤y _ _ >> C.reflexive (C.Eq.sym (C.identityʳ _)) >> C.evalˡ
 
-  ⊗-runit : ∀ X → (X ⊗ ε) ≈ X
-  ⊗-runit X .proj₁ = ≤-trans ⊗-sym (⊗-lunit X .proj₁)
-  ⊗-runit X .proj₂ = ≤-trans (⊗-lunit X .proj₂) ⊗-sym
+  ⊗-identityʳ : RightIdentity _≈_ ε _⊗_
+  ⊗-identityʳ X .Product.proj₁ = ≤-trans ⊗-sym (⊗-identityˡ X .Product.proj₁)
+  ⊗-identityʳ X .Product.proj₂ = ≤-trans (⊗-identityˡ X .Product.proj₂) ⊗-sym
 
-  ⊗-assoc : ∀ X Y Z → ((X ⊗ Y) ⊗ Z) ≈ (X ⊗ (Y ⊗ Z))
-  ⊗-assoc X Y Z .proj₁ .fpos = C.reflexive (C.assoc _ _ _)
-  ⊗-assoc X Y Z .proj₁ .fneg =
+  ⊗-identity : Identity _≈_ ε _⊗_
+  ⊗-identity = ⊗-identityˡ , ⊗-identityʳ
+
+  ⊗-assoc : Associative _≈_ _⊗_
+  ⊗-assoc X Y Z .Product.proj₁ .fpos = C.reflexive (C.assoc _ _ _)
+  ⊗-assoc X Y Z .Product.proj₁ .fneg =
     C.∧-greatest 
       (Λˡ 
         (C.∧-greatest
@@ -205,9 +207,9 @@ module Construction
           >> (C.reflexive (C.Eq.sym (C.assoc _ _ _)) 
           >> (C.mono C.evalˡ C.refl 
           >> C.evalˡ))))
-  ⊗-assoc X Y Z .proj₂ .fpos =
+  ⊗-assoc X Y Z .Product.proj₂ .fpos =
     C.reflexive (C.Eq.sym (C.assoc _ _ _))
-  ⊗-assoc X Y Z .proj₂ .fneg =
+  ⊗-assoc X Y Z .Product.proj₂ .fneg =
     C.∧-greatest
       (Λˡ (  C.mono (C.x∧y≤x _ _ >> C.anti-monoʳ C.refl (C.x∧y≤x _ _)) C.refl 
           >> (C.mono C.refl (C.reflexive (C.comm _ _)) 
@@ -228,7 +230,7 @@ module Construction
   ⊗-isPomonoid .IsPomonoid.isPosemigroup .IsPosemigroup.isPomagma .IsPomagma.isPartialOrder = ≤-isPartialOrder
   ⊗-isPomonoid .IsPomonoid.isPosemigroup .IsPosemigroup.isPomagma .IsPomagma.mono = ⊗-mono
   ⊗-isPomonoid .IsPomonoid.isPosemigroup .IsPosemigroup.assoc = ⊗-assoc
-  ⊗-isPomonoid .IsPomonoid.identity = ⊗-lunit , ⊗-runit
+  ⊗-isPomonoid .IsPomonoid.identity = ⊗-identity
 
   ⊗-isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _⊗_ ε
   ⊗-isCommutativePomonoid .IsCommutativePomonoid.isPomonoid = ⊗-isPomonoid
@@ -246,14 +248,14 @@ module Construction
   *-aut⁻¹ m .fneg =
     C.∧-greatest (Λʳ (m .fneg)) (Λʳ (C.mono (m .fpos >> C.x∧y≤x _ _) C.refl >> C.evalˡ))
 
-  ⊗-isStarAutonomous : IsStarAuto _≈_ _≤_ _⊗_ ε ¬
-  ⊗-isStarAutonomous .IsStarAuto.isCommutativePomonoid = ⊗-isCommutativePomonoid
-  ⊗-isStarAutonomous .IsStarAuto.¬-mono = ¬-mono
-  ⊗-isStarAutonomous .IsStarAuto.¬-involutive = ¬-involutive
-  ⊗-isStarAutonomous .IsStarAuto.*-aut = *-aut
-  ⊗-isStarAutonomous .IsStarAuto.*-aut⁻¹ = *-aut⁻¹
+  ⊗-isStarAuto : IsStarAuto _≈_ _≤_ _⊗_ ε ¬
+  ⊗-isStarAuto .IsStarAuto.isCommutativePomonoid = ⊗-isCommutativePomonoid
+  ⊗-isStarAuto .IsStarAuto.¬-mono = ¬-mono
+  ⊗-isStarAuto .IsStarAuto.¬-involutive = ¬-involutive
+  ⊗-isStarAuto .IsStarAuto.*-aut = *-aut
+  ⊗-isStarAuto .IsStarAuto.*-aut⁻¹ = *-aut⁻¹
 
-  open IsStarAuto ⊗-isStarAutonomous public
+  open IsStarAuto ⊗-isStarAuto public
     using
       ( _⅋_
       ; ⅋-cong
@@ -267,7 +269,7 @@ module Construction
   -- ------------------------------------------------------------------------------
   -- -- Additive structure
 
-  •-∨-distrib : ∀ {x y z} → (x ∙ᶜ (y ∨ᶜ z)) ≤ᶜ ((x ∙ᶜ y) ∨ᶜ (x ∙ᶜ z))
+  •-∨-distrib : (x ∙ᶜ (y ∨ᶜ z)) ≤ᶜ ((x ∙ᶜ y) ∨ᶜ (x ∙ᶜ z))
   •-∨-distrib {x} {y} {z} =
     supremum∧residualʳ⇒distribˡ C.isPreorder {_∨ᶜ_} {_∙ᶜ_} C.supremum C.residualʳ x y z
 
@@ -276,21 +278,21 @@ module Construction
   (X & Y) .neg = X .neg ∨ᶜ Y .neg
   (X & Y) .int = •-∨-distrib >> C.∨-least (C.mono (C.x∧y≤x _ _) C.refl >> X .int) (C.mono (C.x∧y≤y _ _) C.refl >> Y .int)
 
-  fst : ∀ {X Y} → (X & Y) ≤ X
-  fst .fpos = C.x∧y≤x _ _
-  fst .fneg = C.x≤x∨y _ _
+  proj₁ : (X & Y) ≤ X
+  proj₁ .fpos = C.x∧y≤x _ _
+  proj₁ .fneg = C.x≤x∨y _ _
 
-  snd : ∀ {X Y} → (X & Y) ≤ Y
-  snd .fpos = C.x∧y≤y _ _
-  snd .fneg = C.y≤x∨y _ _
+  proj₂ : (X & Y) ≤ Y
+  proj₂ .fpos = C.x∧y≤y _ _
+  proj₂ .fneg = C.y≤x∨y _ _
 
-  pair : ∀ {X Y Z} → (X ≤ Y) → (X ≤ Z) → X ≤ (Y & Z)
-  pair f g .fpos = C.∧-greatest (f .fpos) (g .fpos)
-  pair f g .fneg = C.∨-least (f .fneg) (g .fneg)
+  ⟨_,_⟩ : X ≤ Y → X ≤ Z → X ≤ (Y & Z)
+  ⟨_,_⟩ f g .fpos = C.∧-greatest (f .fpos) (g .fpos)
+  ⟨_,_⟩ f g .fneg = C.∨-least (f .fneg) (g .fneg)
 
   &-isMeet : IsMeetSemilattice _≈_ _≤_ _&_
   &-isMeet .IsMeetSemilattice.isPartialOrder = ≤-isPartialOrder
-  &-isMeet .IsMeetSemilattice.infimum x y = fst , snd , λ z → pair
+  &-isMeet .IsMeetSemilattice.infimum x y = proj₁ , proj₂ , λ z → ⟨_,_⟩
 
   ------------------------------------------------------------------------------
   -- Self-dual operators on Chu, arising from duoidal structures on
@@ -306,76 +308,80 @@ module Construction
     private
       module Duo = IsDuoidal ∙-◁-isDuoidal
 
-    _⍮_ : Chu → Chu → Chu
-    (X ⍮ Y) .pos = X .pos ◁ᶜ Y .pos
-    (X ⍮ Y) .neg = X .neg ◁ᶜ Y .neg
-    (X ⍮ Y) .int = Duo.∙-◁-entropy _ _ _ _ >> (Duo.◁-mono (X .int) (Y .int) >> K-m)
+    _◁_ : Chu → Chu → Chu
+    (X ◁ Y) .pos = X .pos ◁ᶜ Y .pos
+    (X ◁ Y) .neg = X .neg ◁ᶜ Y .neg
+    (X ◁ Y) .int = Duo.∙-◁-entropy _ _ _ _ >> (Duo.◁-mono (X .int) (Y .int) >> K-m)
 
-    self-dual : ∀ {X Y} → ¬ (X ⍮ Y) ≈ (¬ X ⍮ ¬ Y)
-    self-dual .proj₁ .fpos = C.refl
-    self-dual .proj₁ .fneg = C.refl
-    self-dual .proj₂ .fpos = C.refl
-    self-dual .proj₂ .fneg = C.refl
+    self-dual : ∀ {X Y} → ¬ (X ◁ Y) ≈ (¬ X ◁ ¬ Y)
+    self-dual .Product.proj₁ .fpos = C.refl
+    self-dual .Product.proj₁ .fneg = C.refl
+    self-dual .Product.proj₂ .fpos = C.refl
+    self-dual .Product.proj₂ .fneg = C.refl
 
     ι : Chu
     ι .pos = ιᶜ
     ι .neg = ιᶜ
     ι .int = Duo.∙-idem-ι >> K-u
 
-    -- ⍮ is self-dual, so the structure is quite repetitive...
-    ⍮-mono : ∀ {X₁ Y₁ X₂ Y₂} → X₁ ≤ X₂ → Y₁ ≤ Y₂ → (X₁ ⍮ Y₁) ≤ (X₂ ⍮ Y₂)
-    ⍮-mono f g .fpos = Duo.◁-mono (f .fpos) (g .fpos)
-    ⍮-mono f g .fneg = Duo.◁-mono (f .fneg) (g .fneg)
+    -- ◁ is self-dual, so the structure is quite repetitive...
+    ◁-mono : ∀ {X₁ Y₁ X₂ Y₂} → X₁ ≤ X₂ → Y₁ ≤ Y₂ → (X₁ ◁ Y₁) ≤ (X₂ ◁ Y₂)
+    ◁-mono f g .fpos = Duo.◁-mono (f .fpos) (g .fpos)
+    ◁-mono f g .fneg = Duo.◁-mono (f .fneg) (g .fneg)
 
-    ⍮-assoc : Associative _≈_ _⍮_
-    ⍮-assoc x y z = mk-≈ (Duo.◁-assoc _ _ _) (Duo.◁-assoc _ _ _)
+    ◁-assoc : Associative _≈_ _◁_
+    ◁-assoc x y z = mk-≈ (Duo.◁-assoc _ _ _) (Duo.◁-assoc _ _ _)
 
-    ⍮-identityˡ : LeftIdentity _≈_ ι _⍮_
-    ⍮-identityˡ x = mk-≈ (Duo.◁-identityˡ _) (Duo.◁-identityˡ _)
+    ◁-identityˡ : LeftIdentity _≈_ ι _◁_
+    ◁-identityˡ x = mk-≈ (Duo.◁-identityˡ _) (Duo.◁-identityˡ _)
 
-    ⍮-identityʳ : RightIdentity _≈_ ι _⍮_
-    ⍮-identityʳ x = mk-≈ (Duo.◁-identityʳ _) (Duo.◁-identityʳ _)
+    ◁-identityʳ : RightIdentity _≈_ ι _◁_
+    ◁-identityʳ x = mk-≈ (Duo.◁-identityʳ _) (Duo.◁-identityʳ _)
 
-    ⍮-isPomonoid : IsPomonoid _≈_ _≤_ _⍮_ ι
-    ⍮-isPomonoid =
-      record { isPosemigroup = record {
-        isPomagma = record {
-          isPartialOrder = ≤-isPartialOrder ;
-          mono = ⍮-mono
+    ◁-identity : Identity _≈_ ι _◁_
+    ◁-identity = ◁-identityˡ , ◁-identityʳ
+
+    ◁-isPomonoid : IsPomonoid _≈_ _≤_ _◁_ ι
+    ◁-isPomonoid = record
+      { isPosemigroup = record
+        { isPomagma = record
+          { isPartialOrder = ≤-isPartialOrder
+          ; mono = ◁-mono
+          }
+        ; assoc = ◁-assoc
         }
-        ; assoc = ⍮-assoc
-      }
-      ; identity = ⍮-identityˡ , ⍮-identityʳ
+      ; identity = ◁-identity
       }
 
     -- transpose for any closed duoidal category
-    entropy' : ∀ {w x y z} → ((w -∙ᶜ x) ◁ᶜ (y -∙ᶜ z)) ≤ᶜ ((w ◁ᶜ y) -∙ᶜ (x ◁ᶜ z))
-    entropy' = Λˡ (Duo.∙-◁-entropy _ _ _ _ >> Duo.◁-mono C.evalˡ C.evalˡ)
+    private
+      entropy′ : ∀ {w x y z} → ((w -∙ᶜ x) ◁ᶜ (y -∙ᶜ z)) ≤ᶜ ((w ◁ᶜ y) -∙ᶜ (x ◁ᶜ z))
+      entropy′ = Λˡ (Duo.∙-◁-entropy _ _ _ _ >> Duo.◁-mono C.evalˡ C.evalˡ)
 
     ◁-medial : ∀ {Carrier B C D} → ((Carrier ∧ᶜ B) ◁ᶜ (C ∧ᶜ D)) ≤ᶜ ((Carrier ◁ᶜ C) ∧ᶜ (B ◁ᶜ D))
     ◁-medial = C.∧-greatest (Duo.◁-mono (C.x∧y≤x _ _) (C.x∧y≤x _ _)) (Duo.◁-mono (C.x∧y≤y _ _) (C.x∧y≤y _ _))
 
-    ⍮-entropy : ∀ W X Y Z → ((W ⍮ X) ⊗ (Y ⍮ Z)) ≤ ((W ⊗ Y) ⍮ (X ⊗ Z))
-    ⍮-entropy W X Y Z .fpos = Duo.∙-◁-entropy _ _ _ _
-    ⍮-entropy W X Y Z .fneg =
-      ◁-medial >> C.∧-greatest (C.x∧y≤x _ _ >> entropy') (C.x∧y≤y _ _ >> entropy')
+    ⊗-◁-entropy : ∀ W X Y Z → ((W ◁ X) ⊗ (Y ◁ Z)) ≤ ((W ⊗ Y) ◁ (X ⊗ Z))
+    ⊗-◁-entropy W X Y Z .fpos = Duo.∙-◁-entropy _ _ _ _
+    ⊗-◁-entropy W X Y Z .fneg =
+      ◁-medial >> C.∧-greatest (C.x∧y≤x _ _ >> entropy′) (C.x∧y≤y _ _ >> entropy′)
 
-    ⍮-mu : (ι ⊗ ι) ≤ ι
-    ⍮-mu .fpos = Duo.∙-idem-ι
-    ⍮-mu .fneg = C.∧-greatest (Λˡ Duo.∙-idem-ι) (Λˡ Duo.∙-idem-ι)
+    ⊗-idem-ι : (ι ⊗ ι) ≤ ι
+    ⊗-idem-ι .fpos = Duo.∙-idem-ι
+    ⊗-idem-ι .fneg = C.∧-greatest (Λˡ Duo.∙-idem-ι) (Λˡ Duo.∙-idem-ι)
 
-    ⍮-idem-ε : ε ≤ (ε ⍮ ε)
-    ⍮-idem-ε .fpos = Duo.◁-idem-ε
-    ⍮-idem-ε .fneg = K-m
+    ◁-idem-ε : ε ≤ (ε ◁ ε)
+    ◁-idem-ε .fpos = Duo.◁-idem-ε
+    ◁-idem-ε .fneg = K-m
 
     ε≤ι : ε ≤ ι
     ε≤ι .fpos = Duo.ε≲ι
     ε≤ι .fneg = K-u
 
-    ⊗-⍮-isDuoidal : IsDuoidal _≈_ _≤_ _⊗_ _⍮_ ε ι
-    ⊗-⍮-isDuoidal .IsDuoidal.∙-isPomonoid = ⊗-isPomonoid
-    ⊗-⍮-isDuoidal .IsDuoidal.◁-isPomonoid = ⍮-isPomonoid
-    ⊗-⍮-isDuoidal .IsDuoidal.∙-◁-entropy = ⍮-entropy
-    ⊗-⍮-isDuoidal .IsDuoidal.∙-idem-ι = ⍮-mu
-    ⊗-⍮-isDuoidal .IsDuoidal.◁-idem-ε = ⍮-idem-ε
-    ⊗-⍮-isDuoidal .IsDuoidal.ε≲ι = ε≤ι
+    ⊗-◁-isDuoidal : IsDuoidal _≈_ _≤_ _⊗_ _◁_ ε ι
+    ⊗-◁-isDuoidal .IsDuoidal.∙-isPomonoid = ⊗-isPomonoid
+    ⊗-◁-isDuoidal .IsDuoidal.◁-isPomonoid = ◁-isPomonoid
+    ⊗-◁-isDuoidal .IsDuoidal.∙-◁-entropy = ⊗-◁-entropy
+    ⊗-◁-isDuoidal .IsDuoidal.∙-idem-ι = ⊗-idem-ι
+    ⊗-◁-isDuoidal .IsDuoidal.◁-idem-ε = ◁-idem-ε
+    ⊗-◁-isDuoidal .IsDuoidal.ε≲ι = ε≤ι

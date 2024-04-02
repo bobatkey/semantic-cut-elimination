@@ -6,7 +6,7 @@ open import Level using (suc; _⊔_; Lift; lift; 0ℓ; lower)
 open import Algebra.Ordered
 open import Algebra.Ordered.Structures.Duoidal
 open import Algebra using (_DistributesOver_)
-open import Data.Product using (_,_; proj₁; proj₂; Σ-syntax)
+open import Data.Product as Product using (_×_; _,_)
 open import Relation.Binary
 
 open import BV.Model
@@ -157,8 +157,8 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
 
   module C where
     units-iso : L.ε L.≈ L.ι
-    units-iso .proj₁ = L.ε≤ι
-    units-iso .proj₂ .*≤* x≤I = x≤I
+    units-iso .Product.proj₁ = L.ε≤ι
+    units-iso .Product.proj₂ .*≤* x≤I = x≤I
 
     private 
       module C where
@@ -180,20 +180,20 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
     open C public hiding (module SelfDual)
 
     mix : C.ε C.≈ C.¬ C.ε
-    mix .proj₁ .C.fpos = L.≤-refl
-    mix .proj₁ .C.fneg = L.≤-refl
-    mix .proj₂ .C.fpos = L.≤-refl
-    mix .proj₂ .C.fneg = L.≤-refl
+    mix .Product.proj₁ .C.fpos = L.≤-refl
+    mix .Product.proj₁ .C.fneg = L.≤-refl
+    mix .Product.proj₂ .C.fpos = L.≤-refl
+    mix .Product.proj₂ .C.fneg = L.≤-refl
 
     ε-eq-ι : C.ε C.≈ C.ι
-    ε-eq-ι .proj₁ .C.fpos = L.≤-reflexive units-iso
-    ε-eq-ι .proj₁ .C.fneg = L.≤-reflexive (L.Eq.sym units-iso)
-    ε-eq-ι .proj₂ .C.fpos = L.≤-reflexive (L.Eq.sym units-iso)
-    ε-eq-ι .proj₂ .C.fneg = L.≤-reflexive units-iso
+    ε-eq-ι .Product.proj₁ .C.fpos = L.≤-reflexive units-iso
+    ε-eq-ι .Product.proj₁ .C.fneg = L.≤-reflexive (L.Eq.sym units-iso)
+    ε-eq-ι .Product.proj₂ .C.fpos = L.≤-reflexive (L.Eq.sym units-iso)
+    ε-eq-ι .Product.proj₂ .C.fneg = L.≤-reflexive units-iso
 
-    ⊗-⍮-isCommutativeDuoidal : IsCommutativeDuoidal C._≈_ C._≤_ C._⊗_ C._⍮_ C.ε C.ι
-    ⊗-⍮-isCommutativeDuoidal = record
-      { isDuoidal = C.⊗-⍮-isDuoidal 
+    ⊗-◁-isCommutativeDuoidal : IsCommutativeDuoidal C._≈_ C._≤_ C._⊗_ C._◁_ C.ε C.ι
+    ⊗-◁-isCommutativeDuoidal = record
+      { isDuoidal = C.⊗-◁-isDuoidal 
       ; ∙-comm    = C.⊗-isCommutativePomonoid .IsCommutativePomonoid.comm 
       }
   
@@ -207,12 +207,12 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
   model .Model.I = C.ε
   model .Model.J = C.ι
   model .Model._⊗_ = C._⊗_
-  model .Model._◁_ = C._⍮_
+  model .Model._◁_ = C._◁_
   model .Model.mix = C.mix
-  model .Model.⊗-◁-isCommutativeDuoidal = C.⊗-⍮-isCommutativeDuoidal
+  model .Model.⊗-◁-isCommutativeDuoidal = C.⊗-◁-isCommutativeDuoidal
   model .Model.I-eq-J = C.ε-eq-ι
   model .Model.◁-self-dual = C.self-dual
-  model .Model.⊗-isStarAutonomous = C.⊗-isStarAutonomous
+  model .Model.⊗-isStarAuto = C.⊗-isStarAuto
 
   embed : Carrier → Chu
   embed x = C.embed (L.η x)

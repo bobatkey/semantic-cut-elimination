@@ -25,7 +25,7 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
     _⊗_     : Carrier → Carrier → Carrier
 
     ⊗-◁-isCommutativeDuoidal : IsCommutativeDuoidal _≈_ _≲_ _⊗_ _◁_ I J
-    ⊗-isStarAutonomous       : IsStarAuto _≈_ _≲_ _⊗_ I ¬
+    ⊗-isStarAuto       : IsStarAuto _≈_ _≲_ _⊗_ I ¬
     mix                      : I ≈ ¬ I
 
     I-eq-J                   : I ≈ J
@@ -91,7 +91,7 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
       ; ∙-comm                  to ⊗-comm
       )
 
-  open IsStarAuto ⊗-isStarAutonomous public
+  open IsStarAuto ⊗-isStarAuto public
     using
       ( ¬-involutive
       ; ¬-mono
