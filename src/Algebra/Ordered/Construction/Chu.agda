@@ -13,6 +13,7 @@ open import Function using (Equivalence)
 open import Algebra.Core using (Op₁; Op₂)
 open import Algebra.Ordered using (IsCommutativePomonoid; IsPomonoid; IsPosemigroup; IsPomagma)
 open import Algebra.Ordered.Consequences using (supremum∧residualʳ⇒distribˡ)
+open import Algebra.Ordered.Definitions using (Entropy)
 open import Algebra.Ordered.Structures.Residuated
 open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
 open import Algebra.Ordered.Structures.StarAuto using (IsStarAuto)
@@ -21,8 +22,11 @@ open import Relation.Binary.Bundles using (Poset)
 open import Relation.Binary.Core
 open import Relation.Binary.Definitions
 open import Relation.Binary.Structures using (IsPartialOrder; IsPreorder; IsEquivalence)
-open import Relation.Binary.Lattice using (IsMeetSemilattice; IsJoinSemilattice)
+open import Relation.Binary.Lattice.Definitions
+open import Relation.Binary.Lattice.Structures using (IsMeetSemilattice; IsJoinSemilattice)
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
+import Relation.Binary.Reasoning.PartialOrder as PosetReasoning
+import Relation.Binary.Reasoning.Setoid as SetoidReasoning
 
 module Construction
     {c ℓ₁ ℓ₂}
@@ -165,11 +169,11 @@ module Construction
   ⊗-embed .fneg = C.∧-greatest {!!} {!!}
 -}
 
-  Λˡ : ∀ {x y z} → (x ∙ᶜ y) ≤ᶜ z → x ≤ᶜ (y -∙ᶜ z)
-  Λˡ = C.residualˡ .Equivalence.to
-
-  Λʳ : ∀ {x y z} → (x ∙ᶜ y) ≤ᶜ z → y ≤ᶜ (x -∙ᶜ z)
-  Λʳ = C.residualʳ .Equivalence.to
+  private
+    Λˡ : ∀ {x y z} → (x ∙ᶜ y) ≤ᶜ z → x ≤ᶜ (y -∙ᶜ z)
+    Λˡ = C.residualˡ .Equivalence.to
+    Λʳ : ∀ {x y z} → (x ∙ᶜ y) ≤ᶜ z → y ≤ᶜ (x -∙ᶜ z)
+    Λʳ = C.residualʳ .Equivalence.to
 
   ⊗-identityˡ : LeftIdentity _≈_ ε _⊗_
   ⊗-identityˡ X .Product.proj₁ .fpos = C.reflexive (C.identityˡ _)
@@ -186,6 +190,7 @@ module Construction
   ⊗-identity : Identity _≈_ ε _⊗_
   ⊗-identity = ⊗-identityˡ , ⊗-identityʳ
 
+  -- FIXME: This really probably should use reasoning syntax.
   ⊗-assoc : Associative _≈_ _⊗_
   ⊗-assoc X Y Z .Product.proj₁ .fpos = C.reflexive (C.assoc _ _ _)
   ⊗-assoc X Y Z .Product.proj₁ .fneg =
@@ -266,8 +271,8 @@ module Construction
       ; ⅋-identityʳ
       )
 
-  -- ------------------------------------------------------------------------------
-  -- -- Additive structure
+  ------------------------------------------------------------------------------
+  -- Additive structure
 
   •-∨-distrib : (x ∙ᶜ (y ∨ᶜ z)) ≤ᶜ ((x ∙ᶜ y) ∨ᶜ (x ∙ᶜ z))
   •-∨-distrib {x} {y} {z} =
@@ -290,9 +295,12 @@ module Construction
   ⟨_,_⟩ f g .fpos = C.∧-greatest (f .fpos) (g .fpos)
   ⟨_,_⟩ f g .fneg = C.∨-least (f .fneg) (g .fneg)
 
+  &-infimum : Infimum _≤_ _&_
+  &-infimum X Y = proj₁ , proj₂ , λ Z → ⟨_,_⟩
+
   &-isMeet : IsMeetSemilattice _≈_ _≤_ _&_
   &-isMeet .IsMeetSemilattice.isPartialOrder = ≤-isPartialOrder
-  &-isMeet .IsMeetSemilattice.infimum x y = proj₁ , proj₂ , λ z → ⟨_,_⟩
+  &-isMeet .IsMeetSemilattice.infimum = &-infimum
 
   ------------------------------------------------------------------------------
   -- Self-dual operators on Chu, arising from duoidal structures on
@@ -313,7 +321,7 @@ module Construction
     (X ◁ Y) .neg = X .neg ◁ᶜ Y .neg
     (X ◁ Y) .int = Duo.∙-◁-entropy _ _ _ _ >> (Duo.◁-mono (X .int) (Y .int) >> K-m)
 
-    self-dual : ∀ {X Y} → ¬ (X ◁ Y) ≈ (¬ X ◁ ¬ Y)
+    self-dual : ¬ (X ◁ Y) ≈ (¬ X ◁ ¬ Y)
     self-dual .Product.proj₁ .fpos = C.refl
     self-dual .Product.proj₁ .fneg = C.refl
     self-dual .Product.proj₂ .fpos = C.refl
@@ -325,7 +333,7 @@ module Construction
     ι .int = Duo.∙-idem-ι >> K-u
 
     -- ◁ is self-dual, so the structure is quite repetitive...
-    ◁-mono : ∀ {X₁ Y₁ X₂ Y₂} → X₁ ≤ X₂ → Y₁ ≤ Y₂ → (X₁ ◁ Y₁) ≤ (X₂ ◁ Y₂)
+    ◁-mono : Monotonic₂ _≤_ _≤_ _≤_ _◁_
     ◁-mono f g .fpos = Duo.◁-mono (f .fpos) (g .fpos)
     ◁-mono f g .fneg = Duo.◁-mono (f .fneg) (g .fneg)
 
@@ -353,18 +361,17 @@ module Construction
       ; identity = ◁-identity
       }
 
-    -- transpose for any closed duoidal category
+    -- Transpose for any closed duoidal category
     private
-      entropy′ : ∀ {w x y z} → ((w -∙ᶜ x) ◁ᶜ (y -∙ᶜ z)) ≤ᶜ ((w ◁ᶜ y) -∙ᶜ (x ◁ᶜ z))
-      entropy′ = Λˡ (Duo.∙-◁-entropy _ _ _ _ >> Duo.◁-mono C.evalˡ C.evalˡ)
+      -∙ᶜ-◁ᶜ-entropy : Entropy _≤ᶜ_ _◁ᶜ_ _-∙ᶜ_
+      -∙ᶜ-◁ᶜ-entropy w x y z = Λˡ (Duo.∙-◁-entropy _ _ _ _ >> Duo.◁-mono C.evalˡ C.evalˡ)
 
-    ◁-medial : ∀ {Carrier B C D} → ((Carrier ∧ᶜ B) ◁ᶜ (C ∧ᶜ D)) ≤ᶜ ((Carrier ◁ᶜ C) ∧ᶜ (B ◁ᶜ D))
+    ◁-medial : ((w ∧ᶜ x) ◁ᶜ (y ∧ᶜ z)) ≤ᶜ ((w ◁ᶜ y) ∧ᶜ (x ◁ᶜ z))
     ◁-medial = C.∧-greatest (Duo.◁-mono (C.x∧y≤x _ _) (C.x∧y≤x _ _)) (Duo.◁-mono (C.x∧y≤y _ _) (C.x∧y≤y _ _))
 
-    ⊗-◁-entropy : ∀ W X Y Z → ((W ◁ X) ⊗ (Y ◁ Z)) ≤ ((W ⊗ Y) ◁ (X ⊗ Z))
+    ⊗-◁-entropy : Entropy _≤_ _⊗_ _◁_
     ⊗-◁-entropy W X Y Z .fpos = Duo.∙-◁-entropy _ _ _ _
-    ⊗-◁-entropy W X Y Z .fneg =
-      ◁-medial >> C.∧-greatest (C.x∧y≤x _ _ >> entropy′) (C.x∧y≤y _ _ >> entropy′)
+    ⊗-◁-entropy W X Y Z .fneg = ◁-medial >> C.∧-greatest (C.x∧y≤x _ _ >> -∙ᶜ-◁ᶜ-entropy _ _ _ _) (C.x∧y≤y _ _ >> -∙ᶜ-◁ᶜ-entropy _ _ _ _)
 
     ⊗-idem-ι : (ι ⊗ ι) ≤ ι
     ⊗-idem-ι .fpos = Duo.∙-idem-ι
