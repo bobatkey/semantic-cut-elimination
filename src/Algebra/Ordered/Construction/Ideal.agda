@@ -118,7 +118,7 @@ open IsPartialOrder ≤ⁱ-isPartialOrder
     )
   renaming
     ( ≤-respˡ-≈  to ≤ⁱ-respˡ-≈ⁱ
-    ; reflexive to ≤ⁱ-reflexive
+    ; reflexive  to ≤ⁱ-reflexive
     ; isPreorder to ≤ⁱ-isPreorder
     )
   public
@@ -332,7 +332,7 @@ module DayEntropic {_∙_ ε}
     down-closed
       (≤-trans z≤c (ctxt-map-sum _ c))
       (ideal-ctxt-closed {α (ηᵖ x) ◁ⁱ α (ηᵖ y)}
-         (ctxt-map (≤ᵖ-trans η-preserve-∙ (≤ᵖ-trans (∙ᵖ-mono unit unit) (U-monoidal .proj₂))) c))
+         (ctxt-map (≤ᵖ-trans ηᵖ-preserve-∙ᵖ (≤ᵖ-trans (∙ᵖ-mono unit unit) (U-monoidal .proj₂))) c))
     where open Ideal (α (ηᵖ x) ◁ⁱ α (ηᵖ y)) renaming (≤-closed to down-closed)
 
 {-
@@ -360,7 +360,7 @@ module DayEntropic {_∙_ ε}
 
     ηⁱ-preserve-◁⁻¹ : α (ηᵖ x) ◁ⁱ α (ηᵖ y) ≤ⁱ α (ηᵖ (x ∙ y))
     ηⁱ-preserve-◁⁻¹ {x}{y} .*≤ⁱ* {z} (z₁ , z₂ , z≤z₁z₂ , (c₁ , z₁≤c) , (c₂ , z₂≤c)) =
-      ctxt-map η-preserve-∙⁻¹ (c₁ ∙ᶜ' c₂) ,
+      ctxt-map ηᵖ-preserve-∙ᵖ⁻¹ (c₁ ∙ᶜ' c₂) ,
       ≤-trans z≤z₁z₂ {!!}
 -}
 
@@ -407,10 +407,10 @@ module DayDistributive
   ∙ⁱ-mono 𝓕₁≤𝓕₂ 𝓖₁≤𝓖₂ = α-mono (∙ᵖ-mono (U-mono 𝓕₁≤𝓕₂) (U-mono 𝓖₁≤𝓖₂))
 
   ηⁱ-preserve-∙ : ηⁱ (x ∙ y) ≤ⁱ ηⁱ x ∙ⁱ ηⁱ y
-  ηⁱ-preserve-∙ = α-mono (≤ᵖ-trans η-preserve-∙ (∙ᵖ-mono unit unit))
+  ηⁱ-preserve-∙ = α-mono (≤ᵖ-trans ηᵖ-preserve-∙ᵖ (∙ᵖ-mono unit unit))
 
   ηⁱ-preserve-∙⁻¹ : ηⁱ x ∙ⁱ ηⁱ y ≤ⁱ ηⁱ (x ∙ y)
-  ηⁱ-preserve-∙⁻¹ = ≤ⁱ-trans (α-monoidal .proj₁) (α-mono η-preserve-∙⁻¹)
+  ηⁱ-preserve-∙⁻¹ = ≤ⁱ-trans (α-monoidal .proj₁) (α-mono ηᵖ-preserve-∙ᵖ⁻¹)
 
   ∙ⁱ-assoc : Associative _≈ⁱ_ _∙ⁱ_
   ∙ⁱ-assoc 𝓕 𝓖 𝓗 =
