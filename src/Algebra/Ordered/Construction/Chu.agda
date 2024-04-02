@@ -9,46 +9,47 @@ module Algebra.Ordered.Construction.Chu where
 
 open import Level
 open import Data.Product using (proj₁; proj₂; _,_; swap)
-open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 open import Function using (Equivalence)
-open import Algebra using (Associative; LeftIdentity; RightIdentity)
+open import Algebra using (Op₁; Op₂; Associative; LeftIdentity; RightIdentity)
 open import Algebra.Ordered
 open import Algebra.Ordered.Consequences using (supremum∧residualʳ⇒distribˡ)
 open import Algebra.Ordered.Structures.Residuated
 open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
 open import Algebra.Ordered.Structures.StarAuto using (IsStarAuto)
-open import Relation.Binary
-  using (Reflexive; Transitive; IsPartialOrder; IsPreorder; IsEquivalence)
+open import Relation.Binary.Construct.Core.Symmetric as SymCore using (SymCore)
+open import Relation.Binary using (Rel; Reflexive; Transitive; Poset; IsPartialOrder; IsPreorder; IsEquivalence)
 open import Relation.Binary.Lattice using (IsMeetSemilattice; IsJoinSemilattice)
+open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 
-module Construction {a b c}
-    {A : Set a}
-    {_≈ᶜ_ : A → A → Set b}
-    {_≤ᶜ_ : A → A → Set c}
-    {_∙ᶜ_ : A → A → A}
-    {εᶜ : A}
-    {_-∙ᶜ_ : A → A → A}
+module Construction
+    {c ℓ₁ ℓ₂}
+    {Carrier : Set c}
+    {_≈ᶜ_ : Rel Carrier ℓ₁}
+    {_≤ᶜ_ : Rel Carrier ℓ₂}
+    {_∙ᶜ_ : Op₂ Carrier}
+    {_-∙ᶜ_ : Op₂ Carrier}
+    {εᶜ : Carrier}
     (isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ _-∙ᶜ_ εᶜ)
-    {_∧ᶜ_ : A → A → A}
+    {_∧ᶜ_ : Op₂ Carrier}
     (∧ᶜ-isMeet : IsMeetSemilattice _≈ᶜ_ _≤ᶜ_ _∧ᶜ_)
-    {_∨ᶜ_ : A → A → A}
+    {_∨ᶜ_ : Op₂ Carrier}
     (∨ᶜ-isJoin : IsJoinSemilattice _≈ᶜ_ _≤ᶜ_ _∨ᶜ_)
-    (K : A)
+    (K : Carrier)
   where
 
   open IsResiduatedCommutativePomonoid isResiduatedCommutativePomonoid
   open IsMeetSemilattice ∧ᶜ-isMeet using (x∧y≤x; x∧y≤y; ∧-greatest)
   open IsJoinSemilattice ∨ᶜ-isJoin using (supremum; ∨-least; x≤x∨y; y≤x∨y)
 
-  record Chu : Set (suc (a ⊔ b ⊔ c)) where
+  record Chu : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
     no-eta-equality
     field
-      pos : A
-      neg : A
+      pos : Carrier
+      neg : Carrier
       int : (pos ∙ᶜ neg) ≤ᶜ K
   open Chu public
 
-  record _==>_ (X Y : Chu) : Set c where
+  record _==>_ (X Y : Chu) : Set ℓ₂ where
     no-eta-equality
     field
       fpos : X .pos ≤ᶜ Y .pos
@@ -56,6 +57,7 @@ module Construction {a b c}
   open _==>_ public
   infix 4 _==>_
 
+  _≅_ : Rel Chu ℓ₂
   _≅_ = SymCore _==>_
 
   mk-≅ : ∀ {X Y} → (X .pos ≈ᶜ Y .pos) → (X .neg ≈ᶜ Y .neg) → X ≅ Y
@@ -72,26 +74,19 @@ module Construction {a b c}
   ==>-trans x≤y y≤z .fpos = trans (x≤y .fpos) (y≤z .fpos)
   ==>-trans x≤y y≤z .fneg = trans (y≤z .fneg) (x≤y .fneg)
 
-  ==>-isPreorder : IsPreorder _≅_ _==>_
-  ==>-isPreorder .IsPreorder.isEquivalence .IsEquivalence.refl = ==>-refl , ==>-refl
-  ==>-isPreorder .IsPreorder.isEquivalence .IsEquivalence.sym = swap
-  ==>-isPreorder .IsPreorder.isEquivalence .IsEquivalence.trans (ϕ₁ , ϕ₂) (ψ₁ , ψ₂) = (==>-trans ϕ₁ ψ₁) , (==>-trans ψ₂ ϕ₂)
-  ==>-isPreorder .IsPreorder.reflexive = proj₁
-  ==>-isPreorder .IsPreorder.trans = ==>-trans
-
   ==>-isPartialOrder : IsPartialOrder _≅_ _==>_
-  ==>-isPartialOrder .IsPartialOrder.isPreorder = ==>-isPreorder
-  ==>-isPartialOrder .IsPartialOrder.antisym = _,_
+  ==>-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _==>_  record 
+    { isEquivalence = PropEq.isEquivalence 
+    ; reflexive     = λ { PropEq.refl → ==>-refl } 
+    ; trans         = ==>-trans 
+    }
 
   _>>_ : ∀ {x y z} → x ≤ᶜ y → y ≤ᶜ z → x ≤ᶜ z
   _>>_ = trans
   infixr 5 _>>_
 
-  _∘_ : ∀ {X Y Z} → (Y ==> Z) → (X ==> Y) → X ==> Z
-  f ∘ g = ==>-trans g f
-
   -- Embedding
-  embed : A → Chu
+  embed : Carrier → Chu
   embed x .pos = x
   embed x .neg = x -∙ᶜ K
   embed x .int = evalʳ
@@ -253,8 +248,8 @@ module Construction {a b c}
   -- Self-dual operators on Chu, arising from duoidal structures on
   -- the underlying order.
   module SelfDual
-      {_◁ᶜ_ : A → A → A}
-      {ιᶜ : A}
+      {_◁ᶜ_ : Op₂ Carrier}
+      {ιᶜ : Carrier}
       (∙-◁-isDuoidal : IsDuoidal _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ _◁ᶜ_ εᶜ ιᶜ)
       (K-m : (K ◁ᶜ K) ≤ᶜ K)
       (K-u : ιᶜ ≤ᶜ K) -- K is a ◁-monoid
@@ -309,7 +304,7 @@ module Construction {a b c}
     entropy' : ∀ {w x y z} → ((w -∙ᶜ x) ◁ᶜ (y -∙ᶜ z)) ≤ᶜ ((w ◁ᶜ y) -∙ᶜ (x ◁ᶜ z))
     entropy' = Λˡ (Duo.∙-◁-entropy _ _ _ _ >> Duo.◁-mono evalˡ evalˡ)
 
-    ◁-medial : ∀ {A B C D} → ((A ∧ᶜ B) ◁ᶜ (C ∧ᶜ D)) ≤ᶜ ((A ◁ᶜ C) ∧ᶜ (B ◁ᶜ D))
+    ◁-medial : ∀ {Carrier B C D} → ((Carrier ∧ᶜ B) ◁ᶜ (C ∧ᶜ D)) ≤ᶜ ((Carrier ◁ᶜ C) ∧ᶜ (B ◁ᶜ D))
     ◁-medial = ∧-greatest (Duo.◁-mono (x∧y≤x _ _) (x∧y≤x _ _)) (Duo.◁-mono (x∧y≤y _ _) (x∧y≤y _ _))
 
     ⍮-entropy : ∀ W X Y Z → ((W ⍮ X) ⊗ (Y ⍮ Z)) ==> ((W ⊗ Y) ⍮ (X ⊗ Z))
