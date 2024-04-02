@@ -10,9 +10,9 @@ import Algebra.Ordered.Construction.LowerSet
 open import Algebra.Ordered.Structures.Residuated
 open import Algebra.Ordered.Structures.Duoidal
 open import Function using (const; flip)
-open import Data.Product using (_×_; _,_; -,_; proj₁; proj₂; Σ-syntax; ∃; ∃-syntax; <_,_>)
-open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
-open import Data.Unit using (⊤; tt)
+open import Data.Product as Product using (_×_; _,_; -,_; Σ-syntax; ∃; ∃-syntax)
+open import Data.Sum as Sum using (_⊎_)
+open import Data.Unit as Unit using ()
 open import Relation.Binary
 open import Relation.Binary.Construct.Core.Symmetric as SymCore using (SymCore)
 open import Relation.Binary.Lattice
@@ -46,17 +46,17 @@ open L using
   ( LowerSet
   ; ICarrier
   ; ≤-closed
-  ; _≤ᵖ_
-  ; *≤ᵖ*
-  ; ≤ᵖ-refl
-  ; ≤ᵖ-trans
-  ; _≈ᵖ_
-  ; ηᵖ
-  ; ηᵖ-mono
-  ; _∨ᵖ_
-  ; inj₁ᵖ
-  ; inj₂ᵖ
-  ; [_,_]ᵖ
+  ; _≤_
+  ; *≤*
+  ; ≤-refl
+  ; ≤-trans
+  ; _≈_
+  ; η
+  ; η-mono
+  ; _∨_
+  ; inj₁
+  ; inj₂
+  ; [_,_]
   )
 
 private
@@ -141,10 +141,10 @@ U : Ideal → LowerSet
 U 𝓕 .ICarrier = 𝓕 .ICarrier
 U 𝓕 .≤-closed = 𝓕 .≤-closed
 
-U-mono : 𝓕 ≤ⁱ 𝓖 → U 𝓕 ≤ᵖ U 𝓖
-U-mono 𝓕≤𝓖 .*≤ᵖ* = 𝓕≤𝓖 .*≤ⁱ*
+U-mono : 𝓕 ≤ⁱ 𝓖 → U 𝓕 ≤ U 𝓖
+U-mono 𝓕≤𝓖 .*≤* = 𝓕≤𝓖 .*≤ⁱ*
 
-U-cong : 𝓕 ≈ⁱ 𝓖 → U 𝓕 ≈ᵖ U 𝓖
+U-cong : 𝓕 ≈ⁱ 𝓖 → U 𝓕 ≈ U 𝓖
 U-cong (𝓖≤𝓕 , 𝓕≤𝓖) = U-mono 𝓖≤𝓕 , U-mono 𝓕≤𝓖
 
 ------------------------------------------------------------------------------
@@ -158,11 +158,11 @@ sum : Tree F → Carrier
 sum (leaf x _) = x
 sum (node c d) = sum c +ᶜ sum d
 
-mapᵗ : F ≤ᵖ G → Tree F → Tree G
-mapᵗ F≤G (leaf x Fx) = leaf x (F≤G .*≤ᵖ* Fx)
+mapᵗ : F ≤ G → Tree F → Tree G
+mapᵗ F≤G (leaf x Fx) = leaf x (F≤G .*≤* Fx)
 mapᵗ F≤G (node c d)  = node (mapᵗ F≤G c) (mapᵗ F≤G d)
 
-map-sumᵗ : (F≤G : F ≤ᵖ G) (c : Tree F) → sum c ≤ᶜ sum (mapᵗ F≤G c)
+map-sumᵗ : (F≤G : F ≤ G) (c : Tree F) → sum c ≤ᶜ sum (mapᵗ F≤G c)
 map-sumᵗ F≤G (leaf x Fx) = ≤ᶜ.refl
 map-sumᵗ F≤G (node c d) = +ᶜ.mono (map-sumᵗ F≤G c) (map-sumᵗ F≤G d)
 
@@ -171,18 +171,18 @@ map-sumᵗ F≤G (node c d) = +ᶜ.mono (map-sumᵗ F≤G c) (map-sumᵗ F≤G d
 α F .≤-closed x≤y (t , y≤t) = t , ≤ᶜ.trans x≤y y≤t
 α F .+-closed (s , x≤s) (t , y≤t) = node s t , +ᶜ.mono x≤s y≤t
 
-α-mono : F ≤ᵖ G → α F ≤ⁱ α G
+α-mono : F ≤ G → α F ≤ⁱ α G
 α-mono F≤G .*≤ⁱ* (t , x≤t) = mapᵗ F≤G t , ≤ᶜ.trans x≤t (map-sumᵗ F≤G t)
 
-α-cong : ∀ {F G} → F ≈ᵖ G → α F ≈ⁱ α G
+α-cong : ∀ {F G} → F ≈ G → α F ≈ⁱ α G
 α-cong (G≤F , F≤G) = (α-mono G≤F , α-mono F≤G)
 
 ------------------------------------------------------------------------------
 ηⁱ : Carrier → Ideal
-ηⁱ x = α (ηᵖ x)
+ηⁱ x = α (η x)
 
 ηⁱ-mono : x ≤ᶜ y → ηⁱ x ≤ⁱ ηⁱ y
-ηⁱ-mono x≤y = α-mono (ηᵖ-mono x≤y)
+ηⁱ-mono x≤y = α-mono (η-mono x≤y)
 
 ------------------------------------------------------------------------------
 -- U and α form a Galois connection
@@ -200,8 +200,8 @@ counit⁻¹ .*≤ⁱ* 𝓕x = leaf _ 𝓕x , ≤ᶜ.refl
 counit-≈ⁱ : 𝓕 ≈ⁱ α (U 𝓕)
 counit-≈ⁱ = counit⁻¹ , counit
 
-unit : F ≤ᵖ U (α F)
-unit .*≤ᵖ* Fx = leaf _ Fx , ≤ᶜ.refl
+unit : F ≤ U (α F)
+unit .*≤* Fx = leaf _ Fx , ≤ᶜ.refl
 
 ------------------------------------------------------------------------------
 -- Binary meets
@@ -212,13 +212,13 @@ _∧ⁱ_ : Ideal → Ideal → Ideal
 (𝓕 ∧ⁱ 𝓖) .+-closed (𝓕x , 𝓖x) (𝓕y , 𝓖y) = (𝓕 .+-closed 𝓕x 𝓕y) , (𝓖 .+-closed 𝓖x 𝓖y)
 
 proj₁ⁱ : (𝓕 ∧ⁱ 𝓖) ≤ⁱ 𝓕
-proj₁ⁱ .*≤ⁱ* = proj₁
+proj₁ⁱ .*≤ⁱ* = Product.proj₁
 
 proj₂ⁱ : (𝓕 ∧ⁱ 𝓖) ≤ⁱ 𝓖
-proj₂ⁱ .*≤ⁱ* = proj₂
+proj₂ⁱ .*≤ⁱ* = Product.proj₂
 
 ⟨_,_⟩ⁱ : 𝓕 ≤ⁱ 𝓖 → 𝓕 ≤ⁱ 𝓗 → 𝓕 ≤ⁱ (𝓖 ∧ⁱ 𝓗)
-⟨ 𝓗≤𝓕 , 𝓗≤𝓖 ⟩ⁱ .*≤ⁱ* = < 𝓗≤𝓕 .*≤ⁱ* , 𝓗≤𝓖 .*≤ⁱ* >
+⟨ 𝓗≤𝓕 , 𝓗≤𝓖 ⟩ⁱ .*≤ⁱ* = Product.< 𝓗≤𝓕 .*≤ⁱ* , 𝓗≤𝓖 .*≤ⁱ* >
 
 ∧ⁱ-isMeetSemilattice : IsMeetSemilattice _≈ⁱ_ _≤ⁱ_ _∧ⁱ_
 ∧ⁱ-isMeetSemilattice = record
@@ -232,17 +232,17 @@ proj₂ⁱ .*≤ⁱ* = proj₂
 -- Binary joins
 
 _∨ⁱ_ : Ideal → Ideal → Ideal
-𝓕 ∨ⁱ 𝓖 = α (U 𝓕 ∨ᵖ U 𝓖)
+𝓕 ∨ⁱ 𝓖 = α (U 𝓕 ∨ U 𝓖)
 
 inj₁ⁱ : 𝓕 ≤ⁱ (𝓕 ∨ⁱ 𝓖)
-inj₁ⁱ = ≤ⁱ-trans counit⁻¹ (α-mono inj₁ᵖ)
+inj₁ⁱ = ≤ⁱ-trans counit⁻¹ (α-mono inj₁)
 
 inj₂ⁱ : 𝓖 ≤ⁱ (𝓕 ∨ⁱ 𝓖)
-inj₂ⁱ = ≤ⁱ-trans counit⁻¹ (α-mono inj₂ᵖ)
+inj₂ⁱ = ≤ⁱ-trans counit⁻¹ (α-mono inj₂)
 
 [_,_]ⁱ : 𝓕 ≤ⁱ 𝓗 → 𝓖 ≤ⁱ 𝓗 → (𝓕 ∨ⁱ 𝓖) ≤ⁱ 𝓗
 [_,_]ⁱ {𝓕} {𝓗} {𝓖} 𝓕≤𝓗 𝓖≤𝓗 .*≤ⁱ* (t , x≤t) =
-  𝓗 .≤-closed (≤ᶜ.trans x≤t (map-sumᵗ _ t)) (ideal-Tree-closed (mapᵗ [ U-mono 𝓕≤𝓗 , U-mono 𝓖≤𝓗 ]ᵖ t))
+  𝓗 .≤-closed (≤ᶜ.trans x≤t (map-sumᵗ _ t)) (ideal-Tree-closed (mapᵗ [ U-mono 𝓕≤𝓗 , U-mono 𝓖≤𝓗 ] t))
 
 ∨ⁱ-isJoinSemilattice : IsJoinSemilattice _≈ⁱ_ _≤ⁱ_ _∨ⁱ_
 ∨ⁱ-isJoinSemilattice = record
@@ -251,7 +251,7 @@ inj₂ⁱ = ≤ⁱ-trans counit⁻¹ (α-mono inj₂ᵖ)
   }
 
 
-hulp : (c : Tree (ηᵖ (x +ᶜ y))) → Σ[ d ∈ Tree (U (α (ηᵖ x) ∨ⁱ α (ηᵖ y))) ] (sum c ≤ᶜ sum d)
+hulp : (c : Tree (η (x +ᶜ y))) → Σ[ d ∈ Tree (U (α (η x) ∨ⁱ α (η y))) ] (sum c ≤ᶜ sum d)
 hulp {x}{y} (leaf z (lift z≤x+y)) =
   (node (leaf x (inj₁ⁱ .*≤ⁱ* ((leaf x (lift ≤ᶜ.refl)) , ≤ᶜ.refl)))
         (leaf y (inj₂ⁱ .*≤ⁱ* ((leaf y (lift ≤ᶜ.refl)) , ≤ᶜ.refl)))) ,
@@ -260,10 +260,10 @@ hulp (node c₁ c₂) =
   let (d₁ , c₁≤d₁) , (d₂ , c₂≤d₂) = hulp c₁ , hulp c₂
   in node d₁ d₂ , +ᶜ.mono c₁≤d₁ c₂≤d₂
 
-ηᵖ-preserve-∨ⁱ : α (ηᵖ (x +ᶜ y)) ≤ⁱ α (ηᵖ x) ∨ⁱ α (ηᵖ y)
-ηᵖ-preserve-∨ⁱ {x}{y} .*≤ⁱ* {z} (c , z≤c) =
+η-preserve-∨ⁱ : α (η (x +ᶜ y)) ≤ⁱ α (η x) ∨ⁱ α (η y)
+η-preserve-∨ⁱ {x}{y} .*≤ⁱ* {z} (c , z≤c) =
   let d , c≤d = hulp c in down-closed (≤ᶜ.trans z≤c c≤d) (ideal-Tree-closed d)
-  where open Ideal (α (ηᵖ x) ∨ⁱ α (ηᵖ y)) renaming (≤-closed to down-closed)
+  where open Ideal (α (η x) ∨ⁱ α (η y)) renaming (≤-closed to down-closed)
 
 
 ------------------------------------------------------------------------------
@@ -295,19 +295,19 @@ module DayEntropic
   ιⁱ .+-closed (lift x≤ε) (lift y≤ε) = lift (≤ᶜ.trans (+ᶜ.mono x≤ε y≤ε) +-tidy)
 
   ◁ⁱ-mono : Monotonic₂ _≤ⁱ_ _≤ⁱ_ _≤ⁱ_ _◁ⁱ_
-  ◁ⁱ-mono 𝓕₁≤𝓖₁ 𝓕₂≤𝓖₂ .*≤ⁱ* = LMon.∙ᵖ-mono (U-mono 𝓕₁≤𝓖₁) (U-mono 𝓕₂≤𝓖₂) .*≤ᵖ*
+  ◁ⁱ-mono 𝓕₁≤𝓖₁ 𝓕₂≤𝓖₂ .*≤ⁱ* = LMon.∙-mono (U-mono 𝓕₁≤𝓖₁) (U-mono 𝓕₂≤𝓖₂) .*≤*
 
   ◁ⁱ-assoc : Associative _≈ⁱ_ _◁ⁱ_
-  ◁ⁱ-assoc 𝓕 𝓖 𝓗 .proj₁ .*≤ⁱ* = LMon.∙ᵖ-assoc (U 𝓕) (U 𝓖) (U 𝓗) .proj₁ .*≤ᵖ*
-  ◁ⁱ-assoc 𝓕 𝓖 𝓗 .proj₂ .*≤ⁱ* = LMon.∙ᵖ-assoc (U 𝓕) (U 𝓖) (U 𝓗) .proj₂ .*≤ᵖ*
+  ◁ⁱ-assoc 𝓕 𝓖 𝓗 .Product.proj₁ .*≤ⁱ* = LMon.∙-assoc (U 𝓕) (U 𝓖) (U 𝓗) .Product.proj₁ .*≤*
+  ◁ⁱ-assoc 𝓕 𝓖 𝓗 .Product.proj₂ .*≤ⁱ* = LMon.∙-assoc (U 𝓕) (U 𝓖) (U 𝓗) .Product.proj₂ .*≤*
 
   ◁ⁱ-identityˡ : LeftIdentity _≈ⁱ_ ιⁱ _◁ⁱ_
-  ◁ⁱ-identityˡ 𝓕 .proj₁ .*≤ⁱ* = LMon.∙ᵖ-identityˡ (U 𝓕) .proj₁ .*≤ᵖ*
-  ◁ⁱ-identityˡ 𝓕 .proj₂ .*≤ⁱ* = LMon.∙ᵖ-identityˡ (U 𝓕) .proj₂ .*≤ᵖ*
+  ◁ⁱ-identityˡ 𝓕 .Product.proj₁ .*≤ⁱ* = LMon.∙-identityˡ (U 𝓕) .Product.proj₁ .*≤*
+  ◁ⁱ-identityˡ 𝓕 .Product.proj₂ .*≤ⁱ* = LMon.∙-identityˡ (U 𝓕) .Product.proj₂ .*≤*
 
   ◁ⁱ-identityʳ : RightIdentity _≈ⁱ_ ιⁱ _◁ⁱ_
-  ◁ⁱ-identityʳ 𝓕 .proj₁ .*≤ⁱ* = LMon.∙ᵖ-identityʳ (U 𝓕) .proj₁ .*≤ᵖ*
-  ◁ⁱ-identityʳ 𝓕 .proj₂ .*≤ⁱ* = LMon.∙ᵖ-identityʳ (U 𝓕) .proj₂ .*≤ᵖ*
+  ◁ⁱ-identityʳ 𝓕 .Product.proj₁ .*≤ⁱ* = LMon.∙-identityʳ (U 𝓕) .Product.proj₁ .*≤*
+  ◁ⁱ-identityʳ 𝓕 .Product.proj₂ .*≤ⁱ* = LMon.∙-identityʳ (U 𝓕) .Product.proj₂ .*≤*
 
   ◁ⁱ-identity : Identity _≈ⁱ_ ιⁱ _◁ⁱ_
   ◁ⁱ-identity = (◁ⁱ-identityˡ , ◁ⁱ-identityʳ)
@@ -324,24 +324,24 @@ module DayEntropic
     ; identity = ◁ⁱ-identity
     }
 
-  U-monoidal : U (𝓕 ◁ⁱ 𝓖) ≈ᵖ (U 𝓕 LMon.∙ᵖ U 𝓖)
-  U-monoidal .proj₁ .*≤ᵖ* 𝓕x = 𝓕x
-  U-monoidal .proj₂ .*≤ᵖ* 𝓕x = 𝓕x
+  U-monoidal : U (𝓕 ◁ⁱ 𝓖) ≈ (U 𝓕 LMon.∙ U 𝓖)
+  U-monoidal .Product.proj₁ .*≤* 𝓕x = 𝓕x
+  U-monoidal .Product.proj₂ .*≤* 𝓕x = 𝓕x
 
-  U-monoidal-ι : U ιⁱ ≈ᵖ LMon.εᵖ
-  U-monoidal-ι .proj₁ .*≤ᵖ* x≤ε = x≤ε
-  U-monoidal-ι .proj₂ .*≤ᵖ* x≤ε = x≤ε
+  U-monoidal-ι : U ιⁱ ≈ LMon.ε
+  U-monoidal-ι .Product.proj₁ .*≤* x≤ε = x≤ε
+  U-monoidal-ι .Product.proj₂ .*≤* x≤ε = x≤ε
 
   ηⁱ-preserve-◁ : ηⁱ (x ∙ᶜ y) ≤ⁱ ηⁱ x ◁ⁱ ηⁱ y
-  ηⁱ-preserve-◁ {x}{y} .*≤ⁱ* {z} (c , z≤c) =
+  ηⁱ-preserve-◁ {x} {y} .*≤ⁱ* {z} (c , z≤c) =
     down-closed
       (≤ᶜ.trans z≤c (map-sumᵗ _ c))
-      (ideal-Tree-closed {α (ηᵖ x) ◁ⁱ α (ηᵖ y)} 
+      (ideal-Tree-closed {α (η x) ◁ⁱ α (η y)} 
         (mapᵗ 
-          (≤ᵖ-trans LMon.ηᵖ-preserve-∙ᵖ 
-            (≤ᵖ-trans (LMon.∙ᵖ-mono unit unit) (U-monoidal .proj₂))) c))
+          (≤-trans LMon.η-preserve-∙ 
+            (≤-trans (LMon.∙-mono unit unit) (U-monoidal .Product.proj₂))) c))
     where
-      open Ideal (α (ηᵖ x) ◁ⁱ α (ηᵖ y)) renaming (≤-closed to down-closed)
+      open Ideal (α (η x) ◁ⁱ α (η y)) renaming (≤-closed to down-closed)
 
 {-
   -- FIXME: this doesn't work
@@ -350,7 +350,7 @@ module DayEntropic
     open IsPomonoid isPomonoid using (mono)
 
     -- FIXME: this is the same combination function as below
-    _∙ᶜ'_ : Tree F → Tree G → Tree (F LMon.∙ᵖ G)
+    _∙ᶜ'_ : Tree F → Tree G → Tree (F LMon.∙ G)
     leaf x Fx  ∙ᶜ' leaf y Gy  = leaf (x ∙ᶜ y) (x , y , ≤ᶜ.refl , Fx , Gy)
     leaf x Fx  ∙ᶜ' node d₁ d₂ = node (leaf x Fx ∙ᶜ' d₁) (leaf x Fx ∙ᶜ' d₂)
     node c₁ c₂ ∙ᶜ' d          = node (c₁ ∙ᶜ' d) (c₂ ∙ᶜ' d)
@@ -366,9 +366,9 @@ module DayEntropic
       (≤ᶜ.trans (+-entropy _ _ _ _)
       (mono ≤ᶜ.refl idem))
 
-    ηⁱ-preserve-◁⁻¹ : α (ηᵖ x) ◁ⁱ α (ηᵖ y) ≤ⁱ α (ηᵖ (x ∙ᶜ y))
+    ηⁱ-preserve-◁⁻¹ : α (η x) ◁ⁱ α (η y) ≤ⁱ α (η (x ∙ᶜ y))
     ηⁱ-preserve-◁⁻¹ {x}{y} .*≤ⁱ* {z} (z₁ , z₂ , z≤z₁z₂ , (c₁ , z₁≤c) , (c₂ , z₂≤c)) =
-      mapᵗ ηᵖ-preserve-∙ᵖ⁻¹ (c₁ ∙ᶜ' c₂) ,
+      mapᵗ η-preserve-∙⁻¹ (c₁ ∙ᶜ' c₂) ,
       ≤ᶜ.trans z≤z₁z₂ {!!}
 -}
 
@@ -383,16 +383,16 @@ module DayDistributive
     module Mon = IsCommutativePomonoid isCommutativePomonoid
     module LMon = L.LiftIsCommutativePomonoid isCommutativePomonoid
 
-  distribˡ = distrib .proj₁
-  distribʳ = distrib .proj₂
+  distribˡ = distrib .Product.proj₁
+  distribʳ = distrib .Product.proj₂
 
   _∙ⁱ_ : Ideal → Ideal → Ideal
-  𝓕 ∙ⁱ 𝓖 = α (U 𝓕 LMon.∙ᵖ U 𝓖)
+  𝓕 ∙ⁱ 𝓖 = α (U 𝓕 LMon.∙ U 𝓖)
 
   εⁱ : Ideal
-  εⁱ = α LMon.εᵖ
+  εⁱ = α LMon.ε
 
-  _∙ᵗ_ : Tree F → Tree G → Tree (F LMon.∙ᵖ G)
+  _∙ᵗ_ : Tree F → Tree G → Tree (F LMon.∙ G)
   leaf x Fx  ∙ᵗ leaf y Gy  = leaf (x ∙ᶜ y) (x , y , ≤ᶜ.refl , Fx , Gy)
   leaf x Fx  ∙ᵗ node d₁ d₂ = node (leaf x Fx ∙ᵗ d₁) (leaf x Fx ∙ᵗ d₂)
   node c₁ c₂ ∙ᵗ d          = node (c₁ ∙ᵗ d) (c₂ ∙ᵗ d)
@@ -402,42 +402,42 @@ module DayDistributive
   ∙ᵗ-sum (leaf x Fx)  (node d₁ d₂) = ≤ᶜ.trans (distribˡ _ _ _) (+ᶜ.mono (∙ᵗ-sum (leaf x Fx) d₁) (∙ᵗ-sum (leaf x Fx) d₂))
   ∙ᵗ-sum (node c₁ c₂) d            = ≤ᶜ.trans (distribʳ _ _ _) (+ᶜ.mono (∙ᵗ-sum c₁ d) (∙ᵗ-sum c₂ d))
 
-  α-helper : (c : Tree (U (α F) LMon.∙ᵖ U (α G))) → x ≤ᶜ sum c → Σ[ d ∈ Tree (F LMon.∙ᵖ G) ] (x ≤ᶜ sum d)
+  α-helper : (c : Tree (U (α F) LMon.∙ U (α G))) → x ≤ᶜ sum c → Σ[ d ∈ Tree (F LMon.∙ G) ] (x ≤ᶜ sum d)
   α-helper (leaf y (y₁ , y₂ , y≤y₁y₂ , (c , y₁≤c) , (d , y₂≤d))) x≤y =
     (c ∙ᵗ d) , ≤ᶜ.trans x≤y (≤ᶜ.trans y≤y₁y₂ (≤ᶜ.trans (Mon.mono y₁≤c y₂≤d) (∙ᵗ-sum c d)))
   α-helper (node c d) x≤cd =
     let (c' , c≤c') , (d' , d≤d') = α-helper c ≤ᶜ.refl , α-helper d ≤ᶜ.refl
     in (node c' d') , (≤ᶜ.trans x≤cd (+ᶜ.mono c≤c' d≤d'))
 
-  α-monoidal : (α F ∙ⁱ α G) ≈ⁱ α (F LMon.∙ᵖ G)
-  α-monoidal .proj₁ .*≤ⁱ* (c , x≤c)  = α-helper c x≤c
-  α-monoidal .proj₂ = α-mono (LMon.∙ᵖ-mono unit unit)
+  α-monoidal : (α F ∙ⁱ α G) ≈ⁱ α (F LMon.∙ G)
+  α-monoidal .Product.proj₁ .*≤ⁱ* (c , x≤c)  = α-helper c x≤c
+  α-monoidal .Product.proj₂ = α-mono (LMon.∙-mono unit unit)
 
   ∙ⁱ-mono : Monotonic₂ _≤ⁱ_ _≤ⁱ_ _≤ⁱ_ _∙ⁱ_
-  ∙ⁱ-mono 𝓕₁≤𝓕₂ 𝓖₁≤𝓖₂ = α-mono (LMon.∙ᵖ-mono (U-mono 𝓕₁≤𝓕₂) (U-mono 𝓖₁≤𝓖₂))
+  ∙ⁱ-mono 𝓕₁≤𝓕₂ 𝓖₁≤𝓖₂ = α-mono (LMon.∙-mono (U-mono 𝓕₁≤𝓕₂) (U-mono 𝓖₁≤𝓖₂))
 
   ηⁱ-preserve-∙ : ηⁱ (x ∙ᶜ y) ≤ⁱ ηⁱ x ∙ⁱ ηⁱ y
-  ηⁱ-preserve-∙ = α-mono (≤ᵖ-trans LMon.ηᵖ-preserve-∙ᵖ (LMon.∙ᵖ-mono unit unit))
+  ηⁱ-preserve-∙ = α-mono (≤-trans LMon.η-preserve-∙ (LMon.∙-mono unit unit))
 
   ηⁱ-preserve-∙⁻¹ : ηⁱ x ∙ⁱ ηⁱ y ≤ⁱ ηⁱ (x ∙ᶜ y)
-  ηⁱ-preserve-∙⁻¹ = ≤ⁱ-trans (α-monoidal .proj₁) (α-mono LMon.ηᵖ-preserve-∙ᵖ⁻¹)
+  ηⁱ-preserve-∙⁻¹ = ≤ⁱ-trans (α-monoidal .Product.proj₁) (α-mono LMon.η-preserve-∙⁻¹)
 
   ∙ⁱ-assoc : Associative _≈ⁱ_ _∙ⁱ_
   ∙ⁱ-assoc 𝓕 𝓖 𝓗 =
     begin
       (𝓕 ∙ⁱ 𝓖) ∙ⁱ 𝓗
     ≡⟨⟩
-      α (U (α (U 𝓕 LMon.∙ᵖ U 𝓖)) LMon.∙ᵖ U 𝓗)
-    ≈⟨ α-cong (LMon.∙ᵖ-congˡ (U-cong counit-≈ⁱ)) ⟩
-      α (U (α (U 𝓕 LMon.∙ᵖ U 𝓖)) LMon.∙ᵖ U (α (U 𝓗)))
+      α (U (α (U 𝓕 LMon.∙ U 𝓖)) LMon.∙ U 𝓗)
+    ≈⟨ α-cong (LMon.∙-congˡ (U-cong counit-≈ⁱ)) ⟩
+      α (U (α (U 𝓕 LMon.∙ U 𝓖)) LMon.∙ U (α (U 𝓗)))
     ≈⟨ α-monoidal ⟩
-      α ((U 𝓕 LMon.∙ᵖ U 𝓖) LMon.∙ᵖ U 𝓗)
-    ≈⟨ α-cong (LMon.∙ᵖ-assoc (U 𝓕) (U 𝓖) (U 𝓗)) ⟩
-      α (U 𝓕 LMon.∙ᵖ (U 𝓖 LMon.∙ᵖ U 𝓗))
+      α ((U 𝓕 LMon.∙ U 𝓖) LMon.∙ U 𝓗)
+    ≈⟨ α-cong (LMon.∙-assoc (U 𝓕) (U 𝓖) (U 𝓗)) ⟩
+      α (U 𝓕 LMon.∙ (U 𝓖 LMon.∙ U 𝓗))
     ≈⟨ α-monoidal ⟨
-      α (U (α (U 𝓕)) LMon.∙ᵖ U (α (U 𝓖 LMon.∙ᵖ U 𝓗)))
-    ≈⟨ α-cong (LMon.∙ᵖ-congʳ (U-cong counit-≈ⁱ)) ⟨
-      α (U 𝓕 LMon.∙ᵖ U (α (U 𝓖 LMon.∙ᵖ U 𝓗)))
+      α (U (α (U 𝓕)) LMon.∙ U (α (U 𝓖 LMon.∙ U 𝓗)))
+    ≈⟨ α-cong (LMon.∙-congʳ (U-cong counit-≈ⁱ)) ⟨
+      α (U 𝓕 LMon.∙ U (α (U 𝓖 LMon.∙ U 𝓗)))
     ≡⟨⟩
       𝓕 ∙ⁱ (𝓖 ∙ⁱ 𝓗)
     ∎
@@ -448,12 +448,12 @@ module DayDistributive
     begin
       εⁱ ∙ⁱ 𝓕
     ≡⟨⟩
-      α (U (α LMon.εᵖ) LMon.∙ᵖ U 𝓕)
-    ≈⟨ α-cong (LMon.∙ᵖ-congˡ (U-cong counit-≈ⁱ)) ⟩
-      α (U (α LMon.εᵖ) LMon.∙ᵖ U (α (U 𝓕)))
+      α (U (α LMon.ε) LMon.∙ U 𝓕)
+    ≈⟨ α-cong (LMon.∙-congˡ (U-cong counit-≈ⁱ)) ⟩
+      α (U (α LMon.ε) LMon.∙ U (α (U 𝓕)))
     ≈⟨ α-monoidal ⟩
-      α (LMon.εᵖ LMon.∙ᵖ U 𝓕)
-    ≈⟨ α-cong (LMon.∙ᵖ-identityˡ (U 𝓕)) ⟩
+      α (LMon.ε LMon.∙ U 𝓕)
+    ≈⟨ α-cong (LMon.∙-identityˡ (U 𝓕)) ⟩
       α (U 𝓕)
     ≈⟨ counit-≈ⁱ ⟨
       𝓕
@@ -465,12 +465,12 @@ module DayDistributive
     begin
       𝓕 ∙ⁱ εⁱ
     ≡⟨⟩
-      α (U 𝓕 LMon.∙ᵖ U (α LMon.εᵖ))
-    ≈⟨ α-cong (LMon.∙ᵖ-congʳ (U-cong counit-≈ⁱ)) ⟩
-      α (U (α (U 𝓕)) LMon.∙ᵖ U (α LMon.εᵖ))
+      α (U 𝓕 LMon.∙ U (α LMon.ε))
+    ≈⟨ α-cong (LMon.∙-congʳ (U-cong counit-≈ⁱ)) ⟩
+      α (U (α (U 𝓕)) LMon.∙ U (α LMon.ε))
     ≈⟨ α-monoidal ⟩
-      α (U 𝓕 LMon.∙ᵖ LMon.εᵖ)
-    ≈⟨ α-cong (LMon.∙ᵖ-identityʳ (U 𝓕)) ⟩
+      α (U 𝓕 LMon.∙ LMon.ε)
+    ≈⟨ α-cong (LMon.∙-identityʳ (U 𝓕)) ⟩
       α (U 𝓕)
     ≈⟨ counit-≈ⁱ ⟨
       𝓕
@@ -478,7 +478,7 @@ module DayDistributive
     where open SetoidReasoning ≈ⁱ-setoid
 
   ∙ⁱ-comm : Commutative _≈ⁱ_ _∙ⁱ_
-  ∙ⁱ-comm 𝓕 𝓖 = α-cong (LMon.∙ᵖ-comm (U 𝓕) (U 𝓖))
+  ∙ⁱ-comm 𝓕 𝓖 = α-cong (LMon.∙-comm (U 𝓕) (U 𝓖))
 
   ∙ⁱ-isCommutativePomonoid : IsCommutativePomonoid _≈ⁱ_ _≤ⁱ_ _∙ⁱ_ εⁱ
   ∙ⁱ-isCommutativePomonoid = record
@@ -508,19 +508,19 @@ module DayDistributive
   (𝓕 ⊸ⁱ 𝓖) .+-closed 𝓕⊸𝓖x 𝓕⊸𝓖y {z} 𝓕z =
     𝓖 .≤-closed (distribʳ _ _ _) (𝓖 .+-closed (𝓕⊸𝓖x 𝓕z) (𝓕⊸𝓖y 𝓕z))
 
-  U⊸ⁱ : U (𝓕 ⊸ⁱ 𝓖) ≤ᵖ (U 𝓕 LMon.⊸ᵖ U 𝓖)
-  U⊸ⁱ .*≤ᵖ* f = f
+  U⊸ⁱ : U (𝓕 ⊸ⁱ 𝓖) ≤ (U 𝓕 LMon.⊸ U 𝓖)
+  U⊸ⁱ .*≤* f = f
 
-  U⊸ⁱ⁻¹ : (U 𝓕 LMon.⊸ᵖ U 𝓖) ≤ᵖ U (𝓕 ⊸ⁱ 𝓖)
-  U⊸ⁱ⁻¹ .*≤ᵖ* f = f
+  U⊸ⁱ⁻¹ : (U 𝓕 LMon.⊸ U 𝓖) ≤ U (𝓕 ⊸ⁱ 𝓖)
+  U⊸ⁱ⁻¹ .*≤* f = f
 
-  U⊸ⁱ-≈ᵖ : U (𝓕 ⊸ⁱ 𝓖) ≈ᵖ (U 𝓕 LMon.⊸ᵖ U 𝓖)
-  U⊸ⁱ-≈ᵖ = (U⊸ⁱ , U⊸ⁱ⁻¹)
+  U⊸ⁱ-≈ : U (𝓕 ⊸ⁱ 𝓖) ≈ (U 𝓕 LMon.⊸ U 𝓖)
+  U⊸ⁱ-≈ = (U⊸ⁱ , U⊸ⁱ⁻¹)
 
   ⊸ⁱ-residual-to : (𝓕 ∙ⁱ 𝓖) ≤ⁱ 𝓗 → 𝓖 ≤ⁱ (𝓕 ⊸ⁱ 𝓗)
   ⊸ⁱ-residual-to 𝓕𝓖≤𝓗 =
     ≤ⁱ-trans counit⁻¹
-   (≤ⁱ-trans (α-mono (LMon.⊸ᵖ-residual-to (≤ᵖ-trans unit (U-mono 𝓕𝓖≤𝓗))))
+   (≤ⁱ-trans (α-mono (LMon.⊸-residual-to (≤-trans unit (U-mono 𝓕𝓖≤𝓗))))
    (≤ⁱ-trans (α-mono U⊸ⁱ⁻¹)
              counit))
 
@@ -529,8 +529,8 @@ module DayDistributive
     begin
       𝓕 ∙ⁱ 𝓖
     ≡⟨⟩
-      α (U 𝓕 LMon.∙ᵖ U 𝓖)
-    ≤⟨ α-mono (LMon.⊸ᵖ-residual-from (≤ᵖ-trans (U-mono 𝓖≤𝓕⊸𝓗) U⊸ⁱ)) ⟩
+      α (U 𝓕 LMon.∙ U 𝓖)
+    ≤⟨ α-mono (LMon.⊸-residual-from (≤-trans (U-mono 𝓖≤𝓕⊸𝓗) U⊸ⁱ)) ⟩
       α (U 𝓗)
     ≈⟨ counit-≈ⁱ ⟨
       𝓗
@@ -572,41 +572,41 @@ module DayDuoidal
     begin
       (𝓕₁ ◁ⁱ 𝓖₁) ∙ⁱ (𝓕₂ ◁ⁱ 𝓖₂)
     ≡⟨⟩
-      α (U (𝓕₁ ◁ⁱ 𝓖₁) LDuo.∙ᵖ U (𝓕₂ ◁ⁱ 𝓖₂))
-    ≈⟨ α-cong (LDuo.∙ᵖ-cong U-monoidal U-monoidal) ⟩
-      α ((U 𝓕₁ LDuo.◁ᵖ U 𝓖₁) LDuo.∙ᵖ (U 𝓕₂ LDuo.◁ᵖ U 𝓖₂))
-    ≤⟨ α-mono (LDuo.∙ᵖ-◁ᵖ-entropy (U 𝓕₁) (U 𝓖₁) (U 𝓕₂) (U 𝓖₂)) ⟩
-      α ((U 𝓕₁ LDuo.∙ᵖ U 𝓕₂) LDuo.◁ᵖ (U 𝓖₁ LDuo.∙ᵖ U 𝓖₂))
-    ≤⟨ α-mono (LDuo.◁ᵖ-mono unit unit) ⟩
-      α (U (α (U 𝓕₁ LDuo.∙ᵖ U 𝓕₂)) LDuo.◁ᵖ U (α (U 𝓖₁ LDuo.∙ᵖ U 𝓖₂)))
+      α (U (𝓕₁ ◁ⁱ 𝓖₁) LDuo.∙ U (𝓕₂ ◁ⁱ 𝓖₂))
+    ≈⟨ α-cong (LDuo.∙-cong U-monoidal U-monoidal) ⟩
+      α ((U 𝓕₁ LDuo.◁ U 𝓖₁) LDuo.∙ (U 𝓕₂ LDuo.◁ U 𝓖₂))
+    ≤⟨ α-mono (LDuo.∙-◁-entropy (U 𝓕₁) (U 𝓖₁) (U 𝓕₂) (U 𝓖₂)) ⟩
+      α ((U 𝓕₁ LDuo.∙ U 𝓕₂) LDuo.◁ (U 𝓖₁ LDuo.∙ U 𝓖₂))
+    ≤⟨ α-mono (LDuo.◁-mono unit unit) ⟩
+      α (U (α (U 𝓕₁ LDuo.∙ U 𝓕₂)) LDuo.◁ U (α (U 𝓖₁ LDuo.∙ U 𝓖₂)))
     ≈⟨ α-cong U-monoidal ⟨
-      α (U (α (U 𝓕₁ LDuo.∙ᵖ U 𝓕₂) ◁ⁱ α (U 𝓖₁ LDuo.∙ᵖ U 𝓖₂)))
+      α (U (α (U 𝓕₁ LDuo.∙ U 𝓕₂) ◁ⁱ α (U 𝓖₁ LDuo.∙ U 𝓖₂)))
     ≈⟨ counit-≈ⁱ ⟨
-      α (U 𝓕₁ LDuo.∙ᵖ U 𝓕₂) ◁ⁱ α (U 𝓖₁ LDuo.∙ᵖ U 𝓖₂)
+      α (U 𝓕₁ LDuo.∙ U 𝓕₂) ◁ⁱ α (U 𝓖₁ LDuo.∙ U 𝓖₂)
     ≡⟨⟩
       (𝓕₁ ∙ⁱ 𝓕₂) ◁ⁱ (𝓖₁ ∙ⁱ 𝓖₂)
     ∎
     where open PosetReasoning ≤ⁱ-poset
 
-  tidy : (c : Tree LDuo.ιᵖ) → sum c ≤ᶜ ιᶜ
+  tidy : (c : Tree LDuo.ι) → sum c ≤ᶜ ιᶜ
   tidy (leaf x (lift x≤ι)) = x≤ι
   tidy (node c d) = ≤ᶜ.trans (+ᶜ.mono (tidy c) (tidy d)) +ᶜ-tidy
 
   εⁱ≤ιⁱ : εⁱ ≤ⁱ ιⁱ
-  εⁱ≤ιⁱ .*≤ⁱ* (t , x≤t) = lift (≤ᶜ.trans x≤t (≤ᶜ.trans (map-sumᵗ LDuo.εᵖ≤ιᵖ t) (tidy (mapᵗ LDuo.εᵖ≤ιᵖ t))))
+  εⁱ≤ιⁱ .*≤ⁱ* (t , x≤t) = lift (≤ᶜ.trans x≤t (≤ᶜ.trans (map-sumᵗ LDuo.ε≤ι t) (tidy (mapᵗ LDuo.ε≤ι t))))
 
   ∙ⁱ-◁ⁱ-isDuoidal : IsDuoidal _≈ⁱ_ _≤ⁱ_ _∙ⁱ_ _◁ⁱ_ εⁱ ιⁱ
   ∙ⁱ-◁ⁱ-isDuoidal = record
     { ∙-isPomonoid = IsCommutativePomonoid.isPomonoid ∙ⁱ-isCommutativePomonoid
     ; ◁-isPomonoid = ◁ⁱ-isPomonoid
     ; ∙-◁-entropy = ∙ⁱ-◁ⁱ-entropy
-    ; ∙-idem-ι = ≤ⁱ-trans (α-mono (LDuo.∙ᵖ-mono (U-monoidal-ι .proj₁) (U-monoidal-ι .proj₁)))
-                (≤ⁱ-trans (α-mono LDuo.∙ᵖ-idem-ιᵖ)
-                (≤ⁱ-trans (α-mono (U-monoidal-ι .proj₂))
+    ; ∙-idem-ι = ≤ⁱ-trans (α-mono (LDuo.∙-mono (U-monoidal-ι .Product.proj₁) (U-monoidal-ι .Product.proj₁)))
+                (≤ⁱ-trans (α-mono LDuo.∙-idem-ι)
+                (≤ⁱ-trans (α-mono (U-monoidal-ι .Product.proj₂))
                           counit))
-    ; ◁-idem-ε = ≤ⁱ-trans (α-mono LDuo.◁ᵖ-idem-εᵖ)
-                (≤ⁱ-trans (α-mono (LDuo.◁ᵖ-mono unit unit))
-                (≤ⁱ-trans (α-mono (U-monoidal .proj₂))
+    ; ◁-idem-ε = ≤ⁱ-trans (α-mono LDuo.◁-idem-ε)
+                (≤ⁱ-trans (α-mono (LDuo.◁-mono unit unit))
+                (≤ⁱ-trans (α-mono (U-monoidal .Product.proj₂))
                 counit))
     ; ε≲ι = εⁱ≤ιⁱ
     }

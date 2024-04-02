@@ -97,52 +97,52 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
     open Algebra.Ordered.Construction.LowerSet poset public
     open LiftIsDuoidal ⅋-◁-isDuoidal public
       using
-        ( εᵖ
-        ; _◁ᵖ_
-        ; ιᵖ
-        ; ◁ᵖ-mono
-        ; ◁ᵖ-monoˡ
-        ; ◁ᵖ-monoʳ
-        ; ◁ᵖ-cong
-        ; ◁ᵖ-congˡ
-        ; ◁ᵖ-congʳ
-        ; ◁ᵖ-assoc
-        ; ◁ᵖ-identity
-        ; ◁ᵖ-identityˡ
-        ; ◁ᵖ-identityʳ
-        ; ◁ᵖ-isPomonoid
-        ; ηᵖ-preserve-◁ᵖ
-        ; ηᵖ-preserve-◁ᵖ⁻¹
-        ; εᵖ≤ιᵖ
+        ( ε
+        ; _◁_
+        ; ι
+        ; ◁-mono
+        ; ◁-monoˡ
+        ; ◁-monoʳ
+        ; ◁-cong
+        ; ◁-congˡ
+        ; ◁-congʳ
+        ; ◁-assoc
+        ; ◁-identity
+        ; ◁-identityˡ
+        ; ◁-identityʳ
+        ; ◁-isPomonoid
+        ; η-preserve-◁
+        ; η-preserve-◁⁻¹
+        ; ε≤ι
         )
       renaming
-        ( _∙ᵖ_             to _⅋ᵖ_
-        ; ∙ᵖ-mono          to ⅋ᵖ-mono
-        ; ∙ᵖ-monoˡ         to ⅋ᵖ-monoˡ
-        ; ∙ᵖ-monoʳ         to ⅋ᵖ-monoʳ
-        ; ∙ᵖ-cong          to ⅋ᵖ-cong
-        ; ∙ᵖ-congˡ         to ⅋ᵖ-congˡ
-        ; ∙ᵖ-congʳ         to ⅋ᵖ-congʳ
-        ; ∙ᵖ-assoc         to ⅋ᵖ-assoc
-        ; ∙ᵖ-identity      to ⅋ᵖ-identity
-        ; ∙ᵖ-identityˡ     to ⅋ᵖ-identityˡ
-        ; ∙ᵖ-identityʳ     to ⅋ᵖ-identityʳ
-        ; ∙ᵖ-isPomonoid    to ⅋ᵖ-isPomonoid
-        ; ηᵖ-preserve-∙ᵖ   to ηᵖ-preserve-⅋ᵖ
-        ; ηᵖ-preserve-∙ᵖ⁻¹ to ηᵖ-preserve-⅋ᵖ⁻¹
-        ; ∙ᵖ-◁ᵖ-isDuoidal  to ⅋ᵖ-◁ᵖ-isDuoidal
+        ( _∙_             to _⅋_
+        ; ∙-mono          to ⅋-mono
+        ; ∙-monoˡ         to ⅋-monoˡ
+        ; ∙-monoʳ         to ⅋-monoʳ
+        ; ∙-cong          to ⅋-cong
+        ; ∙-congˡ         to ⅋-congˡ
+        ; ∙-congʳ         to ⅋-congʳ
+        ; ∙-assoc         to ⅋-assoc
+        ; ∙-identity      to ⅋-identity
+        ; ∙-identityˡ     to ⅋-identityˡ
+        ; ∙-identityʳ     to ⅋-identityʳ
+        ; ∙-isPomonoid    to ⅋-isPomonoid
+        ; η-preserve-∙   to η-preserve-⅋
+        ; η-preserve-∙⁻¹ to η-preserve-⅋⁻¹
+        ; ∙-◁-isDuoidal  to ⅋-◁-isDuoidal
         )
     open LiftIsCommutativePomonoid ⅋-isCommutativePomonoid public
       using
-        ( _⊸ᵖ_
-        ; ⊸ᵖ-residual-to
-        ; ⊸ᵖ-residual-from
-        ; ⊸ᵖ-residual
+        ( _⊸_
+        ; ⊸-residual-to
+        ; ⊸-residual-from
+        ; ⊸-residual
         )
       renaming
-        ( ∙ᵖ-comm                               to ⅋ᵖ-comm
-        ; ∙ᵖ-isCommutativePomonoid              to ⅋ᵖ-isCommutativePomonoid
-        ; ⊸ᵖ-∙ᵖ-isResiduatedCommutativePomonoid to ⊸ᵖ-⅋ᵖ-isResiduatedCommutativePomonoid
+        ( ∙-comm                               to ⅋-comm
+        ; ∙-isCommutativePomonoid              to ⅋-isCommutativePomonoid
+        ; ⊸-∙-isResiduatedCommutativePomonoid to ⊸-⅋-isResiduatedCommutativePomonoid
         )
 
   open L
@@ -151,41 +151,41 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
       ( LowerSet
       ; ICarrier
       ; ≤-closed
-      ; _≤ᵖ_
-      ; *≤ᵖ*
+      ; _≤_
+      ; *≤*
       )
 
-  units-iso : L.εᵖ L.≈ᵖ L.ιᵖ
-  units-iso .proj₁ = L.εᵖ≤ιᵖ
-  units-iso .proj₂ .*≤ᵖ* x≤I = x≤I
+  units-iso : L.ε L.≈ L.ι
+  units-iso .proj₁ = L.ε≤ι
+  units-iso .proj₂ .*≤* x≤I = x≤I
 
   module C where
     open Algebra.Ordered.Construction.Chu.Construction
-          L.⊸ᵖ-⅋ᵖ-isResiduatedCommutativePomonoid
-          L.∧ᵖ-isMeetSemilattice
-          L.∨ᵖ-isJoinSemilattice
-          L.εᵖ
+          L.⊸-⅋-isResiduatedCommutativePomonoid
+          L.∧-isMeetSemilattice
+          L.∨-isJoinSemilattice
+          L.ε
       public
 
-    K-m : (L.εᵖ L.◁ᵖ L.εᵖ) L.≤ᵖ L.εᵖ
-    K-m = L.≤ᵖ-trans (L.◁ᵖ-mono (L.≤ᵖ-reflexive units-iso) L.≤ᵖ-refl) (L.≤ᵖ-reflexive (L.◁ᵖ-identityˡ _))
+    K-m : (L.ε L.◁ L.ε) L.≤ L.ε
+    K-m = L.≤-trans (L.◁-mono (L.≤-reflexive units-iso) L.≤-refl) (L.≤-reflexive (L.◁-identityˡ _))
     
-    K-u : L.ιᵖ L.≤ᵖ L.εᵖ
-    K-u = L.≤ᵖ-reflexive (L.Eq.sym units-iso)
+    K-u : L.ι L.≤ L.ε
+    K-u = L.≤-reflexive (L.Eq.sym units-iso)
 
-    open SelfDual L.⅋ᵖ-◁ᵖ-isDuoidal K-m K-u public
+    open SelfDual L.⅋-◁-isDuoidal K-m K-u public
 
     mix : ε ≅ ¬ ε
-    mix .proj₁ .fpos = L.≤ᵖ-refl
-    mix .proj₁ .fneg = L.≤ᵖ-refl
-    mix .proj₂ .fpos = L.≤ᵖ-refl
-    mix .proj₂ .fneg = L.≤ᵖ-refl
+    mix .proj₁ .fpos = L.≤-refl
+    mix .proj₁ .fneg = L.≤-refl
+    mix .proj₂ .fpos = L.≤-refl
+    mix .proj₂ .fneg = L.≤-refl
 
     ε-eq-ι : ε ≅ ι
-    ε-eq-ι .proj₁ .fpos = L.≤ᵖ-reflexive units-iso
-    ε-eq-ι .proj₁ .fneg = L.≤ᵖ-reflexive (L.Eq.sym units-iso)
-    ε-eq-ι .proj₂ .fpos = L.≤ᵖ-reflexive (L.Eq.sym units-iso)
-    ε-eq-ι .proj₂ .fneg = L.≤ᵖ-reflexive units-iso
+    ε-eq-ι .proj₁ .fpos = L.≤-reflexive units-iso
+    ε-eq-ι .proj₁ .fneg = L.≤-reflexive (L.Eq.sym units-iso)
+    ε-eq-ι .proj₂ .fpos = L.≤-reflexive (L.Eq.sym units-iso)
+    ε-eq-ι .proj₂ .fneg = L.≤-reflexive units-iso
 
     ⊗-⍮-isCommutativeDuoidal : IsCommutativeDuoidal _≅_ _==>_ _⊗_ _⍮_ ε ι
     ⊗-⍮-isCommutativeDuoidal = record
@@ -211,4 +211,4 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
   model .Model.⊗-isStarAutonomous = C.⊗-isStarAutonomous
 
   embed : Carrier → Chu
-  embed x = C.embed (L.ηᵖ x)
+  embed x = C.embed (L.η x)

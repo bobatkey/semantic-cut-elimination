@@ -24,8 +24,8 @@ open FrameModel MAV.frame
 open C using (Chu; pos; neg; int; _==>_; fpos; fneg)
 open import MAV.Interpretation Atom analyticModel (λ A → embed (`- A))
 
-interactᵖ : (P Q : Formula) → (I.U (I.ηⁱ Q) L.⊸ᵖ I.U I.ιⁱ) L.⅋ᵖ L.ηᵖ (P `⊗ Q) L.≤ᵖ L.ηᵖ P
-interactᵖ P Q .L.*≤ᵖ* {x} (y , z , x≤y⅋z , ϕ₁ , lift z≤P⊗Q) =
+interactᴾ : (P Q : Formula) → (I.U (I.ηⁱ Q) L.⊸ I.U I.ιⁱ) L.⅋ L.η (P `⊗ Q) L.≤ L.η P
+interactᴾ P Q .L.*≤* {x} (y , z , x≤y⅋z , ϕ₁ , lift z≤P⊗Q) =
   lift (x≤y⅋z
         ◅◅ (`⅋⟩⋆ z≤P⊗Q)
         ◅◅ (bwd `⅋-comm ◅ ε)
@@ -37,7 +37,7 @@ interact : (P Q : Formula) → (I.ηⁱ Q I.⊸ⁱ I.ιⁱ) I.⅋ⁱ I.ηⁱ (P 
 interact P Q =
     I.≤ⁱ-trans (I.⅋ⁱ-mono I.counit⁻¹ I.≤ⁱ-refl)
     (I.≤ⁱ-trans (I.α-monoidal .proj₁)
-    (I.α-mono (L.≤ᵖ-trans (L.⅋ᵖ-mono I.U⊸ⁱ L.≤ᵖ-refl) (interactᵖ P Q))))
+    (I.α-mono (L.≤-trans (L.⅋-mono I.U⊸ⁱ L.≤-refl) (interactᴾ P Q))))
 
 mutual
   reflect : (P : Formula) → I.ηⁱ P I.≤ⁱ ⟦ P ⟧ .neg
@@ -52,18 +52,18 @@ mutual
     I.⟨ I.⊸ⁱ-residual-to (I.≤ⁱ-trans (I.⅋ⁱ-mono (reify Q) I.≤ⁱ-refl) (I.≤ⁱ-trans (interact P Q) (reflect P))) 
       , I.⊸ⁱ-residual-to (I.≤ⁱ-trans (I.⅋ⁱ-mono (reify P) (I.ηⁱ-mono (fwd `⊗-comm ◅ ε))) (I.≤ⁱ-trans (interact Q P) (reflect Q))) ⟩ⁱ
   reflect (P `& Q) = 
-    I.≤ⁱ-trans I.ηᵖ-preserve-∨ⁱ I.[ (I.≤ⁱ-trans (reflect P) I.inj₁ⁱ) , (I.≤ⁱ-trans (reflect Q) I.inj₂ⁱ) ]ⁱ
+    I.≤ⁱ-trans I.η-preserve-∨ⁱ I.[ (I.≤ⁱ-trans (reflect P) I.inj₁ⁱ) , (I.≤ⁱ-trans (reflect Q) I.inj₂ⁱ) ]ⁱ
   reflect (P `⊕ Q) = 
     I.⟨ I.≤ⁱ-trans (I.ηⁱ-mono (step `left ◅ ε)) (reflect P)
       , I.≤ⁱ-trans (I.ηⁱ-mono (step `right ◅ ε)) (reflect Q) ⟩ⁱ
   reflect (P `◁ Q) = I.≤ⁱ-trans I.ηⁱ-preserve-◁ (I.◁ⁱ-mono (reflect P) (reflect Q))
 
-  reify : (P : Formula) → ⟦ P ⟧ .pos I.≤ⁱ I.α (L.ηᵖ P) I.⊸ⁱ I.ιⁱ
+  reify : (P : Formula) → ⟦ P ⟧ .pos I.≤ⁱ I.α (L.η P) I.⊸ⁱ I.ιⁱ
   reify P = I.⊸ⁱ-residual-to (I.≤ⁱ-trans (I.⅋ⁱ-comm _ _ .proj₁)
                                (I.≤ⁱ-trans (I.⅋ⁱ-mono I.≤ⁱ-refl (reflect P))
                                (I.≤ⁱ-trans (⟦ P ⟧ .int) I.εⁱ≤ιⁱ)))
 
-  reify' : (P : Formula) → ⟦ P ⟧ .pos I.≤ⁱ I.α (L.ηᵖ P) I.⊸ⁱ I.εⁱ
+  reify' : (P : Formula) → ⟦ P ⟧ .pos I.≤ⁱ I.α (L.η P) I.⊸ⁱ I.εⁱ
   reify' P = I.⊸ⁱ-residual-to (I.≤ⁱ-trans (I.⅋ⁱ-comm _ _ .proj₁)
                                 (I.≤ⁱ-trans (I.⅋ⁱ-mono I.≤ⁱ-refl (reflect P))
                                 (⟦ P ⟧ .int)))
@@ -74,7 +74,7 @@ mutual
 --   -- If it did, and we had general identity-expansion, then we'd get a slightly slicker proof?
 --   --
 --   -- Seems to be a problem with ◁ being preserved in both directions?
---   reify0 : (P : Formula) → ⟦ P ⟧ .pos ≤ⁱ α (L.ηᵖ (`¬ P))
+--   reify0 : (P : Formula) → ⟦ P ⟧ .pos ≤ⁱ α (L.η (`¬ P))
 --   reify0 `I = I.≤ⁱ-refl
 --   reify0 (`+ x) = I.≤ⁱ-refl
 --   reify0 (`- x) = I.≤ⁱ-refl
@@ -83,7 +83,7 @@ mutual
 --   reify0 (P `& Q) =
 --     I.≤ⁱ-trans ⟨ (I.≤ⁱ-trans proj₁ⁱ (reify0 P)) , (I.≤ⁱ-trans proj₂ⁱ (reify0 Q)) ⟩ⁱ
 --              {!!} -- need to preserve meets!
---   reify0 (P `⊕ Q) = [ (I.≤ⁱ-trans (reify0 P) (α-mono (ηᵖ-mono {!!}))) , {!!} ]ⁱ -- need injections into _`&_
+--   reify0 (P `⊕ Q) = [ (I.≤ⁱ-trans (reify0 P) (α-mono (η-mono {!!}))) , {!!} ]ⁱ -- need injections into _`&_
 --   reify0 (P `◁ Q) = I.≤ⁱ-trans (I.◁ⁱ-mono (reify0 P) (reify0 Q)) {!!}
 -- -}
 

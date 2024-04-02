@@ -114,18 +114,18 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
     open Algebra.Ordered.Construction.LowerSet poset public
     open LiftIsCommutativePomonoid ⅋-isCommutativePomonoid public
       renaming
-        ( _∙ᵖ_             to _⅋ᵖ_
-        ; ∙ᵖ-mono          to ⅋ᵖ-mono
-        ; ∙ᵖ-monoˡ         to ⅋ᵖ-monoˡ
-        ; ∙ᵖ-monoʳ         to ⅋ᵖ-monoʳ
-        ; ∙ᵖ-cong          to ⅋ᵖ-cong
-        ; ∙ᵖ-congˡ         to ⅋ᵖ-congˡ
-        ; ∙ᵖ-congʳ         to ⅋ᵖ-congʳ
-        ; ∙ᵖ-assoc         to ⅋ᵖ-assoc
-        ; ∙ᵖ-identity      to ⅋ᵖ-identity
-        ; ∙ᵖ-identityˡ     to ⅋ᵖ-identityˡ
-        ; ∙ᵖ-identityʳ     to ⅋ᵖ-identityʳ
-        ; ∙ᵖ-isPomonoid    to ⅋ᵖ-isPomonoid
+        ( _∙_             to _⅋_
+        ; ∙-mono          to ⅋-mono
+        ; ∙-monoˡ         to ⅋-monoˡ
+        ; ∙-monoʳ         to ⅋-monoʳ
+        ; ∙-cong          to ⅋-cong
+        ; ∙-congˡ         to ⅋-congˡ
+        ; ∙-congʳ         to ⅋-congʳ
+        ; ∙-assoc         to ⅋-assoc
+        ; ∙-identity      to ⅋-identity
+        ; ∙-identityˡ     to ⅋-identityˡ
+        ; ∙-identityʳ     to ⅋-identityʳ
+        ; ∙-isPomonoid    to ⅋-isPomonoid
         )
 
   module I where
