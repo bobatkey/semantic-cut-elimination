@@ -15,8 +15,8 @@ jobs:
         with:
           agda-version: "2.6.4"
           agda-stdlib-version: "2.0"
-      - run: agda src/MAV/Example.agda
-      - run: agda --html --html-dir=html src/MAV/Example.agda
+      - run: agda src/index.agda
+      - run: agda --html --html-dir=html src/index.agda
       - uses: actions/upload-artifact@v4
         with:
           name: html
