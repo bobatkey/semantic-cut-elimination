@@ -160,37 +160,41 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
   units-iso .proj₂ .*≤* x≤I = x≤I
 
   module C where
-    open Algebra.Ordered.Construction.Chu.Construction
-          L.⊸-⅋-isResiduatedCommutativePomonoid
-          L.∧-isMeetSemilattice
-          L.∨-isJoinSemilattice
-          L.ε
-      public
+    private 
+      module C where
+        open Algebra.Ordered.Construction.Chu.Construction
+            L.⊸-⅋-isResiduatedCommutativePomonoid
+            L.∧-isMeetSemilattice
+            L.∨-isJoinSemilattice
+            L.ε
+          public
+        
+        K-m : (L.ε L.◁ L.ε) L.≤ L.ε
+        K-m = L.≤-trans (L.◁-mono (L.≤-reflexive units-iso) L.≤-refl) (L.≤-reflexive (L.◁-identityˡ _))
+        
+        K-u : L.ι L.≤ L.ε
+        K-u = L.≤-reflexive (L.Eq.sym units-iso)
 
-    K-m : (L.ε L.◁ L.ε) L.≤ L.ε
-    K-m = L.≤-trans (L.◁-mono (L.≤-reflexive units-iso) L.≤-refl) (L.≤-reflexive (L.◁-identityˡ _))
-    
-    K-u : L.ι L.≤ L.ε
-    K-u = L.≤-reflexive (L.Eq.sym units-iso)
+        open SelfDual L.⅋-◁-isDuoidal K-m K-u public
 
-    open SelfDual L.⅋-◁-isDuoidal K-m K-u public
+    open C public hiding (module SelfDual)
 
-    mix : ε ≅ ¬ ε
-    mix .proj₁ .fpos = L.≤-refl
-    mix .proj₁ .fneg = L.≤-refl
-    mix .proj₂ .fpos = L.≤-refl
-    mix .proj₂ .fneg = L.≤-refl
+    mix : C.ε C.≅ C.¬ C.ε
+    mix .proj₁ .C.fpos = L.≤-refl
+    mix .proj₁ .C.fneg = L.≤-refl
+    mix .proj₂ .C.fpos = L.≤-refl
+    mix .proj₂ .C.fneg = L.≤-refl
 
-    ε-eq-ι : ε ≅ ι
-    ε-eq-ι .proj₁ .fpos = L.≤-reflexive units-iso
-    ε-eq-ι .proj₁ .fneg = L.≤-reflexive (L.Eq.sym units-iso)
-    ε-eq-ι .proj₂ .fpos = L.≤-reflexive (L.Eq.sym units-iso)
-    ε-eq-ι .proj₂ .fneg = L.≤-reflexive units-iso
+    ε-eq-ι : C.ε C.≅ C.ι
+    ε-eq-ι .proj₁ .C.fpos = L.≤-reflexive units-iso
+    ε-eq-ι .proj₁ .C.fneg = L.≤-reflexive (L.Eq.sym units-iso)
+    ε-eq-ι .proj₂ .C.fpos = L.≤-reflexive (L.Eq.sym units-iso)
+    ε-eq-ι .proj₂ .C.fneg = L.≤-reflexive units-iso
 
-    ⊗-⍮-isCommutativeDuoidal : IsCommutativeDuoidal _≅_ _==>_ _⊗_ _⍮_ ε ι
+    ⊗-⍮-isCommutativeDuoidal : IsCommutativeDuoidal C._≅_ C._==>_ C._⊗_ C._⍮_ C.ε C.ι
     ⊗-⍮-isCommutativeDuoidal = record
-      { isDuoidal = ⊗-⍮-isDuoidal 
-      ; ∙-comm    = ⊗-isCommutativePomonoid .IsCommutativePomonoid.comm 
+      { isDuoidal = C.⊗-⍮-isDuoidal 
+      ; ∙-comm    = C.⊗-isCommutativePomonoid .IsCommutativePomonoid.comm 
       }
   
   open C public using (Chu)
