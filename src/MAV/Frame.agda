@@ -158,44 +158,48 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
   units-iso .proj₂ .*≤* {x} x≤I = I.leaf x x≤I , refl
 
   module C where
-    open Algebra.Ordered.Construction.Chu.Construction
-          I.⊸-∙-isResiduatedCommutativePomonoid
-          I.∧-isMeetSemilattice
-          I.∨-isJoinSemilattice
-          I.ε
-      public
+    private
+      module C where
+        open Algebra.Ordered.Construction.Chu.Construction
+              I.⊸-∙-isResiduatedCommutativePomonoid
+              I.∧-isMeetSemilattice
+              I.∨-isJoinSemilattice
+              I.ε
+          public
 
-    K-m : (I.ε I.◁ I.ε) I.≤ I.ε
-    K-m = I.≤-trans (I.◁-mono (I.≤-reflexive units-iso) I.≤-refl) (I.≤-reflexive (I.◁-identityˡ _))
-    
-    K-u : I.ι I.≤ I.ε
-    K-u = I.≤-reflexive (I.Eq.sym units-iso)
+        K-m : (I.ε I.◁ I.ε) I.≤ I.ε
+        K-m = I.≤-trans (I.◁-mono (I.≤-reflexive units-iso) I.≤-refl) (I.≤-reflexive (I.◁-identityˡ _))
+        
+        K-u : I.ι I.≤ I.ε
+        K-u = I.≤-reflexive (I.Eq.sym units-iso)
 
-    open SelfDual I.∙-◁-isDuoidal K-m K-u public
+        open SelfDual I.∙-◁-isDuoidal K-m K-u public
 
-    mix : ε ≅ ¬ ε
-    mix .proj₁ .fpos = I.≤-refl
-    mix .proj₁ .fneg = I.≤-refl
-    mix .proj₂ .fpos = I.≤-refl
-    mix .proj₂ .fneg = I.≤-refl
+    open C public
 
-    ε-eq-ι : ε ≅ ι
-    ε-eq-ι .proj₁ .fpos = I.≤-reflexive units-iso
-    ε-eq-ι .proj₁ .fneg = I.≤-reflexive (I.Eq.sym units-iso)
-    ε-eq-ι .proj₂ .fpos = I.≤-reflexive (I.Eq.sym units-iso)
-    ε-eq-ι .proj₂ .fneg = I.≤-reflexive units-iso
+    mix : C.ε C.≈ C.¬ C.ε
+    mix .proj₁ .C.fpos = I.≤-refl
+    mix .proj₁ .C.fneg = I.≤-refl
+    mix .proj₂ .C.fpos = I.≤-refl
+    mix .proj₂ .C.fneg = I.≤-refl
 
-    ⊗-⍮-isCommutativeDuoidal : IsCommutativeDuoidal _≅_ _==>_ _⊗_ _⍮_ ε ι
+    ε-eq-ι : C.ε C.≈ C.ι
+    ε-eq-ι .proj₁ .C.fpos = I.≤-reflexive units-iso
+    ε-eq-ι .proj₁ .C.fneg = I.≤-reflexive (I.Eq.sym units-iso)
+    ε-eq-ι .proj₂ .C.fpos = I.≤-reflexive (I.Eq.sym units-iso)
+    ε-eq-ι .proj₂ .C.fneg = I.≤-reflexive units-iso
+
+    ⊗-⍮-isCommutativeDuoidal : IsCommutativeDuoidal C._≈_ C._==>_ C._⊗_ C._⍮_ C.ε C.ι
     ⊗-⍮-isCommutativeDuoidal = record
-      { isDuoidal = ⊗-⍮-isDuoidal 
-      ; ∙-comm    = ⊗-isCommutativePomonoid .IsCommutativePomonoid.comm 
+      { isDuoidal = C.⊗-⍮-isDuoidal 
+      ; ∙-comm    = C.⊗-isCommutativePomonoid .IsCommutativePomonoid.comm 
       }
   
   open C public using (Chu)
 
   model : Model (suc (suc (a ⊔ ℓ₂))) (a ⊔ ℓ₂) (a ⊔ ℓ₂)
   model .Model.Carrier = C.Chu
-  model .Model._≈_ = C._≅_
+  model .Model._≈_ = C._≈_
   model .Model._≲_ = C._==>_
   model .Model.¬ = C.¬
   model .Model.I = C.ε

@@ -179,19 +179,19 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
 
     open C public hiding (module SelfDual)
 
-    mix : C.ε C.≅ C.¬ C.ε
+    mix : C.ε C.≈ C.¬ C.ε
     mix .proj₁ .C.fpos = L.≤-refl
     mix .proj₁ .C.fneg = L.≤-refl
     mix .proj₂ .C.fpos = L.≤-refl
     mix .proj₂ .C.fneg = L.≤-refl
 
-    ε-eq-ι : C.ε C.≅ C.ι
+    ε-eq-ι : C.ε C.≈ C.ι
     ε-eq-ι .proj₁ .C.fpos = L.≤-reflexive units-iso
     ε-eq-ι .proj₁ .C.fneg = L.≤-reflexive (L.Eq.sym units-iso)
     ε-eq-ι .proj₂ .C.fpos = L.≤-reflexive (L.Eq.sym units-iso)
     ε-eq-ι .proj₂ .C.fneg = L.≤-reflexive units-iso
 
-    ⊗-⍮-isCommutativeDuoidal : IsCommutativeDuoidal C._≅_ C._==>_ C._⊗_ C._⍮_ C.ε C.ι
+    ⊗-⍮-isCommutativeDuoidal : IsCommutativeDuoidal C._≈_ C._==>_ C._⊗_ C._⍮_ C.ε C.ι
     ⊗-⍮-isCommutativeDuoidal = record
       { isDuoidal = C.⊗-⍮-isDuoidal 
       ; ∙-comm    = C.⊗-isCommutativePomonoid .IsCommutativePomonoid.comm 
@@ -201,7 +201,7 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
 
   model : Model (suc (suc (a ⊔ ℓ₂))) (a ⊔ ℓ₂) (a ⊔ ℓ₂)
   model .Model.Carrier = C.Chu
-  model .Model._≈_ = C._≅_
+  model .Model._≈_ = C._≈_
   model .Model._≲_ = C._==>_
   model .Model.¬ = C.¬
   model .Model.I = C.ε
