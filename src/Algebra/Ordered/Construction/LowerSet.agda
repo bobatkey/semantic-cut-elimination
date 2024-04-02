@@ -21,16 +21,15 @@ open import Relation.Unary using (Pred; _⊆_)
 module Algebra.Ordered.Construction.LowerSet {c ℓ₁ ℓ₂} (poset : Poset c ℓ₁ ℓ₂) where
 
 private
-  module ≤ᶜ = Poset poset
-  module ≈ᶜ = ≤ᶜ.Eq
+  module C = Poset poset
   
-open ≤ᶜ
+open C
   using
     ( Carrier
     )
   renaming
-    ( _≈_   to _≈ᶜ_
-    ; _≤_   to _≤ᶜ_
+    ( _≈_     to _≈ᶜ_
+    ; _≤_     to _≤ᶜ_
     )
 
 private
@@ -120,10 +119,10 @@ module Reasoning where
 
 η : Carrier → LowerSet
 η x .ICarrier y = Lift c (y ≤ᶜ x)
-η x .≤-closed z≤y y≤x = lift (≤ᶜ.trans z≤y (y≤x .lower))
+η x .≤-closed z≤y y≤x = lift (C.trans z≤y (y≤x .lower))
 
 η-mono : x ≤ᶜ y → η x ≤ η y
-η-mono x≤y .*≤* (lift z≤x) = lift (≤ᶜ.trans z≤x x≤y)
+η-mono x≤y .*≤* (lift z≤x) = lift (C.trans z≤x x≤y)
 
 ------------------------------------------------------------------------------
 -- Construct a meet semilattice for presheaves
@@ -237,13 +236,13 @@ open IsJoinSemilattice ∨-isJoinSemilattice
 
 _⇒_ : LowerSet → LowerSet → LowerSet
 (F ⇒ G) .ICarrier x = ∀ {y} → y ≤ᶜ x → F .ICarrier y → G .ICarrier y
-(F ⇒ G) .≤-closed x≤y f z≤x Fz = f (≤ᶜ.trans z≤x x≤y) Fz
+(F ⇒ G) .≤-closed x≤y f z≤x Fz = f (C.trans z≤x x≤y) Fz
 
 ⇒-residualʳ-to : (F ∧ G) ≤ H → G ≤ (F ⇒ H)
 ⇒-residualʳ-to {F} {G} {H} F∧G≤H .*≤* Gx y≤x Fy = F∧G≤H .*≤* (Fy , G .≤-closed y≤x Gx)
 
 ⇒-residualʳ-from : G ≤ (F ⇒ H) → (F ∧ G) ≤ H
-⇒-residualʳ-from G≤F⇒H .*≤* (Fx , Gx) = G≤F⇒H .*≤* Gx ≤ᶜ.refl Fx
+⇒-residualʳ-from G≤F⇒H .*≤* (Fx , Gx) = G≤F⇒H .*≤* Gx C.refl Fx
 
 ⇒-residualʳ : RightResidual _≤_ _∧_ _⇒_
 ⇒-residualʳ .Function.Equivalence.to        = ⇒-residualʳ-to
@@ -273,45 +272,45 @@ module LiftIsPomonoid
   (F ∙ G) .ICarrier x =
     ∃[ y ] ∃[ z ] (x ≤ᶜ (y ∙ᶜ z) × F .ICarrier y × G .ICarrier z)
   (F ∙ G) .≤-closed x≤w (y , z , w≤yz , ϕ₁ , ϕ₂) =
-    (-, -, ≤ᶜ.trans x≤w w≤yz , ϕ₁ , ϕ₂)
+    (-, -, C.trans x≤w w≤yz , ϕ₁ , ϕ₂)
 
   ∙-mono : Monotonic₂ _≤_ _≤_ _≤_ _∙_
   ∙-mono F₁≤F₂ G₁≤G₂ .*≤* (y , z , x≤yz , F₁y , G₁z) =
     (-, -, x≤yz , F₁≤F₂ .*≤* F₁y , G₁≤G₂ .*≤* G₁z)
 
   η-preserve-∙ : η (x ∙ᶜ y) ≤ η x ∙ η y
-  η-preserve-∙ {x} {y} .*≤* {z} (lift z≤xy) = x , y , z≤xy , lift ≤ᶜ.refl , lift ≤ᶜ.refl
+  η-preserve-∙ {x} {y} .*≤* {z} (lift z≤xy) = x , y , z≤xy , lift C.refl , lift C.refl
 
   η-preserve-∙⁻¹ : η x ∙ η y ≤ η (x ∙ᶜ y)
   η-preserve-∙⁻¹ {x} {y} .*≤* {z} (z₁ , z₂ , z≤z₁z₂ , lift z₁≤x , lift z₂≤y) =
-    lift (≤ᶜ.trans z≤z₁z₂ (Mon.mono z₁≤x z₂≤y))
+    lift (C.trans z≤z₁z₂ (Mon.mono z₁≤x z₂≤y))
 
   ε : LowerSet
   ε = η εᶜ
 
   ∙-identityˡ : LeftIdentity _≈_ ε _∙_
   ∙-identityˡ F .Product.proj₁ .*≤* (y , z , x≤yz , lift y≤ε , Fz) =
-    F .≤-closed (≤ᶜ.trans x≤yz (≤ᶜ.trans (Mon.mono y≤ε ≤ᶜ.refl) (≤ᶜ.≤-respʳ-≈ (Mon.identityˡ z) ≤ᶜ.refl) )) Fz
+    F .≤-closed (C.trans x≤yz (C.trans (Mon.mono y≤ε C.refl) (C.≤-respʳ-≈ (Mon.identityˡ z) C.refl) )) Fz
   ∙-identityˡ F .Product.proj₂ .*≤* Fx =
-    (-, -, ≤ᶜ.≤-respˡ-≈ (Mon.identityˡ _) ≤ᶜ.refl , lift ≤ᶜ.refl , Fx)
+    (-, -, C.≤-respˡ-≈ (Mon.identityˡ _) C.refl , lift C.refl , Fx)
 
   ∙-identityʳ : RightIdentity _≈_ ε _∙_
   ∙-identityʳ F .Product.proj₁ .*≤* (y , z , x≤yz , Fy , lift z≤ε) =
-    F .≤-closed (≤ᶜ.trans x≤yz (≤ᶜ.trans (Mon.mono ≤ᶜ.refl z≤ε) (≤ᶜ.≤-respʳ-≈ (Mon.identityʳ y) ≤ᶜ.refl) )) Fy
+    F .≤-closed (C.trans x≤yz (C.trans (Mon.mono C.refl z≤ε) (C.≤-respʳ-≈ (Mon.identityʳ y) C.refl) )) Fy
   ∙-identityʳ F .Product.proj₂ .*≤* Fx =
-    (-, -, ≤ᶜ.≤-respˡ-≈ (Mon.identityʳ _) ≤ᶜ.refl , Fx , lift ≤ᶜ.refl)
+    (-, -, C.≤-respˡ-≈ (Mon.identityʳ _) C.refl , Fx , lift C.refl)
 
   ∙-identity : Identity _≈_ ε _∙_
   ∙-identity = (∙-identityˡ , ∙-identityʳ)
 
   ∙-assoc : Associative _≈_ _∙_
   ∙-assoc F G H .Product.proj₁ .*≤* (y , z , x≤yz , (u , v , y≤uv , Fu , Gv) , Hz) =
-    let x≤u∙v∙z = ≤ᶜ.trans x≤yz (≤ᶜ.trans (Mon.mono y≤uv ≤ᶜ.refl) (≤ᶜ.≤-respʳ-≈ (Mon.assoc u v z)  ≤ᶜ.refl)) in
-      (-, -, x≤u∙v∙z , Fu , (-, -, ≤ᶜ.refl , Gv , Hz))
+    let x≤u∙v∙z = C.trans x≤yz (C.trans (Mon.mono y≤uv C.refl) (C.≤-respʳ-≈ (Mon.assoc u v z)  C.refl)) in
+      (-, -, x≤u∙v∙z , Fu , (-, -, C.refl , Gv , Hz))
 
   ∙-assoc F G H .Product.proj₂ .*≤* (y , z , x≤yz , Fy , (u , v , z≤uv , Gu , Hv)) =
-    let x≤y∙u∙v = ≤ᶜ.trans x≤yz (≤ᶜ.trans (Mon.mono ≤ᶜ.refl z≤uv) (≤ᶜ.≤-respˡ-≈ (Mon.assoc y u v) ≤ᶜ.refl)) in
-      (-, -, x≤y∙u∙v , (-, -, ≤ᶜ.refl , Fy , Gu) , Hv)
+    let x≤y∙u∙v = C.trans x≤yz (C.trans (Mon.mono C.refl z≤uv) (C.≤-respˡ-≈ (Mon.assoc y u v) C.refl)) in
+      (-, -, x≤y∙u∙v , (-, -, C.refl , Fy , Gu) , Hv)
 
   ∙-isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε
   ∙-isPomonoid = record
@@ -349,9 +348,9 @@ module LiftIsCommutativePomonoid
 
   ∙-comm : Commutative _≈_ _∙_
   ∙-comm F G .Product.proj₁ .*≤* (y , z , x≤yz , Fy , Gz) = 
-    (-, -, ≤ᶜ.trans x≤yz (≤ᶜ.≤-respˡ-≈ (Mon.comm z y) ≤ᶜ.refl) , Gz , Fy)
+    (-, -, C.trans x≤yz (C.≤-respˡ-≈ (Mon.comm z y) C.refl) , Gz , Fy)
   ∙-comm F G .Product.proj₂ .*≤* (y , z , x≤yz , Gy , Fz) = 
-    (-, -, ≤ᶜ.trans x≤yz (≤ᶜ.≤-respˡ-≈ (Mon.comm z y) ≤ᶜ.refl) , Fz , Gy)
+    (-, -, C.trans x≤yz (C.≤-respˡ-≈ (Mon.comm z y) C.refl) , Fz , Gy)
 
   ∙-isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _∙_ ε
   ∙-isCommutativePomonoid = record
@@ -361,15 +360,15 @@ module LiftIsCommutativePomonoid
 
   _⊸_ : LowerSet → LowerSet → LowerSet
   (F ⊸ G) .ICarrier x        = ∀ {y} → F .ICarrier y → G .ICarrier (x ∙ᶜ y)
-  (F ⊸ G) .≤-closed x≤z f Fy = G .≤-closed (Mon.mono x≤z ≤ᶜ.refl) (f Fy)
+  (F ⊸ G) .≤-closed x≤z f Fy = G .≤-closed (Mon.mono x≤z C.refl) (f Fy)
 
   ⊸-residual-to : (F ∙ G) ≤ H → G ≤ (F ⊸ H)
   ⊸-residual-to F∙G≤H .*≤* Gx Fy = 
-    F∙G≤H .*≤* (-, -, ≤ᶜ.≤-respˡ-≈ (Mon.comm _ _) ≤ᶜ.refl , Fy , Gx)
+    F∙G≤H .*≤* (-, -, C.≤-respˡ-≈ (Mon.comm _ _) C.refl , Fy , Gx)
 
   ⊸-residual-from : G ≤ (F ⊸ H) → (F ∙ G) ≤ H
   ⊸-residual-from {G} {F} {H} G≤F⊸H .*≤* (_ , _ , x≤y∙z , Fy , Gz) = 
-    H .≤-closed (≤ᶜ.trans x≤y∙z (≤ᶜ.≤-respˡ-≈ (Mon.comm _ _) ≤ᶜ.refl)) (G≤F⊸H .*≤* Gz Fy)
+    H .≤-closed (C.trans x≤y∙z (C.≤-respˡ-≈ (Mon.comm _ _) C.refl)) (G≤F⊸H .*≤* Gz Fy)
 
   ⊸-residual : RightResidual _≤_ _∙_ _⊸_
   ⊸-residual .Function.Equivalence.to        = ⊸-residual-to
@@ -422,20 +421,20 @@ module LiftIsDuoidal
     (y , z , x≤yz ,
       (y₁ , y₂ , y≤y₁y₂ , F₁y₁ , G₁y₂) ,
       (z₁ , z₂ , z≤z₁z₂ , F₂z₁ , G₂z₂)) =
-    (-, -, ≤ᶜ.trans x≤yz (≤ᶜ.trans (Duo.∙-mono y≤y₁y₂ z≤z₁z₂) (Duo.∙-◁-entropy y₁ y₂ z₁ z₂)) ,
-      (-, -, ≤ᶜ.refl , F₁y₁ , F₂z₁) ,
-      (-, -, ≤ᶜ.refl , G₁y₂ , G₂z₂))
+    (-, -, C.trans x≤yz (C.trans (Duo.∙-mono y≤y₁y₂ z≤z₁z₂) (Duo.∙-◁-entropy y₁ y₂ z₁ z₂)) ,
+      (-, -, C.refl , F₁y₁ , F₂z₁) ,
+      (-, -, C.refl , G₁y₂ , G₂z₂))
 
   ∙-idem-ι : _SubidempotentOn_ _≤_ _∙_ ι
   ∙-idem-ι .*≤* (y , z , x≤y∙z , ιy , ιz) .lower =
-    ≤ᶜ.trans x≤y∙z (≤ᶜ.trans (Duo.∙-mono (ιy .lower) (ιz .lower)) Duo.∙-idem-ι)
+    C.trans x≤y∙z (C.trans (Duo.∙-mono (ιy .lower) (ιz .lower)) Duo.∙-idem-ι)
 
   ◁-idem-ε : _SuperidempotentOn_ _≤_ _◁_ ε
   ◁-idem-ε .*≤* εx =
-    (-, -, ≤ᶜ.trans (εx .lower) Duo.◁-idem-ε , lift ≤ᶜ.refl , lift ≤ᶜ.refl)
+    (-, -, C.trans (εx .lower) Duo.◁-idem-ε , lift C.refl , lift C.refl)
 
   ε≤ι : ε ≤ ι
-  ε≤ι .*≤* εx .lower = ≤ᶜ.trans (εx .lower) Duo.ε≲ι
+  ε≤ι .*≤* εx .lower = C.trans (εx .lower) Duo.ε≲ι
 
   ∙-◁-isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _◁_ ε ι
   ∙-◁-isDuoidal = record
