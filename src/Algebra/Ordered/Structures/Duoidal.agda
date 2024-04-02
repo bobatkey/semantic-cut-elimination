@@ -26,7 +26,6 @@ open import Algebra.Ordered.Structures _≈_ _≲_
 open import Data.Product using (_,_; proj₁; proj₂)
 open import Function using (flip; _$_)
 open import Level using (_⊔_)
-open import Relation.Binary
 open import Relation.Binary.Consequences using (mono₂⇒cong₂)
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 
@@ -45,10 +44,14 @@ record IsDuoidal (∙ ◁ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂)
   open IsPomonoid ∙-isPomonoid public
     using
       ( isPreorder
+      ; isPartialOrder
       ; refl
+      ; reflexive
       ; trans
+      ; antisym
       ; isEquivalence
       ; setoid
+      ; module Eq
       ; ∙-cong
       ; ∙-congˡ
       ; ∙-congʳ
@@ -60,6 +63,8 @@ record IsDuoidal (∙ ◁ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂)
       ; isPromagma     to ∙-isPromagma
       ; isProsemigroup to ∙-isProsemigroup
       ; isPromonoid    to ∙-isPromonoid
+      ; isPomagma      to ∙-isPomagma
+      ; isPosemigroup  to ∙-isPosemigroup
       ; assoc          to ∙-assoc
       ; identity       to ∙-identity
       ; identityˡ      to ∙-identityˡ
@@ -71,10 +76,14 @@ record IsDuoidal (∙ ◁ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂)
   open IsPomonoid ◁-isPomonoid public
     hiding
       ( isPreorder
+      ; isPartialOrder
       ; refl
+      ; reflexive
       ; trans
+      ; antisym
       ; isEquivalence
       ; setoid
+      ; module Eq
       )
     renaming
       ( isMagma        to ◁-isMagma
@@ -83,6 +92,8 @@ record IsDuoidal (∙ ◁ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂)
       ; isPromagma     to ◁-isPromagma
       ; isProsemigroup to ◁-isProsemigroup
       ; isPromonoid    to ◁-isPromonoid
+      ; isPomagma      to ◁-isPomagma
+      ; isPosemigroup  to ◁-isPosemigroup
       ; assoc          to ◁-assoc
       ; identity       to ◁-identity
       ; identityˡ      to ◁-identityˡ
@@ -94,3 +105,16 @@ record IsDuoidal (∙ ◁ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂)
       ; ∙-congˡ        to ◁-congˡ
       ; ∙-congʳ        to ◁-congʳ
       )
+
+record IsCommutativeDuoidal (∙ ◁ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+  field
+    isDuoidal : IsDuoidal ∙ ◁ ε ι
+    ∙-comm    : Commutative ∙
+  
+  open IsDuoidal isDuoidal public
+
+  ∙-isCommutativePomonoid : IsCommutativePomonoid ∙ ε
+  ∙-isCommutativePomonoid = record
+    { isPomonoid = ∙-isPomonoid
+    ; comm       = ∙-comm
+    }

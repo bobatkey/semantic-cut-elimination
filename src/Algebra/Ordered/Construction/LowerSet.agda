@@ -21,9 +21,10 @@ open import Relation.Unary using (Pred; _⊆_)
 module Algebra.Ordered.Construction.LowerSet {c ℓ₁ ℓ₂} (poset : Poset c ℓ₁ ℓ₂) where
 
 private
-  module Carrier = Poset poset
+  module ≤ᶜ = Poset poset
+  module ≈ᶜ = ≤ᶜ.Eq
   
-open Carrier
+open ≤ᶜ
   using
     ( Carrier
     )
@@ -119,10 +120,10 @@ module Reasoning where
 
 ηᵖ : Carrier → LowerSet
 ηᵖ x .ICarrier y = Lift c (y ≤ᶜ x)
-ηᵖ x .≤-closed z≤y y≤x = lift (Carrier.trans z≤y (y≤x .lower))
+ηᵖ x .≤-closed z≤y y≤x = lift (≤ᶜ.trans z≤y (y≤x .lower))
 
 ηᵖ-mono : x ≤ᶜ y → ηᵖ x ≤ᵖ ηᵖ y
-ηᵖ-mono x≤y .*≤ᵖ* (lift z≤x) = lift (Carrier.trans z≤x x≤y)
+ηᵖ-mono x≤y .*≤ᵖ* (lift z≤x) = lift (≤ᶜ.trans z≤x x≤y)
 
 ------------------------------------------------------------------------------
 -- Construct a meet semilattice for presheaves
@@ -152,7 +153,9 @@ proj₂ᵖ .*≤ᵖ* = proj₂
   }
 
 open import Relation.Binary.Lattice.Properties.MeetSemilattice ∧ᵖ-meetSemilattice
-  using ()
+  using
+    (
+    )
   renaming
     ( ∧-monotonic to ∧ᵖ-monotonic
     ; ∧-assoc     to ∧ᵖ-assoc
@@ -184,7 +187,9 @@ open import Relation.Binary.Lattice.Properties.MeetSemilattice ∧ᵖ-meetSemila
   }
 
 open import Relation.Binary.Lattice.Properties.BoundedMeetSemilattice ∧ᵖ-⊤ᵖ-boundedMeetSemilattice
-  using ()
+  using
+    (
+    )
   renaming
     ( identity to ∧ᵖ-⊤ᵖ-identity
     )
@@ -232,13 +237,13 @@ open IsJoinSemilattice ∨ᵖ-isJoinSemilattice
 
 _⇒ᵖ_ : LowerSet → LowerSet → LowerSet
 (F ⇒ᵖ G) .ICarrier x = ∀ {y} → y ≤ᶜ x → F .ICarrier y → G .ICarrier y
-(F ⇒ᵖ G) .≤-closed x≤y f z≤x Fz = f (Carrier.trans z≤x x≤y) Fz
+(F ⇒ᵖ G) .≤-closed x≤y f z≤x Fz = f (≤ᶜ.trans z≤x x≤y) Fz
 
 ⇒ᵖ-residualʳ-to : (F ∧ᵖ G) ≤ᵖ H → G ≤ᵖ (F ⇒ᵖ H)
 ⇒ᵖ-residualʳ-to {F} {G} {H} F∧G≤H .*≤ᵖ* Gx y≤x Fy = F∧G≤H .*≤ᵖ* (Fy , G .≤-closed y≤x Gx)
 
 ⇒ᵖ-residualʳ-from : G ≤ᵖ (F ⇒ᵖ H) → (F ∧ᵖ G) ≤ᵖ H
-⇒ᵖ-residualʳ-from G≤F⇒H .*≤ᵖ* (Fx , Gx) = G≤F⇒H .*≤ᵖ* Gx Carrier.refl Fx
+⇒ᵖ-residualʳ-from G≤F⇒H .*≤ᵖ* (Fx , Gx) = G≤F⇒H .*≤ᵖ* Gx ≤ᶜ.refl Fx
 
 ⇒ᵖ-residualʳ : RightResidual _≤ᵖ_ _∧ᵖ_ _⇒ᵖ_
 ⇒ᵖ-residualʳ .Function.Equivalence.to        = ⇒ᵖ-residualʳ-to
@@ -261,51 +266,52 @@ module LiftIsPomonoid
     (isPomonoid : IsPomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ)
   where
 
-  open IsPomonoid isPomonoid
+  private 
+    module Mon = IsPomonoid isPomonoid
 
   _∙ᵖ_ : LowerSet → LowerSet → LowerSet
   (F ∙ᵖ G) .ICarrier x =
     ∃[ y ] ∃[ z ] (x ≤ᶜ (y ∙ᶜ z) × F .ICarrier y × G .ICarrier z)
   (F ∙ᵖ G) .≤-closed x≤w (y , z , w≤yz , ϕ₁ , ϕ₂) =
-    (-, -, Carrier.trans x≤w w≤yz , ϕ₁ , ϕ₂)
+    (-, -, ≤ᶜ.trans x≤w w≤yz , ϕ₁ , ϕ₂)
 
   ∙ᵖ-mono : Monotonic₂ _≤ᵖ_ _≤ᵖ_ _≤ᵖ_ _∙ᵖ_
   ∙ᵖ-mono F₁≤F₂ G₁≤G₂ .*≤ᵖ* (y , z , x≤yz , F₁y , G₁z) =
     (-, -, x≤yz , F₁≤F₂ .*≤ᵖ* F₁y , G₁≤G₂ .*≤ᵖ* G₁z)
 
   ηᵖ-preserve-∙ᵖ : ηᵖ (x ∙ᶜ y) ≤ᵖ ηᵖ x ∙ᵖ ηᵖ y
-  ηᵖ-preserve-∙ᵖ {x} {y} .*≤ᵖ* {z} (lift z≤xy) = x , y , z≤xy , lift Carrier.refl , lift Carrier.refl
+  ηᵖ-preserve-∙ᵖ {x} {y} .*≤ᵖ* {z} (lift z≤xy) = x , y , z≤xy , lift ≤ᶜ.refl , lift ≤ᶜ.refl
 
   ηᵖ-preserve-∙ᵖ⁻¹ : ηᵖ x ∙ᵖ ηᵖ y ≤ᵖ ηᵖ (x ∙ᶜ y)
   ηᵖ-preserve-∙ᵖ⁻¹ {x} {y} .*≤ᵖ* {z} (z₁ , z₂ , z≤z₁z₂ , lift z₁≤x , lift z₂≤y) =
-    lift (Carrier.trans z≤z₁z₂ (mono z₁≤x z₂≤y))
+    lift (≤ᶜ.trans z≤z₁z₂ (Mon.mono z₁≤x z₂≤y))
 
   εᵖ : LowerSet
   εᵖ = ηᵖ εᶜ
 
   ∙ᵖ-identityˡ : LeftIdentity _≈ᵖ_ εᵖ _∙ᵖ_
   ∙ᵖ-identityˡ F .proj₁ .*≤ᵖ* (y , z , x≤yz , lift y≤ε , Fz) =
-    F .≤-closed (Carrier.trans x≤yz (Carrier.trans (mono y≤ε Carrier.refl) (≤-respʳ-≈ (identityˡ z) Carrier.refl) )) Fz
+    F .≤-closed (≤ᶜ.trans x≤yz (≤ᶜ.trans (Mon.mono y≤ε ≤ᶜ.refl) (≤ᶜ.≤-respʳ-≈ (Mon.identityˡ z) ≤ᶜ.refl) )) Fz
   ∙ᵖ-identityˡ F .proj₂ .*≤ᵖ* Fx =
-    (-, -, ≤-respˡ-≈ (identityˡ _) Carrier.refl , lift Carrier.refl , Fx)
+    (-, -, ≤ᶜ.≤-respˡ-≈ (Mon.identityˡ _) ≤ᶜ.refl , lift ≤ᶜ.refl , Fx)
 
   ∙ᵖ-identityʳ : RightIdentity _≈ᵖ_ εᵖ _∙ᵖ_
   ∙ᵖ-identityʳ F .proj₁ .*≤ᵖ* (y , z , x≤yz , Fy , lift z≤ε) =
-    F .≤-closed (Carrier.trans x≤yz (Carrier.trans (mono Carrier.refl z≤ε) (≤-respʳ-≈ (identityʳ y) Carrier.refl) )) Fy
+    F .≤-closed (≤ᶜ.trans x≤yz (≤ᶜ.trans (Mon.mono ≤ᶜ.refl z≤ε) (≤ᶜ.≤-respʳ-≈ (Mon.identityʳ y) ≤ᶜ.refl) )) Fy
   ∙ᵖ-identityʳ F .proj₂ .*≤ᵖ* Fx =
-    (-, -, ≤-respˡ-≈ (identityʳ _) Carrier.refl , Fx , lift Carrier.refl)
+    (-, -, ≤ᶜ.≤-respˡ-≈ (Mon.identityʳ _) ≤ᶜ.refl , Fx , lift ≤ᶜ.refl)
 
   ∙ᵖ-identity : Identity _≈ᵖ_ εᵖ _∙ᵖ_
   ∙ᵖ-identity = (∙ᵖ-identityˡ , ∙ᵖ-identityʳ)
 
   ∙ᵖ-assoc : Associative _≈ᵖ_ _∙ᵖ_
   ∙ᵖ-assoc F G H .proj₁ .*≤ᵖ* (y , z , x≤yz , (u , v , y≤uv , Fu , Gv) , Hz) =
-    let x≤u∙v∙z = Carrier.trans x≤yz (Carrier.trans (mono y≤uv Carrier.refl) (≤-respʳ-≈ (assoc u v z)  Carrier.refl)) in
-      (-, -, x≤u∙v∙z , Fu , (-, -, Carrier.refl , Gv , Hz))
+    let x≤u∙v∙z = ≤ᶜ.trans x≤yz (≤ᶜ.trans (Mon.mono y≤uv ≤ᶜ.refl) (≤ᶜ.≤-respʳ-≈ (Mon.assoc u v z)  ≤ᶜ.refl)) in
+      (-, -, x≤u∙v∙z , Fu , (-, -, ≤ᶜ.refl , Gv , Hz))
 
   ∙ᵖ-assoc F G H .proj₂ .*≤ᵖ* (y , z , x≤yz , Fy , (u , v , z≤uv , Gu , Hv)) =
-    let x≤y∙u∙v = Carrier.trans x≤yz (Carrier.trans (mono Carrier.refl z≤uv) (≤-respˡ-≈ (assoc y u v) Carrier.refl)) in
-      (-, -, x≤y∙u∙v , (-, -, Carrier.refl , Fy , Gu) , Hv)
+    let x≤y∙u∙v = ≤ᶜ.trans x≤yz (≤ᶜ.trans (Mon.mono ≤ᶜ.refl z≤uv) (≤ᶜ.≤-respˡ-≈ (Mon.assoc y u v) ≤ᶜ.refl)) in
+      (-, -, x≤y∙u∙v , (-, -, ≤ᶜ.refl , Fy , Gu) , Hv)
 
   ∙ᵖ-isPomonoid : IsPomonoid _≈ᵖ_ _≤ᵖ_ _∙ᵖ_ εᵖ
   ∙ᵖ-isPomonoid = record
@@ -337,14 +343,15 @@ module LiftIsCommutativePomonoid
     (isCommutativePomonoid : IsCommutativePomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ)
   where
 
-  open IsCommutativePomonoid isCommutativePomonoid
-  open LiftIsPomonoid isPomonoid public
+  private
+    module Mon = IsCommutativePomonoid isCommutativePomonoid
+  open LiftIsPomonoid Mon.isPomonoid public
 
   ∙ᵖ-comm : Commutative _≈ᵖ_ _∙ᵖ_
   ∙ᵖ-comm F G .proj₁ .*≤ᵖ* (y , z , x≤yz , Fy , Gz) = 
-    (-, -, trans x≤yz (≤-respˡ-≈ (comm z y) Carrier.refl) , Gz , Fy)
+    (-, -, ≤ᶜ.trans x≤yz (≤ᶜ.≤-respˡ-≈ (Mon.comm z y) ≤ᶜ.refl) , Gz , Fy)
   ∙ᵖ-comm F G .proj₂ .*≤ᵖ* (y , z , x≤yz , Gy , Fz) = 
-    (-, -, trans x≤yz (≤-respˡ-≈ (comm z y) Carrier.refl) , Fz , Gy)
+    (-, -, ≤ᶜ.trans x≤yz (≤ᶜ.≤-respˡ-≈ (Mon.comm z y) ≤ᶜ.refl) , Fz , Gy)
 
   ∙ᵖ-isCommutativePomonoid : IsCommutativePomonoid _≈ᵖ_ _≤ᵖ_ _∙ᵖ_ εᵖ
   ∙ᵖ-isCommutativePomonoid = record
@@ -354,15 +361,15 @@ module LiftIsCommutativePomonoid
 
   _⇨ᵖ_ : LowerSet → LowerSet → LowerSet
   (F ⇨ᵖ G) .ICarrier x        = ∀ {y} → F .ICarrier y → G .ICarrier (x ∙ᶜ y)
-  (F ⇨ᵖ G) .≤-closed x≤z f Fy = G .≤-closed (mono x≤z refl) (f Fy)
+  (F ⇨ᵖ G) .≤-closed x≤z f Fy = G .≤-closed (Mon.mono x≤z ≤ᶜ.refl) (f Fy)
 
   ⇨ᵖ-residual-to : (F ∙ᵖ G) ≤ᵖ H → G ≤ᵖ (F ⇨ᵖ H)
   ⇨ᵖ-residual-to F∙G≤H .*≤ᵖ* Gx Fy = 
-    F∙G≤H .*≤ᵖ* (-, -, ≤-respˡ-≈ (comm _ _) Carrier.refl , Fy , Gx)
+    F∙G≤H .*≤ᵖ* (-, -, ≤ᶜ.≤-respˡ-≈ (Mon.comm _ _) ≤ᶜ.refl , Fy , Gx)
 
   ⇨ᵖ-residual-from : G ≤ᵖ (F ⇨ᵖ H) → (F ∙ᵖ G) ≤ᵖ H
   ⇨ᵖ-residual-from {G} {F} {H} G≤F⇨H .*≤ᵖ* (_ , _ , x≤y∙z , Fy , Gz) = 
-    H .≤-closed (trans x≤y∙z (≤-respˡ-≈ (comm _ _) Carrier.refl)) (G≤F⇨H .*≤ᵖ* Gz Fy)
+    H .≤-closed (≤ᶜ.trans x≤y∙z (≤ᶜ.≤-respˡ-≈ (Mon.comm _ _) ≤ᶜ.refl)) (G≤F⇨H .*≤ᵖ* Gz Fy)
 
   ⇨ᵖ-residual : RightResidual _≤ᵖ_ _∙ᵖ_ _⇨ᵖ_
   ⇨ᵖ-residual .Function.Equivalence.to        = ⇨ᵖ-residual-to
@@ -388,9 +395,10 @@ module LiftIsDuoidal
     (isDuoidal : IsDuoidal _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ _◁ᶜ_ εᶜ ιᶜ)
   where
 
-  open IsDuoidal isDuoidal
-  open LiftIsPomonoid ∙-isPomonoid public
-  open LiftIsPomonoid ◁-isPomonoid public
+  private
+    module Duo = IsDuoidal isDuoidal
+  open LiftIsPomonoid Duo.∙-isPomonoid public
+  open LiftIsPomonoid Duo.◁-isPomonoid public
     renaming
       ( _∙ᵖ_             to _◁ᵖ_
       ; εᵖ               to ιᵖ
@@ -414,20 +422,20 @@ module LiftIsDuoidal
     (y , z , x≤yz ,
       (y₁ , y₂ , y≤y₁y₂ , F₁y₁ , G₁y₂) ,
       (z₁ , z₂ , z≤z₁z₂ , F₂z₁ , G₂z₂)) =
-    (-, -, trans x≤yz (trans (∙-mono y≤y₁y₂ z≤z₁z₂) (∙-◁-entropy y₁ y₂ z₁ z₂)) ,
-      (-, -, refl , F₁y₁ , F₂z₁) ,
-      (-, -, refl , G₁y₂ , G₂z₂))
+    (-, -, ≤ᶜ.trans x≤yz (≤ᶜ.trans (Duo.∙-mono y≤y₁y₂ z≤z₁z₂) (Duo.∙-◁-entropy y₁ y₂ z₁ z₂)) ,
+      (-, -, ≤ᶜ.refl , F₁y₁ , F₂z₁) ,
+      (-, -, ≤ᶜ.refl , G₁y₂ , G₂z₂))
 
   ∙ᵖ-idem-ιᵖ : _SubidempotentOn_ _≤ᵖ_ _∙ᵖ_ ιᵖ
   ∙ᵖ-idem-ιᵖ .*≤ᵖ* (y , z , x≤y∙z , ιy , ιz) .lower =
-    trans x≤y∙z (trans (∙-mono (ιy .lower) (ιz .lower)) ∙-idem-ι)
+    ≤ᶜ.trans x≤y∙z (≤ᶜ.trans (Duo.∙-mono (ιy .lower) (ιz .lower)) Duo.∙-idem-ι)
 
   ◁ᵖ-idem-εᵖ : _SuperidempotentOn_ _≤ᵖ_ _◁ᵖ_ εᵖ
   ◁ᵖ-idem-εᵖ .*≤ᵖ* εx =
-    (-, -, trans (εx .lower) ◁-idem-ε , lift refl , lift refl)
+    (-, -, ≤ᶜ.trans (εx .lower) Duo.◁-idem-ε , lift ≤ᶜ.refl , lift ≤ᶜ.refl)
 
   εᵖ≤ιᵖ : εᵖ ≤ᵖ ιᵖ
-  εᵖ≤ιᵖ .*≤ᵖ* εx .lower = trans (εx .lower) ε≲ι
+  εᵖ≤ιᵖ .*≤ᵖ* εx .lower = ≤ᶜ.trans (εx .lower) Duo.ε≲ι
 
   ∙ᵖ-◁ᵖ-isDuoidal : IsDuoidal _≈ᵖ_ _≤ᵖ_ _∙ᵖ_ _◁ᵖ_ εᵖ ιᵖ
   ∙ᵖ-◁ᵖ-isDuoidal = record
