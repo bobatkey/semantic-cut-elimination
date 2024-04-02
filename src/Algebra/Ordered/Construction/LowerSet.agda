@@ -90,7 +90,7 @@ open IsPartialOrder ≤-isPartialOrder public
     ( module Eq
     )
   renaming
-    ( ≤-respˡ-≈  to ≤-respˡ-≈ⁱ
+    ( ≤-respˡ-≈  to ≤-respˡ-≈
     ; reflexive  to ≤-reflexive
     ; isPreorder to ≤-isPreorder
     )

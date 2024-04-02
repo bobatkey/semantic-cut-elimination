@@ -132,12 +132,12 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
     open Algebra.Ordered.Construction.Ideal &-pomagma public
     open DayDistributive ⅋-isCommutativePomonoid ⅋-distrib-& public
       renaming
-        ( _∙ⁱ_             to _⅋ⁱ_
-        ; ∙ⁱ-mono          to ⅋ⁱ-mono
-        ; ∙ⁱ-comm          to ⅋ⁱ-comm
-        ; ∙ⁱ-assoc         to ⅋ⁱ-assoc
-        ; ∙ⁱ-identityˡ     to ⅋ⁱ-identityˡ
-        ; ∙ⁱ-identityʳ     to ⅋ⁱ-identityʳ
+        ( _∙_             to _⅋_
+        ; ∙-mono          to ⅋-mono
+        ; ∙-comm          to ⅋-comm
+        ; ∙-assoc         to ⅋-assoc
+        ; ∙-identityˡ     to ⅋-identityˡ
+        ; ∙-identityʳ     to ⅋-identityʳ
         )
     open DayEntropic ◁-isPomonoid &-◁-entropy &-tidy public
     open DayDuoidal ⅋-◁-isCommutativeDuoidal ⅋-distrib-& &-◁-entropy &-tidy public
@@ -149,41 +149,41 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
       ; ICarrier
       ; ≤-closed
       ; +-closed
-      ; _≤ⁱ_
-      ; *≤ⁱ*
+      ; _≤_
+      ; *≤*
       )
 
-  units-iso : I.εⁱ I.≈ⁱ I.ιⁱ
-  units-iso .proj₁ = I.εⁱ≤ιⁱ
-  units-iso .proj₂ .*≤ⁱ* {x} x≤I = I.leaf x x≤I , refl
+  units-iso : I.ε I.≈ I.ι
+  units-iso .proj₁ = I.ε≤ι
+  units-iso .proj₂ .*≤* {x} x≤I = I.leaf x x≤I , refl
 
   module C where
     open Algebra.Ordered.Construction.Chu.Construction
-          I.⊸ⁱ-∙ⁱ-isResiduatedCommutativePomonoid
-          I.∧ⁱ-isMeetSemilattice
-          I.∨ⁱ-isJoinSemilattice
-          I.εⁱ
+          I.⊸-∙-isResiduatedCommutativePomonoid
+          I.∧-isMeetSemilattice
+          I.∨-isJoinSemilattice
+          I.ε
       public
 
-    K-m : (I.εⁱ I.◁ⁱ I.εⁱ) I.≤ⁱ I.εⁱ
-    K-m = I.≤ⁱ-trans (I.◁ⁱ-mono (I.≤ⁱ-reflexive units-iso) I.≤ⁱ-refl) (I.≤ⁱ-reflexive (I.◁ⁱ-identityˡ _))
+    K-m : (I.ε I.◁ I.ε) I.≤ I.ε
+    K-m = I.≤-trans (I.◁-mono (I.≤-reflexive units-iso) I.≤-refl) (I.≤-reflexive (I.◁-identityˡ _))
     
-    K-u : I.ιⁱ I.≤ⁱ I.εⁱ
-    K-u = I.≤ⁱ-reflexive (I.Eq.sym units-iso)
+    K-u : I.ι I.≤ I.ε
+    K-u = I.≤-reflexive (I.Eq.sym units-iso)
 
-    open SelfDual I.∙ⁱ-◁ⁱ-isDuoidal K-m K-u public
+    open SelfDual I.∙-◁-isDuoidal K-m K-u public
 
     mix : ε ≅ ¬ ε
-    mix .proj₁ .fpos = I.≤ⁱ-refl
-    mix .proj₁ .fneg = I.≤ⁱ-refl
-    mix .proj₂ .fpos = I.≤ⁱ-refl
-    mix .proj₂ .fneg = I.≤ⁱ-refl
+    mix .proj₁ .fpos = I.≤-refl
+    mix .proj₁ .fneg = I.≤-refl
+    mix .proj₂ .fpos = I.≤-refl
+    mix .proj₂ .fneg = I.≤-refl
 
     ε-eq-ι : ε ≅ ι
-    ε-eq-ι .proj₁ .fpos = I.≤ⁱ-reflexive units-iso
-    ε-eq-ι .proj₁ .fneg = I.≤ⁱ-reflexive (I.Eq.sym units-iso)
-    ε-eq-ι .proj₂ .fpos = I.≤ⁱ-reflexive (I.Eq.sym units-iso)
-    ε-eq-ι .proj₂ .fneg = I.≤ⁱ-reflexive units-iso
+    ε-eq-ι .proj₁ .fpos = I.≤-reflexive units-iso
+    ε-eq-ι .proj₁ .fneg = I.≤-reflexive (I.Eq.sym units-iso)
+    ε-eq-ι .proj₂ .fpos = I.≤-reflexive (I.Eq.sym units-iso)
+    ε-eq-ι .proj₂ .fneg = I.≤-reflexive units-iso
 
     ⊗-⍮-isCommutativeDuoidal : IsCommutativeDuoidal _≅_ _==>_ _⊗_ _⍮_ ε ι
     ⊗-⍮-isCommutativeDuoidal = record
@@ -211,4 +211,4 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
   model .Model.⊗-isStarAutonomous = C.⊗-isStarAutonomous
 
   embed : Carrier → Chu
-  embed x = C.embed (I.ηⁱ x)
+  embed x = C.embed (I.η x)

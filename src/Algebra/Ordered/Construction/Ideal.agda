@@ -69,55 +69,55 @@ private
     J J₁ J₂ : Ideal
     K K₁ K₂ : Ideal
 
-infix 4 _≤ⁱ_
+infix 4 _≤_
 
-record _≤ⁱ_ (I J : Ideal) : Set (c ⊔ ℓ₂) where
+record _≤_ (I J : Ideal) : Set (c ⊔ ℓ₂) where
   no-eta-equality
   field
-    *≤ⁱ* : I .ICarrier ⊆ J .ICarrier
-open _≤ⁱ_ public
+    *≤* : I .ICarrier ⊆ J .ICarrier
+open _≤_ public
 
-infix 4 _≈ⁱ_
+infix 4 _≈_
 
-_≈ⁱ_ : Ideal → Ideal → Set (c ⊔ ℓ₂)
-_≈ⁱ_ = SymCore _≤ⁱ_
+_≈_ : Ideal → Ideal → Set (c ⊔ ℓ₂)
+_≈_ = SymCore _≤_
 
-≤ⁱ-refl : I ≤ⁱ I
-≤ⁱ-refl .*≤ⁱ* Ix = Ix
+≤-refl : I ≤ I
+≤-refl .*≤* Ix = Ix
 
-≤ⁱ-trans : I ≤ⁱ J → J ≤ⁱ K → I ≤ⁱ K
-≤ⁱ-trans I≤J J≤K .*≤ⁱ* z = J≤K .*≤ⁱ* (I≤J .*≤ⁱ* z)
+≤-trans : I ≤ J → J ≤ K → I ≤ K
+≤-trans I≤J J≤K .*≤* z = J≤K .*≤* (I≤J .*≤* z)
 
 -- FIXME: get rid of the propositional equality here
-≤ⁱ-isPartialOrder : IsPartialOrder _≈ⁱ_ _≤ⁱ_
-≤ⁱ-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _≤ⁱ_ ≡-≤ⁱ-isPreorder
+≤-isPartialOrder : IsPartialOrder _≈_ _≤_
+≤-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _≤_ ≡-≤-isPreorder
   where
-    ≡-≤ⁱ-isPreorder : IsPreorder _≡_ _≤ⁱ_
-    ≡-≤ⁱ-isPreorder = record
+    ≡-≤-isPreorder : IsPreorder _≡_ _≤_
+    ≡-≤-isPreorder = record
       { isEquivalence = PropEq.isEquivalence
-      ; reflexive = λ { PropEq.refl → ≤ⁱ-refl }
-      ; trans = ≤ⁱ-trans
+      ; reflexive = λ { PropEq.refl → ≤-refl }
+      ; trans = ≤-trans
       }
 
-open IsPartialOrder ≤ⁱ-isPartialOrder
+open IsPartialOrder ≤-isPartialOrder
   using
     ( module Eq
     )
   renaming
-    ( ≤-respˡ-≈  to ≤ⁱ-respˡ-≈ⁱ
-    ; reflexive  to ≤ⁱ-reflexive
-    ; isPreorder to ≤ⁱ-isPreorder
+    ( ≤-respˡ-≈  to ≤-respˡ-≈
+    ; reflexive  to ≤-reflexive
+    ; isPreorder to ≤-isPreorder
     )
   public
 
-≤ⁱ-poset : Poset _ _ _
-≤ⁱ-poset = record
-  { isPartialOrder = ≤ⁱ-isPartialOrder
+≤-poset : Poset _ _ _
+≤-poset = record
+  { isPartialOrder = ≤-isPartialOrder
   }
 
-≈ⁱ-setoid : Setoid _ _
-≈ⁱ-setoid = record
-  { isEquivalence = Poset.isEquivalence ≤ⁱ-poset
+≈-setoid : Setoid _ _
+≈-setoid = record
+  { isEquivalence = Poset.isEquivalence ≤-poset
   }
 
 ------------------------------------------------------------------------------
@@ -126,10 +126,10 @@ U : Ideal → LowerSet
 U I .L.ICarrier = I .ICarrier
 U I .L.≤-closed = I .≤-closed
 
-U-mono : I ≤ⁱ J → U I L.≤ U J
-U-mono I≤J .L.*≤* = I≤J .*≤ⁱ*
+U-mono : I ≤ J → U I L.≤ U J
+U-mono I≤J .L.*≤* = I≤J .*≤*
 
-U-cong : I ≈ⁱ J → U I L.≈ U J
+U-cong : I ≈ J → U I L.≈ U J
 U-cong (J≤I , I≤J) = U-mono J≤I , U-mono I≤J
 
 ------------------------------------------------------------------------------
@@ -156,18 +156,18 @@ map-sumᵗ F≤G (node c d) = +ᶜ.mono (map-sumᵗ F≤G c) (map-sumᵗ F≤G d
 α F .≤-closed x≤y (t , y≤t) = t , ≤ᶜ.trans x≤y y≤t
 α F .+-closed (s , x≤s) (t , y≤t) = node s t , +ᶜ.mono x≤s y≤t
 
-α-mono : F L.≤ G → α F ≤ⁱ α G
-α-mono F≤G .*≤ⁱ* (t , x≤t) = mapᵗ F≤G t , ≤ᶜ.trans x≤t (map-sumᵗ F≤G t)
+α-mono : F L.≤ G → α F ≤ α G
+α-mono F≤G .*≤* (t , x≤t) = mapᵗ F≤G t , ≤ᶜ.trans x≤t (map-sumᵗ F≤G t)
 
-α-cong : ∀ {F G} → F L.≈ G → α F ≈ⁱ α G
+α-cong : ∀ {F G} → F L.≈ G → α F ≈ α G
 α-cong (G≤F , F≤G) = (α-mono G≤F , α-mono F≤G)
 
 ------------------------------------------------------------------------------
-ηⁱ : Carrier → Ideal
-ηⁱ x = α (L.η x)
+η : Carrier → Ideal
+η x = α (L.η x)
 
-ηⁱ-mono : x ≤ᶜ y → ηⁱ x ≤ⁱ ηⁱ y
-ηⁱ-mono x≤y = α-mono (L.η-mono x≤y)
+η-mono : x ≤ᶜ y → η x ≤ η y
+η-mono x≤y = α-mono (L.η-mono x≤y)
 
 ------------------------------------------------------------------------------
 -- U and α form a Galois connection
@@ -176,14 +176,14 @@ ideal-Tree-closed : (t : Tree (U I)) → I .ICarrier (sum t)
 ideal-Tree-closed {I} (leaf x ϕ) = ϕ
 ideal-Tree-closed {I} (node c d) = I .+-closed (ideal-Tree-closed c) (ideal-Tree-closed d)
 
-counit : α (U I) ≤ⁱ I
-counit {I} .*≤ⁱ* (t , x≤t) = I .≤-closed x≤t (ideal-Tree-closed t)
+counit : α (U I) ≤ I
+counit {I} .*≤* (t , x≤t) = I .≤-closed x≤t (ideal-Tree-closed t)
 
-counit⁻¹ : I ≤ⁱ α (U I)
-counit⁻¹ .*≤ⁱ* Ix = leaf _ Ix , ≤ᶜ.refl
+counit⁻¹ : I ≤ α (U I)
+counit⁻¹ .*≤* Ix = leaf _ Ix , ≤ᶜ.refl
 
-counit-≈ⁱ : I ≈ⁱ α (U I)
-counit-≈ⁱ = counit⁻¹ , counit
+counit-≈ : I ≈ α (U I)
+counit-≈ = counit⁻¹ , counit
 
 unit : F L.≤ U (α F)
 unit .L.*≤* Fx = leaf _ Fx , ≤ᶜ.refl
@@ -191,24 +191,24 @@ unit .L.*≤* Fx = leaf _ Fx , ≤ᶜ.refl
 ------------------------------------------------------------------------------
 -- Binary meets
 
-_∧ⁱ_ : Ideal → Ideal → Ideal
-(I ∧ⁱ J) .ICarrier x = I .ICarrier x × J .ICarrier x
-(I ∧ⁱ J) .≤-closed x≤y (Iy , Jy) = I .≤-closed x≤y Iy , J .≤-closed x≤y Jy
-(I ∧ⁱ J) .+-closed (Ix , Jx) (Iy , Jy) = (I .+-closed Ix Iy) , (J .+-closed Jx Jy)
+_∧_ : Ideal → Ideal → Ideal
+(I ∧ J) .ICarrier x = I .ICarrier x × J .ICarrier x
+(I ∧ J) .≤-closed x≤y (Iy , Jy) = I .≤-closed x≤y Iy , J .≤-closed x≤y Jy
+(I ∧ J) .+-closed (Ix , Jx) (Iy , Jy) = (I .+-closed Ix Iy) , (J .+-closed Jx Jy)
 
-proj₁ⁱ : (I ∧ⁱ J) ≤ⁱ I
-proj₁ⁱ .*≤ⁱ* = Product.proj₁
+proj₁ : (I ∧ J) ≤ I
+proj₁ .*≤* = Product.proj₁
 
-proj₂ⁱ : (I ∧ⁱ J) ≤ⁱ J
-proj₂ⁱ .*≤ⁱ* = Product.proj₂
+proj₂ : (I ∧ J) ≤ J
+proj₂ .*≤* = Product.proj₂
 
-⟨_,_⟩ⁱ : I ≤ⁱ J → I ≤ⁱ K → I ≤ⁱ (J ∧ⁱ K)
-⟨ K≤I , K≤J ⟩ⁱ .*≤ⁱ* = Product.< K≤I .*≤ⁱ* , K≤J .*≤ⁱ* >
+⟨_,_⟩ : I ≤ J → I ≤ K → I ≤ (J ∧ K)
+⟨ K≤I , K≤J ⟩ .*≤* = Product.< K≤I .*≤* , K≤J .*≤* >
 
-∧ⁱ-isMeetSemilattice : IsMeetSemilattice _≈ⁱ_ _≤ⁱ_ _∧ⁱ_
-∧ⁱ-isMeetSemilattice = record
-  { isPartialOrder = ≤ⁱ-isPartialOrder
-  ; infimum        = λ I J → (proj₁ⁱ ,  proj₂ⁱ , λ K → ⟨_,_⟩ⁱ)
+∧-isMeetSemilattice : IsMeetSemilattice _≈_ _≤_ _∧_
+∧-isMeetSemilattice = record
+  { isPartialOrder = ≤-isPartialOrder
+  ; infimum        = λ I J → (proj₁ ,  proj₂ , λ K → ⟨_,_⟩)
   }
 
 -- FIXME: under what conditions does α preserve meets?
@@ -216,39 +216,39 @@ proj₂ⁱ .*≤ⁱ* = Product.proj₂
 ------------------------------------------------------------------------------
 -- Binary joins
 
-_∨ⁱ_ : Ideal → Ideal → Ideal
-I ∨ⁱ J = α (U I L.∨ U J)
+_∨_ : Ideal → Ideal → Ideal
+I ∨ J = α (U I L.∨ U J)
 
-inj₁ⁱ : I ≤ⁱ (I ∨ⁱ J)
-inj₁ⁱ = ≤ⁱ-trans counit⁻¹ (α-mono L.inj₁)
+inj₁ : I ≤ (I ∨ J)
+inj₁ = ≤-trans counit⁻¹ (α-mono L.inj₁)
 
-inj₂ⁱ : J ≤ⁱ (I ∨ⁱ J)
-inj₂ⁱ = ≤ⁱ-trans counit⁻¹ (α-mono L.inj₂)
+inj₂ : J ≤ (I ∨ J)
+inj₂ = ≤-trans counit⁻¹ (α-mono L.inj₂)
 
-[_,_]ⁱ : I ≤ⁱ K → J ≤ⁱ K → (I ∨ⁱ J) ≤ⁱ K
-[_,_]ⁱ {I} {K} {J} I≤K J≤K .*≤ⁱ* (t , x≤t) =
+[_,_] : I ≤ K → J ≤ K → (I ∨ J) ≤ K
+[_,_] {I} {K} {J} I≤K J≤K .*≤* (t , x≤t) =
   K .≤-closed (≤ᶜ.trans x≤t (map-sumᵗ _ t)) (ideal-Tree-closed (mapᵗ L.[ U-mono I≤K , U-mono J≤K ] t))
 
-∨ⁱ-isJoinSemilattice : IsJoinSemilattice _≈ⁱ_ _≤ⁱ_ _∨ⁱ_
-∨ⁱ-isJoinSemilattice = record
-  { isPartialOrder = ≤ⁱ-isPartialOrder
-  ; supremum       = λ I J → (inj₁ⁱ , inj₂ⁱ , λ K → [_,_]ⁱ)
+∨-isJoinSemilattice : IsJoinSemilattice _≈_ _≤_ _∨_
+∨-isJoinSemilattice = record
+  { isPartialOrder = ≤-isPartialOrder
+  ; supremum       = λ I J → (inj₁ , inj₂ , λ K → [_,_])
   }
 
 
-hulp : (c : Tree (L.η (x +ᶜ y))) → Σ[ d ∈ Tree (U (α (L.η x) ∨ⁱ α (L.η y))) ] (sum c ≤ᶜ sum d)
+hulp : (c : Tree (L.η (x +ᶜ y))) → Σ[ d ∈ Tree (U (α (L.η x) ∨ α (L.η y))) ] (sum c ≤ᶜ sum d)
 hulp {x}{y} (leaf z (lift z≤x+y)) =
-  (node (leaf x (inj₁ⁱ .*≤ⁱ* ((leaf x (lift ≤ᶜ.refl)) , ≤ᶜ.refl)))
-        (leaf y (inj₂ⁱ .*≤ⁱ* ((leaf y (lift ≤ᶜ.refl)) , ≤ᶜ.refl)))) ,
+  (node (leaf x (inj₁ .*≤* ((leaf x (lift ≤ᶜ.refl)) , ≤ᶜ.refl)))
+        (leaf y (inj₂ .*≤* ((leaf y (lift ≤ᶜ.refl)) , ≤ᶜ.refl)))) ,
   z≤x+y
 hulp (node c₁ c₂) =
   let (d₁ , c₁≤d₁) , (d₂ , c₂≤d₂) = hulp c₁ , hulp c₂
   in node d₁ d₂ , +ᶜ.mono c₁≤d₁ c₂≤d₂
 
-η-preserve-∨ⁱ : α (L.η (x +ᶜ y)) ≤ⁱ α (L.η x) ∨ⁱ α (L.η y)
-η-preserve-∨ⁱ {x}{y} .*≤ⁱ* {z} (c , z≤c) =
+η-preserve-∨ : α (L.η (x +ᶜ y)) ≤ α (L.η x) ∨ α (L.η y)
+η-preserve-∨ {x}{y} .*≤* {z} (c , z≤c) =
   let d , c≤d = hulp c in down-closed (≤ᶜ.trans z≤c c≤d) (ideal-Tree-closed d)
-  where open Ideal (α (L.η x) ∨ⁱ α (L.η y)) renaming (≤-closed to down-closed)
+  where open Ideal (α (L.η x) ∨ α (L.η y)) renaming (≤-closed to down-closed)
 
 
 ------------------------------------------------------------------------------
@@ -263,70 +263,70 @@ module DayEntropic
   private
     module LMon = L.LiftIsPomonoid isPomonoid
 
-  _◁ⁱ_ : Ideal → Ideal → Ideal
-  (I ◁ⁱ J) .ICarrier x =
+  _◁_ : Ideal → Ideal → Ideal
+  (I ◁ J) .ICarrier x =
     ∃[ y ] ∃[ z ] (x ≤ᶜ (y ∙ᶜ z) × I .ICarrier y × J .ICarrier z)
-  (I ◁ⁱ J) .≤-closed x≤w (y , z , w≤yz , Iy , Jz) =
+  (I ◁ J) .≤-closed x≤w (y , z , w≤yz , Iy , Jz) =
     (-, -, ≤ᶜ.trans x≤w w≤yz , Iy , Jz)
-  (I ◁ⁱ J) .+-closed (y₁ , z₁ , x₁≤y₁z₁ , ϕ₁ , ψ₁) (y₂ , z₂ , x₂≤y₂z₂ , ϕ₂ , ψ₂) =
+  (I ◁ J) .+-closed (y₁ , z₁ , x₁≤y₁z₁ , ϕ₁ , ψ₁) (y₂ , z₂ , x₂≤y₂z₂ , ϕ₂ , ψ₂) =
     y₁ +ᶜ y₂ , z₁ +ᶜ z₂ ,
     ≤ᶜ.trans (+ᶜ.mono x₁≤y₁z₁ x₂≤y₂z₂) (+-entropy _ _ _ _) ,
     I .+-closed ϕ₁ ϕ₂ ,
     J .+-closed ψ₁ ψ₂
 
-  ιⁱ : Ideal
-  ιⁱ .ICarrier x = Lift c (x ≤ᶜ εᶜ)
-  ιⁱ .≤-closed x≤y (lift y≤ε) = lift (≤ᶜ.trans x≤y y≤ε)
-  ιⁱ .+-closed (lift x≤ε) (lift y≤ε) = lift (≤ᶜ.trans (+ᶜ.mono x≤ε y≤ε) +-tidy)
+  ι : Ideal
+  ι .ICarrier x = Lift c (x ≤ᶜ εᶜ)
+  ι .≤-closed x≤y (lift y≤ε) = lift (≤ᶜ.trans x≤y y≤ε)
+  ι .+-closed (lift x≤ε) (lift y≤ε) = lift (≤ᶜ.trans (+ᶜ.mono x≤ε y≤ε) +-tidy)
 
-  ◁ⁱ-mono : Monotonic₂ _≤ⁱ_ _≤ⁱ_ _≤ⁱ_ _◁ⁱ_
-  ◁ⁱ-mono I₁≤J₁ I₂≤J₂ .*≤ⁱ* = LMon.∙-mono (U-mono I₁≤J₁) (U-mono I₂≤J₂) .L.*≤*
+  ◁-mono : Monotonic₂ _≤_ _≤_ _≤_ _◁_
+  ◁-mono I₁≤J₁ I₂≤J₂ .*≤* = LMon.∙-mono (U-mono I₁≤J₁) (U-mono I₂≤J₂) .L.*≤*
 
-  ◁ⁱ-assoc : Associative _≈ⁱ_ _◁ⁱ_
-  ◁ⁱ-assoc I J K .Product.proj₁ .*≤ⁱ* = LMon.∙-assoc (U I) (U J) (U K) .Product.proj₁ .L.*≤*
-  ◁ⁱ-assoc I J K .Product.proj₂ .*≤ⁱ* = LMon.∙-assoc (U I) (U J) (U K) .Product.proj₂ .L.*≤*
+  ◁-assoc : Associative _≈_ _◁_
+  ◁-assoc I J K .Product.proj₁ .*≤* = LMon.∙-assoc (U I) (U J) (U K) .Product.proj₁ .L.*≤*
+  ◁-assoc I J K .Product.proj₂ .*≤* = LMon.∙-assoc (U I) (U J) (U K) .Product.proj₂ .L.*≤*
 
-  ◁ⁱ-identityˡ : LeftIdentity _≈ⁱ_ ιⁱ _◁ⁱ_
-  ◁ⁱ-identityˡ I .Product.proj₁ .*≤ⁱ* = LMon.∙-identityˡ (U I) .Product.proj₁ .L.*≤*
-  ◁ⁱ-identityˡ I .Product.proj₂ .*≤ⁱ* = LMon.∙-identityˡ (U I) .Product.proj₂ .L.*≤*
+  ◁-identityˡ : LeftIdentity _≈_ ι _◁_
+  ◁-identityˡ I .Product.proj₁ .*≤* = LMon.∙-identityˡ (U I) .Product.proj₁ .L.*≤*
+  ◁-identityˡ I .Product.proj₂ .*≤* = LMon.∙-identityˡ (U I) .Product.proj₂ .L.*≤*
 
-  ◁ⁱ-identityʳ : RightIdentity _≈ⁱ_ ιⁱ _◁ⁱ_
-  ◁ⁱ-identityʳ I .Product.proj₁ .*≤ⁱ* = LMon.∙-identityʳ (U I) .Product.proj₁ .L.*≤*
-  ◁ⁱ-identityʳ I .Product.proj₂ .*≤ⁱ* = LMon.∙-identityʳ (U I) .Product.proj₂ .L.*≤*
+  ◁-identityʳ : RightIdentity _≈_ ι _◁_
+  ◁-identityʳ I .Product.proj₁ .*≤* = LMon.∙-identityʳ (U I) .Product.proj₁ .L.*≤*
+  ◁-identityʳ I .Product.proj₂ .*≤* = LMon.∙-identityʳ (U I) .Product.proj₂ .L.*≤*
 
-  ◁ⁱ-identity : Identity _≈ⁱ_ ιⁱ _◁ⁱ_
-  ◁ⁱ-identity = (◁ⁱ-identityˡ , ◁ⁱ-identityʳ)
+  ◁-identity : Identity _≈_ ι _◁_
+  ◁-identity = (◁-identityˡ , ◁-identityʳ)
 
-  ◁ⁱ-isPomonoid : IsPomonoid _≈ⁱ_ _≤ⁱ_ _◁ⁱ_ ιⁱ
-  ◁ⁱ-isPomonoid = record
+  ◁-isPomonoid : IsPomonoid _≈_ _≤_ _◁_ ι
+  ◁-isPomonoid = record
     { isPosemigroup = record
       { isPomagma = record
-        { isPartialOrder = ≤ⁱ-isPartialOrder
-        ; mono = ◁ⁱ-mono
+        { isPartialOrder = ≤-isPartialOrder
+        ; mono = ◁-mono
         }
-      ; assoc = ◁ⁱ-assoc
+      ; assoc = ◁-assoc
       }
-    ; identity = ◁ⁱ-identity
+    ; identity = ◁-identity
     }
 
-  U-monoidal : U (I ◁ⁱ J) L.≈ (U I LMon.∙ U J)
+  U-monoidal : U (I ◁ J) L.≈ (U I LMon.∙ U J)
   U-monoidal .Product.proj₁ .L.*≤* Ix = Ix
   U-monoidal .Product.proj₂ .L.*≤* Ix = Ix
 
-  U-monoidal-ι : U ιⁱ L.≈ LMon.ε
+  U-monoidal-ι : U ι L.≈ LMon.ε
   U-monoidal-ι .Product.proj₁ .L.*≤* x≤ε = x≤ε
   U-monoidal-ι .Product.proj₂ .L.*≤* x≤ε = x≤ε
 
-  ηⁱ-preserve-◁ : ηⁱ (x ∙ᶜ y) ≤ⁱ ηⁱ x ◁ⁱ ηⁱ y
-  ηⁱ-preserve-◁ {x} {y} .*≤ⁱ* {z} (c , z≤c) =
+  η-preserve-◁ : η (x ∙ᶜ y) ≤ η x ◁ η y
+  η-preserve-◁ {x} {y} .*≤* {z} (c , z≤c) =
     down-closed
       (≤ᶜ.trans z≤c (map-sumᵗ _ c))
-      (ideal-Tree-closed {α (L.η x) ◁ⁱ α (L.η y)} 
+      (ideal-Tree-closed {α (L.η x) ◁ α (L.η y)} 
         (mapᵗ 
           (L.≤-trans LMon.η-preserve-∙ 
             (L.≤-trans (LMon.∙-mono unit unit) (U-monoidal .Product.proj₂))) c))
     where
-      open Ideal (α (L.η x) ◁ⁱ α (L.η y)) renaming (≤-closed to down-closed)
+      open Ideal (α (L.η x) ◁ α (L.η y)) renaming (≤-closed to down-closed)
 
 {-
   -- FIXME: this doesn't work
@@ -351,8 +351,8 @@ module DayEntropic
       (≤ᶜ.trans (+-entropy _ _ _ _)
       (mono ≤ᶜ.refl idem))
 
-    ηⁱ-preserve-◁⁻¹ : α (η x) ◁ⁱ α (η y) ≤ⁱ α (η (x ∙ᶜ y))
-    ηⁱ-preserve-◁⁻¹ {x}{y} .*≤ⁱ* {z} (z₁ , z₂ , z≤z₁z₂ , (c₁ , z₁≤c) , (c₂ , z₂≤c)) =
+    η-preserve-◁⁻¹ : α (η x) ◁ α (η y) ≤ α (η (x ∙ᶜ y))
+    η-preserve-◁⁻¹ {x}{y} .*≤* {z} (z₁ , z₂ , z≤z₁z₂ , (c₁ , z₁≤c) , (c₂ , z₂≤c)) =
       mapᵗ η-preserve-∙⁻¹ (c₁ ∙ᶜ' c₂) ,
       ≤ᶜ.trans z≤z₁z₂ {!!}
 -}
@@ -371,11 +371,11 @@ module DayDistributive
   distribˡ = distrib .Product.proj₁
   distribʳ = distrib .Product.proj₂
 
-  _∙ⁱ_ : Ideal → Ideal → Ideal
-  I ∙ⁱ J = α (U I LMon.∙ U J)
+  _∙_ : Ideal → Ideal → Ideal
+  I ∙ J = α (U I LMon.∙ U J)
 
-  εⁱ : Ideal
-  εⁱ = α LMon.ε
+  ε : Ideal
+  ε = α LMon.ε
 
   _∙ᵗ_ : Tree F → Tree G → Tree (F LMon.∙ G)
   leaf x Fx  ∙ᵗ leaf y Gy  = leaf (x ∙ᶜ y) (x , y , ≤ᶜ.refl , Fx , Gy)
@@ -394,26 +394,26 @@ module DayDistributive
     let (c' , c≤c') , (d' , d≤d') = α-helper c ≤ᶜ.refl , α-helper d ≤ᶜ.refl
     in (node c' d') , (≤ᶜ.trans x≤cd (+ᶜ.mono c≤c' d≤d'))
 
-  α-monoidal : (α F ∙ⁱ α G) ≈ⁱ α (F LMon.∙ G)
-  α-monoidal .Product.proj₁ .*≤ⁱ* (c , x≤c)  = α-helper c x≤c
+  α-monoidal : (α F ∙ α G) ≈ α (F LMon.∙ G)
+  α-monoidal .Product.proj₁ .*≤* (c , x≤c)  = α-helper c x≤c
   α-monoidal .Product.proj₂ = α-mono (LMon.∙-mono unit unit)
 
-  ∙ⁱ-mono : Monotonic₂ _≤ⁱ_ _≤ⁱ_ _≤ⁱ_ _∙ⁱ_
-  ∙ⁱ-mono I₁≤I₂ J₁≤J₂ = α-mono (LMon.∙-mono (U-mono I₁≤I₂) (U-mono J₁≤J₂))
+  ∙-mono : Monotonic₂ _≤_ _≤_ _≤_ _∙_
+  ∙-mono I₁≤I₂ J₁≤J₂ = α-mono (LMon.∙-mono (U-mono I₁≤I₂) (U-mono J₁≤J₂))
 
-  ηⁱ-preserve-∙ : ηⁱ (x ∙ᶜ y) ≤ⁱ ηⁱ x ∙ⁱ ηⁱ y
-  ηⁱ-preserve-∙ = α-mono (L.≤-trans LMon.η-preserve-∙ (LMon.∙-mono unit unit))
+  η-preserve-∙ : η (x ∙ᶜ y) ≤ η x ∙ η y
+  η-preserve-∙ = α-mono (L.≤-trans LMon.η-preserve-∙ (LMon.∙-mono unit unit))
 
-  ηⁱ-preserve-∙⁻¹ : ηⁱ x ∙ⁱ ηⁱ y ≤ⁱ ηⁱ (x ∙ᶜ y)
-  ηⁱ-preserve-∙⁻¹ = ≤ⁱ-trans (α-monoidal .Product.proj₁) (α-mono LMon.η-preserve-∙⁻¹)
+  η-preserve-∙⁻¹ : η x ∙ η y ≤ η (x ∙ᶜ y)
+  η-preserve-∙⁻¹ = ≤-trans (α-monoidal .Product.proj₁) (α-mono LMon.η-preserve-∙⁻¹)
 
-  ∙ⁱ-assoc : Associative _≈ⁱ_ _∙ⁱ_
-  ∙ⁱ-assoc I J K =
+  ∙-assoc : Associative _≈_ _∙_
+  ∙-assoc I J K =
     begin
-      (I ∙ⁱ J) ∙ⁱ K
+      (I ∙ J) ∙ K
     ≡⟨⟩
       α (U (α (U I LMon.∙ U J)) LMon.∙ U K)
-    ≈⟨ α-cong (LMon.∙-congˡ (U-cong counit-≈ⁱ)) ⟩
+    ≈⟨ α-cong (LMon.∙-congˡ (U-cong counit-≈)) ⟩
       α (U (α (U I LMon.∙ U J)) LMon.∙ U (α (U K)))
     ≈⟨ α-monoidal ⟩
       α ((U I LMon.∙ U J) LMon.∙ U K)
@@ -421,117 +421,117 @@ module DayDistributive
       α (U I LMon.∙ (U J LMon.∙ U K))
     ≈⟨ α-monoidal ⟨
       α (U (α (U I)) LMon.∙ U (α (U J LMon.∙ U K)))
-    ≈⟨ α-cong (LMon.∙-congʳ (U-cong counit-≈ⁱ)) ⟨
+    ≈⟨ α-cong (LMon.∙-congʳ (U-cong counit-≈)) ⟨
       α (U I LMon.∙ U (α (U J LMon.∙ U K)))
     ≡⟨⟩
-      I ∙ⁱ (J ∙ⁱ K)
+      I ∙ (J ∙ K)
     ∎
-    where open SetoidReasoning ≈ⁱ-setoid
+    where open SetoidReasoning ≈-setoid
 
-  ∙ⁱ-identityˡ : LeftIdentity _≈ⁱ_ εⁱ _∙ⁱ_
-  ∙ⁱ-identityˡ I =
+  ∙-identityˡ : LeftIdentity _≈_ ε _∙_
+  ∙-identityˡ I =
     begin
-      εⁱ ∙ⁱ I
+      ε ∙ I
     ≡⟨⟩
       α (U (α LMon.ε) LMon.∙ U I)
-    ≈⟨ α-cong (LMon.∙-congˡ (U-cong counit-≈ⁱ)) ⟩
+    ≈⟨ α-cong (LMon.∙-congˡ (U-cong counit-≈)) ⟩
       α (U (α LMon.ε) LMon.∙ U (α (U I)))
     ≈⟨ α-monoidal ⟩
       α (LMon.ε LMon.∙ U I)
     ≈⟨ α-cong (LMon.∙-identityˡ (U I)) ⟩
       α (U I)
-    ≈⟨ counit-≈ⁱ ⟨
+    ≈⟨ counit-≈ ⟨
       I
     ∎
-    where open SetoidReasoning ≈ⁱ-setoid
+    where open SetoidReasoning ≈-setoid
 
-  ∙ⁱ-identityʳ : RightIdentity _≈ⁱ_ εⁱ _∙ⁱ_
-  ∙ⁱ-identityʳ I =
+  ∙-identityʳ : RightIdentity _≈_ ε _∙_
+  ∙-identityʳ I =
     begin
-      I ∙ⁱ εⁱ
+      I ∙ ε
     ≡⟨⟩
       α (U I LMon.∙ U (α LMon.ε))
-    ≈⟨ α-cong (LMon.∙-congʳ (U-cong counit-≈ⁱ)) ⟩
+    ≈⟨ α-cong (LMon.∙-congʳ (U-cong counit-≈)) ⟩
       α (U (α (U I)) LMon.∙ U (α LMon.ε))
     ≈⟨ α-monoidal ⟩
       α (U I LMon.∙ LMon.ε)
     ≈⟨ α-cong (LMon.∙-identityʳ (U I)) ⟩
       α (U I)
-    ≈⟨ counit-≈ⁱ ⟨
+    ≈⟨ counit-≈ ⟨
       I
     ∎
-    where open SetoidReasoning ≈ⁱ-setoid
+    where open SetoidReasoning ≈-setoid
 
-  ∙ⁱ-comm : Commutative _≈ⁱ_ _∙ⁱ_
-  ∙ⁱ-comm I J = α-cong (LMon.∙-comm (U I) (U J))
+  ∙-comm : Commutative _≈_ _∙_
+  ∙-comm I J = α-cong (LMon.∙-comm (U I) (U J))
 
-  ∙ⁱ-isCommutativePomonoid : IsCommutativePomonoid _≈ⁱ_ _≤ⁱ_ _∙ⁱ_ εⁱ
-  ∙ⁱ-isCommutativePomonoid = record
+  ∙-isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _∙_ ε
+  ∙-isCommutativePomonoid = record
     { isPomonoid = record
       { isPosemigroup = record
         { isPomagma = record
-          { isPartialOrder = ≤ⁱ-isPartialOrder
-          ; mono = ∙ⁱ-mono
+          { isPartialOrder = ≤-isPartialOrder
+          ; mono = ∙-mono
           }
-        ; assoc = ∙ⁱ-assoc
+        ; assoc = ∙-assoc
         }
-      ; identity = ∙ⁱ-identityˡ , ∙ⁱ-identityʳ
+      ; identity = ∙-identityˡ , ∙-identityʳ
       }
-      ; comm = ∙ⁱ-comm
+      ; comm = ∙-comm
     }
 
   commutativePomonoid : CommutativePomonoid (suc (c ⊔ ℓ₂)) (c ⊔ ℓ₂) (c ⊔ ℓ₂)
   commutativePomonoid = record
-    { isCommutativePomonoid = ∙ⁱ-isCommutativePomonoid }
+    { isCommutativePomonoid = ∙-isCommutativePomonoid }
 
   ------------------------------------------------------------------------------
   -- Residuals
 
-  _⊸ⁱ_ : Ideal → Ideal → Ideal
-  (I ⊸ⁱ J) .ICarrier x = ∀ {y} → I .ICarrier y → J .ICarrier (x ∙ᶜ y)
-  (I ⊸ⁱ J) .≤-closed x≤z f Iy = J .≤-closed (Mon.monoˡ x≤z) (f Iy)
-  (I ⊸ⁱ J) .+-closed I⊸Jx I⊸Jy {z} Iz =
+  _⊸_ : Ideal → Ideal → Ideal
+  (I ⊸ J) .ICarrier x = ∀ {y} → I .ICarrier y → J .ICarrier (x ∙ᶜ y)
+  (I ⊸ J) .≤-closed x≤z f Iy = J .≤-closed (Mon.monoˡ x≤z) (f Iy)
+  (I ⊸ J) .+-closed I⊸Jx I⊸Jy {z} Iz =
     J .≤-closed (distribʳ _ _ _) (J .+-closed (I⊸Jx Iz) (I⊸Jy Iz))
 
-  U⊸ⁱ : U (I ⊸ⁱ J) L.≤ (U I LMon.⊸ U J)
-  U⊸ⁱ .L.*≤* f = f
+  U⊸ : U (I ⊸ J) L.≤ (U I LMon.⊸ U J)
+  U⊸ .L.*≤* f = f
 
-  U⊸ⁱ⁻¹ : (U I LMon.⊸ U J) L.≤ U (I ⊸ⁱ J)
-  U⊸ⁱ⁻¹ .L.*≤* f = f
+  U⊸⁻¹ : (U I LMon.⊸ U J) L.≤ U (I ⊸ J)
+  U⊸⁻¹ .L.*≤* f = f
 
-  U⊸ⁱ-≈ : U (I ⊸ⁱ J) L.≈ (U I LMon.⊸ U J)
-  U⊸ⁱ-≈ = (U⊸ⁱ , U⊸ⁱ⁻¹)
+  U⊸-≈ : U (I ⊸ J) L.≈ (U I LMon.⊸ U J)
+  U⊸-≈ = (U⊸ , U⊸⁻¹)
 
-  ⊸ⁱ-residual-to : (I ∙ⁱ J) ≤ⁱ K → J ≤ⁱ (I ⊸ⁱ K)
-  ⊸ⁱ-residual-to IJ≤K =
-    ≤ⁱ-trans counit⁻¹
-   (≤ⁱ-trans (α-mono (LMon.⊸-residual-to (L.≤-trans unit (U-mono IJ≤K))))
-   (≤ⁱ-trans (α-mono U⊸ⁱ⁻¹)
+  ⊸-residual-to : (I ∙ J) ≤ K → J ≤ (I ⊸ K)
+  ⊸-residual-to IJ≤K =
+    ≤-trans counit⁻¹
+   (≤-trans (α-mono (LMon.⊸-residual-to (L.≤-trans unit (U-mono IJ≤K))))
+   (≤-trans (α-mono U⊸⁻¹)
              counit))
 
-  ⊸ⁱ-residual-from : J ≤ⁱ (I ⊸ⁱ K) → (I ∙ⁱ J) ≤ⁱ K
-  ⊸ⁱ-residual-from {J} {I} {K} J≤I⊸K =
+  ⊸-residual-from : J ≤ (I ⊸ K) → (I ∙ J) ≤ K
+  ⊸-residual-from {J} {I} {K} J≤I⊸K =
     begin
-      I ∙ⁱ J
+      I ∙ J
     ≡⟨⟩
       α (U I LMon.∙ U J)
-    ≤⟨ α-mono (LMon.⊸-residual-from (L.≤-trans (U-mono J≤I⊸K) U⊸ⁱ)) ⟩
+    ≤⟨ α-mono (LMon.⊸-residual-from (L.≤-trans (U-mono J≤I⊸K) U⊸)) ⟩
       α (U K)
-    ≈⟨ counit-≈ⁱ ⟨
+    ≈⟨ counit-≈ ⟨
       K
     ∎
-    where open PosetReasoning ≤ⁱ-poset
+    where open PosetReasoning ≤-poset
 
-  ⊸ⁱ-residual : RightResidual _≤ⁱ_ _∙ⁱ_ _⊸ⁱ_
-  ⊸ⁱ-residual .Function.Equivalence.to        = ⊸ⁱ-residual-to
-  ⊸ⁱ-residual .Function.Equivalence.from      = ⊸ⁱ-residual-from
-  ⊸ⁱ-residual .Function.Equivalence.to-cong   = λ { PropEq.refl → PropEq.refl }
-  ⊸ⁱ-residual .Function.Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
+  ⊸-residual : RightResidual _≤_ _∙_ _⊸_
+  ⊸-residual .Function.Equivalence.to        = ⊸-residual-to
+  ⊸-residual .Function.Equivalence.from      = ⊸-residual-from
+  ⊸-residual .Function.Equivalence.to-cong   = λ { PropEq.refl → PropEq.refl }
+  ⊸-residual .Function.Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
 
-  ⊸ⁱ-∙ⁱ-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈ⁱ_ _≤ⁱ_ _∙ⁱ_ _⊸ⁱ_ εⁱ
-  ⊸ⁱ-∙ⁱ-isResiduatedCommutativePomonoid = record
-    { isCommutativePomonoid = ∙ⁱ-isCommutativePomonoid
-    ; residuated = comm∧residual⇒residuated ≤ⁱ-isPreorder ∙ⁱ-comm ⊸ⁱ-residual
+  ⊸-∙-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈_ _≤_ _∙_ _⊸_ ε
+  ⊸-∙-isResiduatedCommutativePomonoid = record
+    { isCommutativePomonoid = ∙-isCommutativePomonoid
+    ; residuated = comm∧residual⇒residuated ≤-isPreorder ∙-comm ⊸-residual
     }
 
 module DayDuoidal
@@ -552,12 +552,12 @@ module DayDuoidal
   open DayDistributive Duo.∙-isCommutativePomonoid distrib
   open DayEntropic Duo.◁-isPomonoid +ᶜ-entropy +ᶜ-tidy
 
-  ∙ⁱ-◁ⁱ-entropy : Entropy _≤ⁱ_ _∙ⁱ_ _◁ⁱ_
-  ∙ⁱ-◁ⁱ-entropy I₁ J₁ I₂ J₂ =
+  ∙-◁-entropy : Entropy _≤_ _∙_ _◁_
+  ∙-◁-entropy I₁ J₁ I₂ J₂ =
     begin
-      (I₁ ◁ⁱ J₁) ∙ⁱ (I₂ ◁ⁱ J₂)
+      (I₁ ◁ J₁) ∙ (I₂ ◁ J₂)
     ≡⟨⟩
-      α (U (I₁ ◁ⁱ J₁) LDuo.∙ U (I₂ ◁ⁱ J₂))
+      α (U (I₁ ◁ J₁) LDuo.∙ U (I₂ ◁ J₂))
     ≈⟨ α-cong (LDuo.∙-cong U-monoidal U-monoidal) ⟩
       α ((U I₁ LDuo.◁ U J₁) LDuo.∙ (U I₂ LDuo.◁ U J₂))
     ≤⟨ α-mono (LDuo.∙-◁-entropy (U I₁) (U J₁) (U I₂) (U J₂)) ⟩
@@ -565,34 +565,34 @@ module DayDuoidal
     ≤⟨ α-mono (LDuo.◁-mono unit unit) ⟩
       α (U (α (U I₁ LDuo.∙ U I₂)) LDuo.◁ U (α (U J₁ LDuo.∙ U J₂)))
     ≈⟨ α-cong U-monoidal ⟨
-      α (U (α (U I₁ LDuo.∙ U I₂) ◁ⁱ α (U J₁ LDuo.∙ U J₂)))
-    ≈⟨ counit-≈ⁱ ⟨
-      α (U I₁ LDuo.∙ U I₂) ◁ⁱ α (U J₁ LDuo.∙ U J₂)
+      α (U (α (U I₁ LDuo.∙ U I₂) ◁ α (U J₁ LDuo.∙ U J₂)))
+    ≈⟨ counit-≈ ⟨
+      α (U I₁ LDuo.∙ U I₂) ◁ α (U J₁ LDuo.∙ U J₂)
     ≡⟨⟩
-      (I₁ ∙ⁱ I₂) ◁ⁱ (J₁ ∙ⁱ J₂)
+      (I₁ ∙ I₂) ◁ (J₁ ∙ J₂)
     ∎
-    where open PosetReasoning ≤ⁱ-poset
+    where open PosetReasoning ≤-poset
 
   tidy : (c : Tree LDuo.ι) → sum c ≤ᶜ ιᶜ
   tidy (leaf x (lift x≤ι)) = x≤ι
   tidy (node c d) = ≤ᶜ.trans (+ᶜ.mono (tidy c) (tidy d)) +ᶜ-tidy
 
-  εⁱ≤ιⁱ : εⁱ ≤ⁱ ιⁱ
-  εⁱ≤ιⁱ .*≤ⁱ* (t , x≤t) = lift (≤ᶜ.trans x≤t (≤ᶜ.trans (map-sumᵗ LDuo.ε≤ι t) (tidy (mapᵗ LDuo.ε≤ι t))))
+  ε≤ι : ε ≤ ι
+  ε≤ι .*≤* (t , x≤t) = lift (≤ᶜ.trans x≤t (≤ᶜ.trans (map-sumᵗ LDuo.ε≤ι t) (tidy (mapᵗ LDuo.ε≤ι t))))
 
-  ∙ⁱ-◁ⁱ-isDuoidal : IsDuoidal _≈ⁱ_ _≤ⁱ_ _∙ⁱ_ _◁ⁱ_ εⁱ ιⁱ
-  ∙ⁱ-◁ⁱ-isDuoidal = record
-    { ∙-isPomonoid = IsCommutativePomonoid.isPomonoid ∙ⁱ-isCommutativePomonoid
-    ; ◁-isPomonoid = ◁ⁱ-isPomonoid
-    ; ∙-◁-entropy = ∙ⁱ-◁ⁱ-entropy
-    ; ∙-idem-ι = ≤ⁱ-trans (α-mono (LDuo.∙-mono (U-monoidal-ι .Product.proj₁) (U-monoidal-ι .Product.proj₁)))
-                (≤ⁱ-trans (α-mono LDuo.∙-idem-ι)
-                (≤ⁱ-trans (α-mono (U-monoidal-ι .Product.proj₂))
+  ∙-◁-isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _◁_ ε ι
+  ∙-◁-isDuoidal = record
+    { ∙-isPomonoid = IsCommutativePomonoid.isPomonoid ∙-isCommutativePomonoid
+    ; ◁-isPomonoid = ◁-isPomonoid
+    ; ∙-◁-entropy = ∙-◁-entropy
+    ; ∙-idem-ι = ≤-trans (α-mono (LDuo.∙-mono (U-monoidal-ι .Product.proj₁) (U-monoidal-ι .Product.proj₁)))
+                (≤-trans (α-mono LDuo.∙-idem-ι)
+                (≤-trans (α-mono (U-monoidal-ι .Product.proj₂))
                           counit))
-    ; ◁-idem-ε = ≤ⁱ-trans (α-mono LDuo.◁-idem-ε)
-                (≤ⁱ-trans (α-mono (LDuo.◁-mono unit unit))
-                (≤ⁱ-trans (α-mono (U-monoidal .Product.proj₂))
+    ; ◁-idem-ε = ≤-trans (α-mono LDuo.◁-idem-ε)
+                (≤-trans (α-mono (LDuo.◁-mono unit unit))
+                (≤-trans (α-mono (U-monoidal .Product.proj₂))
                 counit))
-    ; ε≲ι = εⁱ≤ιⁱ
+    ; ε≲ι = ε≤ι
     }
   
