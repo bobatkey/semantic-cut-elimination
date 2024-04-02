@@ -268,11 +268,11 @@ module LiftIsPomonoid {_∙_} {ε} (isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε
   ∙ᵖ-mono F₁≤F₂ G₁≤G₂ .*≤ᵖ* (y , z , x≤yz , F₁y , G₁z) =
     (-, -, x≤yz , F₁≤F₂ .*≤ᵖ* F₁y , G₁≤G₂ .*≤ᵖ* G₁z)
 
-  η-preserve-∙ : ηᵖ (x ∙ y) ≤ᵖ ηᵖ x ∙ᵖ ηᵖ y
-  η-preserve-∙ {x} {y} .*≤ᵖ* {z} (lift z≤xy) = x , y , z≤xy , lift ≤-refl , lift ≤-refl
+  ηᵖ-preserve-∙ᵖ : ηᵖ (x ∙ y) ≤ᵖ ηᵖ x ∙ᵖ ηᵖ y
+  ηᵖ-preserve-∙ᵖ {x} {y} .*≤ᵖ* {z} (lift z≤xy) = x , y , z≤xy , lift ≤-refl , lift ≤-refl
 
-  η-preserve-∙⁻¹ : ηᵖ x ∙ᵖ ηᵖ y ≤ᵖ ηᵖ (x ∙ y)
-  η-preserve-∙⁻¹ {x} {y} .*≤ᵖ* {z} (z₁ , z₂ , z≤z₁z₂ , lift z₁≤x , lift z₂≤y) =
+  ηᵖ-preserve-∙ᵖ⁻¹ : ηᵖ x ∙ᵖ ηᵖ y ≤ᵖ ηᵖ (x ∙ y)
+  ηᵖ-preserve-∙ᵖ⁻¹ {x} {y} .*≤ᵖ* {z} (z₁ , z₂ , z≤z₁z₂ , lift z₁≤x , lift z₂≤y) =
     lift (≤-trans z≤z₁z₂ (mono z₁≤x z₂≤y))
 
   εᵖ : PreSheaf
@@ -377,21 +377,21 @@ module LiftIsDuoidal {_∙_} {_◁_} {ε} {ι} (isDuoidal : IsDuoidal _≈_ _≤
   open LiftIsPomonoid ∙-isPomonoid public
   open LiftIsPomonoid ◁-isPomonoid public
     renaming
-      ( _∙ᵖ_          to _◁ᵖ_
-      ; εᵖ            to ιᵖ
-      ; ∙ᵖ-mono       to ◁ᵖ-mono
-      ; ∙ᵖ-monoˡ      to ◁ᵖ-monoˡ
-      ; ∙ᵖ-monoʳ      to ◁ᵖ-monoʳ
-      ; ∙ᵖ-cong       to ◁ᵖ-cong
-      ; ∙ᵖ-congˡ      to ◁ᵖ-congˡ
-      ; ∙ᵖ-congʳ      to ◁ᵖ-congʳ
-      ; ∙ᵖ-assoc      to ◁ᵖ-assoc
-      ; ∙ᵖ-identity   to ◁ᵖ-identity
-      ; ∙ᵖ-identityˡ  to ◁ᵖ-identityˡ
-      ; ∙ᵖ-identityʳ  to ◁ᵖ-identityʳ
-      ; ∙ᵖ-isPomonoid to ◁ᵖ-isPomonoid
-      ; η-preserve-∙  to η-preserve-◁
-      ; η-preserve-∙⁻¹ to η-preserve-◁⁻¹
+      ( _∙ᵖ_             to _◁ᵖ_
+      ; εᵖ               to ιᵖ
+      ; ∙ᵖ-mono          to ◁ᵖ-mono
+      ; ∙ᵖ-monoˡ         to ◁ᵖ-monoˡ
+      ; ∙ᵖ-monoʳ         to ◁ᵖ-monoʳ
+      ; ∙ᵖ-cong          to ◁ᵖ-cong
+      ; ∙ᵖ-congˡ         to ◁ᵖ-congˡ
+      ; ∙ᵖ-congʳ         to ◁ᵖ-congʳ
+      ; ∙ᵖ-assoc         to ◁ᵖ-assoc
+      ; ∙ᵖ-identity      to ◁ᵖ-identity
+      ; ∙ᵖ-identityˡ     to ◁ᵖ-identityˡ
+      ; ∙ᵖ-identityʳ     to ◁ᵖ-identityʳ
+      ; ∙ᵖ-isPomonoid    to ◁ᵖ-isPomonoid
+      ; ηᵖ-preserve-∙ᵖ   to ηᵖ-preserve-◁ᵖ
+      ; ηᵖ-preserve-∙ᵖ⁻¹ to ηᵖ-preserve-◁ᵖ⁻¹
       )
 
   ∙ᵖ-◁ᵖ-entropy : Entropy _≤ᵖ_ _∙ᵖ_ _◁ᵖ_
