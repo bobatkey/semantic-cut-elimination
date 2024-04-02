@@ -56,9 +56,14 @@ record IsStarAuto {_⊗_ ε} (⊗-isCommutativePomonoid : IsCommutativePomonoid 
       )
     renaming
       ( mono      to ⊗-mono
+      ; monoˡ     to ⊗-monoˡ
+      ; monoʳ     to ⊗-monoʳ
+      ; ∙-cong    to ⊗-cong
+      ; ∙-congˡ   to ⊗-congˡ
+      ; ∙-congʳ   to ⊗-congʳ
       ; assoc     to ⊗-assoc
       ; comm      to ⊗-comm
-      ; ∙-cong    to ⊗-cong
+      ; identity  to ⊗-identity
       ; identityˡ to ⊗-identityˡ
       ; identityʳ to ⊗-identityʳ
       )
@@ -113,22 +118,32 @@ record IsStarAuto {_⊗_ ε} (⊗-isCommutativePomonoid : IsCommutativePomonoid 
       where open SetoidReasoning setoid
 
   ⅋-isCommutativePomonoid : IsCommutativePomonoid _⅋_ ⊥
-  ⅋-isCommutativePomonoid = record {
-    isPomonoid = record {
-      isPosemigroup = record {
-        isPomagma = record {
-            isPartialOrder = isPartialOrder ;
-            mono = ⅋-mono } ;
-          assoc = ⅋-assoc } ;
-        identity = ⅋-identityˡ , ⅋-identityʳ } ;
-      comm = ⅋-comm }
+  ⅋-isCommutativePomonoid = record
+    { isPomonoid = record 
+      { isPosemigroup = record 
+        { isPomagma = record 
+          { isPartialOrder = isPartialOrder
+          ; mono = ⅋-mono 
+          }
+          ;
+          assoc = ⅋-assoc 
+        }
+      ; identity = ⅋-identityˡ , ⅋-identityʳ
+      }
+    ; comm = ⅋-comm
+    }
 
   open IsCommutativePomonoid ⅋-isCommutativePomonoid public
     using
       (
       )
     renaming
-      ( ∙-cong to ⅋-cong
+      ( monoˡ     to ⅋-monoˡ
+      ; monoʳ     to ⅋-monoʳ
+      ; ∙-cong    to ⅋-cong
+      ; ∙-congˡ   to ⅋-congˡ
+      ; ∙-congʳ   to ⅋-congʳ
+      ; identity  to ⅋-identity
       )
 
   ev : ∀ {x} → (x ⊗ ¬ x) ≲ ⊥

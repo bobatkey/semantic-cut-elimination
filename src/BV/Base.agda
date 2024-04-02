@@ -2,7 +2,7 @@
 
 open import Algebra.Core using (Op₁)
 open import Algebra.Ordered
-open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
+open import Algebra.Ordered.Structures.Duoidal
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum as Sum using (_⊎_; inj₁; inj₂; [_,_])
 open import Level using (suc; _⊔_)
@@ -245,6 +245,10 @@ P⟶⋆P′ `⟨⅋⋆ = ⟶⋆-map _ _`⟨⅋ P⟶⋆P′
 `⅋-`◁-isDuoidal .IsDuoidal.◁-idem-ε = bwd `◁-identityʳ ◅ ε
 `⅋-`◁-isDuoidal .IsDuoidal.ε≲ι = ε
 
+`⅋-`◁-isCommutativeDuoidal : IsCommutativeDuoidal _⟷⋆_ _⟶⋆_ _`⅋_ _`◁_ `I `I
+`⅋-`◁-isCommutativeDuoidal .IsCommutativeDuoidal.isDuoidal = `⅋-`◁-isDuoidal
+`⅋-`◁-isCommutativeDuoidal .IsCommutativeDuoidal.∙-comm P Q = fwd∧bwd `⅋-comm
+
 ------------------------------------------------------------------------------
 frame : Frame a (suc a) (suc a)
 frame .Frame.Carrier = Formula
@@ -253,6 +257,5 @@ frame .Frame._≲_ = _⟶⋆_
 frame .Frame.I = `I
 frame .Frame._◁_ = _`◁_
 frame .Frame._⅋_ = _`⅋_
-frame .Frame.⅋-isCommutativePomonoid = `⅋-isCommutativePomonoid
-frame .Frame.⅋-◁-isDuoidal = `⅋-`◁-isDuoidal
+frame .Frame.⅋-◁-isCommutativeDuoidal = `⅋-`◁-isCommutativeDuoidal
    

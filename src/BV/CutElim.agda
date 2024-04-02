@@ -9,30 +9,22 @@ module BV.CutElim {a} (Atom : Set a) where
 open import BV.Formula Atom
 open import BV.Base Atom as BV
 import BV.Symmetric Atom as SBV
-import BV.Frame
-
-open BV.Frame.FrameModel BV.frame
+open import BV.Frame
+open FrameModel BV.frame
   using
     ( Chu
-    ; ==>-trans
-    ; ⟦I⟧
-    ; _==>_
-    ; module P
-    ; module M
-    ; module D
+    ; module L
+    ; module C
     ; embed
-    ; ⟦¬⟧)
+    )
   renaming
     ( model to analyticModel
     )
-
+open C using (Chu; pos; neg; int; _==>_; fpos; fneg)
 open import BV.Interpretation Atom analyticModel (λ A → embed (`- A))
 
-open Chu
-open P
-
-interactᵖ : ∀ P Q → ((ηᵖ Q) M.⇨ᵖ M.εᵖ) M.∙ᵖ (ηᵖ (P `⊗ Q)) ≤ᵖ ηᵖ P
-interactᵖ P Q ._≤ᵖ_.*≤ᵖ* {P′} (Q′ , R′ , P′⟶⋆Q′⅋R , ϕ , lift R≤P⊗Q) = lift P′⟶⋆P
+interactᵖ : ∀ P Q → ((L.ηᵖ Q) L.⊸ᵖ L.εᵖ) L.⅋ᵖ (L.ηᵖ (P `⊗ Q)) L.≤ᵖ L.ηᵖ P
+interactᵖ P Q .L.*≤ᵖ* {P′} (Q′ , R′ , P′⟶⋆Q′⅋R , ϕ , lift R≤P⊗Q) = lift P′⟶⋆P
   where
     P′⟶⋆P : P′ ⟶⋆ P
     P′⟶⋆P = P′⟶⋆Q′⅋R
@@ -44,46 +36,43 @@ interactᵖ P Q ._≤ᵖ_.*≤ᵖ* {P′} (Q′ , R′ , P′⟶⋆Q′⅋R , ϕ
           ◅◅ (fwd `⊗-identityʳ ◅ ε)
 
 mutual
-  reflect : ∀ P → ηᵖ P P.≤ᵖ ⟦ P ⟧ .neg
+  reflect : ∀ P → L.ηᵖ P L.≤ᵖ ⟦ P ⟧ .neg
   reflect `I = 
-    P.≤ᵖ-refl
+    L.≤ᵖ-refl
   reflect (P `◁ Q) = 
-    ≤ᵖ-trans D.ηᵖ-preserve-◁ᵖ (D.◁ᵖ-mono (reflect P) (reflect Q))
+    L.≤ᵖ-trans L.ηᵖ-preserve-◁ᵖ (L.◁ᵖ-mono (reflect P) (reflect Q))
   reflect (`+ A) =
-    M.⇨ᵖ-residual-to (≤ᵖ-trans M.ηᵖ-preserve-∙ᵖ⁻¹ (ηᵖ-mono ((step `axiom) ◅ ε)))
+    L.⊸ᵖ-residual-to (L.≤ᵖ-trans L.ηᵖ-preserve-⅋ᵖ⁻¹ (L.ηᵖ-mono ((step `axiom) ◅ ε)))
   reflect (`- A) = 
-    P.≤ᵖ-refl
+    L.≤ᵖ-refl
   reflect (P `⅋ Q) =
-    ≤ᵖ-trans M.ηᵖ-preserve-∙ᵖ (M.∙ᵖ-mono (reflect P) (reflect Q))
+    L.≤ᵖ-trans L.ηᵖ-preserve-⅋ᵖ (L.⅋ᵖ-mono (reflect P) (reflect Q))
   reflect (P `⊗ Q) = 
-    ⟨ M.⇨ᵖ-residual-to (≤ᵖ-trans (M.∙ᵖ-mono (reify Q) ≤ᵖ-refl) (≤ᵖ-trans (interactᵖ P Q) (reflect P)))
-    , M.⇨ᵖ-residual-to (≤ᵖ-trans (M.∙ᵖ-mono (reify P) (ηᵖ-mono (fwd `⊗-comm ◅ ε))) (≤ᵖ-trans (interactᵖ Q P) (reflect Q))) ⟩ᵖ
-  reify : ∀ P → ⟦ P ⟧ .pos ≤ᵖ P.ηᵖ P M.⇨ᵖ D.ιᵖ
+    L.⟨ L.⊸ᵖ-residual-to (L.≤ᵖ-trans (L.⅋ᵖ-mono (reify Q) L.≤ᵖ-refl) (L.≤ᵖ-trans (interactᵖ P Q) (reflect P)))
+      , L.⊸ᵖ-residual-to (L.≤ᵖ-trans (L.⅋ᵖ-mono (reify P) (L.ηᵖ-mono (fwd `⊗-comm ◅ ε))) (L.≤ᵖ-trans (interactᵖ Q P) (reflect Q))) ⟩ᵖ
+  reify : ∀ P → ⟦ P ⟧ .pos L.≤ᵖ L.ηᵖ P L.⊸ᵖ L.ιᵖ
   reify P = 
-    M.⇨ᵖ-residual-to 
-      (≤ᵖ-trans (M.∙ᵖ-comm _ _ .proj₁) 
-        (≤ᵖ-trans (M.∙ᵖ-mono ≤ᵖ-refl (reflect P)) 
-          (≤ᵖ-trans (⟦ P ⟧ .int) D.εᵖ≤ιᵖ)))
+    L.⊸ᵖ-residual-to 
+      (L.≤ᵖ-trans (L.⅋ᵖ-comm _ _ .proj₁) 
+        (L.≤ᵖ-trans (L.⅋ᵖ-mono L.≤ᵖ-refl (reflect P)) 
+          (L.≤ᵖ-trans (⟦ P ⟧ .int) L.εᵖ≤ιᵖ)))
 
-  reify′ : ∀ P → ⟦ P ⟧ .pos ≤ᵖ P.ηᵖ P M.⇨ᵖ M.εᵖ
+  reify′ : ∀ P → ⟦ P ⟧ .pos L.≤ᵖ L.ηᵖ P L.⊸ᵖ L.εᵖ
   reify′ P =
-    M.⇨ᵖ-residual-to 
-      (≤ᵖ-trans (M.∙ᵖ-comm _ _ .proj₁) 
-        (≤ᵖ-trans (M.∙ᵖ-mono ≤ᵖ-refl (reflect P)) (⟦ P ⟧ .int)))
+    L.⊸ᵖ-residual-to 
+      (L.≤ᵖ-trans (L.⅋ᵖ-comm _ _ .proj₁) 
+        (L.≤ᵖ-trans (L.⅋ᵖ-mono L.≤ᵖ-refl (reflect P)) (⟦ P ⟧ .int)))
 
-open _==>_
-
-main-lemma : ∀ P → ⟦ P ⟧ ==> ⟦¬⟧ (embed P)
+main-lemma : ∀ P → ⟦ P ⟧ ==> C.¬ (embed P)
 main-lemma P .fpos = reify′ P
 main-lemma P .fneg = reflect P
 
-sem-cut-elim : ∀ P → ⟦I⟧ ==> ⟦ P ⟧ → P ⟶⋆ `I
-sem-cut-elim P I==>P = q ._≤ᵖ_.*≤ᵖ* (lift ε) .lower
-  where p : ⟦I⟧ ==> ⟦¬⟧ (embed P)
-        p = ==>-trans I==>P (main-lemma P)
-
-        q : ηᵖ P ≤ᵖ D.ιᵖ
-        q = ≤ᵖ-trans (p .fneg) D.εᵖ≤ιᵖ
+sem-cut-elim : ∀ P → C.ε ==> ⟦ P ⟧ → P ⟶⋆ `I
+sem-cut-elim P I==>P = q .L.*≤ᵖ* (lift ε) .lower
+  where p : C.ε ==> C.¬ (embed P)
+        p = C.==>-trans I==>P (main-lemma P)
+        q : L.ηᵖ P L.≤ᵖ L.ιᵖ
+        q = L.≤ᵖ-trans (p .fneg) L.εᵖ≤ιᵖ
 
 cut-elim : (P : Formula) → (P SBV.⟶⋆ `I) → P ⟶⋆ `I
 cut-elim P prf = sem-cut-elim P ⟦ prf ⟧steps

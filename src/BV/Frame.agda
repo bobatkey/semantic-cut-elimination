@@ -1,13 +1,13 @@
 {-# OPTIONS --postfix-projections --safe --without-K #-}
 
+module BV.Frame where
+
 open import Level using (suc; _⊔_; Lift; lift; 0ℓ; lower)
 open import Algebra.Ordered
 open import Algebra.Ordered.Structures.Duoidal
 open import Algebra using (_DistributesOver_)
 open import Data.Product using (_,_; proj₁; proj₂; Σ-syntax)
 open import Relation.Binary
-
-module BV.Frame where
 
 open import BV.Model
 
@@ -16,100 +16,200 @@ record Frame c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
     Carrier : Set c
     _≈_     : Carrier → Carrier → Set ℓ₁
     _≲_     : Carrier → Carrier → Set ℓ₂
-    
+
     I       : Carrier
     _◁_     : Carrier → Carrier → Carrier
     _⅋_     : Carrier → Carrier → Carrier
 
-    ⅋-isCommutativePomonoid : IsCommutativePomonoid _≈_ _≲_ _⅋_ I
-    ⅋-◁-isDuoidal           : IsDuoidal _≈_ _≲_ _⅋_ _◁_ I I
+    ⅋-◁-isCommutativeDuoidal : IsCommutativeDuoidal _≈_ _≲_ _⅋_ _◁_ I I
 
-  open IsCommutativePomonoid ⅋-isCommutativePomonoid public
-  open IsDuoidal ⅋-◁-isDuoidal public
-    using (◁-isPomonoid)
-    renaming (∙-◁-entropy to ⅋-◁-entropy)
+  open IsCommutativeDuoidal ⅋-◁-isCommutativeDuoidal public
+    using
+      ( isPreorder
+      ; isPartialOrder
+      ; refl
+      ; reflexive
+      ; trans
+      ; antisym
+      ; isEquivalence
+      ; setoid
+      ; module Eq
+      ; ◁-isMagma
+      ; ◁-isSemigroup
+      ; ◁-isMonoid
+      ; ◁-isPromagma
+      ; ◁-isProsemigroup
+      ; ◁-isPromonoid
+      ; ◁-isPomagma
+      ; ◁-isPosemigroup
+      ; ◁-cong
+      ; ◁-congˡ
+      ; ◁-congʳ
+      ; ◁-mono
+      ; ◁-monoˡ
+      ; ◁-monoʳ
+      ; ◁-assoc
+      ; ◁-identity
+      ; ◁-identityˡ
+      ; ◁-identityʳ
+      ; ◁-isPomonoid
+      ; ◁-idem-ε
+      ; ε≲ι
+      )
+    renaming
+      ( ∙-isMagma               to ⅋-isMagma
+      ; ∙-isSemigroup           to ⅋-isSemigroup
+      ; ∙-isMonoid              to ⅋-isMonoid
+      ; ∙-isPromagma            to ⅋-isPromagma
+      ; ∙-isProsemigroup        to ⅋-isProsemigroup
+      ; ∙-isPromonoid           to ⅋-isPromonoid
+      ; ∙-isPomagma             to ⅋-isPomagma
+      ; ∙-isPosemigroup         to ⅋-isPosemigroup
+      ; ∙-isPomonoid            to ⅋-isPomonoid
+      ; ∙-isCommutativePomonoid to ⅋-isCommutativePomonoid
+      ; isDuoidal               to ⅋-◁-isDuoidal
+      ; ∙-◁-entropy             to ⅋-◁-entropy
+      ; ∙-idem-ι                to ⅋-idem-ι
+      ; ∙-cong                  to ⅋-cong
+      ; ∙-congˡ                 to ⅋-congˡ
+      ; ∙-congʳ                 to ⅋-congʳ
+      ; ∙-mono                  to ⅋-mono
+      ; ∙-monoˡ                 to ⅋-monoˡ
+      ; ∙-monoʳ                 to ⅋-monoʳ
+      ; ∙-assoc                 to ⅋-assoc
+      ; ∙-identity              to ⅋-identity
+      ; ∙-identityˡ             to ⅋-identityˡ
+      ; ∙-identityʳ             to ⅋-identityʳ
+      ; ∙-comm                  to ⅋-comm
+      )
 
+  poset : Poset _ _ _
+  poset = record { isPartialOrder = isPartialOrder }
 
-module FrameModel {a ℓ₁ ℓ₂} (F : Frame a ℓ₁ ℓ₂) where
+module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
 
   import Algebra.Ordered.Construction.LowerSet
   import Algebra.Ordered.Construction.Chu
 
-  open Frame F
+  open Frame frame
 
-  module P = Algebra.Ordered.Construction.LowerSet (record { isPartialOrder = isPartialOrder })
-  module M = P.LiftIsCommutativePomonoid ⅋-isCommutativePomonoid
-  module D = P.LiftIsDuoidal ⅋-◁-isDuoidal
-
-  open P._≤ᵖ_
-  open P.LowerSet
-
-  units-iso : M.εᵖ P.≈ᵖ D.ιᵖ
-  units-iso .proj₁ = D.εᵖ≤ιᵖ
-  units-iso .proj₂ .*≤ᵖ* x≤I = x≤I
-
-  open Algebra.Ordered.Construction.Chu.Construction
-                M.⇨ᵖ-∙ᵖ-isResiduatedCommutativePomonoid
-                P.∧ᵖ-isMeetSemilattice
-                P.∨ᵖ-isJoinSemilattice
-                M.εᵖ
+  module L where
+    open Algebra.Ordered.Construction.LowerSet poset public
+    open LiftIsDuoidal ⅋-◁-isDuoidal public
       using
-        ( Chu
-        ; _==>_
-        ; module SelfDual
-        ; _≅_
-        ; ==>-trans
-        ; ⊗-isCommutativePomonoid
-        ; ⊗-isStarAutonomous
-        ; &-isMeet
+        ( εᵖ
+        ; _◁ᵖ_
+        ; ιᵖ
+        ; ◁ᵖ-mono
+        ; ◁ᵖ-monoˡ
+        ; ◁ᵖ-monoʳ
+        ; ◁ᵖ-cong
+        ; ◁ᵖ-congˡ
+        ; ◁ᵖ-congʳ
+        ; ◁ᵖ-assoc
+        ; ◁ᵖ-identity
+        ; ◁ᵖ-identityˡ
+        ; ◁ᵖ-identityʳ
+        ; ◁ᵖ-isPomonoid
+        ; ηᵖ-preserve-◁ᵖ
+        ; ηᵖ-preserve-◁ᵖ⁻¹
+        ; εᵖ≤ιᵖ
         )
       renaming
-        ( _⊗_ to _⟦⊗⟧_
-        ; _&_ to _⟦&⟧_
-        ; I to ⟦I⟧
-        ; ¬ to ⟦¬⟧
-        ; embed to Chu-embed
+        ( _∙ᵖ_             to _⅋ᵖ_
+        ; ∙ᵖ-mono          to ⅋ᵖ-mono
+        ; ∙ᵖ-monoˡ         to ⅋ᵖ-monoˡ
+        ; ∙ᵖ-monoʳ         to ⅋ᵖ-monoʳ
+        ; ∙ᵖ-cong          to ⅋ᵖ-cong
+        ; ∙ᵖ-congˡ         to ⅋ᵖ-congˡ
+        ; ∙ᵖ-congʳ         to ⅋ᵖ-congʳ
+        ; ∙ᵖ-assoc         to ⅋ᵖ-assoc
+        ; ∙ᵖ-identity      to ⅋ᵖ-identity
+        ; ∙ᵖ-identityˡ     to ⅋ᵖ-identityˡ
+        ; ∙ᵖ-identityʳ     to ⅋ᵖ-identityʳ
+        ; ∙ᵖ-isPomonoid    to ⅋ᵖ-isPomonoid
+        ; ηᵖ-preserve-∙ᵖ   to ηᵖ-preserve-⅋ᵖ
+        ; ηᵖ-preserve-∙ᵖ⁻¹ to ηᵖ-preserve-⅋ᵖ⁻¹
+        ; ∙ᵖ-◁ᵖ-isDuoidal  to ⅋ᵖ-◁ᵖ-isDuoidal
         )
+    open LiftIsCommutativePomonoid ⅋-isCommutativePomonoid public
+      using
+        (
+        )
+      renaming
+        ( ∙ᵖ-comm                               to ⅋ᵖ-comm
+        ; ∙ᵖ-isCommutativePomonoid              to ⅋ᵖ-isCommutativePomonoid
+        ; _⇨ᵖ_                                  to _⊸ᵖ_
+        ; ⇨ᵖ-residual-to                        to ⊸ᵖ-residual-to
+        ; ⇨ᵖ-residual-from                      to ⊸ᵖ-residual-from
+        ; ⇨ᵖ-residual                           to ⊸ᵖ-residual
+        ; ⇨ᵖ-∙ᵖ-isResiduatedCommutativePomonoid to ⊸ᵖ-⅋ᵖ-isResiduatedCommutativePomonoid
+        )
+
+  open L
+    public
+    using
+      ( LowerSet
+      ; ICarrier
+      ; ≤-closed
+      ; _≤ᵖ_
+      ; *≤ᵖ*
+      )
+
+  units-iso : L.εᵖ L.≈ᵖ L.ιᵖ
+  units-iso .proj₁ = L.εᵖ≤ιᵖ
+  units-iso .proj₂ .*≤ᵖ* x≤I = x≤I
+
+  module C where
+    open Algebra.Ordered.Construction.Chu.Construction
+          L.⊸ᵖ-⅋ᵖ-isResiduatedCommutativePomonoid
+          L.∧ᵖ-isMeetSemilattice
+          L.∨ᵖ-isJoinSemilattice
+          L.εᵖ
       public
 
-  open Chu
-  open _==>_
+    K-m : (L.εᵖ L.◁ᵖ L.εᵖ) L.≤ᵖ L.εᵖ
+    K-m = L.≤ᵖ-trans (L.◁ᵖ-mono (L.≤ᵖ-reflexive units-iso) L.≤ᵖ-refl) (L.≤ᵖ-reflexive (L.◁ᵖ-identityˡ _))
+    
+    K-u : L.ιᵖ L.≤ᵖ L.εᵖ
+    K-u = L.≤ᵖ-reflexive (L.Eq.sym units-iso)
 
-  K-m : (M.εᵖ D.◁ᵖ M.εᵖ) P.≤ᵖ M.εᵖ
-  K-m = P.≤ᵖ-trans (D.◁ᵖ-mono P.≤ᵖ-refl P.≤ᵖ-refl) (P.≤ᵖ-reflexive (D.◁ᵖ-identityˡ _))
-  K-u : D.ιᵖ P.≤ᵖ M.εᵖ
-  K-u = P.≤ᵖ-refl
+    open SelfDual L.⅋ᵖ-◁ᵖ-isDuoidal K-m K-u public
 
-  open SelfDual D.∙ᵖ-◁ᵖ-isDuoidal K-m K-u
+    mix : ε ≅ ¬ ε
+    mix .proj₁ .fpos = L.≤ᵖ-refl
+    mix .proj₁ .fneg = L.≤ᵖ-refl
+    mix .proj₂ .fpos = L.≤ᵖ-refl
+    mix .proj₂ .fneg = L.≤ᵖ-refl
 
+    ε-eq-ι : ε ≅ ι
+    ε-eq-ι .proj₁ .fpos = L.≤ᵖ-reflexive units-iso
+    ε-eq-ι .proj₁ .fneg = L.≤ᵖ-reflexive (L.Eq.sym units-iso)
+    ε-eq-ι .proj₂ .fpos = L.≤ᵖ-reflexive (L.Eq.sym units-iso)
+    ε-eq-ι .proj₂ .fneg = L.≤ᵖ-reflexive units-iso
 
-  Chu-mix : ⟦I⟧ ≅ ⟦¬⟧ ⟦I⟧
-  Chu-mix .proj₁ .fpos = P.≤ᵖ-refl
-  Chu-mix .proj₁ .fneg = P.≤ᵖ-refl
-  Chu-mix .proj₂ .fpos = P.≤ᵖ-refl
-  Chu-mix .proj₂ .fneg = P.≤ᵖ-refl
-
-  I-eq-J : ⟦I⟧ ≅ J
-  I-eq-J .proj₁ .fpos = P.≤ᵖ-reflexive units-iso
-  I-eq-J .proj₁ .fneg = P.≤ᵖ-reflexive (P.Eq.sym units-iso)
-  I-eq-J .proj₂ .fpos = P.≤ᵖ-reflexive (P.Eq.sym units-iso)
-  I-eq-J .proj₂ .fneg = P.≤ᵖ-reflexive units-iso
+    ⊗-⍮-isCommutativeDuoidal : IsCommutativeDuoidal _≅_ _==>_ _⊗_ _⍮_ ε ι
+    ⊗-⍮-isCommutativeDuoidal = record
+      { isDuoidal = ⊗-⍮-isDuoidal 
+      ; ∙-comm    = ⊗-isCommutativePomonoid .IsCommutativePomonoid.comm 
+      }
+  
+  open C public using (Chu)
 
   model : Model (suc (suc (a ⊔ ℓ₂))) (a ⊔ ℓ₂) (a ⊔ ℓ₂)
-  model .Model.Carrier = Chu
-  model .Model._≈_ = _≅_
-  model .Model._≲_ = _==>_
-  model .Model.¬ = ⟦¬⟧
-  model .Model.I = ⟦I⟧
-  model .Model.J = J
-  model .Model._⊗_ = _⟦⊗⟧_
-  model .Model._◁_ = _⍮_
-  model .Model.⊗-isCommutativePomonoid = ⊗-isCommutativePomonoid
-  model .Model.⊗-isStarAutonomous = ⊗-isStarAutonomous
-  model .Model.mix = Chu-mix
-  model .Model.⊗-◁-isDuoidal = ⊗-⍮-isDuoidal
-  model .Model.I-eq-J = I-eq-J
-  model .Model.◁-self-dual = self-dual
+  model .Model.Carrier = C.Chu
+  model .Model._≈_ = C._≅_
+  model .Model._≲_ = C._==>_
+  model .Model.¬ = C.¬
+  model .Model.I = C.ε
+  model .Model.J = C.ι
+  model .Model._⊗_ = C._⊗_
+  model .Model._◁_ = C._⍮_
+  model .Model.mix = C.mix
+  model .Model.⊗-◁-isCommutativeDuoidal = C.⊗-⍮-isCommutativeDuoidal
+  model .Model.I-eq-J = C.ε-eq-ι
+  model .Model.◁-self-dual = C.self-dual
+  model .Model.⊗-isStarAutonomous = C.⊗-isStarAutonomous
 
   embed : Carrier → Chu
-  embed x = Chu-embed (P.ηᵖ x)
+  embed x = C.embed (L.ηᵖ x)
