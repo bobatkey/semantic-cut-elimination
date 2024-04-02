@@ -10,14 +10,17 @@ module Algebra.Ordered.Construction.Chu where
 open import Level
 open import Data.Product using (proj₁; proj₂; _,_; swap)
 open import Function using (Equivalence)
-open import Algebra using (Op₁; Op₂; Associative; LeftIdentity; RightIdentity)
-open import Algebra.Ordered
+open import Algebra.Core using (Op₁; Op₂)
+open import Algebra.Ordered using (IsCommutativePomonoid; IsPomonoid; IsPosemigroup; IsPomagma)
 open import Algebra.Ordered.Consequences using (supremum∧residualʳ⇒distribˡ)
 open import Algebra.Ordered.Structures.Residuated
 open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
 open import Algebra.Ordered.Structures.StarAuto using (IsStarAuto)
 open import Relation.Binary.Construct.Core.Symmetric as SymCore using (SymCore)
-open import Relation.Binary using (Rel; Reflexive; Transitive; Poset; IsPartialOrder; IsPreorder; IsEquivalence)
+open import Relation.Binary.Bundles using (Poset)
+open import Relation.Binary.Core
+open import Relation.Binary.Definitions
+open import Relation.Binary.Structures using (IsPartialOrder; IsPreorder; IsEquivalence)
 open import Relation.Binary.Lattice using (IsMeetSemilattice; IsJoinSemilattice)
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 
@@ -37,6 +40,15 @@ module Construction
     (K : Carrier)
   where
 
+  open import Algebra.Definitions
+
+  private
+    variable
+      w w′ w₁ w₂ : Carrier
+      x x′ x₁ x₂ : Carrier
+      y y′ y₁ y₂ : Carrier
+      z z′ z₁ z₂ : Carrier
+
   private
     module C where
       open IsResiduatedCommutativePomonoid ∙ᶜ-isResiduatedCommutativePomonoid public
@@ -49,7 +61,14 @@ module Construction
       pos : Carrier
       neg : Carrier
       int : (pos ∙ᶜ neg) ≤ᶜ K
-  open Chu public
+  open Chu public 
+
+  private
+    variable
+      W W′ W₁ W₂ : Chu
+      X X′ X₁ X₂ : Chu
+      Y Y′ Y₁ Y₂ : Chu
+      Z Z′ Z₁ Z₂ : Chu
 
   record _≤_ (X Y : Chu) : Set ℓ₂ where
     no-eta-equality
@@ -62,7 +81,7 @@ module Construction
   _≈_ : Rel Chu ℓ₂
   _≈_ = SymCore _≤_
 
-  mk-≈ : ∀ {X Y} → (X .pos ≈ᶜ Y .pos) → (X .neg ≈ᶜ Y .neg) → X ≈ Y
+  mk-≈ : X .pos ≈ᶜ Y .pos → X .neg ≈ᶜ Y .neg → X ≈ Y
   mk-≈ pos-eq neg-eq .proj₁ .fpos = C.reflexive pos-eq
   mk-≈ pos-eq neg-eq .proj₁ .fneg = C.reflexive (C.Eq.sym neg-eq)
   mk-≈ pos-eq neg-eq .proj₂ .fpos = C.reflexive (C.Eq.sym pos-eq)
@@ -83,9 +102,10 @@ module Construction
     ; trans         = ≤-trans 
     }
 
-  _>>_ : ∀ {x y z} → x ≤ᶜ y → y ≤ᶜ z → x ≤ᶜ z
-  _>>_ = C.trans
   infixr 5 _>>_
+  
+  _>>_ : Transitive _≤ᶜ_
+  _>>_ = C.trans
 
   -- Embedding
   embed : Carrier → Chu
@@ -99,13 +119,13 @@ module Construction
   ¬ X .neg = X .pos
   ¬ X .int = C.trans (C.reflexive (C.comm _ _)) (X .int)
 
-  involution : ∀ {X} → X ≈ ¬ (¬ X)
-  involution .proj₁ .fpos = C.refl
-  involution .proj₁ .fneg = C.refl
-  involution .proj₂ .fpos = C.refl
-  involution .proj₂ .fneg = C.refl
+  ¬-involutive : Involutive _≈_ ¬
+  ¬-involutive X .proj₁ .fpos = C.refl
+  ¬-involutive X .proj₁ .fneg = C.refl
+  ¬-involutive X .proj₂ .fpos = C.refl
+  ¬-involutive X .proj₂ .fneg = C.refl
 
-  ¬-mono : ∀ {X Y} → X ≤ Y → ¬ Y ≤ ¬ X
+  ¬-mono : Antitonic₁ _≤_ _≤_ ¬ -- X ≤ Y → ¬ Y ≤ ¬ X
   ¬-mono f .fpos = f .fneg
   ¬-mono f .fneg = f .fpos
 
@@ -124,14 +144,15 @@ module Construction
     C.mono C.refl C.evalʳ >>
     X .int
 
-  ⊗-mono : ∀ {X₁ Y₁ X₂ Y₂} → X₁ ≤ X₂ → Y₁ ≤ Y₂ → (X₁ ⊗ Y₁) ≤ (X₂ ⊗ Y₂)
+  ⊗-mono : X₁ ≤ X₂ → Y₁ ≤ Y₂ → (X₁ ⊗ Y₁) ≤ (X₂ ⊗ Y₂)
   ⊗-mono f g .fpos = C.mono (f .fpos) (g .fpos)
   ⊗-mono f g .fneg =
     C.∧-greatest (C.x∧y≤x _ _ >> C.anti-monoʳ (g .fpos) (f .fneg))
                  (C.x∧y≤y _ _ >> C.anti-monoʳ (f .fpos) (g .fneg))
 
 
-  ⊗-sym : ∀ {X Y} → (X ⊗ Y) ≤ (Y ⊗ X)
+  -- ⊗-sym : (X ⊗ Y) ≤ (Y ⊗ X)
+  ⊗-sym : (X ⊗ Y) ≤ (Y ⊗ X)
   ⊗-sym .fpos = C.reflexive (C.comm _ _)
   ⊗-sym .fneg = C.∧-greatest (C.x∧y≤y _ _) (C.x∧y≤x _ _)
 
@@ -228,7 +249,7 @@ module Construction
   ⊗-isStarAutonomous : IsStarAuto _≈_ _≤_ _⊗_ ε ¬
   ⊗-isStarAutonomous .IsStarAuto.isCommutativePomonoid = ⊗-isCommutativePomonoid
   ⊗-isStarAutonomous .IsStarAuto.¬-mono = ¬-mono
-  ⊗-isStarAutonomous .IsStarAuto.involution = involution
+  ⊗-isStarAutonomous .IsStarAuto.¬-involutive = ¬-involutive
   ⊗-isStarAutonomous .IsStarAuto.*-aut = *-aut
   ⊗-isStarAutonomous .IsStarAuto.*-aut⁻¹ = *-aut⁻¹
 

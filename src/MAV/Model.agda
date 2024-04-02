@@ -95,7 +95,7 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
 
   open IsStarAuto ⊗-isStarAutonomous public
     using
-      ( involution
+      ( ¬-involutive
       ; ¬-mono
       ; ¬-cong
       ; _⅋_
@@ -131,15 +131,15 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
 
   x≲x⊕y : ∀ x y → x ≲ (x ⊕ y)
   x≲x⊕y x y = 
-    trans (reflexive involution) (¬-mono (x&y≲x _ _))
+    trans (reflexive (Eq.sym (¬-involutive _))) (¬-mono (x&y≲x _ _))
 
   y≲x⊕y : ∀ x y → y ≲ (x ⊕ y)
   y≲x⊕y x y = 
-    trans (reflexive involution) (¬-mono (x&y≲y _ _))
+    trans (reflexive (Eq.sym (¬-involutive _))) (¬-mono (x&y≲y _ _))
 
   ⊕-least : ∀ {x y z} → x ≲ z → y ≲ z → (x ⊕ y) ≲ z
   ⊕-least x≲z y≲z =
-    trans (¬-mono (&-greatest (¬-mono x≲z) (¬-mono y≲z))) (reflexive (Eq.sym involution))
+    trans (¬-mono (&-greatest (¬-mono x≲z) (¬-mono y≲z))) (reflexive (¬-involutive _))
 
   ⊕-isJoinSemilattice : IsJoinSemilattice _≈_ _≲_ _⊕_
   ⊕-isJoinSemilattice = record
@@ -168,10 +168,10 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
 
   sequence : ∀ {w x y z} → ((w ⅋ x) ◁ (y ⅋ z)) ≲ ((w ◁ y) ⅋ (x ◁ z))
   sequence =
-    trans (reflexive involution)
+    trans (reflexive (Eq.sym (¬-involutive _)))
           (¬-mono (trans (⊗-mono (reflexive ◁-self-dual) (reflexive ◁-self-dual))
                   (trans (⊗-◁-entropy _ _ _ _)
-                  (trans (◁-mono (reflexive involution) (reflexive involution))
+                  (trans (◁-mono (reflexive (Eq.sym (¬-involutive _))) (reflexive (Eq.sym (¬-involutive _))))
                          (reflexive (Eq.sym ◁-self-dual))))))
 
   ⊕-⊗-distrib : _DistributesOver_ _≲_ _⊗_ _⊕_
@@ -180,8 +180,8 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
 
   &-⅋-distrib : ∀ {x y z} → ((x ⅋ z) & (y ⅋ z)) ≲ ((x & y) ⅋ z)
   &-⅋-distrib =
-    trans (reflexive involution)
-          (¬-mono (trans (⊗-mono (¬-mono (&-mono (reflexive (Eq.sym involution))
-                                                 (reflexive (Eq.sym involution))))
+    trans (reflexive (Eq.sym (¬-involutive _)))
+          (¬-mono (trans (⊗-mono (¬-mono (&-mono (reflexive (¬-involutive _))
+                                                 (reflexive (¬-involutive _))))
                                  refl)
                          (⊕-⊗-distrib .proj₂ _ _ _)))

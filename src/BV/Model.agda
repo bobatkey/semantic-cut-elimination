@@ -93,7 +93,7 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
 
   open IsStarAuto ⊗-isStarAutonomous public
     using
-      ( involution
+      ( ¬-involutive
       ; ¬-mono
       ; ¬-cong
       ; _⅋_
@@ -116,8 +116,8 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
 
   sequence : ∀ {w x y z} → ((w ⅋ x) ◁ (y ⅋ z)) ≲ ((w ◁ y) ⅋ (x ◁ z))
   sequence =
-    trans (reflexive involution)
+    trans (reflexive (Eq.sym (¬-involutive _)))
           (¬-mono (trans (⊗-mono (reflexive ◁-self-dual) (reflexive ◁-self-dual))
                   (trans (⊗-◁-entropy _ _ _ _)
-                  (trans (◁-mono (reflexive involution) (reflexive involution))
+                  (trans (◁-mono (reflexive (Eq.sym (¬-involutive _))) (reflexive (Eq.sym (¬-involutive _))))
                          (reflexive (Eq.sym ◁-self-dual))))))
