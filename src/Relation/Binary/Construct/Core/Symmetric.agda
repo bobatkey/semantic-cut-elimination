@@ -69,30 +69,5 @@ module _ {a ℓ} {A : Set a} where
       isPreorder⇒poset .Poset._≤_ = _≲_
       isPreorder⇒poset .Poset.isPartialOrder = isPreorder⇒isPartialOrder
 
-    module _ (refl : Reflexive _≲_) (trans : Transitive _≲_) where
-
-      refl,trans⇒≡-≲-isPreorder : IsPreorder PropEq._≡_ _≲_
-      refl,trans⇒≡-≲-isPreorder .IsPreorder.isEquivalence = PropEq.isEquivalence
-      refl,trans⇒≡-≲-isPreorder .IsPreorder.reflexive PropEq.refl = refl
-      refl,trans⇒≡-≲-isPreorder .IsPreorder.trans = trans
-
-      refl,trans⇒isEquivalence : IsEquivalence (SymCore _≲_)
-      refl,trans⇒isEquivalence = isPreorder⇒isEquivalence refl,trans⇒≡-≲-isPreorder
-
-      refl,trans⇒setoid : Setoid a ℓ
-      refl,trans⇒setoid = isPreorder⇒setoid refl,trans⇒≡-≲-isPreorder
-
-      refl,trans⇒isPreorder : IsPreorder (SymCore _≲_) _≲_
-      refl,trans⇒isPreorder = isPreorder⇒isPreorder refl,trans⇒≡-≲-isPreorder
-
-      refl,trans⇒preorder : Preorder a ℓ ℓ
-      refl,trans⇒preorder = isPreorder⇒preorder refl,trans⇒≡-≲-isPreorder
-
-      refl,trans⇒isPartialOrder : IsPartialOrder (SymCore _≲_) _≲_
-      refl,trans⇒isPartialOrder = isPreorder⇒isPartialOrder refl,trans⇒≡-≲-isPreorder
-
-      refl,trans⇒poset : Poset a ℓ ℓ
-      refl,trans⇒poset = isPreorder⇒poset refl,trans⇒≡-≲-isPreorder
-
     SymCore⇒SymClosure : SymCore _≲_ ⇒ SymClosure _≲_
     SymCore⇒SymClosure (x≲y , _y≲x) = fwd x≲y -- or bwd y≲x
