@@ -58,6 +58,9 @@ module Construction
       open IsResiduatedCommutativePomonoid ∙ᶜ-isResiduatedCommutativePomonoid public
       open IsMeetSemilattice ∧ᶜ-isMeet public using (infimum; x∧y≤x; x∧y≤y; ∧-greatest)
       open IsJoinSemilattice ∨ᶜ-isJoin public using (supremum; ∨-least; x≤x∨y; y≤x∨y)
+      
+      poset : Poset _ _ _
+      poset = record { isPartialOrder = isPartialOrder }
 
   record Chu : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
     no-eta-equality
@@ -121,7 +124,7 @@ module Construction
   ¬ : Chu → Chu
   ¬ X .pos = X .neg
   ¬ X .neg = X .pos
-  ¬ X .int = C.trans (C.reflexive (C.comm _ _)) (X .int)
+  ¬ X .int = C.≤-respˡ-≈ (C.comm _ _) (X .int)
 
   ¬-involutive : Involutive _≈_ ¬
   ¬-involutive X .Product.proj₁ .fpos = C.refl
@@ -137,16 +140,26 @@ module Construction
   ε : Chu
   ε .pos = εᶜ
   ε .neg = K
-  ε .int = C.reflexive (C.identity .Product.proj₁ _)
+  ε .int = C.reflexive (C.identityˡ _)
 
   _⊗_ : Chu → Chu → Chu
   (X ⊗ Y) .pos = X .pos ∙ᶜ Y .pos
   (X ⊗ Y) .neg = (Y .pos -∙ᶜ X .neg) ∧ᶜ (X .pos -∙ᶜ Y .neg)
   (X ⊗ Y) .int =
-    C.mono C.refl (C.x∧y≤x _ _) >>
-    C.reflexive (C.assoc _ _ _) >>
-    C.mono C.refl C.evalʳ >>
-    X .int
+    begin
+      (X ⊗ Y) .pos ∙ᶜ (X ⊗ Y) .neg
+    ≡⟨⟩
+      (X .pos ∙ᶜ Y .pos) ∙ᶜ ((Y .pos -∙ᶜ X .neg) ∧ᶜ (X .pos -∙ᶜ Y .neg))
+    ≤⟨ C.monoʳ (C.x∧y≤x _ _) ⟩
+      (X .pos ∙ᶜ Y .pos) ∙ᶜ (Y .pos -∙ᶜ X .neg)
+    ≈⟨ C.assoc _ _ _ ⟩
+      X .pos ∙ᶜ (Y .pos ∙ᶜ (Y .pos -∙ᶜ X .neg))
+    ≤⟨ C.monoʳ C.evalʳ ⟩
+      X .pos ∙ᶜ X .neg
+    ≤⟨ X .int ⟩
+      K
+    ∎
+    where open PosetReasoning C.poset
 
   ⊗-mono : X₁ ≤ X₂ → Y₁ ≤ Y₂ → (X₁ ⊗ Y₁) ≤ (X₂ ⊗ Y₂)
   ⊗-mono f g .fpos = C.mono (f .fpos) (g .fpos)
