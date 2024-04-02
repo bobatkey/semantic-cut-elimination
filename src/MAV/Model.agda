@@ -25,11 +25,13 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
     _⊗_     : Carrier → Carrier → Carrier
     _&_     : Carrier → Carrier → Carrier
 
-  field
-    &-isMeet                 : IsMeetSemilattice _≈_ _≲_ _&_
     ⊗-◁-isCommutativeDuoidal : IsCommutativeDuoidal _≈_ _≲_ _⊗_ _◁_ I J
+    ⊗-isStarAutonomous       : IsStarAuto _≈_ _≲_ _⊗_ I ¬
+    &-isMeet                 : IsMeetSemilattice _≈_ _≲_ _&_
+
     I-eq-J                   : I ≈ J
     ◁-self-dual              : ∀ {x y} → (¬ (x ◁ y)) ≈ ((¬ x) ◁ (¬ y))
+    mix                      : I ≈ ¬ I
 
   open IsCommutativeDuoidal ⊗-◁-isCommutativeDuoidal public
     using
@@ -90,10 +92,6 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
       ; ∙-identityʳ             to ⊗-identityʳ
       ; ∙-comm                  to ⊗-comm
       )
-
-  field
-    ⊗-isStarAutonomous       : IsStarAuto _≈_ _≲_ ⊗-isCommutativePomonoid ¬
-    mix                      : I ≈ ¬ I
 
   open IsStarAuto ⊗-isStarAutonomous public
     using

@@ -203,7 +203,8 @@ module Construction {a b c}
   *-aut⁻¹ m .fneg =
     ∧-greatest (Λʳ (m .fneg)) (Λʳ (mono (m .fpos >> x∧y≤x _ _) refl >> evalˡ))
 
-  ⊗-isStarAutonomous : IsStarAuto _≅_ _==>_ ⊗-isCommutativePomonoid ¬
+  ⊗-isStarAutonomous : IsStarAuto _≅_ _==>_ _⊗_ ε ¬
+  ⊗-isStarAutonomous .IsStarAuto.isCommutativePomonoid = ⊗-isCommutativePomonoid
   ⊗-isStarAutonomous .IsStarAuto.¬-mono = ¬-mono
   ⊗-isStarAutonomous .IsStarAuto.involution = involution
   ⊗-isStarAutonomous .IsStarAuto.*-aut = *-aut

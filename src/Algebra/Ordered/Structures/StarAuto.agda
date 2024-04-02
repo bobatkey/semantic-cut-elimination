@@ -33,16 +33,15 @@ open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 import Relation.Binary.Reasoning.Setoid as SetoidReasoning
 import Relation.Binary.Reasoning.PartialOrder as PosetReasoning
 
-record IsStarAuto {_⊗_ ε} (⊗-isCommutativePomonoid : IsCommutativePomonoid _⊗_ ε) (¬ : A → A)
-   : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
+record IsStarAuto (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   field
-    ¬-mono     : ∀ {x y} → x ≲ y → ¬ y ≲ ¬ x
-    involution : ∀ {x} → x ≈ ¬ (¬ x)
+    isCommutativePomonoid : IsCommutativePomonoid _⊗_ ε
+    ¬-mono                : ∀ {x y} → x ≲ y → ¬ y ≲ ¬ x
+    involution            : ∀ {x} → x ≈ ¬ (¬ x)
+    *-aut                 : ∀ {x y z} → (x ⊗ y) ≲ ¬ z → x ≲ ¬ (y ⊗ z)
+    *-aut⁻¹               : ∀ {x y z} → x ≲ ¬ (y ⊗ z) → (x ⊗ y) ≲ ¬ z
 
-    *-aut   : ∀ {x y z} → (x ⊗ y) ≲ ¬ z → x ≲ ¬ (y ⊗ z)
-    *-aut⁻¹ : ∀ {x y z} → x ≲ ¬ (y ⊗ z) → (x ⊗ y) ≲ ¬ z
-
-  open IsCommutativePomonoid ⊗-isCommutativePomonoid public
+  open IsCommutativePomonoid isCommutativePomonoid public
     using
       ( refl
       ; trans
@@ -67,7 +66,7 @@ record IsStarAuto {_⊗_ ε} (⊗-isCommutativePomonoid : IsCommutativePomonoid 
       ; identityˡ to ⊗-identityˡ
       ; identityʳ to ⊗-identityʳ
       )
-  
+
   poset : Poset _ _ _
   poset = record { isPartialOrder = isPartialOrder }
 
@@ -119,14 +118,14 @@ record IsStarAuto {_⊗_ ε} (⊗-isCommutativePomonoid : IsCommutativePomonoid 
 
   ⅋-isCommutativePomonoid : IsCommutativePomonoid _⅋_ ⊥
   ⅋-isCommutativePomonoid = record
-    { isPomonoid = record 
-      { isPosemigroup = record 
-        { isPomagma = record 
+    { isPomonoid = record
+      { isPosemigroup = record
+        { isPomagma = record
           { isPartialOrder = isPartialOrder
-          ; mono = ⅋-mono 
+          ; mono = ⅋-mono
           }
           ;
-          assoc = ⅋-assoc 
+          assoc = ⅋-assoc
         }
       ; identity = ⅋-identityˡ , ⅋-identityʳ
       }
@@ -169,8 +168,8 @@ record IsStarAuto {_⊗_ ε} (⊗-isCommutativePomonoid : IsCommutativePomonoid 
 
   ⊗-⊸-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _⊗_ _⊸_ ε
   ⊗-⊸-isResiduatedCommutativePomonoid = record
-    { isCommutativePomonoid = ⊗-isCommutativePomonoid
-    ; residuated            = comm∧residual⇒residuated isPreorder ⊗-comm residualʳ 
+    { isCommutativePomonoid = isCommutativePomonoid
+    ; residuated            = comm∧residual⇒residuated isPreorder ⊗-comm residualʳ
     }
 
   open IsResiduatedCommutativePomonoid ⊗-⊸-isResiduatedCommutativePomonoid public

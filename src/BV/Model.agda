@@ -24,8 +24,10 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
     _◁_     : Carrier → Carrier → Carrier
     _⊗_     : Carrier → Carrier → Carrier
 
-  field
     ⊗-◁-isCommutativeDuoidal : IsCommutativeDuoidal _≈_ _≲_ _⊗_ _◁_ I J
+    ⊗-isStarAutonomous       : IsStarAuto _≈_ _≲_ _⊗_ I ¬
+    mix                      : I ≈ ¬ I
+
     I-eq-J                   : I ≈ J
     ◁-self-dual              : ∀ {x y} → (¬ (x ◁ y)) ≈ ((¬ x) ◁ (¬ y))
 
@@ -88,10 +90,6 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
       ; ∙-identityʳ             to ⊗-identityʳ
       ; ∙-comm                  to ⊗-comm
       )
-
-  field
-    ⊗-isStarAutonomous       : IsStarAuto _≈_ _≲_ ⊗-isCommutativePomonoid ¬
-    mix                      : I ≈ ¬ I
 
   open IsStarAuto ⊗-isStarAutonomous public
     using
