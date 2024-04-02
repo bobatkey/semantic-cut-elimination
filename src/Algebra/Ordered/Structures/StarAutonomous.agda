@@ -78,10 +78,10 @@ record IsStarAutonomous (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ �
 
   -- NOTE: `*-aut` is the LEFT *-autonomous property.
   *-autʳ : ∀ {x y z} → (x ⊗ y) ≲ ¬ z → y ≲ ¬ (z ⊗ x)
-  *-autʳ {x} {y} {z} x⊗y≲¬z =
+  *-autʳ {x} {y} {z} xy≲¬z =
     begin
       y
-    ≤⟨ *-aut (≤-respˡ-≈ (⊗-comm x y) x⊗y≲¬z) ⟩
+    ≤⟨ *-aut (≤-respˡ-≈ (⊗-comm x y) xy≲¬z) ⟩
       ¬ (x ⊗ z)
     ≈⟨ ¬-cong (⊗-comm _ _) ⟩
       ¬ (z ⊗ x)
@@ -90,12 +90,12 @@ record IsStarAutonomous (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ �
   
   -- NOTE: `*-aut⁻¹` is the LEFT inverse *-autonomous property.
   *-autʳ⁻¹ : ∀ {x y z} → y ≲ ¬ (z ⊗ x) → (x ⊗ y) ≲ ¬ z
-  *-autʳ⁻¹ {x} {y} {z} y≲¬z⊗x =
+  *-autʳ⁻¹ {x} {y} {z} y≲¬zx =
     begin
       x ⊗ y
     ≈⟨ ⊗-comm _ _ ⟩
       y ⊗ x
-    ≤⟨ *-aut⁻¹ (≤-respʳ-≈ (¬-cong (⊗-comm _ _)) y≲¬z⊗x) ⟩
+    ≤⟨ *-aut⁻¹ (≤-respʳ-≈ (¬-cong (⊗-comm _ _)) y≲¬zx) ⟩
       ¬ z
     ∎
     where open PosetReasoning poset
@@ -269,7 +269,7 @@ record IsStarAutonomous (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ �
     where open PosetReasoning poset
 
   linear-distribˡ : ∀ {x y z} → (x ⊗ (z ⅋ y)) ≲ (z ⅋ (x ⊗ y))
-  linear-distribˡ {x} {y} {z} = *-aut {x ⊗ (z ⅋ y)} {¬ z} {¬ (x ⊗ y)} $
+  linear-distribˡ {x} {y} {z} = *-aut $
     begin
       (x ⊗ (z ⅋ y)) ⊗ ¬ z
     ≈⟨ ⊗-assoc _ _ _ ⟩ 
