@@ -24,7 +24,7 @@ open FrameModel MAV.frame
 open C using (Chu; pos; neg; int; _==>_; fpos; fneg)
 open import MAV.Interpretation Atom analyticModel (λ A → embed (`- A))
 
-interactᵖ : (P Q : Formula) → (I.U (I.ηⁱ Q) L.⇨ᵖ I.U I.ιⁱ) L.⅋ᵖ L.ηᵖ (P `⊗ Q) L.≤ᵖ L.ηᵖ P
+interactᵖ : (P Q : Formula) → (I.U (I.ηⁱ Q) L.⊸ᵖ I.U I.ιⁱ) L.⅋ᵖ L.ηᵖ (P `⊗ Q) L.≤ᵖ L.ηᵖ P
 interactᵖ P Q .L.*≤ᵖ* {x} (y , z , x≤y⅋z , ϕ₁ , lift z≤P⊗Q) =
   lift (x≤y⅋z
         ◅◅ (`⅋⟩⋆ z≤P⊗Q)

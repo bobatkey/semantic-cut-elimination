@@ -134,16 +134,15 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
         )
     open LiftIsCommutativePomonoid ⅋-isCommutativePomonoid public
       using
-        (
+        ( _⊸ᵖ_
+        ; ⊸ᵖ-residual-to
+        ; ⊸ᵖ-residual-from
+        ; ⊸ᵖ-residual
         )
       renaming
         ( ∙ᵖ-comm                               to ⅋ᵖ-comm
         ; ∙ᵖ-isCommutativePomonoid              to ⅋ᵖ-isCommutativePomonoid
-        ; _⇨ᵖ_                                  to _⊸ᵖ_
-        ; ⇨ᵖ-residual-to                        to ⊸ᵖ-residual-to
-        ; ⇨ᵖ-residual-from                      to ⊸ᵖ-residual-from
-        ; ⇨ᵖ-residual                           to ⊸ᵖ-residual
-        ; ⇨ᵖ-∙ᵖ-isResiduatedCommutativePomonoid to ⊸ᵖ-⅋ᵖ-isResiduatedCommutativePomonoid
+        ; ⊸ᵖ-∙ᵖ-isResiduatedCommutativePomonoid to ⊸ᵖ-⅋ᵖ-isResiduatedCommutativePomonoid
         )
 
   open L
