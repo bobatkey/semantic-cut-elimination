@@ -12,7 +12,7 @@ open import Data.Empty as Empty using ()
 open import Data.Product as Product using (_×_; _,_; -,_; ∃-syntax; Σ-syntax; swap)
 open import Data.Sum as Sum using (_⊎_)
 open import Data.Unit as Unit using ()
-open import Relation.Binary using (Poset; Reflexive; Transitive; IsPartialOrder; IsPreorder; Monotonic₂; Minimum)
+open import Relation.Binary using (Poset; Reflexive; Transitive; IsPartialOrder; IsPreorder; Monotonic₁; Monotonic₂; Minimum)
 open import Relation.Binary.Construct.Core.Symmetric as SymCore using (SymCore)
 open import Relation.Binary.Lattice
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
@@ -399,6 +399,45 @@ module LiftIsCommutativePomonoid
   ∙-∨-distrib : _DistributesOver_ _≤_ _∙_ _∨_
   ∙-∨-distrib = supremum∧residuated⇒distrib ≤-isPreorder ∨-supremum 
     (IsResiduatedCommutativePomonoid.residuated ⊸-∙-isResiduatedCommutativePomonoid)
+
+  -- Exponentials
+  ！ : LowerSet → LowerSet
+  ！ F .ICarrier x =
+      Σ[ z ∈ Carrier ] (x ≤ᶜ z) × (z ≤ᶜ εᶜ) × (z ≤ᶜ (z ∙ᶜ z)) × F .ICarrier z
+  ！ F .≤-closed x≤y (z , y≤z , z≤ε , z≤zz , Fz) = z , C.trans x≤y y≤z , z≤ε , z≤zz , Fz
+
+  ！-mono : Monotonic₁ _≤_ _≤_ ！
+  ！-mono F≤G .*≤* (z , x≤z , z≤ε , z≤zz , Fz) =
+    z , x≤z , z≤ε , z≤zz , F≤G .*≤* Fz
+
+  ！-monoidal : (！ F ∙ ！ G) ≤ ！ (F ∙ G)
+  ！-monoidal .*≤* {x} (y , z , x≤yz , (y' , y≤y' , y'≤ε , y'≤y'y' , Fy') ,
+                                       (z' , z≤z' , z'≤ε , z'≤z'z' , Gz')) =
+     y' ∙ᶜ z' , C.trans x≤yz (Mon.mono y≤y' z≤z') ,
+     (C.trans (Mon.mono y'≤ε z'≤ε) (C.reflexive (Mon.identityˡ _))) ,
+     C.trans (Mon.mono y'≤y'y' z'≤z'z')
+     (C.trans (C.reflexive (Mon.assoc _ _ _))
+     (C.trans (Mon.mono C.refl (C.reflexive (C.Eq.sym (Mon.assoc _ _ _))))
+     (C.trans (Mon.mono C.refl (Mon.mono (C.reflexive (Mon.comm _ _)) C.refl))
+     (C.trans (Mon.mono C.refl (C.reflexive (Mon.assoc _ _ _)))
+     (C.reflexive (C.Eq.sym (Mon.assoc _ _ _))))))) ,
+     (y' , z' , C.refl , Fy' , Gz')
+
+  ！-discard : ！ F ≤ ε
+  ！-discard .*≤* {x} (z , x≤z , z≤ε , z≤zz , Fz) = lift (C.trans x≤z z≤ε)
+
+  ！-duplicate : ！ F ≤ (！ F ∙ ！ F)
+  ！-duplicate .*≤* {x} (z , x≤z , z≤ε , z≤zz , Fz) =
+    z , z , C.trans x≤z z≤zz ,
+    (z , C.refl , z≤ε , z≤zz , Fz) ,
+    (z , C.refl , z≤ε , z≤zz , Fz)
+
+  ！-derelict : ！ F ≤ F
+  ！-derelict {F} .*≤* {x} (z , x≤z , z≤ε , x≤zz , Fz) = F .≤-closed x≤z Fz
+
+  ！-dig : ！ F ≤ ！ (！ F)
+  ！-dig .*≤* {x} (z , x≤z , z≤ε , z≤zz , Fz) =
+    z , x≤z , z≤ε , z≤zz , (z , C.refl , z≤ε , z≤zz , Fz)
 
 module LiftIsDuoidal
     {_∙ᶜ_}
