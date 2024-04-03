@@ -164,8 +164,8 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
       module C where
         open Algebra.Ordered.Construction.Chu.Construction
             L.⊸-⅋-isResiduatedCommutativePomonoid
-            L.∧-isMeetSemilattice
-            L.∨-isJoinSemilattice
+            L.∧-⊤-isBoundedMeetSemilattice
+            L.∨-⊥-isBoundedJoinSemilattice
             L.ε
           public
         
