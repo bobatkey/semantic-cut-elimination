@@ -8,7 +8,7 @@ module Algebra.Ordered.Construction.Chu where
 -- ◁-monoid, then Chu(A,K) is duoidal.
 
 open import Level
-open import Data.Product as Product using (_×_; _,_; swap)
+open import Data.Product as Product using (_×_; _,_; proj₁; proj₂; swap)
 open import Function using (Equivalence)
 open import Algebra.Core using (Op₁; Op₂)
 open import Algebra.Ordered using (IsCommutativePomonoid; IsPomonoid; IsPosemigroup; IsPomagma)
@@ -89,10 +89,10 @@ module Construction
   _≈_ = SymCore _≤_
 
   mk-≈ : X .pos ≈ᶜ Y .pos → X .neg ≈ᶜ Y .neg → X ≈ Y
-  mk-≈ pos-eq neg-eq .Product.proj₁ .fpos = C.reflexive pos-eq
-  mk-≈ pos-eq neg-eq .Product.proj₁ .fneg = C.reflexive (C.Eq.sym neg-eq)
-  mk-≈ pos-eq neg-eq .Product.proj₂ .fpos = C.reflexive (C.Eq.sym pos-eq)
-  mk-≈ pos-eq neg-eq .Product.proj₂ .fneg = C.reflexive neg-eq
+  mk-≈ pos-eq neg-eq .proj₁ .fpos = C.reflexive pos-eq
+  mk-≈ pos-eq neg-eq .proj₁ .fneg = C.reflexive (C.Eq.sym neg-eq)
+  mk-≈ pos-eq neg-eq .proj₂ .fpos = C.reflexive (C.Eq.sym pos-eq)
+  mk-≈ pos-eq neg-eq .proj₂ .fneg = C.reflexive neg-eq
 
   ≤-refl : Reflexive _≤_
   ≤-refl .fpos = C.refl
@@ -127,10 +127,10 @@ module Construction
   ¬ X .int = C.≤-respˡ-≈ (C.comm _ _) (X .int)
 
   ¬-involutive : Involutive _≈_ ¬
-  ¬-involutive X .Product.proj₁ .fpos = C.refl
-  ¬-involutive X .Product.proj₁ .fneg = C.refl
-  ¬-involutive X .Product.proj₂ .fpos = C.refl
-  ¬-involutive X .Product.proj₂ .fneg = C.refl
+  ¬-involutive X .proj₁ .fpos = C.refl
+  ¬-involutive X .proj₁ .fneg = C.refl
+  ¬-involutive X .proj₂ .fpos = C.refl
+  ¬-involutive X .proj₂ .fneg = C.refl
 
   ¬-mono : Antitonic₁ _≤_ _≤_ ¬
   ¬-mono f .fpos = f .fneg
@@ -206,22 +206,22 @@ module Construction
     Λʳ = C.residualʳ .Equivalence.to
 
   ⊗-identityˡ : LeftIdentity _≈_ ε _⊗_
-  ⊗-identityˡ X .Product.proj₁ .fpos = C.reflexive (C.identityˡ _)
-  ⊗-identityˡ X .Product.proj₁ .fneg = C.∧-greatest (Λʳ (X .int)) (Λʳ (C.reflexive (C.identityˡ _)))
-  ⊗-identityˡ X .Product.proj₂ .fpos = C.reflexive (C.Eq.sym (C.identityˡ (X .pos)))
-  ⊗-identityˡ X .Product.proj₂ .fneg = C.x∧y≤y _ _ >> C.reflexive (C.Eq.sym (C.identityʳ _)) >> C.evalˡ
+  ⊗-identityˡ X .proj₁ .fpos = C.reflexive (C.identityˡ _)
+  ⊗-identityˡ X .proj₁ .fneg = C.∧-greatest (Λʳ (X .int)) (Λʳ (C.reflexive (C.identityˡ _)))
+  ⊗-identityˡ X .proj₂ .fpos = C.reflexive (C.Eq.sym (C.identityˡ (X .pos)))
+  ⊗-identityˡ X .proj₂ .fneg = C.x∧y≤y _ _ >> C.reflexive (C.Eq.sym (C.identityʳ _)) >> C.evalˡ
 
   ⊗-identityʳ : RightIdentity _≈_ ε _⊗_
-  ⊗-identityʳ X .Product.proj₁ = ≤-trans ⊗-sym (⊗-identityˡ X .Product.proj₁)
-  ⊗-identityʳ X .Product.proj₂ = ≤-trans (⊗-identityˡ X .Product.proj₂) ⊗-sym
+  ⊗-identityʳ X .proj₁ = ≤-trans ⊗-sym (⊗-identityˡ X .proj₁)
+  ⊗-identityʳ X .proj₂ = ≤-trans (⊗-identityˡ X .proj₂) ⊗-sym
 
   ⊗-identity : Identity _≈_ ε _⊗_
   ⊗-identity = ⊗-identityˡ , ⊗-identityʳ
 
   -- FIXME: This really probably should use reasoning syntax.
   ⊗-assoc : Associative _≈_ _⊗_
-  ⊗-assoc X Y Z .Product.proj₁ .fpos = C.reflexive (C.assoc _ _ _)
-  ⊗-assoc X Y Z .Product.proj₁ .fneg =
+  ⊗-assoc X Y Z .proj₁ .fpos = C.reflexive (C.assoc _ _ _)
+  ⊗-assoc X Y Z .proj₁ .fneg =
     C.∧-greatest 
       (Λˡ 
         (C.∧-greatest
@@ -240,9 +240,9 @@ module Construction
           >> (C.reflexive (C.Eq.sym (C.assoc _ _ _)) 
           >> (C.mono C.evalˡ C.refl 
           >> C.evalˡ))))
-  ⊗-assoc X Y Z .Product.proj₂ .fpos =
+  ⊗-assoc X Y Z .proj₂ .fpos =
     C.reflexive (C.Eq.sym (C.assoc _ _ _))
-  ⊗-assoc X Y Z .Product.proj₂ .fneg =
+  ⊗-assoc X Y Z .proj₂ .fneg =
     C.∧-greatest
       (Λˡ (  C.mono (C.x∧y≤x _ _ >> C.anti-monoʳ C.refl (C.x∧y≤x _ _)) C.refl 
           >> (C.mono C.refl (C.reflexive (C.comm _ _)) 
@@ -311,20 +311,20 @@ module Construction
   (X & Y) .neg = X .neg ∨ᶜ Y .neg
   (X & Y) .int = •-∨-distrib >> C.∨-least (C.mono (C.x∧y≤x _ _) C.refl >> X .int) (C.mono (C.x∧y≤y _ _) C.refl >> Y .int)
 
-  proj₁ : (X & Y) ≤ X
-  proj₁ .fpos = C.x∧y≤x _ _
-  proj₁ .fneg = C.x≤x∨y _ _
+  x&y≤x : (X & Y) ≤ X
+  x&y≤x .fpos = C.x∧y≤x _ _
+  x&y≤x .fneg = C.x≤x∨y _ _
 
-  proj₂ : (X & Y) ≤ Y
-  proj₂ .fpos = C.x∧y≤y _ _
-  proj₂ .fneg = C.y≤x∨y _ _
+  x&y≤y : (X & Y) ≤ Y
+  x&y≤y .fpos = C.x∧y≤y _ _
+  x&y≤y .fneg = C.y≤x∨y _ _
 
-  ⟨_,_⟩ : X ≤ Y → X ≤ Z → X ≤ (Y & Z)
-  ⟨_,_⟩ f g .fpos = C.∧-greatest (f .fpos) (g .fpos)
-  ⟨_,_⟩ f g .fneg = C.∨-least (f .fneg) (g .fneg)
+  &-greatest : X ≤ Y → X ≤ Z → X ≤ (Y & Z)
+  &-greatest f g .fpos = C.∧-greatest (f .fpos) (g .fpos)
+  &-greatest f g .fneg = C.∨-least (f .fneg) (g .fneg)
 
   &-infimum : Infimum _≤_ _&_
-  &-infimum X Y = proj₁ , proj₂ , λ Z → ⟨_,_⟩
+  &-infimum X Y = x&y≤x , x&y≤y , λ Z → &-greatest
 
   &-isMeet : IsMeetSemilattice _≈_ _≤_ _&_
   &-isMeet .IsMeetSemilattice.isPartialOrder = ≤-isPartialOrder
@@ -350,10 +350,10 @@ module Construction
     (X ◁ Y) .int = Duo.∙-◁-entropy _ _ _ _ >> (Duo.◁-mono (X .int) (Y .int) >> K-m)
 
     self-dual : ¬ (X ◁ Y) ≈ (¬ X ◁ ¬ Y)
-    self-dual .Product.proj₁ .fpos = C.refl
-    self-dual .Product.proj₁ .fneg = C.refl
-    self-dual .Product.proj₂ .fpos = C.refl
-    self-dual .Product.proj₂ .fneg = C.refl
+    self-dual .proj₁ .fpos = C.refl
+    self-dual .proj₁ .fneg = C.refl
+    self-dual .proj₂ .fpos = C.refl
+    self-dual .proj₂ .fneg = C.refl
 
     ι : Chu
     ι .pos = ιᶜ
