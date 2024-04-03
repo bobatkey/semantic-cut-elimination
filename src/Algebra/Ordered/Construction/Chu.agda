@@ -187,9 +187,9 @@ module Construction
         where open PosetReasoning C.poset
 
 
-  ⊗-sym : (X ⊗ Y) ≤ (Y ⊗ X)
-  ⊗-sym .fpos = C.reflexive (C.comm _ _)
-  ⊗-sym .fneg = C.∧-greatest (C.x∧y≤y _ _) (C.x∧y≤x _ _)
+  ⊗-comm : (X ⊗ Y) ≤ (Y ⊗ X)
+  ⊗-comm .fpos = C.reflexive (C.comm _ _)
+  ⊗-comm .fneg = C.∧-greatest (C.x∧y≤y _ _) (C.x∧y≤x _ _)
 
 {- TODO: need general (un)curry
   embed-⊗ : ∀ {x y} → embed (x ∙ y) ≤ embed x ⊗ embed y
@@ -214,52 +214,117 @@ module Construction
   ⊗-identityˡ X .proj₂ .fneg = C.x∧y≤y _ _ >> C.reflexive (C.Eq.sym (C.identityʳ _)) >> C.evalˡ
 
   ⊗-identityʳ : RightIdentity _≈_ ε _⊗_
-  ⊗-identityʳ X .proj₁ = ≤-trans ⊗-sym (⊗-identityˡ X .proj₁)
-  ⊗-identityʳ X .proj₂ = ≤-trans (⊗-identityˡ X .proj₂) ⊗-sym
+  ⊗-identityʳ X .proj₁ = ≤-trans ⊗-comm (⊗-identityˡ X .proj₁)
+  ⊗-identityʳ X .proj₂ = ≤-trans (⊗-identityˡ X .proj₂) ⊗-comm
 
   ⊗-identity : Identity _≈_ ε _⊗_
   ⊗-identity = ⊗-identityˡ , ⊗-identityʳ
 
-  -- FIXME: This really probably should use reasoning syntax.
   ⊗-assoc : Associative _≈_ _⊗_
   ⊗-assoc X Y Z .proj₁ .fpos = C.reflexive (C.assoc _ _ _)
+  ⊗-assoc X Y Z .proj₂ .fpos = C.reflexive (C.Eq.sym (C.assoc _ _ _))
   ⊗-assoc X Y Z .proj₁ .fneg =
-    C.∧-greatest 
-      (Λˡ 
-        (C.∧-greatest
-          (Λˡ (  C.mono (C.mono (C.x∧y≤x _ _) C.refl) C.refl 
-              >> C.reflexive (C.assoc _ _ _) 
-              >> C.mono C.refl (C.reflexive (C.comm _ _)) 
-              >> C.evalˡ))
-          (Λˡ (  C.mono (C.mono (C.x∧y≤y _ _ 
-              >> C.anti-monoʳ C.refl (C.x∧y≤x _ _)) C.refl) C.refl
-              >> C.reflexive (C.assoc _ _ _) 
-              >> C.mono C.refl (C.reflexive (C.comm _ _)) 
-              >> C.reflexive (C.Eq.sym (C.assoc _ _ _)) 
-              >> C.mono C.evalˡ C.refl 
-              >> C.evalˡ))))
-      (Λˡ (  C.mono (C.x∧y≤y _ _ >> C.anti-monoʳ C.refl (C.x∧y≤y _ _)) C.refl
-          >> (C.reflexive (C.Eq.sym (C.assoc _ _ _)) 
-          >> (C.mono C.evalˡ C.refl 
-          >> C.evalˡ))))
-  ⊗-assoc X Y Z .proj₂ .fpos =
-    C.reflexive (C.Eq.sym (C.assoc _ _ _))
+    let lem₁ =
+          begin
+            ((X ⊗ (Y ⊗ Z)) .neg ∙ᶜ Z .pos) ∙ᶜ Y .pos
+          ≤⟨ C.monoˡ (C.monoˡ (C.x∧y≤x _ _)) ⟩
+            (((Y .pos ∙ᶜ Z .pos) -∙ᶜ X .neg) ∙ᶜ Z .pos) ∙ᶜ Y .pos
+          ≈⟨ C.assoc _ _ _ ⟩
+            ((Y .pos ∙ᶜ Z .pos) -∙ᶜ X .neg) ∙ᶜ (Z .pos ∙ᶜ Y .pos)
+          ≈⟨ C.∙-congˡ (C.comm _ _) ⟩
+            ((Y .pos ∙ᶜ Z .pos) -∙ᶜ X .neg) ∙ᶜ (Y .pos ∙ᶜ Z .pos)
+          ≤⟨ C.evalˡ ⟩
+            X .neg
+          ∎
+        lem₂ =
+          begin
+            ((X ⊗ (Y ⊗ Z)) .neg ∙ᶜ Z .pos) ∙ᶜ X .pos
+          ≤⟨ C.monoˡ (C.monoˡ (C.x∧y≤y _ _)) ⟩
+            ((X .pos -∙ᶜ ((Z .pos -∙ᶜ Y .neg) ∧ᶜ (Y .pos -∙ᶜ Z .neg))) ∙ᶜ Z .pos) ∙ᶜ X .pos
+          ≤⟨ C.monoˡ (C.monoˡ (C.anti-monoʳ C.refl (C.x∧y≤x _ _))) ⟩
+            ((X .pos -∙ᶜ (Z .pos -∙ᶜ Y .neg)) ∙ᶜ Z .pos) ∙ᶜ X .pos
+          ≈⟨ C.assoc _ _ _ ⟩
+            (X .pos -∙ᶜ (Z .pos -∙ᶜ Y .neg)) ∙ᶜ (Z .pos ∙ᶜ X .pos)
+          ≈⟨ C.∙-congˡ (C.comm _ _) ⟩
+            (X .pos -∙ᶜ (Z .pos -∙ᶜ Y .neg)) ∙ᶜ (X .pos ∙ᶜ Z .pos)
+          ≈⟨ C.assoc _ _ _ ⟨
+            ((X .pos -∙ᶜ (Z .pos -∙ᶜ Y .neg)) ∙ᶜ X .pos) ∙ᶜ Z .pos
+          ≤⟨ C.monoˡ C.evalˡ ⟩
+            (Z .pos -∙ᶜ Y .neg) ∙ᶜ Z .pos
+          ≤⟨ C.evalˡ ⟩
+            Y .neg
+          ∎
+        lem₃ =
+          begin
+            (X ⊗ (Y ⊗ Z)) .neg ∙ᶜ (X ⊗ Y) .pos
+          ≤⟨ C.monoˡ (C.x∧y≤y _ _) ⟩
+            (X .pos -∙ᶜ ((Z .pos -∙ᶜ Y .neg) ∧ᶜ (Y .pos -∙ᶜ Z .neg))) ∙ᶜ (X .pos ∙ᶜ Y .pos)
+          ≤⟨ C.monoˡ (C.anti-monoʳ C.refl (C.x∧y≤y _ _)) ⟩
+            (X .pos -∙ᶜ (Y .pos -∙ᶜ Z .neg)) ∙ᶜ (X .pos ∙ᶜ Y .pos)
+          ≈⟨ C.assoc _ _ _ ⟨
+            ((X .pos -∙ᶜ (Y .pos -∙ᶜ Z .neg)) ∙ᶜ X .pos) ∙ᶜ Y .pos
+          ≤⟨ C.monoˡ C.evalˡ ⟩
+            (Y .pos -∙ᶜ Z .neg) ∙ᶜ Y .pos
+          ≤⟨ C.evalˡ ⟩
+            Z .neg
+          ∎
+    in    begin
+            (X ⊗ (Y ⊗ Z)) .neg
+          ≤⟨ C.∧-greatest (Λˡ (C.∧-greatest (Λˡ lem₁) (Λˡ lem₂))) (Λˡ lem₃) ⟩
+            ((X ⊗ Y) ⊗ Z) .neg
+          ∎
+    where open PosetReasoning C.poset
   ⊗-assoc X Y Z .proj₂ .fneg =
-    C.∧-greatest
-      (Λˡ (  C.mono (C.x∧y≤x _ _ >> C.anti-monoʳ C.refl (C.x∧y≤x _ _)) C.refl 
-          >> (C.mono C.refl (C.reflexive (C.comm _ _)) 
-          >> (C.reflexive (C.Eq.sym (C.assoc _ _ _)) 
-          >> (C.mono C.evalˡ C.refl 
-          >> C.evalˡ)))))
-      (Λˡ (C.∧-greatest
-            (Λˡ (  C.mono (  C.mono (C.x∧y≤x _ _ 
-                        >> C.anti-monoʳ C.refl (C.x∧y≤y _ _)) C.refl) C.refl
-                >> C.reflexive (C.assoc _ _ _) >> C.mono C.refl (C.reflexive (C.comm _ _)) 
-                >> C.reflexive (C.Eq.sym (C.assoc _ _ _)) 
-                >> (C.mono C.evalˡ C.refl >> C.evalˡ)))
-            (Λˡ (C.mono (C.mono (C.x∧y≤y _ _) C.refl) C.refl 
-                >> C.reflexive (C.assoc _ _ _) 
-                >> C.evalˡ))))
+    let lem₁ =
+          begin
+            ((X ⊗ Y) ⊗ Z) .neg ∙ᶜ (Y ⊗ Z) .pos
+          ≤⟨ C.monoˡ (C.x∧y≤x _ _) ⟩
+            (Z .pos -∙ᶜ ((Y .pos -∙ᶜ X .neg) ∧ᶜ (X .pos -∙ᶜ Y .neg))) ∙ᶜ (Y .pos ∙ᶜ Z .pos)
+          ≤⟨ C.monoˡ (C.anti-monoʳ C.refl (C.x∧y≤x _ _)) ⟩
+            (((Z .pos -∙ᶜ (Y .pos -∙ᶜ X .neg)) ∙ᶜ (Y .pos ∙ᶜ Z .pos)))
+          ≈⟨ C.∙-congˡ (C.comm _ _) ⟩
+            (Z .pos -∙ᶜ (Y .pos -∙ᶜ X .neg)) ∙ᶜ (Z .pos ∙ᶜ Y .pos)
+          ≈⟨ C.assoc _ _ _ ⟨
+            ((Z .pos -∙ᶜ (Y .pos -∙ᶜ X .neg)) ∙ᶜ Z .pos) ∙ᶜ Y .pos
+          ≤⟨ C.monoˡ C.evalˡ ⟩
+            (Y .pos -∙ᶜ X .neg) ∙ᶜ Y .pos
+          ≤⟨ C.evalˡ ⟩
+            X .neg
+          ∎
+        lem₂ =
+          begin
+            (((X ⊗ Y) ⊗ Z) .neg ∙ᶜ X .pos) ∙ᶜ Z .pos
+          ≤⟨ C.monoˡ (C.monoˡ (C.x∧y≤x _ _)) ⟩
+            ((Z .pos -∙ᶜ ((Y .pos -∙ᶜ X .neg) ∧ᶜ (X .pos -∙ᶜ Y .neg))) ∙ᶜ X .pos) ∙ᶜ Z .pos
+          ≤⟨ C.monoˡ (C.monoˡ (C.anti-monoʳ C.refl (C.x∧y≤y _ _))) ⟩
+            ((Z .pos -∙ᶜ (X .pos -∙ᶜ Y .neg)) ∙ᶜ X .pos) ∙ᶜ Z .pos
+          ≈⟨ C.assoc _ _ _ ⟩
+            (Z .pos -∙ᶜ (X .pos -∙ᶜ Y .neg)) ∙ᶜ (X .pos ∙ᶜ Z .pos)
+          ≈⟨ C.∙-congˡ (C.comm _ _) ⟩
+            (Z .pos -∙ᶜ (X .pos -∙ᶜ Y .neg)) ∙ᶜ (Z .pos ∙ᶜ X .pos)
+          ≈⟨ C.assoc _ _ _ ⟨
+            ((Z .pos -∙ᶜ (X .pos -∙ᶜ Y .neg)) ∙ᶜ Z .pos) ∙ᶜ X .pos
+          ≤⟨ C.monoˡ C.evalˡ ⟩
+            (X .pos -∙ᶜ Y .neg) ∙ᶜ X .pos
+          ≤⟨ C.evalˡ ⟩
+            Y .neg
+          ∎
+        lem₃ =
+          begin
+            (((X ⊗ Y) ⊗ Z) .neg ∙ᶜ X .pos) ∙ᶜ Y .pos
+          ≤⟨ C.monoˡ (C.monoˡ (C.x∧y≤y _ _)) ⟩
+            (((X .pos ∙ᶜ Y .pos) -∙ᶜ Z .neg) ∙ᶜ X .pos) ∙ᶜ Y .pos
+          ≈⟨ C.assoc _ _ _ ⟩
+            ((X .pos ∙ᶜ Y .pos) -∙ᶜ Z .neg) ∙ᶜ (X .pos ∙ᶜ Y .pos)
+          ≤⟨ C.evalˡ ⟩
+            Z .neg
+          ∎
+    in    begin
+            ((X ⊗ Y) ⊗ Z) .neg
+          ≤⟨ C.∧-greatest (Λˡ lem₁) (Λˡ (C.∧-greatest (Λˡ lem₂) (Λˡ lem₃))) ⟩
+            (X ⊗ (Y ⊗ Z)) .neg
+          ∎ 
+    where open PosetReasoning C.poset
 
   ⊗-isPomonoid : IsPomonoid _≈_ _≤_ _⊗_ ε
   ⊗-isPomonoid .IsPomonoid.isPosemigroup .IsPosemigroup.isPomagma .IsPomagma.isPartialOrder = ≤-isPartialOrder
@@ -269,7 +334,7 @@ module Construction
 
   ⊗-isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _⊗_ ε
   ⊗-isCommutativePomonoid .IsCommutativePomonoid.isPomonoid = ⊗-isPomonoid
-  ⊗-isCommutativePomonoid .IsCommutativePomonoid.comm x y = ⊗-sym , ⊗-sym
+  ⊗-isCommutativePomonoid .IsCommutativePomonoid.comm x y = ⊗-comm , ⊗-comm
 
   ------------------------------------------------------------------------------
   -- We have a *-autonomous preorder:
