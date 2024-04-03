@@ -32,7 +32,7 @@ open C
     ( Carrier
     ) 
   renaming
-    ( _∙_ to _+ᶜ_
+    ( _∙_ to _∨ᶜ_
     ; _≤_ to _≤ᶜ_
     ; _≈_ to _≈ᶜ_
     )
@@ -58,7 +58,7 @@ record Ideal : Set (suc (c ⊔ ℓ₂)) where
   field
     ICarrier : Carrier → Set (c ⊔ ℓ₂)
     ≤-closed : x ≤ᶜ y → ICarrier y → ICarrier x
-    +-closed : ICarrier x → ICarrier y → ICarrier (x +ᶜ y)
+    ∨-closed : ICarrier x → ICarrier y → ICarrier (x ∨ᶜ y)
 open Ideal public
 
 private
@@ -131,31 +131,31 @@ U-cong : I ≈ J → U I L.≈ U J
 U-cong (J≤I , I≤J) = U-mono J≤I , U-mono I≤J
 
 ------------------------------------------------------------------------------
--- Turn a lower set into an ideal by closing under +
+-- Turn a lower set into an ideal by closing under ∨
 
-data Tree (F : LowerSet) : Set (c ⊔ ℓ₂) where
-  leaf : (x : Carrier) → F .L.ICarrier x → Tree F
-  node : Tree F → Tree F → Tree F
+data `⋁ (F : LowerSet) : Set (c ⊔ ℓ₂) where
+  leaf : (x : Carrier) → F .L.ICarrier x → `⋁ F
+  node : `⋁ F → `⋁ F → `⋁ F
 
-sum : Tree F → Carrier
-sum (leaf x _) = x
-sum (node c d) = sum c +ᶜ sum d
+`⋁-eval : `⋁ F → Carrier
+`⋁-eval (leaf x _) = x
+`⋁-eval (node c d) = `⋁-eval c ∨ᶜ `⋁-eval d
 
-mapᵗ : F L.≤ G → Tree F → Tree G
-mapᵗ F≤G (leaf x Fx) = leaf x (F≤G .L.*≤* Fx)
-mapᵗ F≤G (node c d)  = node (mapᵗ F≤G c) (mapᵗ F≤G d)
+`⋁-map : F L.≤ G → `⋁ F → `⋁ G
+`⋁-map F≤G (leaf x Fx) = leaf x (F≤G .L.*≤* Fx)
+`⋁-map F≤G (node c d)  = node (`⋁-map F≤G c) (`⋁-map F≤G d)
 
-map-sumᵗ : (F≤G : F L.≤ G) (c : Tree F) → sum c ≤ᶜ sum (mapᵗ F≤G c)
-map-sumᵗ F≤G (leaf x Fx) = C.refl
-map-sumᵗ F≤G (node c d) = C.mono (map-sumᵗ F≤G c) (map-sumᵗ F≤G d)
+`⋁-map-eval : (F≤G : F L.≤ G) (c : `⋁ F) → `⋁-eval c ≤ᶜ `⋁-eval (`⋁-map F≤G c)
+`⋁-map-eval F≤G (leaf x Fx) = C.refl
+`⋁-map-eval F≤G (node c d) = C.mono (`⋁-map-eval F≤G c) (`⋁-map-eval F≤G d)
 
 α : LowerSet → Ideal
-α F .ICarrier x = Σ[ t ∈ Tree F ] (x ≤ᶜ sum t)
+α F .ICarrier x = Σ[ t ∈ `⋁ F ] (x ≤ᶜ `⋁-eval t)
 α F .≤-closed x≤y (t , y≤t) = t , C.trans x≤y y≤t
-α F .+-closed (s , x≤s) (t , y≤t) = node s t , C.mono x≤s y≤t
+α F .∨-closed (s , x≤s) (t , y≤t) = node s t , C.mono x≤s y≤t
 
 α-mono : F L.≤ G → α F ≤ α G
-α-mono F≤G .*≤* (t , x≤t) = mapᵗ F≤G t , C.trans x≤t (map-sumᵗ F≤G t)
+α-mono F≤G .*≤* (t , x≤t) = `⋁-map F≤G t , C.trans x≤t (`⋁-map-eval F≤G t)
 
 α-cong : ∀ {F G} → F L.≈ G → α F ≈ α G
 α-cong (G≤F , F≤G) = (α-mono G≤F , α-mono F≤G)
@@ -170,12 +170,12 @@ map-sumᵗ F≤G (node c d) = C.mono (map-sumᵗ F≤G c) (map-sumᵗ F≤G d)
 ------------------------------------------------------------------------------
 -- U and α form a Galois connection
 
-ideal-Tree-closed : (t : Tree (U I)) → I .ICarrier (sum t)
-ideal-Tree-closed {I} (leaf x ϕ) = ϕ
-ideal-Tree-closed {I} (node c d) = I .+-closed (ideal-Tree-closed c) (ideal-Tree-closed d)
+`⋁-closed : (t : `⋁ (U I)) → I .ICarrier (`⋁-eval t)
+`⋁-closed {I} (leaf x ϕ) = ϕ
+`⋁-closed {I} (node c d) = I .∨-closed (`⋁-closed c) (`⋁-closed d)
 
 counit : α (U I) ≤ I
-counit {I} .*≤* (t , x≤t) = I .≤-closed x≤t (ideal-Tree-closed t)
+counit {I} .*≤* (t , x≤t) = I .≤-closed x≤t (`⋁-closed t)
 
 counit⁻¹ : I ≤ α (U I)
 counit⁻¹ .*≤* Ix = leaf _ Ix , C.refl
@@ -192,7 +192,7 @@ unit .L.*≤* Fx = leaf _ Fx , C.refl
 _∧_ : Ideal → Ideal → Ideal
 (I ∧ J) .ICarrier x = I .ICarrier x × J .ICarrier x
 (I ∧ J) .≤-closed x≤y (Iy , Jy) = I .≤-closed x≤y Iy , J .≤-closed x≤y Jy
-(I ∧ J) .+-closed (Ix , Jx) (Iy , Jy) = (I .+-closed Ix Iy) , (J .+-closed Jx Jy)
+(I ∧ J) .∨-closed (Ix , Jx) (Iy , Jy) = (I .∨-closed Ix Iy) , (J .∨-closed Jx Jy)
 
 proj₁ : (I ∧ J) ≤ I
 proj₁ .*≤* = Product.proj₁
@@ -214,7 +214,7 @@ proj₂ .*≤* = Product.proj₂
 ⊤ : Ideal
 ⊤ .ICarrier x = Lift _ Unit.⊤
 ⊤ .≤-closed x≤y (lift Unit.tt) = lift Unit.tt
-⊤ .+-closed _ _ = lift Unit.tt
+⊤ .∨-closed _ _ = lift Unit.tt
 
 ⊤-maximum : Maximum _≤_ ⊤
 ⊤-maximum x .*≤* _ = lift Unit.tt
@@ -242,7 +242,7 @@ inj₂ = ≤-trans counit⁻¹ (α-mono L.inj₂)
 
 [_,_] : I ≤ K → J ≤ K → (I ∨ J) ≤ K
 [_,_] {I} {K} {J} I≤K J≤K .*≤* (t , x≤t) =
-  K .≤-closed (C.trans x≤t (map-sumᵗ _ t)) (ideal-Tree-closed (mapᵗ L.[ U-mono I≤K , U-mono J≤K ] t))
+  K .≤-closed (C.trans x≤t (`⋁-map-eval _ t)) (`⋁-closed (`⋁-map L.[ U-mono I≤K , U-mono J≤K ] t))
 
 ∨-isJoinSemilattice : IsJoinSemilattice _≈_ _≤_ _∨_
 ∨-isJoinSemilattice = record
@@ -260,20 +260,20 @@ inj₂ = ≤-trans counit⁻¹ (α-mono L.inj₂)
   }
 
 private
-  helper : (c : Tree (L.η (x +ᶜ y))) → Σ[ d ∈ Tree (U (α (L.η x) ∨ α (L.η y))) ] (sum c ≤ᶜ sum d)
-  helper {x}{y} (leaf z (lift z≤x+y)) =
+  helper : (c : `⋁ (L.η (x ∨ᶜ y))) → Σ[ d ∈ `⋁ (U (α (L.η x) ∨ α (L.η y))) ] (`⋁-eval c ≤ᶜ `⋁-eval d)
+  helper {x}{y} (leaf z (lift z≤x∨y)) =
     (node (leaf x (inj₁ .*≤* ((leaf x (lift C.refl)) , C.refl)))
           (leaf y (inj₂ .*≤* ((leaf y (lift C.refl)) , C.refl)))) ,
-    z≤x+y
+    z≤x∨y
   helper (node c₁ c₂) =
     let (d₁ , c₁≤d₁) , (d₂ , c₂≤d₂) = helper c₁ , helper c₂
     in node d₁ d₂ , C.mono c₁≤d₁ c₂≤d₂
 
-η-preserve-∨ : α (L.η (x +ᶜ y)) ≤ α (L.η x) ∨ α (L.η y)
+η-preserve-∨ : α (L.η (x ∨ᶜ y)) ≤ α (L.η x) ∨ α (L.η y)
 η-preserve-∨ {x}{y} .*≤* {z} (c , z≤c) =
   let d , c≤d = helper c in 
     Ideal.≤-closed (α (L.η x) ∨ α (L.η y)) 
-      (C.trans z≤c c≤d) (ideal-Tree-closed d)
+      (C.trans z≤c c≤d) (`⋁-closed d)
 
 
 ------------------------------------------------------------------------------
@@ -281,8 +281,8 @@ module DayEntropic
     {_∙ᶜ_}
     {εᶜ}
     (isPomonoid : IsPomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ)
-    (+-entropy : Entropy _≤ᶜ_ _+ᶜ_ _∙ᶜ_)
-    (+-tidy    : εᶜ +ᶜ εᶜ ≤ᶜ εᶜ)
+    (∨-entropy : Entropy _≤ᶜ_ _∨ᶜ_ _∙ᶜ_)
+    (∨-tidy    : εᶜ ∨ᶜ εᶜ ≤ᶜ εᶜ)
     where
 
   private
@@ -293,16 +293,16 @@ module DayEntropic
     ∃[ y ] ∃[ z ] (x ≤ᶜ (y ∙ᶜ z) × I .ICarrier y × J .ICarrier z)
   (I ◁ J) .≤-closed x≤w (y , z , w≤yz , Iy , Jz) =
     (-, -, C.trans x≤w w≤yz , Iy , Jz)
-  (I ◁ J) .+-closed (y₁ , z₁ , x₁≤y₁z₁ , ϕ₁ , ψ₁) (y₂ , z₂ , x₂≤y₂z₂ , ϕ₂ , ψ₂) =
-    y₁ +ᶜ y₂ , z₁ +ᶜ z₂ ,
-    C.trans (C.mono x₁≤y₁z₁ x₂≤y₂z₂) (+-entropy _ _ _ _) ,
-    I .+-closed ϕ₁ ϕ₂ ,
-    J .+-closed ψ₁ ψ₂
+  (I ◁ J) .∨-closed (y₁ , z₁ , x₁≤y₁z₁ , ϕ₁ , ψ₁) (y₂ , z₂ , x₂≤y₂z₂ , ϕ₂ , ψ₂) =
+    y₁ ∨ᶜ y₂ , z₁ ∨ᶜ z₂ ,
+    C.trans (C.mono x₁≤y₁z₁ x₂≤y₂z₂) (∨-entropy _ _ _ _) ,
+    I .∨-closed ϕ₁ ϕ₂ ,
+    J .∨-closed ψ₁ ψ₂
 
   ι : Ideal
   ι .ICarrier x = Lift c (x ≤ᶜ εᶜ)
   ι .≤-closed x≤y (lift y≤ε) = lift (C.trans x≤y y≤ε)
-  ι .+-closed (lift x≤ε) (lift y≤ε) = lift (C.trans (C.mono x≤ε y≤ε) +-tidy)
+  ι .∨-closed (lift x≤ε) (lift y≤ε) = lift (C.trans (C.mono x≤ε y≤ε) ∨-tidy)
 
   ◁-mono : Monotonic₂ _≤_ _≤_ _≤_ _◁_
   ◁-mono I₁≤J₁ I₂≤J₂ .*≤* = LMon.∙-mono (U-mono I₁≤J₁) (U-mono I₂≤J₂) .L.*≤*
@@ -346,38 +346,38 @@ module DayEntropic
   η-preserve-◁ {x} {y} .*≤* {z} (c , z≤c) =
     Ideal.≤-closed
       (α (L.η x) ◁ α (L.η y))
-        (C.trans z≤c (map-sumᵗ _ c))
-          (ideal-Tree-closed {α (L.η x) ◁ α (L.η y)} 
-            (mapᵗ 
+        (C.trans z≤c (`⋁-map-eval _ c))
+          (`⋁-closed {α (L.η x) ◁ α (L.η y)} 
+            (`⋁-map 
               (L.≤-trans LMon.η-preserve-∙ 
                 (L.≤-trans (LMon.∙-mono unit unit) (U-monoidal .Product.proj₂))) c))
 
 {-
   -- FIXME: this doesn't work
-  module _ (idem : ∀ {x} → x +ᶜ x ≤ᶜ x) where
+  module _ (idem : ∀ {x} → x ∨ᶜ x ≤ᶜ x) where
 
     open IsPomonoid isPomonoid using (mono)
 
     -- FIXME: this is the same combination function as below
-    _∙ᶜ'_ : Tree F → Tree G → Tree (F LMon.∙ G)
+    _∙ᶜ'_ : `⋁ F → `⋁ G → `⋁ (F LMon.∙ G)
     leaf x Fx  ∙ᶜ' leaf y Gy  = leaf (x ∙ᶜ y) (x , y , C.refl , Fx , Gy)
     leaf x Fx  ∙ᶜ' node d₁ d₂ = node (leaf x Fx ∙ᶜ' d₁) (leaf x Fx ∙ᶜ' d₂)
     node c₁ c₂ ∙ᶜ' d          = node (c₁ ∙ᶜ' d) (c₂ ∙ᶜ' d)
 
-    ∙ᵗ-sum : (c : Tree F)(d : Tree G) → sum (c ∙ᶜ' d) ≤ᶜ sum c ∙ᶜ sum d
-    ∙ᵗ-sum (leaf x Fx)  (leaf y Gy)  = C.refl
-    ∙ᵗ-sum (leaf x Fx)  (node d₁ d₂) =
-       C.trans (C.mono (∙ᵗ-sum (leaf x Fx) d₁) (∙ᵗ-sum (leaf x Fx) d₂))
-      (C.trans (+-entropy _ _ _ _)
+    `⋁-∙-eval : (c : `⋁ F)(d : `⋁ G) → eval (c ∙ᶜ' d) ≤ᶜ eval c ∙ᶜ eval d
+    `⋁-∙-eval (leaf x Fx)  (leaf y Gy)  = C.refl
+    `⋁-∙-eval (leaf x Fx)  (node d₁ d₂) =
+       C.trans (C.mono (`⋁-∙-eval (leaf x Fx) d₁) (`⋁-∙-eval (leaf x Fx) d₂))
+      (C.trans (∨-entropy _ _ _ _)
                (mono idem C.refl))
-    ∙ᵗ-sum (node c₁ c₂) d =
-      C.trans (C.mono (∙ᵗ-sum c₁ d) (∙ᵗ-sum c₂ d))
-      (C.trans (+-entropy _ _ _ _)
+    `⋁-∙-eval (node c₁ c₂) d =
+      C.trans (C.mono (`⋁-∙-eval c₁ d) (`⋁-∙-eval c₂ d))
+      (C.trans (∨-entropy _ _ _ _)
       (mono C.refl idem))
 
     η-preserve-◁⁻¹ : α (η x) ◁ α (η y) ≤ α (η (x ∙ᶜ y))
     η-preserve-◁⁻¹ {x}{y} .*≤* {z} (z₁ , z₂ , z≤z₁z₂ , (c₁ , z₁≤c) , (c₂ , z₂≤c)) =
-      mapᵗ η-preserve-∙⁻¹ (c₁ ∙ᶜ' c₂) ,
+      `⋁-map η-preserve-∙⁻¹ (c₁ ∙ᶜ' c₂) ,
       C.trans z≤z₁z₂ {!!}
 -}
 
@@ -385,7 +385,7 @@ module DayDistributive
     {_∙ᶜ_}
     {εᶜ}
     (isCommutativePomonoid : IsCommutativePomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ)
-    (distrib : _DistributesOver_ _≤ᶜ_ _∙ᶜ_ _+ᶜ_)
+    (distrib : _DistributesOver_ _≤ᶜ_ _∙ᶜ_ _∨ᶜ_)
   where
 
   private
@@ -401,19 +401,19 @@ module DayDistributive
   ε : Ideal
   ε = α LMon.ε
 
-  _∙ᵗ_ : Tree F → Tree G → Tree (F LMon.∙ G)
-  leaf x Fx  ∙ᵗ leaf y Gy  = leaf (x ∙ᶜ y) (x , y , C.refl , Fx , Gy)
-  leaf x Fx  ∙ᵗ node d₁ d₂ = node (leaf x Fx ∙ᵗ d₁) (leaf x Fx ∙ᵗ d₂)
-  node c₁ c₂ ∙ᵗ d          = node (c₁ ∙ᵗ d) (c₂ ∙ᵗ d)
+  _`⋁-∙_ : `⋁ F → `⋁ G → `⋁ (F LMon.∙ G)
+  leaf x Fx  `⋁-∙ leaf y Gy  = leaf (x ∙ᶜ y) (x , y , C.refl , Fx , Gy)
+  leaf x Fx  `⋁-∙ node d₁ d₂ = node (leaf x Fx `⋁-∙ d₁) (leaf x Fx `⋁-∙ d₂)
+  node c₁ c₂ `⋁-∙ d          = node (c₁ `⋁-∙ d) (c₂ `⋁-∙ d)
 
-  ∙ᵗ-sum : (c : Tree F)(d : Tree G) → sum c ∙ᶜ sum d ≤ᶜ sum (c ∙ᵗ d)
-  ∙ᵗ-sum (leaf x Fx)  (leaf y Gy)  = C.refl
-  ∙ᵗ-sum (leaf x Fx)  (node d₁ d₂) = C.trans (distribˡ _ _ _) (C.mono (∙ᵗ-sum (leaf x Fx) d₁) (∙ᵗ-sum (leaf x Fx) d₂))
-  ∙ᵗ-sum (node c₁ c₂) d            = C.trans (distribʳ _ _ _) (C.mono (∙ᵗ-sum c₁ d) (∙ᵗ-sum c₂ d))
+  `⋁-∙-eval : (c : `⋁ F)(d : `⋁ G) → `⋁-eval c ∙ᶜ `⋁-eval d ≤ᶜ `⋁-eval (c `⋁-∙ d)
+  `⋁-∙-eval (leaf x Fx)  (leaf y Gy)  = C.refl
+  `⋁-∙-eval (leaf x Fx)  (node d₁ d₂) = C.trans (distribˡ _ _ _) (C.mono (`⋁-∙-eval (leaf x Fx) d₁) (`⋁-∙-eval (leaf x Fx) d₂))
+  `⋁-∙-eval (node c₁ c₂) d            = C.trans (distribʳ _ _ _) (C.mono (`⋁-∙-eval c₁ d) (`⋁-∙-eval c₂ d))
 
-  α-helper : (c : Tree (U (α F) LMon.∙ U (α G))) → x ≤ᶜ sum c → Σ[ d ∈ Tree (F LMon.∙ G) ] (x ≤ᶜ sum d)
+  α-helper : (c : `⋁ (U (α F) LMon.∙ U (α G))) → x ≤ᶜ `⋁-eval c → Σ[ d ∈ `⋁ (F LMon.∙ G) ] (x ≤ᶜ `⋁-eval d)
   α-helper (leaf y (y₁ , y₂ , y≤y₁y₂ , (c , y₁≤c) , (d , y₂≤d))) x≤y =
-    (c ∙ᵗ d) , C.trans x≤y (C.trans y≤y₁y₂ (C.trans (Mon.mono y₁≤c y₂≤d) (∙ᵗ-sum c d)))
+    (c `⋁-∙ d) , C.trans x≤y (C.trans y≤y₁y₂ (C.trans (Mon.mono y₁≤c y₂≤d) (`⋁-∙-eval c d)))
   α-helper (node c d) x≤cd =
     let (c' , c≤c') , (d' , d≤d') = α-helper c C.refl , α-helper d C.refl
     in (node c' d') , (C.trans x≤cd (C.mono c≤c' d≤d'))
@@ -514,8 +514,8 @@ module DayDistributive
   _⊸_ : Ideal → Ideal → Ideal
   (I ⊸ J) .ICarrier x = ∀ {y} → I .ICarrier y → J .ICarrier (x ∙ᶜ y)
   (I ⊸ J) .≤-closed x≤z f Iy = J .≤-closed (Mon.monoˡ x≤z) (f Iy)
-  (I ⊸ J) .+-closed I⊸Jx I⊸Jy {z} Iz =
-    J .≤-closed (distribʳ _ _ _) (J .+-closed (I⊸Jx Iz) (I⊸Jy Iz))
+  (I ⊸ J) .∨-closed I⊸Jx I⊸Jy {z} Iz =
+    J .≤-closed (distribʳ _ _ _) (J .∨-closed (I⊸Jx Iz) (I⊸Jy Iz))
 
   U⊸ : U (I ⊸ J) L.≤ (U I LMon.⊸ U J)
   U⊸ .L.*≤* f = f
@@ -564,9 +564,9 @@ module DayDuoidal
     {εᶜ}
     {ιᶜ}
     (isCommutativeDuoidal : IsCommutativeDuoidal _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ _◁ᶜ_ εᶜ ιᶜ)
-    (distrib : _DistributesOver_ _≤ᶜ_ _∙ᶜ_ _+ᶜ_)
-    (+ᶜ-entropy : Entropy _≤ᶜ_ _+ᶜ_ _◁ᶜ_)
-    (+ᶜ-tidy : ιᶜ +ᶜ ιᶜ ≤ᶜ ιᶜ)
+    (distrib : _DistributesOver_ _≤ᶜ_ _∙ᶜ_ _∨ᶜ_)
+    (∨ᶜ-entropy : Entropy _≤ᶜ_ _∨ᶜ_ _◁ᶜ_)
+    (∨ᶜ-tidy : ιᶜ ∨ᶜ ιᶜ ≤ᶜ ιᶜ)
   where
 
   private
@@ -574,7 +574,7 @@ module DayDuoidal
     module LDuo = L.LiftIsDuoidal Duo.isDuoidal
 
   open DayDistributive Duo.∙-isCommutativePomonoid distrib
-  open DayEntropic Duo.◁-isPomonoid +ᶜ-entropy +ᶜ-tidy
+  open DayEntropic Duo.◁-isPomonoid ∨ᶜ-entropy ∨ᶜ-tidy
 
   ∙-◁-entropy : Entropy _≤_ _∙_ _◁_
   ∙-◁-entropy I₁ J₁ I₂ J₂ =
@@ -597,12 +597,12 @@ module DayDuoidal
     ∎
     where open PosetReasoning ≤-poset
 
-  tidy : (c : Tree LDuo.ι) → sum c ≤ᶜ ιᶜ
+  tidy : (c : `⋁ LDuo.ι) → `⋁-eval c ≤ᶜ ιᶜ
   tidy (leaf x (lift x≤ι)) = x≤ι
-  tidy (node c d) = C.trans (C.mono (tidy c) (tidy d)) +ᶜ-tidy
+  tidy (node c d) = C.trans (C.mono (tidy c) (tidy d)) ∨ᶜ-tidy
 
   ε≤ι : ε ≤ ι
-  ε≤ι .*≤* (t , x≤t) = lift (C.trans x≤t (C.trans (map-sumᵗ LDuo.ε≤ι t) (tidy (mapᵗ LDuo.ε≤ι t))))
+  ε≤ι .*≤* (t , x≤t) = lift (C.trans x≤t (C.trans (`⋁-map-eval LDuo.ε≤ι t) (tidy (`⋁-map LDuo.ε≤ι t))))
 
   ∙-◁-isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _◁_ ε ι
   ∙-◁-isDuoidal = record
@@ -619,4 +619,4 @@ module DayDuoidal
                 counit))
     ; ε≲ι = ε≤ι
     }
-  
+   

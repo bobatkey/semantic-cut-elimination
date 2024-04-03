@@ -152,7 +152,7 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
       ( Ideal
       ; ICarrier
       ; ≤-closed
-      ; +-closed
+      ; ∨-closed
       ; _≤_
       ; *≤*
       )
