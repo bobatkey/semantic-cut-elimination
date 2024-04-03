@@ -3,8 +3,8 @@
 module MAV.Frame where
 
 open import Level using (suc; _⊔_)
-open import Algebra.Ordered using (IsCommutativePomonoid; Entropy)
-open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal)
+open import Algebra.Ordered using (IsCommutativePomonoid; Entropy; IsPomagma; Pomagma)
+open import Algebra.Ordered.Structures.Duoidal using (IsCommutativeDuoidal)
 open import Algebra using (_DistributesOver_)
 open import Data.Product as Product using (_×_; _,_)
 open import Relation.Binary.Bundles using (Poset)
@@ -163,14 +163,14 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
       module C where
         open Algebra.Ordered.Construction.Chu.Construction
               I.⊸-∙-isResiduatedCommutativePomonoid
-              I.∧-isMeetSemilattice
-              I.∨-isJoinSemilattice
+              I.∧-⊤-isBoundedMeetSemilattice
+              I.∨-⊥-isBoundedJoinSemilattice
               I.ε
           public
 
         K-m : (I.ε I.◁ I.ε) I.≤ I.ε
         K-m = I.≤-trans (I.◁-mono (I.≤-reflexive units-iso) I.≤-refl) (I.≤-reflexive (I.◁-identityˡ _))
-        
+
         K-u : I.ι I.≤ I.ε
         K-u = I.≤-reflexive (I.Eq.sym units-iso)
 
@@ -195,7 +195,7 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
       { isDuoidal = C.⊗-◁-isDuoidal 
       ; ∙-comm    = C.⊗-isCommutativePomonoid .IsCommutativePomonoid.comm 
       }
-  
+
   open C public using (Chu)
 
   model : Model (suc (suc (a ⊔ ℓ₂))) (a ⊔ ℓ₂) (a ⊔ ℓ₂)

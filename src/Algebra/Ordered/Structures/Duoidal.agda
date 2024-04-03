@@ -110,7 +110,7 @@ record IsCommutativeDuoidal (∙ ◁ : Op₂ A) (ε ι : A) : Set (a ⊔ ℓ₁ 
   field
     isDuoidal : IsDuoidal ∙ ◁ ε ι
     ∙-comm    : Commutative ∙
-  
+
   open IsDuoidal isDuoidal public
 
   ∙-isCommutativePomonoid : IsCommutativePomonoid ∙ ε

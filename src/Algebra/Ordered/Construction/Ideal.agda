@@ -211,11 +211,28 @@ proj₂ .*≤* = Product.proj₂
 
 -- FIXME: under what conditions does α preserve meets?
 
+⊤ : Ideal
+⊤ .ICarrier x = Lift _ Unit.⊤
+⊤ .≤-closed x≤y (lift Unit.tt) = lift Unit.tt
+⊤ .+-closed _ _ = lift Unit.tt
+
+⊤-maximum : Maximum _≤_ ⊤
+⊤-maximum x .*≤* _ = lift Unit.tt
+
+∧-⊤-isBoundedMeetSemilattice : IsBoundedMeetSemilattice _≈_ _≤_ _∧_ ⊤
+∧-⊤-isBoundedMeetSemilattice = record
+  { isMeetSemilattice = ∧-isMeetSemilattice
+  ; maximum = ⊤-maximum
+  }
+
 ------------------------------------------------------------------------------
 -- Binary joins
 
 _∨_ : Ideal → Ideal → Ideal
 I ∨ J = α (U I L.∨ U J)
+
+⊥ : Ideal
+⊥ = α L.⊥
 
 inj₁ : I ≤ (I ∨ J)
 inj₁ = ≤-trans counit⁻¹ (α-mono L.inj₁)
@@ -231,6 +248,15 @@ inj₂ = ≤-trans counit⁻¹ (α-mono L.inj₂)
 ∨-isJoinSemilattice = record
   { isPartialOrder = ≤-isPartialOrder
   ; supremum       = λ I J → (inj₁ , inj₂ , λ K → [_,_])
+  }
+
+⊥-minimum : Minimum _≤_ ⊥
+⊥-minimum x = ≤-trans (α-mono (L.⊥-minimum (U x))) counit
+
+∨-⊥-isBoundedJoinSemilattice : IsBoundedJoinSemilattice _≈_ _≤_ _∨_ ⊥
+∨-⊥-isBoundedJoinSemilattice = record
+  { isJoinSemilattice = ∨-isJoinSemilattice
+  ; minimum = ⊥-minimum
   }
 
 private

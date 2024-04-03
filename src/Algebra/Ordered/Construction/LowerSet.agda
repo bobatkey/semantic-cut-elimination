@@ -8,10 +8,11 @@ open import Algebra.Ordered.Structures
 open import Algebra.Ordered.Structures.Residuated
 open import Algebra.Ordered.Structures.Duoidal
 open import Function using (flip)
+open import Data.Empty as Empty using ()
 open import Data.Product as Product using (_×_; _,_; -,_; ∃-syntax; Σ-syntax; swap)
 open import Data.Sum as Sum using (_⊎_)
 open import Data.Unit as Unit using ()
-open import Relation.Binary using (Poset; Reflexive; Transitive; IsPartialOrder; IsPreorder; Monotonic₂)
+open import Relation.Binary using (Poset; Reflexive; Transitive; IsPartialOrder; IsPreorder; Monotonic₂; Minimum)
 open import Relation.Binary.Construct.Core.Symmetric as SymCore using (SymCore)
 open import Relation.Binary.Lattice
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
@@ -22,7 +23,7 @@ module Algebra.Ordered.Construction.LowerSet {c ℓ₁ ℓ₂} (poset : Poset c 
 
 private
   module C = Poset poset
-  
+
 open C
   using
     ( Carrier
@@ -225,6 +226,19 @@ inj₂ .*≤* = Sum.inj₂
   ; supremum       = λ F G → (inj₁ , inj₂ , λ H → [_,_])
   }
 
+⊥ : LowerSet
+⊥ .ICarrier x = Lift (c ⊔ ℓ₂) Empty.⊥
+⊥ .≤-closed _ ()
+
+⊥-minimum : Minimum _≤_ ⊥
+⊥-minimum F = mk-≤ λ ()
+
+∨-⊥-isBoundedJoinSemilattice : IsBoundedJoinSemilattice _≈_ _≤_ _∨_ ⊥
+∨-⊥-isBoundedJoinSemilattice = record
+  { isJoinSemilattice = ∨-isJoinSemilattice
+  ; minimum = ⊥-minimum
+  }
+
 open IsJoinSemilattice ∨-isJoinSemilattice
   using ()
   renaming
@@ -387,9 +401,9 @@ module LiftIsCommutativePomonoid
     (IsResiduatedCommutativePomonoid.residuated ⊸-∙-isResiduatedCommutativePomonoid)
 
 module LiftIsDuoidal
-    {_∙ᶜ_} 
-    {_◁ᶜ_} 
-    {εᶜ} 
+    {_∙ᶜ_}
+    {_◁ᶜ_}
+    {εᶜ}
     {ιᶜ}
     (isDuoidal : IsDuoidal _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ _◁ᶜ_ εᶜ ιᶜ)
   where
@@ -445,4 +459,3 @@ module LiftIsDuoidal
     ; ◁-idem-ε     = ◁-idem-ε
     ; ε≲ι          = ε≤ι
     }
- 

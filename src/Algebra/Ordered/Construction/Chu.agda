@@ -23,7 +23,7 @@ open import Relation.Binary.Core
 open import Relation.Binary.Definitions
 open import Relation.Binary.Structures using (IsPartialOrder; IsPreorder; IsEquivalence)
 open import Relation.Binary.Lattice.Definitions
-open import Relation.Binary.Lattice.Structures using (IsMeetSemilattice; IsJoinSemilattice)
+open import Relation.Binary.Lattice.Structures using (IsBoundedMeetSemilattice; IsBoundedJoinSemilattice; IsMeetSemilattice; IsJoinSemilattice)
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 import Relation.Binary.Reasoning.PartialOrder as PosetReasoning
 import Relation.Binary.Reasoning.Setoid as SetoidReasoning
@@ -38,9 +38,11 @@ module Construction
     {εᶜ : Carrier}
     (∙ᶜ-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ _-∙ᶜ_ εᶜ)
     {_∧ᶜ_ : Op₂ Carrier}
-    (∧ᶜ-isMeet : IsMeetSemilattice _≈ᶜ_ _≤ᶜ_ _∧ᶜ_)
+    {⊤ᶜ : Carrier}
+    (∧ᶜ-⊤ᶜ-isBoundedMeet : IsBoundedMeetSemilattice _≈ᶜ_ _≤ᶜ_ _∧ᶜ_ ⊤ᶜ)
     {_∨ᶜ_ : Op₂ Carrier}
-    (∨ᶜ-isJoin : IsJoinSemilattice _≈ᶜ_ _≤ᶜ_ _∨ᶜ_)
+    {⊥ᶜ : Carrier}
+    (∨ᶜ-⊥ᶜ-isBoundedJoin : IsBoundedJoinSemilattice _≈ᶜ_ _≤ᶜ_ _∨ᶜ_ ⊥ᶜ)
     (K : Carrier)
   where
 
@@ -56,9 +58,9 @@ module Construction
   private
     module C where
       open IsResiduatedCommutativePomonoid ∙ᶜ-isResiduatedCommutativePomonoid public
-      open IsMeetSemilattice ∧ᶜ-isMeet public using (infimum; x∧y≤x; x∧y≤y; ∧-greatest)
-      open IsJoinSemilattice ∨ᶜ-isJoin public using (supremum; ∨-least; x≤x∨y; y≤x∨y)
-      
+      open IsBoundedMeetSemilattice ∧ᶜ-⊤ᶜ-isBoundedMeet public using (infimum; x∧y≤x; x∧y≤y; ∧-greatest; maximum)
+      open IsBoundedJoinSemilattice ∨ᶜ-⊥ᶜ-isBoundedJoin public using (supremum; ∨-least; x≤x∨y; y≤x∨y; minimum)
+
       poset : Poset _ _ _
       poset = record { isPartialOrder = isPartialOrder }
 
@@ -68,7 +70,7 @@ module Construction
       pos : Carrier
       neg : Carrier
       int : (pos ∙ᶜ neg) ≤ᶜ K
-  open Chu public 
+  open Chu public
 
   private
     variable
@@ -103,14 +105,14 @@ module Construction
   ≤-trans x≤y y≤z .fneg = C.trans (y≤z .fneg) (x≤y .fneg)
 
   ≤-isPartialOrder : IsPartialOrder _≈_ _≤_
-  ≤-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _≤_  record 
-    { isEquivalence = PropEq.isEquivalence 
-    ; reflexive     = λ { PropEq.refl → ≤-refl } 
-    ; trans         = ≤-trans 
+  ≤-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _≤_  record
+    { isEquivalence = PropEq.isEquivalence
+    ; reflexive     = λ { PropEq.refl → ≤-refl }
+    ; trans         = ≤-trans
     }
 
   infixr 5 _>>_
-  
+
   _>>_ : Transitive _≤ᶜ_
   _>>_ = C.trans
 
@@ -330,6 +332,19 @@ module Construction
   &-isMeet .IsMeetSemilattice.isPartialOrder = ≤-isPartialOrder
   &-isMeet .IsMeetSemilattice.infimum = &-infimum
 
+  ⊤ : Chu
+  ⊤ .pos = ⊤ᶜ
+  ⊤ .neg = ⊥ᶜ
+  ⊤ .int = C.residualʳ .Equivalence.from (C.minimum _)
+
+  ⊤-maximum : Maximum _≤_ ⊤
+  ⊤-maximum x .fpos = C.maximum _
+  ⊤-maximum x .fneg = C.minimum _
+
+  &-⊤-isBoundedMeet : IsBoundedMeetSemilattice _≈_ _≤_ _&_ ⊤
+  &-⊤-isBoundedMeet .IsBoundedMeetSemilattice.isMeetSemilattice = &-isMeet
+  &-⊤-isBoundedMeet .IsBoundedMeetSemilattice.maximum = ⊤-maximum
+
   ------------------------------------------------------------------------------
   -- Self-dual operators on Chu, arising from duoidal structures on
   -- the underlying order.
@@ -420,4 +435,3 @@ module Construction
     ⊗-◁-isDuoidal .IsDuoidal.∙-idem-ι = ⊗-idem-ι
     ⊗-◁-isDuoidal .IsDuoidal.◁-idem-ε = ◁-idem-ε
     ⊗-◁-isDuoidal .IsDuoidal.ε≲ι = ε≤ι
- 
