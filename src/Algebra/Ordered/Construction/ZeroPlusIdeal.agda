@@ -24,7 +24,7 @@ import Relation.Binary.Reasoning.Setoid as SetoidReasoning
 
 module Algebra.Ordered.Construction.ZeroPlusIdeal {c ℓ₁ ℓ₂}
          (pomagma : Pomagma c ℓ₁ ℓ₂)
-         (𝟘 : pomagma .Pomagma.Carrier)
+         (⊥ᶜ : pomagma .Pomagma.Carrier)
      where
 
 private
@@ -61,7 +61,7 @@ record Ideal : Set (suc (c ⊔ ℓ₂)) where
   field
     ICarrier : Carrier → Set (c ⊔ ℓ₂)
     ≤-closed : x ≤ᶜ y → ICarrier y → ICarrier x
-    0-closed : ICarrier 𝟘
+    0-closed : ICarrier ⊥ᶜ
     ∨-closed : ICarrier x → ICarrier y → ICarrier (x ∨ᶜ y)
 open Ideal public
 
@@ -139,28 +139,28 @@ U-cong (J≤I , I≤J) = U-mono J≤I , U-mono I≤J
 
 data `⋁ (F : LowerSet) : Set (c ⊔ ℓ₂) where
   leaf : (x : Carrier) → F .L.ICarrier x → `⋁ F
-  `𝟘 : `⋁ F
+  `⊥   : `⋁ F
   node : `⋁ F → `⋁ F → `⋁ F
 
 `⋁-eval : `⋁ F → Carrier
 `⋁-eval (leaf x _) = x
-`⋁-eval `𝟘        = 𝟘
+`⋁-eval `⊥        = ⊥ᶜ
 `⋁-eval (node c d) = `⋁-eval c ∨ᶜ `⋁-eval d
 
 `⋁-map : F L.≤ G → `⋁ F → `⋁ G
 `⋁-map F≤G (leaf x Fx) = leaf x (F≤G .L.*≤* Fx)
-`⋁-map F≤G `𝟘         = `𝟘
+`⋁-map F≤G `⊥         = `⊥
 `⋁-map F≤G (node c d)  = node (`⋁-map F≤G c) (`⋁-map F≤G d)
 
 `⋁-map-eval : (F≤G : F L.≤ G) (c : `⋁ F) → `⋁-eval c ≤ᶜ `⋁-eval (`⋁-map F≤G c)
 `⋁-map-eval F≤G (leaf x Fx) = C.refl
-`⋁-map-eval F≤G `𝟘         = C.refl
+`⋁-map-eval F≤G `⊥         = C.refl
 `⋁-map-eval F≤G (node c d) = C.mono (`⋁-map-eval F≤G c) (`⋁-map-eval F≤G d)
 
 α : LowerSet → Ideal
 α F .ICarrier x = Σ[ t ∈ `⋁ F ] (x ≤ᶜ `⋁-eval t)
 α F .≤-closed x≤y (t , y≤t) = t , C.trans x≤y y≤t
-α F .0-closed = `𝟘 , C.refl
+α F .0-closed = `⊥ , C.refl
 α F .∨-closed (s , x≤s) (t , y≤t) = node s t , C.mono x≤s y≤t
 
 α-mono : F L.≤ G → α F ≤ α G
@@ -181,7 +181,7 @@ data `⋁ (F : LowerSet) : Set (c ⊔ ℓ₂) where
 
 `⋁-closed : (t : `⋁ (U I)) → I .ICarrier (`⋁-eval t)
 `⋁-closed {I} (leaf x ϕ) = ϕ
-`⋁-closed {I} `𝟘         = I .0-closed
+`⋁-closed {I} `⊥         = I .0-closed
 `⋁-closed {I} (node c d) = I .∨-closed (`⋁-closed c) (`⋁-closed d)
 
 counit : α (U I) ≤ I
@@ -277,7 +277,7 @@ private
     (node (leaf x (inj₁ .*≤* ((leaf x (lift C.refl)) , C.refl)))
           (leaf y (inj₂ .*≤* ((leaf y (lift C.refl)) , C.refl)))) ,
     z≤x∨y
-  helper `𝟘 = `𝟘 , C.refl
+  helper `⊥ = `⊥ , C.refl
   helper (node c₁ c₂) =
     let (d₁ , c₁≤d₁) , (d₂ , c₂≤d₂) = helper c₁ , helper c₂
     in node d₁ d₂ , C.mono c₁≤d₁ c₂≤d₂
@@ -289,16 +289,16 @@ private
       (C.trans z≤c c≤d) (`⋁-closed d)
 
 private
-  preserve-𝟘-helper : (c : `⋁ (L.η 𝟘)) → Σ[ d ∈ `⋁ L.⊥ ] (`⋁-eval c ≤ᶜ `⋁-eval d)
-  preserve-𝟘-helper (leaf x (lift x≤𝟘)) = `𝟘 , x≤𝟘
-  preserve-𝟘-helper `𝟘 = `𝟘 , C.refl
-  preserve-𝟘-helper (node c₁ c₂) =
-    let (d₁ , c₁≤d₁) , (d₂ , c₂≤d₂) = preserve-𝟘-helper c₁ , preserve-𝟘-helper c₂
+  preserve-⊥ᶜ-helper : (c : `⋁ (L.η ⊥ᶜ)) → Σ[ d ∈ `⋁ L.⊥ ] (`⋁-eval c ≤ᶜ `⋁-eval d)
+  preserve-⊥ᶜ-helper (leaf x (lift x≤⊥ᶜ)) = `⊥ , x≤⊥ᶜ
+  preserve-⊥ᶜ-helper `⊥ = `⊥ , C.refl
+  preserve-⊥ᶜ-helper (node c₁ c₂) =
+    let (d₁ , c₁≤d₁) , (d₂ , c₂≤d₂) = preserve-⊥ᶜ-helper c₁ , preserve-⊥ᶜ-helper c₂
     in node d₁ d₂ , C.mono c₁≤d₁ c₂≤d₂
 
-η-preserve-𝟘 : α (L.η 𝟘) ≤ ⊥
-η-preserve-𝟘 .*≤* (c , x≤c) =
-  let d , c≤d = preserve-𝟘-helper c in d , C.trans x≤c c≤d
+η-preserve-⊥ᶜ : α (L.η ⊥ᶜ) ≤ ⊥
+η-preserve-⊥ᶜ .*≤* (c , x≤c) =
+  let d , c≤d = preserve-⊥ᶜ-helper c in d , C.trans x≤c c≤d
 
 ------------------------------------------------------------------------------
 module DayEntropic
@@ -307,8 +307,8 @@ module DayEntropic
     (isPomonoid : IsPomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ)
     (∨-entropy : Entropy _≤ᶜ_ _∨ᶜ_ _∙ᶜ_)
     (∨-tidy    : εᶜ ∨ᶜ εᶜ ≤ᶜ εᶜ)
-    (𝟘-expand : 𝟘 ≤ᶜ 𝟘 ∙ᶜ 𝟘)
-    (𝟘≤εᶜ     : 𝟘 ≤ᶜ εᶜ)
+    (⊥ᶜ-expand : ⊥ᶜ ≤ᶜ ⊥ᶜ ∙ᶜ ⊥ᶜ)
+    (⊥ᶜ≤εᶜ     : ⊥ᶜ ≤ᶜ εᶜ)
     where
 
   private
@@ -319,7 +319,7 @@ module DayEntropic
     ∃[ y ] ∃[ z ] (x ≤ᶜ (y ∙ᶜ z) × I .ICarrier y × J .ICarrier z)
   (I ◁ J) .≤-closed x≤w (y , z , w≤yz , Iy , Jz) =
     (-, -, C.trans x≤w w≤yz , Iy , Jz)
-  (I ◁ J) .0-closed = 𝟘 , 𝟘 , 𝟘-expand , I .0-closed , J .0-closed
+  (I ◁ J) .0-closed = ⊥ᶜ , ⊥ᶜ , ⊥ᶜ-expand , I .0-closed , J .0-closed
   (I ◁ J) .∨-closed (y₁ , z₁ , x₁≤y₁z₁ , ϕ₁ , ψ₁) (y₂ , z₂ , x₂≤y₂z₂ , ϕ₂ , ψ₂) =
     y₁ ∨ᶜ y₂ , z₁ ∨ᶜ z₂ ,
     C.trans (C.mono x₁≤y₁z₁ x₂≤y₂z₂) (∨-entropy _ _ _ _) ,
@@ -329,7 +329,7 @@ module DayEntropic
   ι : Ideal
   ι .ICarrier x = Lift c (x ≤ᶜ εᶜ)
   ι .≤-closed x≤y (lift y≤ε) = lift (C.trans x≤y y≤ε)
-  ι .0-closed = lift 𝟘≤εᶜ
+  ι .0-closed = lift ⊥ᶜ≤εᶜ
   ι .∨-closed (lift x≤ε) (lift y≤ε) = lift (C.trans (C.mono x≤ε y≤ε) ∨-tidy)
 
   ◁-mono : Monotonic₂ _≤_ _≤_ _≤_ _◁_
@@ -414,7 +414,7 @@ module DayDistributive
     {εᶜ}
     (isCommutativePomonoid : IsCommutativePomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ)
     (distrib : _DistributesOver_ _≤ᶜ_ _∙ᶜ_ _∨ᶜ_)
-    (𝟘-distrib : ∀ {x} → 𝟘 ∙ᶜ x ≤ᶜ 𝟘)
+    (⊥ᶜ-distrib : ∀ {x} → ⊥ᶜ ∙ᶜ x ≤ᶜ ⊥ᶜ)
   where
 
   private
@@ -433,25 +433,25 @@ module DayDistributive
   _∙ᵗ_ : `⋁ F → `⋁ G → `⋁ (F LMon.∙ G)
   leaf x Fx  ∙ᵗ leaf y Gy  = leaf (x ∙ᶜ y) (x , y , C.refl , Fx , Gy)
   leaf x Fx  ∙ᵗ node d₁ d₂ = node (leaf x Fx ∙ᵗ d₁) (leaf x Fx ∙ᵗ d₂)
-  leaf x Fx  ∙ᵗ `𝟘        = `𝟘
-  `𝟘        ∙ᵗ leaf y Gy  = `𝟘
-  `𝟘        ∙ᵗ `𝟘         = `𝟘
-  `𝟘        ∙ᵗ node d₁ d₂ = `𝟘
+  leaf x Fx  ∙ᵗ `⊥        = `⊥
+  `⊥        ∙ᵗ leaf y Gy  = `⊥
+  `⊥        ∙ᵗ `⊥         = `⊥
+  `⊥        ∙ᵗ node d₁ d₂ = `⊥
   node c₁ c₂ ∙ᵗ d          = node (c₁ ∙ᵗ d) (c₂ ∙ᵗ d)
 
   ∙ᵗ-`⋁-eval : (c : `⋁ F)(d : `⋁ G) → `⋁-eval c ∙ᶜ `⋁-eval d ≤ᶜ `⋁-eval (c ∙ᵗ d)
   ∙ᵗ-`⋁-eval (leaf x Fx)  (leaf y Gy)  = C.refl
   ∙ᵗ-`⋁-eval (leaf x Fx)  (node d₁ d₂) = C.trans (distribˡ _ _ _) (C.mono (∙ᵗ-`⋁-eval (leaf x Fx) d₁) (∙ᵗ-`⋁-eval (leaf x Fx) d₂))
-  ∙ᵗ-`⋁-eval (leaf x Fx)  `𝟘           = C.trans (C.reflexive (Mon.comm _ _)) 𝟘-distrib
-  ∙ᵗ-`⋁-eval `𝟘           (leaf x x₁) = 𝟘-distrib
-  ∙ᵗ-`⋁-eval `𝟘           `𝟘          = 𝟘-distrib
-  ∙ᵗ-`⋁-eval `𝟘           (node d d₁) = 𝟘-distrib
+  ∙ᵗ-`⋁-eval (leaf x Fx)  `⊥           = C.trans (C.reflexive (Mon.comm _ _)) ⊥ᶜ-distrib
+  ∙ᵗ-`⋁-eval `⊥           (leaf x x₁) = ⊥ᶜ-distrib
+  ∙ᵗ-`⋁-eval `⊥           `⊥          = ⊥ᶜ-distrib
+  ∙ᵗ-`⋁-eval `⊥           (node d d₁) = ⊥ᶜ-distrib
   ∙ᵗ-`⋁-eval (node c₁ c₂) d            = C.trans (distribʳ _ _ _) (C.mono (∙ᵗ-`⋁-eval c₁ d) (∙ᵗ-`⋁-eval c₂ d))
 
   α-helper : (c : `⋁ (U (α F) LMon.∙ U (α G))) → x ≤ᶜ `⋁-eval c → Σ[ d ∈ `⋁ (F LMon.∙ G) ] (x ≤ᶜ `⋁-eval d)
   α-helper (leaf y (y₁ , y₂ , y≤y₁y₂ , (c , y₁≤c) , (d , y₂≤d))) x≤y =
     (c ∙ᵗ d) , C.trans x≤y (C.trans y≤y₁y₂ (C.trans (Mon.mono y₁≤c y₂≤d) (∙ᵗ-`⋁-eval c d)))
-  α-helper `𝟘 x≤y = `𝟘 , x≤y
+  α-helper `⊥ x≤y = `⊥ , x≤y
   α-helper (node c d) x≤cd =
     let (c' , c≤c') , (d' , d≤d') = α-helper c C.refl , α-helper d C.refl
     in (node c' d') , (C.trans x≤cd (C.mono c≤c' d≤d'))
@@ -552,7 +552,7 @@ module DayDistributive
   _⊸_ : Ideal → Ideal → Ideal
   (I ⊸ J) .ICarrier x = ∀ {y} → I .ICarrier y → J .ICarrier (x ∙ᶜ y)
   (I ⊸ J) .≤-closed x≤z f Iy = J .≤-closed (Mon.monoˡ x≤z) (f Iy)
-  (I ⊸ J) .0-closed Iy = J .≤-closed 𝟘-distrib (J .0-closed)
+  (I ⊸ J) .0-closed Iy = J .≤-closed ⊥ᶜ-distrib (J .0-closed)
   (I ⊸ J) .∨-closed I⊸Jx I⊸Jy {z} Iz =
     J .≤-closed (distribʳ _ _ _) (J .∨-closed (I⊸Jx Iz) (I⊸Jy Iz))
 
@@ -604,19 +604,19 @@ module DayDuoidal
     {ιᶜ}
     (isCommutativeDuoidal : IsCommutativeDuoidal _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ _◁ᶜ_ εᶜ ιᶜ)
     (distrib : _DistributesOver_ _≤ᶜ_ _∙ᶜ_ _∨ᶜ_)
-    (𝟘-distrib : ∀ {x} → 𝟘 ∙ᶜ x ≤ᶜ 𝟘)
+    (⊥ᶜ-distrib : ∀ {x} → ⊥ᶜ ∙ᶜ x ≤ᶜ ⊥ᶜ)
     (∨ᶜ-entropy : Entropy _≤ᶜ_ _∨ᶜ_ _◁ᶜ_)
     (∨ᶜ-tidy : ιᶜ ∨ᶜ ιᶜ ≤ᶜ ιᶜ)
-    (𝟘-expand : 𝟘 ≤ᶜ (𝟘 ◁ᶜ 𝟘))
-    (𝟘≤ιᶜ     : 𝟘 ≤ᶜ ιᶜ)
+    (⊥ᶜ-expand : ⊥ᶜ ≤ᶜ (⊥ᶜ ◁ᶜ ⊥ᶜ))
+    (⊥ᶜ≤ιᶜ     : ⊥ᶜ ≤ᶜ ιᶜ)
   where
 
   private
     module Duo = IsCommutativeDuoidal isCommutativeDuoidal
     module LDuo = L.LiftIsDuoidal Duo.isDuoidal
 
-  open DayDistributive Duo.∙-isCommutativePomonoid distrib 𝟘-distrib
-  open DayEntropic Duo.◁-isPomonoid ∨ᶜ-entropy ∨ᶜ-tidy 𝟘-expand 𝟘≤ιᶜ
+  open DayDistributive Duo.∙-isCommutativePomonoid distrib ⊥ᶜ-distrib
+  open DayEntropic Duo.◁-isPomonoid ∨ᶜ-entropy ∨ᶜ-tidy ⊥ᶜ-expand ⊥ᶜ≤ιᶜ
 
   ∙-◁-entropy : Entropy _≤_ _∙_ _◁_
   ∙-◁-entropy I₁ J₁ I₂ J₂ =
@@ -641,7 +641,7 @@ module DayDuoidal
 
   tidy : (c : `⋁ LDuo.ι) → `⋁-eval c ≤ᶜ ιᶜ
   tidy (leaf x (lift x≤ι)) = x≤ι
-  tidy `𝟘 = 𝟘≤ιᶜ
+  tidy `⊥ = ⊥ᶜ≤ιᶜ
   tidy (node c d) = C.trans (C.mono (tidy c) (tidy d)) ∨ᶜ-tidy
 
   ε≤ι : ε ≤ ι
