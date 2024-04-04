@@ -27,6 +27,14 @@ import MAUV.Interpretation
 import MAUV.Model
 import MAUV.Symmetric
 
+import NEL.Formula
+import NEL.Base
+import NEL.Frame
+import NEL.Model
+import NEL.Symmetric
+import NEL.Interpretation
+import NEL.CutElim
+
 import Algebra.Ordered.Construction.Chu
 import Algebra.Ordered.Construction.Ideal
 import Algebra.Ordered.Construction.LowerSet
