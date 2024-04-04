@@ -3,9 +3,8 @@
 module MAV.Frame where
 
 open import Level using (suc; _⊔_)
-open import Algebra.Ordered using (IsCommutativePomonoid; Entropy; IsPomagma; Pomagma)
-open import Algebra.Ordered.Structures.Duoidal using (IsCommutativeDuoidal)
 open import Algebra using (_DistributesOver_)
+open import Algebra.Ordered
 open import Data.Product as Product using (_×_; _,_)
 open import Relation.Binary.Bundles using (Poset)
 open import Relation.Binary.Definitions

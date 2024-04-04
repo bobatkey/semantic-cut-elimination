@@ -4,10 +4,8 @@ module BV.Model where
 
 open import Level using (suc; _⊔_)
 open import Algebra using (_DistributesOver_)
-open import Algebra.Ordered using (IsCommutativePomonoid)
+open import Algebra.Ordered
 open import Algebra.Ordered.Consequences using (supremum∧residuated⇒distrib)
-open import Algebra.Ordered.Structures.Duoidal
-open import Algebra.Ordered.Structures.StarAutonomous
 open import Data.Product using (_,_; proj₁; proj₂)
 open import Relation.Binary using (IsEquivalence; IsPartialOrder)
 open import Relation.Binary.Lattice using (IsMeetSemilattice; IsJoinSemilattice)

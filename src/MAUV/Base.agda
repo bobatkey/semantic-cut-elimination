@@ -2,7 +2,6 @@
 
 open import Algebra.Core using (Op₁)
 open import Algebra.Ordered
-open import Algebra.Ordered.Structures.Duoidal
 open import Data.Product using (_×_; _,_; proj₁; proj₂)
 open import Data.Sum as Sum using (_⊎_; inj₁; inj₂; [_,_])
 open import Level using (suc; _⊔_)

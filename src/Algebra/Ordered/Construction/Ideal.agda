@@ -2,13 +2,9 @@
 
 open import Level
 open import Algebra
-open import Algebra.Definitions
 open import Algebra.Ordered
-open import Algebra.Ordered.Definitions
 open import Algebra.Ordered.Consequences
 import Algebra.Ordered.Construction.LowerSet
-open import Algebra.Ordered.Structures.Residuated
-open import Algebra.Ordered.Structures.Duoidal
 open import Function using (Equivalence; const; flip)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; <_,_>; -,_; Σ-syntax; ∃; ∃-syntax)
 open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])

@@ -3,8 +3,7 @@
 module MAUV.Frame where
 
 open import Level using (suc; _⊔_)
-open import Algebra.Ordered using (IsCommutativePomonoid; Entropy; IsPomagma; Pomagma)
-open import Algebra.Ordered.Structures.Duoidal using (IsDuoidal; IsCommutativeDuoidal)
+open import Algebra.Ordered
 open import Algebra using (_DistributesOver_)
 open import Data.Product as Product using (_×_; _,_)
 open import Relation.Binary.Bundles using (Poset)

@@ -5,6 +5,7 @@ open import Relation.Binary
 open import Data.Sum using (inj₂)
 open import Relation.Binary.Construct.Union using (_∪_)
 import Relation.Binary.Construct.Union as Union
+open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star; ε; _◅_; _◅◅_)
 import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star
 import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as StarProps
@@ -87,3 +88,8 @@ _⟶⋆_ = Star _⟶₌_
 
 step : P ⟶ Q → P ⟶₌ Q
 step P⟶Q = inj₂ (emb P⟶Q)
+
+infix 5 _⟷⋆_
+
+_⟷⋆_ : Rel Structure (suc a)
+_⟷⋆_ = SymCore _⟶⋆_

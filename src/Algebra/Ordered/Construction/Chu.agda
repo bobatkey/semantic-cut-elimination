@@ -11,12 +11,8 @@ open import Level
 open import Data.Product as Product using (_×_; _,_; proj₁; proj₂; swap)
 open import Function using (Equivalence)
 open import Algebra.Core using (Op₁; Op₂)
-open import Algebra.Ordered using (IsCommutativePomonoid; IsPomonoid; IsPosemigroup; IsPomagma)
+open import Algebra.Ordered
 open import Algebra.Ordered.Consequences using (supremum∧residualʳ⇒distribˡ)
-open import Algebra.Ordered.Definitions using (Entropy)
-open import Algebra.Ordered.Structures.Residuated
-open import Algebra.Ordered.Structures.Duoidal
-open import Algebra.Ordered.Structures.StarAutonomous
 open import Relation.Binary.Construct.Core.Symmetric as SymCore using (SymCore)
 open import Relation.Binary.Bundles using (Poset)
 open import Relation.Binary.Core

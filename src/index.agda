@@ -48,12 +48,7 @@ import Algebra.Ordered.Construction.Chu
 import Algebra.Ordered.Construction.Ideal
 import Algebra.Ordered.Construction.LowerSet
 
--- Duoidal, Residuated, and *-Autonomous structures.
-import Algebra.Ordered.Structures.Duoidal
-import Algebra.Ordered.Structures.Residuated
-import Algebra.Ordered.Structures.StarAutonomous
-
--- Basic ordered algebraic structures.
+-- Ordered algebraic structures.
 import Algebra.Ordered
 import Algebra.Ordered.Bundles
 import Algebra.Ordered.Consequences

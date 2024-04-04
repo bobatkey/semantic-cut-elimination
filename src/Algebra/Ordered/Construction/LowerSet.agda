@@ -2,11 +2,8 @@
 
 open import Level
 open import Algebra
-open import Algebra.Ordered.Consequences
-open import Algebra.Ordered.Definitions
-open import Algebra.Ordered.Structures
-open import Algebra.Ordered.Structures.Residuated
-open import Algebra.Ordered.Structures.Duoidal
+open import Algebra.Ordered
+open import Algebra.Ordered.Consequences using (comm∧residual⇒residuated; supremum∧residuated⇒distrib)
 open import Function using (flip)
 open import Data.Empty as Empty using ()
 open import Data.Product using (_×_; _,_; proj₁; proj₂; <_,_>; -,_; ∃-syntax; Σ-syntax; swap)
