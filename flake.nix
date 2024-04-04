@@ -41,7 +41,7 @@
             phases = ["unpackPhase" "buildPhase" "installPhase"];
             buildPhase = ''
 mkdir -p html;
-agda --html --html-dir=html src/MAV/Example.agda
+agda --html --html-dir=html src/index.agda
 '';
             installPhase = ''
 mkdir -p $out;
