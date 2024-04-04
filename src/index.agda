@@ -33,8 +33,8 @@ import MAUV.Interpretation
 import MAUV.Model
 import MAUV.Symmetric
 
--- Generalised Semantic Cut Elimination for MAUV:
--- The Exponential System Virtual.
+-- Generalised Semantic Cut Elimination for NEL:
+-- Non-Commutative Exponential Logic.
 import NEL.Structure
 import NEL.Base
 import NEL.Frame
