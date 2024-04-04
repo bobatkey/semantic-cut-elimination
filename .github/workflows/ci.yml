@@ -50,6 +50,11 @@ jobs:
         with:
           name: html
           path: html
+      - run: |
+          wget https://github.com/bobatkey/semantic-cut-elimination/releases/download/MFPS-2024/semantic-cut-elimination-html.tar.gz -O MFPS-2024.tar.gz
+          mkdir -p html/MFPS/2024/
+          tar -xf MFPS-2024.tar.gz -C html/MFPS/2024/
+      - run:
       - uses: actions/configure-pages@v3
       - uses: actions/upload-pages-artifact@v2
         with:

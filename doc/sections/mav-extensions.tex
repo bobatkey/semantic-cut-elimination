@@ -8,42 +8,40 @@ To evidence this claim, we have adapted our Agda formalisation to prove generali
         The basic system does not have the additives (\ie $\vWith$ and $\vPlus$).
         The proof is a straightforward restriction of our proof for MAV,
         but only relies on lower sets, rather than $+$-closed lower sets.
-        See:
+        The source code of the proof is available at the following URL:
         \begin{center}
           \url{\AgdaBaseUrl/BV.CutElim.html}
         \end{center}
   \item[MAUV]
         The multiplicative-additive-unital system adds the additive units (\ie $\top$ and $\mathbf{0}$, using Girard's notation).
         The proof is a straightforward extension of our proof for MAV, and requires the use of lower sets which are $+$-closed as well as $0$-closed.
+        The source code of the proof is available at the following URL:
+        \begin{center}
+          \url{\AgdaBaseUrl/MAUV.CutElim.html}
+        \end{center}
   \item[NEL]
         Non-commutative exponential logic~\cite{GuglielmiS11} extends BV with the exponentials (\ie $!$ and $?$, using Girard's notation).
+        The proof is a straightforward extension of our proof for MAV, and requires that we:
+        \begin{enumerate*}
+          \item add \emph{near-exponentials}, which do not satisfy monoidality, to BV-frames;
+          \item construct exponentials on lower sets, which adds monoidality;
+          \item construct exponentials on Chu spaces, which adds duality; and
+          \item extend the main proposition (\Cref{prop:embedding-sem}) to account for the new connectives, which requires lemmas similar to those for $\vTens$ and $\vParr$.
+        \end{enumerate*}
+        The source code of the proof is available at the following URL:
+        \begin{center}
+          \url{\AgdaBaseUrl/NEL.CutElim.html}
+        \end{center}
 \end{description}
-The work opens up several paths for future work. The theory developed
-here for lifting Day pomonoids to $+$-closed lower sets enables alternative Cut-elimination proofs for other substructural logics, such as MALL and Bunched Implications (Okada's technique has already been applied here by Frumin~\cite{Frumin22:psc}).
-We find the technique of using $+$-closed lower sets rather than more opaque closure operators more revealing in how the
+The work opens up several paths for future work.
+The theory, developed here, for lifting Day pomonoids to $+$-closed lower sets enables alternative Cut-elimination proofs for other substructural logics, such as MALL and Bunched Implications. (Okada's technique has already been applied to Bunched Implications by Frumin~\cite{Frumin22:psc}.)
+We find the technique of using $+$-closed lower sets more revealing in how the join structure is preserved than the use of impredicative closure operators in Frumin's proof or double negation closure in Okada's.
 
-We plan to investigate extensions of MAV with exponentials, as in
-the System NEL \cite{GuglielmiS11}, and Kleene Star operators which
-can be seen as the exponential for the $\vSeq$ connective. Adding a
-Kleene Star would tighten the connection with Concurrent Kleene
-Algebras we highlighted in \Cref{remark:cka}. It would interesting to
-see to what extent MAV can be seen as a logic for processes
-represented as elements of MAV-frames. More generally, fixpoint
-operators following Baelde \cite{Baelde12} and De, Jafarrahmani and
-Saurin \cite{De22:psc}. The latters' use of Okada's technique is not
-compatible with Agda's logic because it relies on impredicativity to
-construct fixpoints with the double negation closure. We believe that
-our more direct predicative technique will be able to use Agda's
-inductive and coinductive types.
+We plan to investigate extensions of MAV with exponentials, as in the system NEL, and with a Kleene Star operator, which can be seen as the exponential for the $\vSeq$ connective. Adding a Kleene Star would tighten the connection with Concurrent Kleene Algebras we highlighted in~\Cref{remark:cka}. It would interesting to see to what extent MAV can be seen as a logic for processes represented as elements of MAV-frames.
+Furthermore, we plan to investigate fixpoint operators following Baelde~\cite{Baelde12} and De, Jafarrahmani and Saurin~\cite{De22:psc}.
+The latters' use of Okada's technique is not compatible with Agda's type theory, as it relies on impredicativity to construct fixpoints with the double negation closure. We believe that our more direct predicative technique will be able to use Agda's inductive and coinductive types.
 
-We also plan to extend our semantics of BV and MAV to a categorical
-semantics that considers equalities between proofs as well as
-provability. Such a semantics ought to be useful for treating MAV as a
-session-types style language, as considered by Ciobanu and Horne
-\cite{Ciobanu_2016}. The necessary analogue of MAV-algebras has
-already been investigated by Blute, Panangaden and Slavnov
-\cite{Blute_2010} as BV-categories, which are Aguiar and Mahajan's
-2-monoidal, or duoidal, categories \cite{Aguiar_2010} extended with
-duality. The key task will be to categorify the constructions in this
-paper to show how the categorical analogue of MAV-frames induces
-MAV-categories.
+Lastly, we plan to extend our semantics of BV and MAV to a categorical semantics that considers equalities between proofs as well as provability.
+Such a semantics ought to be useful for treating MAV as a session-typed language, as considered by Ciobanu and Horne~\cite{Ciobanu_2016}.
+The necessary analogue of MAV-algebras has already been investigated by Blute, Panangaden, and Slavnov~\cite{Blute_2010} as BV-categories, which are Aguiar and Mahajan's 2-monoidal (or duoidal) categories~\cite{Aguiar_2010} extended with duality.
+The key task will be to categorify the constructions in this paper to show how the categorical analogue of MAV-frames induces MAV-categories.
