@@ -43,7 +43,7 @@ mutual
   reflect : (P : Formula) → I.η P I.≤ ⟦ P ⟧ .neg
   reflect `I = I.≤-refl
   reflect `𝟘 = I.⊤-maximum _
-  reflect `⊤ = I.η-preserve-𝟘
+  reflect `⊤ = I.η-preserve-⊥ᶜ
   reflect (`+ A) =
     I.⊸-residual-to (I.≤-trans I.η-preserve-∙⁻¹ (I.η-mono ((step `axiom) ◅ ε)))
   reflect (`- A) =
