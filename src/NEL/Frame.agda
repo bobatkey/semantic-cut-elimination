@@ -22,8 +22,6 @@ record Frame c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
     _⅋_     : Carrier → Carrier → Carrier
     ！      : Carrier → Carrier
 
-    ！-monoidal-unit : I ≲ ！ I
-    ！-monoidal  : ∀ {x y} → (！ x ⅋ ！ y) ≲ ！ (x ⅋ y)
     ！-discard   : ∀ {x} → ！ x ≲ I
     ！-duplicate : ∀ {x} → ！ x ≲ (！ x ⅋ ！ x)
     ！-derelict  : ∀ {x} → ！ x ≲ x
@@ -152,9 +150,10 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
         ; ∙-isCommutativePomonoid              to ⅋-isCommutativePomonoid
         ; ⊸-∙-isResiduatedCommutativePomonoid to ⊸-⅋-isResiduatedCommutativePomonoid
         )
-    open Exp ！ ！-monoidal-unit ！-monoidal ！-discard ！-duplicate ！-derelict ！-dig public
+    open Exp ！ ！-discard ！-duplicate ！-derelict ！-dig public
       using
         ( ！
+        ; !-context; nil; pair; leaf
         ; ！-mono
         ; ！-monoidal-unit
         ; ！-monoidal

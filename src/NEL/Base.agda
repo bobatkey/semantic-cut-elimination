@@ -66,10 +66,6 @@ data _⟶_ : Structure → Structure → Set a where
   `switch   : (P `⊗ Q) `⅋ R ⟶ P `⊗ (Q `⅋ R)
   `sequence : (P `◁ Q) `⅋ (R `◁ S) ⟶ (P `⅋ R) `◁ (Q `⅋ S)
 
-  -- FIXME: remove these when LowerSet.Exp is changed
-  `mon      : `? P `⅋ `? Q ⟶ `? (P `⅋ Q)
-  `e↑       : `I ⟶ `? `I
-
   `e        : `! `I ⟶ `I
   `p        : `! P `⅋ `? Q ⟶ `! (P `⅋ Q)
   `dis      : `? P ⟶ `I
@@ -273,8 +269,6 @@ frame .Frame._◁_ = _`◁_
 frame .Frame._⅋_ = _`⅋_
 frame .Frame.⅋-◁-isCommutativeDuoidal = `⅋-`◁-isCommutativeDuoidal
 frame .Frame.！ = `?_
-frame .Frame.！-monoidal = (step `mon) ◅ ε
-frame .Frame.！-monoidal-unit = step `e↑ ◅ ε
 frame .Frame.！-discard = (step `dis) ◅ ε
 frame .Frame.！-duplicate = (step `dup) ◅ ε
 frame .Frame.！-derelict = step `ε ◅ ε

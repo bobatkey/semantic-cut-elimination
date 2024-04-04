@@ -56,8 +56,8 @@ data _⟶_ : Rel Structure a where
   `switch   : (P `⊗ Q) `⅋ R ⟶ P `⊗ (Q `⅋ R)
   `sequence : (P `◁ Q) `⅋ (R `◁ S) ⟶ (P `⅋ R) `◁ (Q `⅋ S)
 
-  `mon      : `? P `⅋ `? Q ⟶ `? (P `⅋ Q)
-  `e↑       : `I ⟶ `? `I
+  -- `mon      : `? P `⅋ `? Q ⟶ `? (P `⅋ Q)
+  -- `e↑       : `I ⟶ `? `I
   `e        : `! `I ⟶ `I
   `p        : `! P `⅋ `? Q ⟶ `! (P `⅋ Q)
   `dis      : `? P ⟶ `I

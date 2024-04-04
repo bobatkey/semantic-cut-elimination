@@ -36,15 +36,20 @@ interact P Q .L.*≤* {P′} (Q′ , R′ , P′⟶⋆Q′⅋R , ϕ , lift R≤P
           ◅◅ (fwd `⊗-identityʳ ◅ ε)
 
 interact-！ : ∀ P → (L.！ (L.η P L.⊸ L.ε) L.⅋ L.η (`! P)) L.≤ L.ε
-interact-！ P .L.*≤* {P'} (Q , R , P'⟶⋆QR , (Q' , Q≤?Q' , ϕ) , lift R≤!P) =
+interact-！ P .L.*≤* {P'} (Q , R , P'⟶⋆QR , (Q' , Q≤Q' , ?Q' , ϕ) , lift R≤!P) =
   lift P'⟶⋆I
   where
+    promote : ∀ {S T} → L.!-context T → `! S `⅋ T ⟶⋆ `! (S `⅋ T)
+    promote L.nil = (fwd `⅋-identityʳ ◅ ε) ◅◅ (`!⟩⋆ (bwd `⅋-identityʳ ◅ ε))
+    promote (L.pair c d) = (bwd `⅋-assoc ◅ ε) ◅◅ (promote c `⟨⅋⋆) ◅◅ promote d ◅◅ (`!⟩⋆ (fwd `⅋-assoc ◅ ε))
+    promote L.leaf = (`⅋⟩⋆ (step `δ ◅ ε)) ◅◅ (step `p ◅ ε)
+
     P'⟶⋆I : P' ⟶⋆ `I
     P'⟶⋆I = P'⟶⋆QR
-         ◅◅ (Q≤?Q' `⟨⅋⋆)
+         ◅◅ (Q≤Q' `⟨⅋⋆)
          ◅◅ (`⅋⟩⋆ R≤!P)
          ◅◅ (fwd `⅋-comm ◅ ε)
-         ◅◅ (step `p ◅ ε)
+         ◅◅ promote ?Q'
          ◅◅ (`!⟩⋆ (fwd `⅋-comm ◅ ε))
          ◅◅ (`!⟩⋆ (ϕ {P} (lift ε) .lower))
          ◅◅ step `e ◅ ε
