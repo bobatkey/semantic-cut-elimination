@@ -500,3 +500,55 @@ module Construction
     ⊗-◁-isDuoidal .IsDuoidal.∙-idem-ι = ⊗-idem-ι
     ⊗-◁-isDuoidal .IsDuoidal.◁-idem-ε = ◁-idem-ε
     ⊗-◁-isDuoidal .IsDuoidal.ε≲ι = ε≤ι
+
+  module Exponential {！ᶜ : Op₁ Carrier}
+      (！ᶜ-mono : Monotonic₁ _≤ᶜ_ _≤ᶜ_ ！ᶜ)
+      (！ᶜ-monoidal-unit : εᶜ ≤ᶜ ！ᶜ εᶜ)
+      (！ᶜ-monoidal  : ∀ {x y} → (！ᶜ x ∙ᶜ ！ᶜ y) ≤ᶜ ！ᶜ (x ∙ᶜ y))
+      (！ᶜ-discard   : ∀ {x} → ！ᶜ x ≤ᶜ εᶜ)
+      (！ᶜ-duplicate : ∀ {x} → ！ᶜ x ≤ᶜ (！ᶜ x ∙ᶜ ！ᶜ x))
+      (！ᶜ-derelict  : ∀ {x} → ！ᶜ x ≤ᶜ x)
+      (！ᶜ-dig       : ∀ {x} → ！ᶜ x ≤ᶜ ！ᶜ (！ᶜ x))
+      where
+
+    ！ : Chu → Chu
+    ！ X = embed (！ᶜ (X .pos))
+
+    ！-mono : Monotonic₁ _≤_ _≤_ ！
+    ！-mono x≤y .fpos = ！ᶜ-mono (x≤y .fpos)
+    ！-mono x≤y .fneg = C.mono-antiˡ C.refl (！ᶜ-mono (x≤y .fpos))
+
+    ！-monoidal-unit : ε ≤ ！ ε
+    ！-monoidal-unit .fpos = ！ᶜ-monoidal-unit
+    ！-monoidal-unit .fneg =
+      C.anti-monoʳ ！ᶜ-monoidal-unit C.refl >>
+      C.reflexive (C.Eq.sym (C.identityˡ _)) >>
+      C.evalʳ
+
+    ！-monoidal : ∀ {X Y} → (！ X ⊗ ！ Y) ≤ ！ (X ⊗ Y)
+    ！-monoidal {X} {Y} .fpos = ！ᶜ-monoidal
+    ！-monoidal {X} {Y} .fneg =
+       C.∧-greatest
+         (Λʳ (Λʳ (C.reflexive (C.Eq.sym (C.assoc _ _ _)) >>
+                   C.mono ！ᶜ-monoidal C.refl >>
+                   C.evalʳ)))
+         (Λʳ (Λʳ (C.reflexive (C.Eq.sym (C.assoc _ _ _)) >>
+                   C.mono (C.reflexive (C.comm _ _)) C.refl >>
+                   C.mono ！ᶜ-monoidal C.refl >>
+                   C.evalʳ)))
+
+    ！-discard : ∀ {X} → ！ X ≤ ε
+    ！-discard .fpos = ！ᶜ-discard
+    ！-discard .fneg = Λʳ (C.mono ！ᶜ-discard C.refl >> C.reflexive (C.identityˡ _))
+
+    ！-duplicate : ∀ {X} → ！ X ≤ (！ X ⊗ ！ X)
+    ！-duplicate .fpos = ！ᶜ-duplicate
+    ！-duplicate .fneg =  C.x∧y≤x _ _ >> Λʳ (C.mono ！ᶜ-duplicate C.refl >> C.reflexive (C.assoc _ _ _) >> C.mono C.refl C.evalʳ >> C.evalʳ)
+
+    ！-derelict : ∀ {X} → ！ X ≤ X
+    ！-derelict {X} .fpos = ！ᶜ-derelict
+    ！-derelict {X} .fneg = Λʳ (C.mono ！ᶜ-derelict C.refl >> X .int)
+
+    ！-dig : ∀ {X} → ！ X ≤ ！ (！ X)
+    ！-dig {X} .fpos = ！ᶜ-dig
+    ！-dig {X} .fneg = Λʳ (C.mono ！ᶜ-dig C.refl >> C.evalʳ)

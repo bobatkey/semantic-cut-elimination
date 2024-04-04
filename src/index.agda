@@ -33,6 +33,16 @@ import MAUV.Interpretation
 import MAUV.Model
 import MAUV.Symmetric
 
+-- Generalised Semantic Cut Elimination for MAUV:
+-- The Exponential System Virtual.
+import NEL.Formula
+import NEL.Base
+import NEL.Frame
+import NEL.Model
+import NEL.Symmetric
+import NEL.Interpretation
+import NEL.CutElim
+
 -- The Chu Construction, Ideals, and Lower Sets.
 import Algebra.Ordered.Construction.Chu
 import Algebra.Ordered.Construction.Ideal
