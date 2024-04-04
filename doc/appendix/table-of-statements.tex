@@ -4,16 +4,17 @@
 The table below lists the main definitions, propositions, and theorems in the paper together with the qualified name of the corresponding Agda definition.
 The names of the Agda definitions are hyperlinked to the HTML rendition of the source code, which is available at the following URL:
 \begin{center}
-  \url{https://bobatkey.github.io/semantic-cut-elimination}
+  \url{\AgdaBaseUrl}
 \end{center}
-
-\newcommand{\longtableheader}[1]{%
-  \rowcolor{lightgray}
-  \multicolumn{3}{l}{#1}}
-\newcommand{\longtablemodule}[1]{%
-  \multicolumn{3}{r}{%
-    \small%
-    (The following definitions can be found under \AgdaModuleRef{#1}.)}}
+If the version of the paper you are reading does not support hyperlinks, you can reconstruct the URL to any definition by taking the URL above, adding a \texttt{/}, the module path followed by \texttt{.html}, and the definition name prefixed with a \texttt{\#}.
+For instance, the URL to the definition of \texttt{\`{}¬\_} is:
+\begin{center}
+  \texttt{\AgdaBaseUrl/MAV.Structure.html\#\`{}¬\_}
+\end{center}
+The table has three columns.
+The first gives an intuitive name to the definition, proposition, or theorem statement.
+The second links to its statement in the paper, if applicable.
+The third gives the name of the corresponding Agda definition, and links to its statement online.
 \begin{longtable}[c]{lll}
   \longtableheader{\Cref{sec:mav-syntax}}%
   \\
@@ -23,7 +24,7 @@ The names of the Agda definitions are hyperlinked to the HTML rendition of the s
   \\
   Duality
    & $\vDual\vP$
-   & \AgdaRef{MAV.Structure}+`¬_+
+   & \AgdaRef{MAV.Structure}+`¬_+[\`{}¬\_]
   \\
   Symmetric MAV
    &
@@ -67,8 +68,6 @@ The names of the Agda definitions are hyperlinked to the HTML rendition of the s
   \\[2ex]
   \longtableheader{\Cref{sec:mav-semantics-preliminaries}}%
   \\
-  \longtablemodule{Algebra.Orderd.Structures}%
-  \\
   Pomonoids
    & \Cref{defn:pomonoid}
    & \AgdaRef*{Algebra.Ordered.Structures}+IsPomonoid+
@@ -88,6 +87,8 @@ The names of the Agda definitions are hyperlinked to the HTML rendition of the s
   $*$-autonomous partial order
    & \Cref{defn:star-autonomous}
    & \AgdaRef*{Algebra.Ordered.Structures}+IsStarAutonomous+
+  \\
+  \longtablemodule{Algebra.Orderd.Structures}%
   \\[2ex]
   \longtableheader{\Cref{sec:mav-algebras}}%
   \\
@@ -100,11 +101,11 @@ The names of the Agda definitions are hyperlinked to the HTML rendition of the s
    & \AgdaRef{MAV.Interpretation}+⟦_⟧+
   \\
   Soundness
-   &
+   & \Cref{thm:soundness}
    &
   \\
   \quad for Equality
-   & \multirow{3}*{\Cref{thm:soundness}}
+   &
    & \AgdaRef{MAV.Interpretation}+⟦_⟧eq+
   \\
   \quad for Inference
@@ -127,8 +128,6 @@ The names of the Agda definitions are hyperlinked to the HTML rendition of the s
   \\[2ex]
   \longtableheader{\Cref{sec:lower-sets}}%
   \\
-  \longtablemodule{Algebra.Ordered.Construction.LowerSet}%
-  \\
   Lower sets
    & \Cref{defn:lower-set}
    & \AgdaRef*{Algebra.Ordered.Construction.LowerSet}+LowerSet+
@@ -144,10 +143,10 @@ The names of the Agda definitions are hyperlinked to the HTML rendition of the s
   \quad if Duoidal
    & \Cref{prop:lower-set-duoidal}
    & \texttt{module} \AgdaRef*{Algebra.Ordered.Construction.LowerSet}+DayDuoidal+
+  \\
+  \longtablemodule{Algebra.Ordered.Construction.LowerSet}%
   \\[2ex]
   \longtableheader{\Cref{sec:closed-lower-sets}}%
-  \\
-  \longtablemodule{Algebra.Ordered.Construction.Ideal}%
   \\
   +-closed lower sets
    & \Cref{defn:closed-lower-set}
@@ -164,10 +163,10 @@ The names of the Agda definitions are hyperlinked to the HTML rendition of the s
   \quad if Duoidal
    & \Cref{prop:closed-monoid-duoidal}
    & \texttt{module} \AgdaRef*{Algebra.Ordered.Construction.Ideal}+DayDuoidal+
+  \\
+  \longtablemodule{Algebra.Ordered.Construction.Ideal}%
   \\[2ex]
   \longtableheader{\Cref{sec:chu}}%
-  \\
-  \longtablemodule{Algebra.Ordered.Construction.Chu}%
   \\
   Chu construction
    & \Cref{defn:chu}
@@ -176,6 +175,8 @@ The names of the Agda definitions are hyperlinked to the HTML rendition of the s
   \quad for duoidal pomonoids
    & \Cref{prop:chu-monoid-duoidal}
    & \texttt{module} \AgdaRef*{Algebra.Ordered.Construction.Chu}+SelfDual+
+  \\
+  \longtablemodule{Algebra.Ordered.Construction.Chu}%
   \\[2ex]
   \longtableheader{\Cref{sec:algebra-from-frame}}%
   \\

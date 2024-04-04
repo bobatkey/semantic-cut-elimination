@@ -150,18 +150,26 @@
 \makeatother
 
 % External URLs to the documentation
-\def\AgdaBaseUrl{https://bobatkey.github.io/semantic-cut-elimination/}
+\def\AgdaBaseUrl{https://bobatkey.github.io/semantic-cut-elimination}
 \NewDocumentCommand{\AgdaModuleRef}{m}{%
   \href{%
-    \AgdaBaseUrl#1.html}{%
+    \AgdaBaseUrl/#1.html}{%
     \texttt{#1}}}
-\NewDocumentCommand{\AgdaRef}{s m v}{%
+\NewDocumentCommand{\AgdaRef}{s m v o}{%
   \href{%
-    \AgdaBaseUrl#2.html\##3}{%
+    \AgdaBaseUrl/#2.html\##3}{%
     \texttt{%
-      \IfBooleanF{#1}{#2\IfValueT{#3}{\IfBlankF{#3}{.}}}%
-      \IfValueT{#3}{#3}}}}
+      \IfBooleanF{#1}{#2.}%
+      \IfValueTF{#4}{#4}{#3}}}}
 
+% Helpers for table
+\newcommand{\longtableheader}[1]{%
+  \rowcolor{lightgray}
+  \multicolumn{3}{l}{#1}}
+\newcommand{\longtablemodule}[1]{%
+  \multicolumn{3}{r}{%
+    \small%
+    (The preceding definitions can be found under \AgdaModuleRef{#1}.)}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Syntax:                                                                    %%
