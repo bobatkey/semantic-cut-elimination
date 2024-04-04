@@ -5,9 +5,9 @@ The source code is available at the following URL:
 \begin{center}
   \url{https://github.com/bobatkey/semantic-cut-elimination}
 \end{center}
-The formalisation uses setoids to represent sets, and reuses definitions from the Agda Standard Library~\cite{AgdaStdlib20} where appropriate.
+The formalisation uses setoids to represent sets, and reuses definitions from the Agda Standard Library~\cite{AgdaStdlib20} where appropriate. We have provided a guide to the mechanisation relating it to the Definitions, Propositions, and Theorems in the previous sections in \Cref{sec:table-of-statments}.
 
-We did not attempt to formalise the syntactic proof of generalised cut-elimination directly. We suspect that this would likely be quite involved, due to the widespread and implicit use of syntactic equalities when manipulating structures, as well as the construction of the relevant termination measures. The semantic constructions are relatively straightforward to formalise in Agda.
+We did not attempt to formalise Horne's syntactic proof of generalised cut-elimination directly. We suspect that this would likely be quite involved, due to the widespread and implicit use of syntactic equalities when manipulating structures, as well as the construction of the relevant termination measures. The semantic constructions are relatively straightforward to formalise in Agda.
 
 In addition to increasing the confidence in our results, a key benefit of the formalised proof in a proof assistant such as Agda is that the proof normalisation procedure defined by \Cref{thm:cut-elim} is executable.
 As an example, we have normalised the one-step proof below:
