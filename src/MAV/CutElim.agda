@@ -49,13 +49,18 @@ mutual
   reflect (P `⅋ Q) = 
     I.≤-trans I.η-preserve-∙ (I.⅋-mono (reflect P) (reflect Q))
   reflect (P `⊗ Q) = 
-    I.⟨ I.⊸-residual-to (I.≤-trans (I.⅋-mono (reify Q) I.≤-refl) (I.≤-trans (interact P Q) (reflect P))) 
-      , I.⊸-residual-to (I.≤-trans (I.⅋-mono (reify P) (I.η-mono (fwd `⊗-comm ◅ ε))) (I.≤-trans (interact Q P) (reflect Q))) ⟩
+    I.∧-greatest
+      (I.⊸-residual-to (I.≤-trans (I.⅋-mono (reify Q) I.≤-refl) (I.≤-trans (interact P Q) (reflect P))))
+      (I.⊸-residual-to (I.≤-trans (I.⅋-mono (reify P) (I.η-mono (fwd `⊗-comm ◅ ε))) (I.≤-trans (interact Q P) (reflect Q))))
   reflect (P `& Q) = 
-    I.≤-trans I.η-preserve-∨ I.[ (I.≤-trans (reflect P) I.inj₁) , (I.≤-trans (reflect Q) I.inj₂) ]
+    I.≤-trans I.η-preserve-∨ 
+      (I.∨-least
+        (I.≤-trans (reflect P) I.x≤x∨y)
+        (I.≤-trans (reflect Q) I.y≤x∨y))
   reflect (P `⊕ Q) = 
-    I.⟨ I.≤-trans (I.η-mono (step `left ◅ ε)) (reflect P)
-      , I.≤-trans (I.η-mono (step `right ◅ ε)) (reflect Q) ⟩
+    I.∧-greatest
+      (I.≤-trans (I.η-mono (step `left ◅ ε)) (reflect P))
+      (I.≤-trans (I.η-mono (step `right ◅ ε)) (reflect Q))
   reflect (P `◁ Q) = I.≤-trans I.η-preserve-◁ (I.◁-mono (reflect P) (reflect Q))
 
   reify : (P : Formula) → ⟦ P ⟧ .pos I.≤ I.α (L.η P) I.⊸ I.ι

@@ -66,8 +66,9 @@ mutual
   reflect (P `⅋ Q) =
     L.≤-trans L.η-preserve-⅋ (L.⅋-mono (reflect P) (reflect Q))
   reflect (P `⊗ Q) =
-    L.⟨ L.⊸-residual-to (L.≤-trans (L.⅋-mono (reify Q) L.≤-refl) (L.≤-trans (interact P Q) (reflect P)))
-      , L.⊸-residual-to (L.≤-trans (L.⅋-mono (reify P) (L.η-mono (fwd `⊗-comm ◅ ε))) (L.≤-trans (interact Q P) (reflect Q))) ⟩
+    L.∧-greatest
+      (L.⊸-residual-to (L.≤-trans (L.⅋-mono (reify Q) L.≤-refl) (L.≤-trans (interact P Q) (reflect P))))
+      (L.⊸-residual-to (L.≤-trans (L.⅋-mono (reify P) (L.η-mono (fwd `⊗-comm ◅ ε))) (L.≤-trans (interact Q P) (reflect Q))))
 
   reify : ∀ P → ⟦ P ⟧ .pos L.≤ L.η P L.⊸ L.ι
   reify P =
