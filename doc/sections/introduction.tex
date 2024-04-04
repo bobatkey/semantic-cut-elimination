@@ -5,7 +5,9 @@ We present an algebraic semantics and semantic proof of generalised cut-eliminat
 }~\cite{Guglielmi99:bv,Guglielmi07:sis} with the additives of multiplicative-additive linear logic~\cite[MALL]{Girard87:ll}. The proof technique also extends to the additive units.
 Our proofs are constructive and mechanised in Agda~\cite{Agda264}.
 
-MAV and BV are \emph{deep inference} systems. Deep Inference~\cite{Guglielmi14:di} is generalisation of Gentzen's methodology for designing proof systems, which arose from Guglielmi's attempts to relate process algebra~\cite[CCS]{Milner80:CCS,Milner89:CC} to Classical Linear Logic~\cite[CLL]{Girard87:ll}.
+\subsection{BV, MAV, and Deep Inference}
+
+MAV and BV are \emph{Deep Inference} systems. Deep Inference~\cite{Guglielmi14:di} is generalisation of Gentzen's methodology for designing proof systems, which arose from Guglielmi's attempts to relate process algebra~\cite[CCS]{Milner80:CCS,Milner89:CC} to Classical Linear Logic~\cite[CLL]{Girard87:ll}.
 The problem with such a relation is that, while the multiplicative connectives of Linear Logic capture parallel composition, no connective of Linear Logic captures \emph{sequential composition}.
 Eventually, Guglielmi's attempts yielded BV, which extends Multiplicative Linear Logic~\cite[MLL]{Girard87:ll} with a self-dual non-commutative connective that captures sequential composition.
 Such a connective was already present in another extension of Linear Logic, Pomset logic~\cite{Retore97:pomset}, where it arose from the study of coherence space semantics of Linear Logic~\cite[\C8]{GirardTL89:proofs}.
@@ -25,7 +27,11 @@ The same technique was used by Abrusci~\cite{Abrusci91:psc} for non-commutative 
 The phase semantic proof of cut-elimination does not easily extend to include the kind of self-dual connective present in BV and its extensions.
 The phase space model derives duality by means of double negation with respect to the monoidal structure, which means that any connective has a derived dual. Attempts to extend the model with the non-commutative connective result in two distinct dual non-comutative connectives, reminiscent of the non-commutative tensor and par introduced by Slavnov~\cite{Slavnov19:scmll}.
 
-To our knowledge, all prior work on the metatheory of Deep Inference systems like BV and MAV has been carried out using syntactic techniques such as rewriting with termination measures, or translations into other logics with known Cut-Elimination properties. Our main contribution is the use of semantic techniques to derive the admissibility of identity expansion, cut, and the other \emph{co-} rules of MAV. To this end, we develop a number of results on the semantics of BV and MAV:
+\subsection{Contribution and Content of this Paper}
+
+To our knowledge, all prior work on the metatheory of Deep Inference systems like BV and MAV has been carried out using syntactic techniques such as rewriting with termination measures, or translations into other logics with known Cut-Elimination properties.
+
+Our main contribution is the use of semantic techniques to derive the admissibility of identity expansion, cut, and the other \emph{co-} rules of MAV. To this end, we have developed a number of results on the semantics of BV and MAV:
 \begin{enumerate}
 \item In \Cref{sec:mav-algebras}, we propose MAV-algebras as the algebraic counterpart of MAV. In short, an MAV-algebra is a $*$-autonomous partial order with meets, and another partially ordered monoidal structure that is \emph{duoidal} with respect to the $*$-autonomous structure.
 \item Normal proofs (our name for the ``up'' fragment) as we define them in the next section do not {\it a priori} support all the structure of an MAV-algebra, so we define the weaker notion of \emph{MAV-frame} (\Cref{defn:mav-frame}). These play the same role as Kripke structures do for modal and substructural logics. The first main technical contribution of the paper is in showing that every MAV-frame can be completed to an MAV-algebra.
@@ -33,6 +39,8 @@ To our knowledge, all prior work on the metatheory of Deep Inference systems lik
 \end{enumerate}
 
 We describe the MAV Deep Inference system in \Cref{sec:mav-syntax} and motivate the idea for readers not familiar with such systems.
+
+As far as we are aware, the semantics of BV and its extensions have not been considered before in the literature. The crucial part of the proof is that the standard Chu construction extends to the self-dual non-commutative connective of BV and MAV (\Cref{prop:chu-self-dual} and \Cref{prop:chu-monoid-duoidal}). Our development of the semantics of MAV and BV also opens the possibility of using these logics as sound and complete for reasoning about the MAV-frame structures we define.
 
 All of our proofs have been mechanised and checked in the Agda proof assistant \cite{Agda264}. We briefly discuss the mechanisation in \Cref{sec:mechanisation} and provide a hyperlinked guide to the proof relating it to our mathematical development in \Cref{sec:table-of-statments}. Aside from the benefits of checking the proof, the Agda proof is executable and yields a program for actually normalising proofs.
 
