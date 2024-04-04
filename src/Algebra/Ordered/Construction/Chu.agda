@@ -501,8 +501,9 @@ module Construction
     ⊗-◁-isDuoidal .IsDuoidal.◁-idem-ε = ◁-idem-ε
     ⊗-◁-isDuoidal .IsDuoidal.ε≲ι = ε≤ι
 
-  module Exponential (！ᶜ : Op₁ Carrier)
+  module Exponential {！ᶜ : Op₁ Carrier}
       (！ᶜ-mono : Monotonic₁ _≤ᶜ_ _≤ᶜ_ ！ᶜ)
+      (！ᶜ-monoidal-unit : εᶜ ≤ᶜ ！ᶜ εᶜ)
       (！ᶜ-monoidal  : ∀ {x y} → (！ᶜ x ∙ᶜ ！ᶜ y) ≤ᶜ ！ᶜ (x ∙ᶜ y))
       (！ᶜ-discard   : ∀ {x} → ！ᶜ x ≤ᶜ εᶜ)
       (！ᶜ-duplicate : ∀ {x} → ！ᶜ x ≤ᶜ (！ᶜ x ∙ᶜ ！ᶜ x))
@@ -512,6 +513,17 @@ module Construction
 
     ！ : Chu → Chu
     ！ X = embed (！ᶜ (X .pos))
+
+    ！-mono : Monotonic₁ _≤_ _≤_ ！
+    ！-mono x≤y .fpos = ！ᶜ-mono (x≤y .fpos)
+    ！-mono x≤y .fneg = C.mono-antiˡ C.refl (！ᶜ-mono (x≤y .fpos))
+
+    ！-monoidal-unit : ε ≤ ！ ε
+    ！-monoidal-unit .fpos = ！ᶜ-monoidal-unit
+    ！-monoidal-unit .fneg =
+      C.anti-monoʳ ！ᶜ-monoidal-unit C.refl >>
+      C.reflexive (C.Eq.sym (C.identityˡ _)) >>
+      C.evalʳ
 
     ！-monoidal : ∀ {X Y} → (！ X ⊗ ！ Y) ≤ ！ (X ⊗ Y)
     ！-monoidal {X} {Y} .fpos = ！ᶜ-monoidal
@@ -540,5 +552,3 @@ module Construction
     ！-dig : ∀ {X} → ！ X ≤ ！ (！ X)
     ！-dig {X} .fpos = ！ᶜ-dig
     ！-dig {X} .fneg = Λʳ (C.mono ！ᶜ-dig C.refl >> C.evalʳ)
-
-    -- Define ！ᶜ F x = Σ[ y ∈ Carrier ] (x ≤ y × y ≤ ε × y ≤ y ∙ y × F .Carrier y)

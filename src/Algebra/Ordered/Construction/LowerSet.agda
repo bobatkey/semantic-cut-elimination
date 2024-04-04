@@ -401,43 +401,91 @@ module LiftIsCommutativePomonoid
     (IsResiduatedCommutativePomonoid.residuated ⊸-∙-isResiduatedCommutativePomonoid)
 
   -- Exponentials
-  ！ : LowerSet → LowerSet
-  ！ F .ICarrier x =
-      Σ[ z ∈ Carrier ] (x ≤ᶜ z) × (z ≤ᶜ εᶜ) × (z ≤ᶜ (z ∙ᶜ z)) × F .ICarrier z
-  ！ F .≤-closed x≤y (z , y≤z , z≤ε , z≤zz , Fz) = z , C.trans x≤y y≤z , z≤ε , z≤zz , Fz
+  module FreeExponential where
+    ！ : LowerSet → LowerSet
+    ！ F .ICarrier x =
+        Σ[ z ∈ Carrier ] (x ≤ᶜ z) × (z ≤ᶜ εᶜ) × (z ≤ᶜ (z ∙ᶜ z)) × F .ICarrier z
+    ！ F .≤-closed x≤y (z , y≤z , z≤ε , z≤zz , Fz) = z , C.trans x≤y y≤z , z≤ε , z≤zz , Fz
 
-  ！-mono : Monotonic₁ _≤_ _≤_ ！
-  ！-mono F≤G .*≤* (z , x≤z , z≤ε , z≤zz , Fz) =
-    z , x≤z , z≤ε , z≤zz , F≤G .*≤* Fz
+    ！-mono : Monotonic₁ _≤_ _≤_ ！
+    ！-mono F≤G .*≤* (z , x≤z , z≤ε , z≤zz , Fz) =
+      z , x≤z , z≤ε , z≤zz , F≤G .*≤* Fz
 
-  ！-monoidal : (！ F ∙ ！ G) ≤ ！ (F ∙ G)
-  ！-monoidal .*≤* {x} (y , z , x≤yz , (y' , y≤y' , y'≤ε , y'≤y'y' , Fy') ,
-                                       (z' , z≤z' , z'≤ε , z'≤z'z' , Gz')) =
-     y' ∙ᶜ z' , C.trans x≤yz (Mon.mono y≤y' z≤z') ,
-     (C.trans (Mon.mono y'≤ε z'≤ε) (C.reflexive (Mon.identityˡ _))) ,
-     C.trans (Mon.mono y'≤y'y' z'≤z'z')
-     (C.trans (C.reflexive (Mon.assoc _ _ _))
-     (C.trans (Mon.mono C.refl (C.reflexive (C.Eq.sym (Mon.assoc _ _ _))))
-     (C.trans (Mon.mono C.refl (Mon.mono (C.reflexive (Mon.comm _ _)) C.refl))
-     (C.trans (Mon.mono C.refl (C.reflexive (Mon.assoc _ _ _)))
-     (C.reflexive (C.Eq.sym (Mon.assoc _ _ _))))))) ,
-     (y' , z' , C.refl , Fy' , Gz')
+    ！-monoidal : (！ F ∙ ！ G) ≤ ！ (F ∙ G)
+    ！-monoidal .*≤* {x} (y , z , x≤yz , (y' , y≤y' , y'≤ε , y'≤y'y' , Fy') ,
+                                         (z' , z≤z' , z'≤ε , z'≤z'z' , Gz')) =
+       y' ∙ᶜ z' , C.trans x≤yz (Mon.mono y≤y' z≤z') ,
+       (C.trans (Mon.mono y'≤ε z'≤ε) (C.reflexive (Mon.identityˡ _))) ,
+       C.trans (Mon.mono y'≤y'y' z'≤z'z')
+       (C.trans (C.reflexive (Mon.assoc _ _ _))
+       (C.trans (Mon.mono C.refl (C.reflexive (C.Eq.sym (Mon.assoc _ _ _))))
+       (C.trans (Mon.mono C.refl (Mon.mono (C.reflexive (Mon.comm _ _)) C.refl))
+       (C.trans (Mon.mono C.refl (C.reflexive (Mon.assoc _ _ _)))
+       (C.reflexive (C.Eq.sym (Mon.assoc _ _ _))))))) ,
+       (y' , z' , C.refl , Fy' , Gz')
 
-  ！-discard : ！ F ≤ ε
-  ！-discard .*≤* {x} (z , x≤z , z≤ε , z≤zz , Fz) = lift (C.trans x≤z z≤ε)
+    ！-discard : ！ F ≤ ε
+    ！-discard .*≤* {x} (z , x≤z , z≤ε , z≤zz , Fz) = lift (C.trans x≤z z≤ε)
 
-  ！-duplicate : ！ F ≤ (！ F ∙ ！ F)
-  ！-duplicate .*≤* {x} (z , x≤z , z≤ε , z≤zz , Fz) =
-    z , z , C.trans x≤z z≤zz ,
-    (z , C.refl , z≤ε , z≤zz , Fz) ,
-    (z , C.refl , z≤ε , z≤zz , Fz)
+    ！-duplicate : ！ F ≤ (！ F ∙ ！ F)
+    ！-duplicate .*≤* {x} (z , x≤z , z≤ε , z≤zz , Fz) =
+      z , z , C.trans x≤z z≤zz ,
+      (z , C.refl , z≤ε , z≤zz , Fz) ,
+      (z , C.refl , z≤ε , z≤zz , Fz)
 
-  ！-derelict : ！ F ≤ F
-  ！-derelict {F} .*≤* {x} (z , x≤z , z≤ε , x≤zz , Fz) = F .≤-closed x≤z Fz
+    ！-derelict : ！ F ≤ F
+    ！-derelict {F} .*≤* {x} (z , x≤z , z≤ε , x≤zz , Fz) = F .≤-closed x≤z Fz
 
-  ！-dig : ！ F ≤ ！ (！ F)
-  ！-dig .*≤* {x} (z , x≤z , z≤ε , z≤zz , Fz) =
-    z , x≤z , z≤ε , z≤zz , (z , C.refl , z≤ε , z≤zz , Fz)
+    ！-dig : ！ F ≤ ！ (！ F)
+    ！-dig .*≤* {x} (z , x≤z , z≤ε , z≤zz , Fz) =
+      z , x≤z , z≤ε , z≤zz , (z , C.refl , z≤ε , z≤zz , Fz)
+
+    η-preserve-！ : ∀ {x} → x ≤ᶜ εᶜ → x ≤ᶜ (x ∙ᶜ x) → η x ≤ ！ (η x)
+    η-preserve-！ {x} x≤ε x≤xx .*≤* {y} (lift y≤x) = x , y≤x , x≤ε , x≤xx , lift C.refl
+
+  module Exp (！ᶜ : Op₁ Carrier)
+      (！ᶜ-monoidal-unit : εᶜ ≤ᶜ ！ᶜ εᶜ)
+      (！ᶜ-monoidal  : ∀ {x y} → (！ᶜ x ∙ᶜ ！ᶜ y) ≤ᶜ ！ᶜ (x ∙ᶜ y))
+      (！ᶜ-discard   : ∀ {x} → ！ᶜ x ≤ᶜ εᶜ)
+      (！ᶜ-duplicate : ∀ {x} → ！ᶜ x ≤ᶜ (！ᶜ x ∙ᶜ ！ᶜ x))
+      (！ᶜ-derelict  : ∀ {x} → ！ᶜ x ≤ᶜ x)
+      (！ᶜ-dig       : ∀ {x} → ！ᶜ x ≤ᶜ ！ᶜ (！ᶜ x))
+      where
+
+     -- FIXME: if this definition is changed to:
+     --   Σ[ n ∈ ℕ ] Σ[ z ∈ (Fin n → Carrier) ] (x ≤ !z₁ ∙ ... ∙ !zₙ) × F x₁ × ... × F xₙ
+     -- then ！-monoidal is automatic and doesn't rely on the underlying ！ᶜ being monoidal
+    ！ : LowerSet → LowerSet
+    ！ F .ICarrier x = Σ[ z ∈ Carrier ] (x ≤ᶜ ！ᶜ z) × F .ICarrier z
+    ！ F .≤-closed x≤y (z , y≤!z , Fz) = z , C.trans x≤y y≤!z , Fz
+
+    ！-mono : Monotonic₁ _≤_ _≤_ ！
+    ！-mono F≤G .*≤* (z , x≤!z , Fz) = z , x≤!z , F≤G .*≤* Fz
+
+    ！-monoidal-unit : ε ≤ ！ ε
+    ！-monoidal-unit .*≤* {x} (lift x≤ε) = εᶜ , C.trans x≤ε ！ᶜ-monoidal-unit , lift C.refl
+
+    ！-monoidal : (！ F ∙ ！ G) ≤ ！ (F ∙ G)
+    ！-monoidal .*≤* {x} (y , z , x≤yz , (y' , y≤!y' , Fy') , (z' , z≤!z' , Gz')) =
+      (y' ∙ᶜ z') ,
+      C.trans x≤yz (C.trans (Mon.mono y≤!y' z≤!z') ！ᶜ-monoidal) ,
+      y' , z' , C.refl , Fy' , Gz'
+
+    ！-discard : ！ F ≤ ε
+    ！-discard .*≤* {x} (z , x≤!z , Fz) = lift (C.trans x≤!z ！ᶜ-discard)
+
+    ！-duplicate : ！ F ≤ (！ F ∙ ！ F)
+    ！-duplicate .*≤* {x} (z , x≤!z , Fz) =
+      ！ᶜ z , ！ᶜ z , C.trans x≤!z ！ᶜ-duplicate , (z , C.refl , Fz) , (z , C.refl , Fz)
+
+    ！-derelict : ！ F ≤ F
+    ！-derelict {F} .*≤* {x} (z , x≤!z , Fz) = F .≤-closed (C.trans x≤!z ！ᶜ-derelict) Fz
+
+    ！-dig : ！ F ≤ ！ (！ F)
+    ！-dig .*≤* {x} (z , x≤!z , Fz) = ！ᶜ z , C.trans x≤!z ！ᶜ-dig , z , C.refl , Fz
+
+    η-preserve-！ : ∀ {x} → η (！ᶜ x) ≤ ！ (η x)
+    η-preserve-！ {x} .*≤* {z} (lift z≤!x) = x , z≤!x , lift C.refl
 
 module LiftIsDuoidal
     {_∙ᶜ_}
