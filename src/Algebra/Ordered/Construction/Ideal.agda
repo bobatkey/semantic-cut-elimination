@@ -9,7 +9,7 @@ open import Algebra.Ordered.Consequences
 import Algebra.Ordered.Construction.LowerSet
 open import Algebra.Ordered.Structures.Residuated
 open import Algebra.Ordered.Structures.Duoidal
-open import Function using (const; flip)
+open import Function using (Equivalence; const; flip)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; <_,_>; -,_; Σ-syntax; ∃; ∃-syntax)
 open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
 open import Data.Unit as Unit using ()
@@ -553,10 +553,10 @@ module DayDistributive
     where open PosetReasoning ≤-poset
 
   ⊸-residual : RightResidual _≤_ _∙_ _⊸_
-  ⊸-residual .Function.Equivalence.to        = ⊸-residual-to
-  ⊸-residual .Function.Equivalence.from      = ⊸-residual-from
-  ⊸-residual .Function.Equivalence.to-cong   = λ { PropEq.refl → PropEq.refl }
-  ⊸-residual .Function.Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
+  ⊸-residual .Equivalence.to        = ⊸-residual-to
+  ⊸-residual .Equivalence.from      = ⊸-residual-from
+  ⊸-residual .Equivalence.to-cong   = λ { PropEq.refl → PropEq.refl }
+  ⊸-residual .Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
 
   ⊸-∙-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈_ _≤_ _∙_ _⊸_ ε
   ⊸-∙-isResiduatedCommutativePomonoid = record

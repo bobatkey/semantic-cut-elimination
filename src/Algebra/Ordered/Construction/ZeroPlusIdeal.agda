@@ -9,9 +9,8 @@ open import Algebra.Ordered.Consequences
 import Algebra.Ordered.Construction.LowerSet
 open import Algebra.Ordered.Structures.Residuated
 open import Algebra.Ordered.Structures.Duoidal
-open import Function using (const; flip)
-open import Data.Product as Product using (_×_; _,_; -,_; Σ-syntax; ∃; ∃-syntax)
-open import Data.Sum as Sum using (_⊎_)
+open import Function using (Equivalence; const; flip)
+open import Data.Product using (_×_; _,_; proj₁; proj₂; <_,_>; -,_; Σ-syntax; ∃; ∃-syntax)
 open import Data.Unit as Unit using ()
 open import Relation.Binary
 open import Relation.Binary.Construct.Core.Symmetric as SymCore using (SymCore)
@@ -205,19 +204,22 @@ _∧_ : Ideal → Ideal → Ideal
 (I ∧ J) .0-closed = I .0-closed , J .0-closed
 (I ∧ J) .∨-closed (Ix , Jx) (Iy , Jy) = (I .∨-closed Ix Iy) , (J .∨-closed Jx Jy)
 
-proj₁ : (I ∧ J) ≤ I
-proj₁ .*≤* = Product.proj₁
+x∧y≤x : (I ∧ J) ≤ I
+x∧y≤x .*≤* = proj₁
 
-proj₂ : (I ∧ J) ≤ J
-proj₂ .*≤* = Product.proj₂
+x∧y≤y : (I ∧ J) ≤ J
+x∧y≤y .*≤* = proj₂
 
-⟨_,_⟩ : I ≤ J → I ≤ K → I ≤ (J ∧ K)
-⟨ K≤I , K≤J ⟩ .*≤* = Product.< K≤I .*≤* , K≤J .*≤* >
+∧-greatest : I ≤ J → I ≤ K → I ≤ (J ∧ K)
+∧-greatest K≤I K≤J .*≤* = < K≤I .*≤* , K≤J .*≤* >
+
+∧-infimum : Infimum _≤_ _∧_
+∧-infimum I J = (x∧y≤x ,  x∧y≤y , λ K → ∧-greatest)
 
 ∧-isMeetSemilattice : IsMeetSemilattice _≈_ _≤_ _∧_
 ∧-isMeetSemilattice = record
   { isPartialOrder = ≤-isPartialOrder
-  ; infimum        = λ I J → (proj₁ ,  proj₂ , λ K → ⟨_,_⟩)
+  ; infimum        = ∧-infimum
   }
 
 -- FIXME: under what conditions does α preserve meets?
@@ -246,20 +248,23 @@ I ∨ J = α (U I L.∨ U J)
 ⊥ : Ideal
 ⊥ = α L.⊥
 
-inj₁ : I ≤ (I ∨ J)
-inj₁ = ≤-trans counit⁻¹ (α-mono L.inj₁)
+x≤x∨y : I ≤ (I ∨ J)
+x≤x∨y = ≤-trans counit⁻¹ (α-mono L.x≤x∨y)
 
-inj₂ : J ≤ (I ∨ J)
-inj₂ = ≤-trans counit⁻¹ (α-mono L.inj₂)
+y≤x∨y : J ≤ (I ∨ J)
+y≤x∨y = ≤-trans counit⁻¹ (α-mono L.y≤x∨y)
 
-[_,_] : I ≤ K → J ≤ K → (I ∨ J) ≤ K
-[_,_] {I} {K} {J} I≤K J≤K .*≤* (t , x≤t) =
-  K .≤-closed (C.trans x≤t (`⋁-map-eval _ t)) (`⋁-closed (`⋁-map L.[ U-mono I≤K , U-mono J≤K ] t))
+∨-least : I ≤ K → J ≤ K → (I ∨ J) ≤ K
+∨-least {I} {K} {J} I≤K J≤K .*≤* (t , x≤t) =
+  K .≤-closed (C.trans x≤t (`⋁-map-eval _ t)) (`⋁-closed (`⋁-map (L.∨-least (U-mono I≤K) (U-mono J≤K)) t))
+
+∨-supremum : Supremum _≤_ _∨_
+∨-supremum I J = (x≤x∨y , y≤x∨y , λ K → ∨-least)
 
 ∨-isJoinSemilattice : IsJoinSemilattice _≈_ _≤_ _∨_
 ∨-isJoinSemilattice = record
   { isPartialOrder = ≤-isPartialOrder
-  ; supremum       = λ I J → (inj₁ , inj₂ , λ K → [_,_])
+  ; supremum       = ∨-supremum
   }
 
 ⊥-minimum : Minimum _≤_ ⊥
@@ -274,8 +279,8 @@ inj₂ = ≤-trans counit⁻¹ (α-mono L.inj₂)
 private
   helper : (c : `⋁ (L.η (x ∨ᶜ y))) → Σ[ d ∈ `⋁ (U (α (L.η x) ∨ α (L.η y))) ] (`⋁-eval c ≤ᶜ `⋁-eval d)
   helper {x}{y} (leaf z (lift z≤x∨y)) =
-    (node (leaf x (inj₁ .*≤* ((leaf x (lift C.refl)) , C.refl)))
-          (leaf y (inj₂ .*≤* ((leaf y (lift C.refl)) , C.refl)))) ,
+    (node (leaf x (x≤x∨y .*≤* ((leaf x (lift C.refl)) , C.refl)))
+          (leaf y (y≤x∨y .*≤* ((leaf y (lift C.refl)) , C.refl)))) ,
     z≤x∨y
   helper `⊥ = `⊥ , C.refl
   helper (node c₁ c₂) =
@@ -336,16 +341,16 @@ module DayEntropic
   ◁-mono I₁≤J₁ I₂≤J₂ .*≤* = LMon.∙-mono (U-mono I₁≤J₁) (U-mono I₂≤J₂) .L.*≤*
 
   ◁-assoc : Associative _≈_ _◁_
-  ◁-assoc I J K .Product.proj₁ .*≤* = LMon.∙-assoc (U I) (U J) (U K) .Product.proj₁ .L.*≤*
-  ◁-assoc I J K .Product.proj₂ .*≤* = LMon.∙-assoc (U I) (U J) (U K) .Product.proj₂ .L.*≤*
+  ◁-assoc I J K .proj₁ .*≤* = LMon.∙-assoc (U I) (U J) (U K) .proj₁ .L.*≤*
+  ◁-assoc I J K .proj₂ .*≤* = LMon.∙-assoc (U I) (U J) (U K) .proj₂ .L.*≤*
 
   ◁-identityˡ : LeftIdentity _≈_ ι _◁_
-  ◁-identityˡ I .Product.proj₁ .*≤* = LMon.∙-identityˡ (U I) .Product.proj₁ .L.*≤*
-  ◁-identityˡ I .Product.proj₂ .*≤* = LMon.∙-identityˡ (U I) .Product.proj₂ .L.*≤*
+  ◁-identityˡ I .proj₁ .*≤* = LMon.∙-identityˡ (U I) .proj₁ .L.*≤*
+  ◁-identityˡ I .proj₂ .*≤* = LMon.∙-identityˡ (U I) .proj₂ .L.*≤*
 
   ◁-identityʳ : RightIdentity _≈_ ι _◁_
-  ◁-identityʳ I .Product.proj₁ .*≤* = LMon.∙-identityʳ (U I) .Product.proj₁ .L.*≤*
-  ◁-identityʳ I .Product.proj₂ .*≤* = LMon.∙-identityʳ (U I) .Product.proj₂ .L.*≤*
+  ◁-identityʳ I .proj₁ .*≤* = LMon.∙-identityʳ (U I) .proj₁ .L.*≤*
+  ◁-identityʳ I .proj₂ .*≤* = LMon.∙-identityʳ (U I) .proj₂ .L.*≤*
 
   ◁-identity : Identity _≈_ ι _◁_
   ◁-identity = (◁-identityˡ , ◁-identityʳ)
@@ -363,12 +368,12 @@ module DayEntropic
     }
 
   U-monoidal : U (I ◁ J) L.≈ (U I LMon.∙ U J)
-  U-monoidal .Product.proj₁ .L.*≤* Ix = Ix
-  U-monoidal .Product.proj₂ .L.*≤* Ix = Ix
+  U-monoidal .proj₁ .L.*≤* Ix = Ix
+  U-monoidal .proj₂ .L.*≤* Ix = Ix
 
   U-monoidal-ι : U ι L.≈ LMon.ε
-  U-monoidal-ι .Product.proj₁ .L.*≤* x≤ε = x≤ε
-  U-monoidal-ι .Product.proj₂ .L.*≤* x≤ε = x≤ε
+  U-monoidal-ι .proj₁ .L.*≤* x≤ε = x≤ε
+  U-monoidal-ι .proj₂ .L.*≤* x≤ε = x≤ε
 
   η-preserve-◁ : η (x ∙ᶜ y) ≤ η x ◁ η y
   η-preserve-◁ {x} {y} .*≤* {z} (c , z≤c) =
@@ -378,7 +383,7 @@ module DayEntropic
           (`⋁-closed {α (L.η x) ◁ α (L.η y)} 
             (`⋁-map 
               (L.≤-trans LMon.η-preserve-∙ 
-                (L.≤-trans (LMon.∙-mono unit unit) (U-monoidal .Product.proj₂))) c))
+                (L.≤-trans (LMon.∙-mono unit unit) (U-monoidal .proj₂))) c))
 
 {-
   -- FIXME: this doesn't work
@@ -421,8 +426,8 @@ module DayDistributive
     module Mon = IsCommutativePomonoid isCommutativePomonoid
     module LMon = L.LiftIsCommutativePomonoid isCommutativePomonoid
 
-  distribˡ = distrib .Product.proj₁
-  distribʳ = distrib .Product.proj₂
+  distribˡ = distrib .proj₁
+  distribʳ = distrib .proj₂
 
   _∙_ : Ideal → Ideal → Ideal
   I ∙ J = α (U I LMon.∙ U J)
@@ -457,8 +462,8 @@ module DayDistributive
     in (node c' d') , (C.trans x≤cd (C.mono c≤c' d≤d'))
 
   α-monoidal : (α F ∙ α G) ≈ α (F LMon.∙ G)
-  α-monoidal .Product.proj₁ .*≤* (c , x≤c)  = α-helper c x≤c
-  α-monoidal .Product.proj₂ = α-mono (LMon.∙-mono unit unit)
+  α-monoidal .proj₁ .*≤* (c , x≤c)  = α-helper c x≤c
+  α-monoidal .proj₂ = α-mono (LMon.∙-mono unit unit)
 
   ∙-mono : Monotonic₂ _≤_ _≤_ _≤_ _∙_
   ∙-mono I₁≤I₂ J₁≤J₂ = α-mono (LMon.∙-mono (U-mono I₁≤I₂) (U-mono J₁≤J₂))
@@ -467,7 +472,7 @@ module DayDistributive
   η-preserve-∙ = α-mono (L.≤-trans LMon.η-preserve-∙ (LMon.∙-mono unit unit))
 
   η-preserve-∙⁻¹ : η x ∙ η y ≤ η (x ∙ᶜ y)
-  η-preserve-∙⁻¹ = ≤-trans (α-monoidal .Product.proj₁) (α-mono LMon.η-preserve-∙⁻¹)
+  η-preserve-∙⁻¹ = ≤-trans (α-monoidal .proj₁) (α-mono LMon.η-preserve-∙⁻¹)
 
   ∙-assoc : Associative _≈_ _∙_
   ∙-assoc I J K =
@@ -586,10 +591,10 @@ module DayDistributive
     where open PosetReasoning ≤-poset
 
   ⊸-residual : RightResidual _≤_ _∙_ _⊸_
-  ⊸-residual .Function.Equivalence.to        = ⊸-residual-to
-  ⊸-residual .Function.Equivalence.from      = ⊸-residual-from
-  ⊸-residual .Function.Equivalence.to-cong   = λ { PropEq.refl → PropEq.refl }
-  ⊸-residual .Function.Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
+  ⊸-residual .Equivalence.to        = ⊸-residual-to
+  ⊸-residual .Equivalence.from      = ⊸-residual-from
+  ⊸-residual .Equivalence.to-cong   = λ { PropEq.refl → PropEq.refl }
+  ⊸-residual .Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
 
   ⊸-∙-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈_ _≤_ _∙_ _⊸_ ε
   ⊸-∙-isResiduatedCommutativePomonoid = record
@@ -652,13 +657,13 @@ module DayDuoidal
     { ∙-isPomonoid = IsCommutativePomonoid.isPomonoid ∙-isCommutativePomonoid
     ; ◁-isPomonoid = ◁-isPomonoid
     ; ∙-◁-entropy = ∙-◁-entropy
-    ; ∙-idem-ι = ≤-trans (α-mono (LDuo.∙-mono (U-monoidal-ι .Product.proj₁) (U-monoidal-ι .Product.proj₁)))
+    ; ∙-idem-ι = ≤-trans (α-mono (LDuo.∙-mono (U-monoidal-ι .proj₁) (U-monoidal-ι .proj₁)))
                 (≤-trans (α-mono LDuo.∙-idem-ι)
-                (≤-trans (α-mono (U-monoidal-ι .Product.proj₂))
+                (≤-trans (α-mono (U-monoidal-ι .proj₂))
                           counit))
     ; ◁-idem-ε = ≤-trans (α-mono LDuo.◁-idem-ε)
                 (≤-trans (α-mono (LDuo.◁-mono unit unit))
-                (≤-trans (α-mono (U-monoidal .Product.proj₂))
+                (≤-trans (α-mono (U-monoidal .proj₂))
                 counit))
     ; ε≲ι = ε≤ι
     }
