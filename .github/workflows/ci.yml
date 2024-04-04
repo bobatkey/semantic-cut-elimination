@@ -19,6 +19,12 @@ jobs:
           agda-version: "2.6.4"
           agda-stdlib-version: "2.0"
       - run: agda src/index.agda
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source
+          path: |
+            semantic-cut-elimination.agda-lib
+            src/**/*.agda
       - run: agda --html --html-dir=html src/index.agda
       - uses: actions/upload-artifact@v4
         with:
@@ -60,6 +66,10 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: source
+          path: source
       - uses: actions/download-artifact@v4
         with:
           name: html
