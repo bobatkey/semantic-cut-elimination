@@ -13,12 +13,13 @@
         tex = pkgs.texlive.combine {
           inherit (pkgs.texlive)
             scheme-basic
-            latexmk cmll mathpartir xypic todonotes mathtools xifthen ifmtarg polytable lazylist etoolbox environ
+            latexmk cmll mathpartir xypic todonotes mathtools
+            xifthen ifmtarg polytable lazylist etoolbox environ
             newunicodechar
             mathcommand foreign xpunctuate cleveref
             fdsymbol stmaryrd
             vntex enumitem
-            parskip
+            parskip multirow ec metafont
           ;
         };
 
@@ -55,9 +56,10 @@ cp html/* $out/;
             phases = ["unpackPhase" "buildPhase" "installPhase"];
             buildPhase = ''
 export PATH="${pkgs.lib.makeBinPath buildInputs}";
-mkdir -p .cache/texmf-var;
+export DIR=$(pwd);
+mkdir -p "$DIR"/doc/.cache/texmf-var;
 cd doc/
-env TEXMFHOME=../.cache TEXMFVAR=../.cache/texmf-var make AGDA=agda
+env TEXMFHOME="$DIR/doc/.cache" TEXMFVAR="$DIR/doc/.cache/texmf-var" make AGDA=agda
 '';
             installPhase = ''
 mkdir -p $out;
