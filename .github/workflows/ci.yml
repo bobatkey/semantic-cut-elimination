@@ -61,7 +61,7 @@ jobs:
   publish-documentation-to-github-releases:
     name: Publish package to GitHub Releases
     needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -70,11 +70,15 @@ jobs:
         with:
           name: source
           path: source
+      - run: tar -czvf semantic-cut-elimination-source.tar.gz -C source .
       - uses: actions/download-artifact@v4
         with:
           name: html
           path: html
+      - run: tar -czvf semantic-cut-elimination-html.tar.gz -C html .
       - uses: softprops/action-gh-release@v2
         with:
-          files: html
+          files: |
+            semantic-cut-elimination-source.tar.gz
+            semantic-cut-elimination-html.tar.gz
           fail_on_unmatched_files: true
