@@ -3,7 +3,7 @@
 import BV.Base
 import BV.Base.Reasoning
 import BV.CutElim
-import BV.Formula
+import BV.Structure
 import BV.Frame
 import BV.Interpretation
 import BV.Model
@@ -15,7 +15,7 @@ import MAV.Base
 import MAV.Base.Reasoning
 import MAV.CutElim
 import MAV.Example
-import MAV.Formula
+import MAV.Structure
 import MAV.Frame
 import MAV.Interpretation
 import MAV.Model
@@ -27,7 +27,7 @@ import MAUV.Base
 import MAUV.Base.Reasoning
 import MAUV.CutElim
 import MAUV.Example
-import MAUV.Formula
+import MAUV.Structure
 import MAUV.Frame
 import MAUV.Interpretation
 import MAUV.Model
@@ -35,7 +35,7 @@ import MAUV.Symmetric
 
 -- Generalised Semantic Cut Elimination for MAUV:
 -- The Exponential System Virtual.
-import NEL.Formula
+import NEL.Structure
 import NEL.Base
 import NEL.Frame
 import NEL.Model

@@ -24,20 +24,20 @@ import Relation.Binary.Reasoning.PartialOrder as PartialOrderReasoning
 module MAV.Base {a} (Atom : Set a) where
 
 open import MAV.Frame
-open import MAV.Formula Atom
+open import MAV.Structure Atom
 
 private
   variable
     A A′ : Atom
     B B′ : Atom
-    P P′ : Formula
-    Q Q′ : Formula
-    R R′ : Formula
-    S S′ : Formula
+    P P′ : Structure
+    Q Q′ : Structure
+    R R′ : Structure
+    S S′ : Structure
 
 infix 5 _∼_
 
-data _∼_ : Rel Formula a where
+data _∼_ : Rel Structure a where
   `◁-assoc     : ((P `◁ Q) `◁ R) ∼ (P `◁ (Q `◁ R))
   `◁-identityʳ : (P `◁ `I) ∼ P
   `◁-identityˡ : (`I `◁ P) ∼ P
@@ -50,18 +50,18 @@ data _∼_ : Rel Formula a where
 
 infix 5 _∼ᶜ_
 
-_∼ᶜ_ : Rel Formula (suc a)
+_∼ᶜ_ : Rel Structure (suc a)
 _∼ᶜ_ = CongClosure _∼_
 
 infix 5 _≃_
 
-_≃_ : Rel Formula (suc a)
+_≃_ : Rel Structure (suc a)
 _≃_ = EqClosure _∼ᶜ_
 
 infix 5 _⟶_
 
 -- One step of the “analytic” proof system
-data _⟶_ : Formula → Formula → Set a where
+data _⟶_ : Structure → Structure → Set a where
   `axiom    : `- A `⅋ `+ A ⟶ `I
   `tidy     : `I `& `I ⟶ `I
   `switch   : (P `⊗ Q) `⅋ R ⟶ P `⊗ (Q `⅋ R)
@@ -76,22 +76,22 @@ data _⟶_ : Formula → Formula → Set a where
 
 infix 5 _⟶ᶜ_
 
-_⟶ᶜ_ : Rel Formula (suc a)
+_⟶ᶜ_ : Rel Structure (suc a)
 _⟶ᶜ_ = CongClosure _⟶_
 
 infix 5 _⟶₌_
 
-_⟶₌_ : Rel Formula (suc a)
+_⟶₌_ : Rel Structure (suc a)
 _⟶₌_ = _≃_ ∪ _⟶ᶜ_
 
 infix 5 _⟶⋆_
 
-_⟶⋆_ : Rel Formula (suc a)
+_⟶⋆_ : Rel Structure (suc a)
 _⟶⋆_ = Star _⟶₌_
 
 infix 5 _⟷⋆_
 
-_⟷⋆_ : Rel Formula (suc a)
+_⟷⋆_ : Rel Structure (suc a)
 _⟷⋆_ = SymCore _⟶⋆_
 
 fwd : P ∼ Q → P ⟶₌ Q
@@ -110,7 +110,7 @@ step P⟶Q = inj₂ (emb P⟶Q)
 ⟶⋆-isPartialOrder = SymCore.isPreorder⇒isPartialOrder _⟶⋆_ (StarProps.isPreorder _)
 
 ⟶⋆-Poset : Poset a (suc a) (suc a)
-⟶⋆-Poset .Poset.Carrier = Formula
+⟶⋆-Poset .Poset.Carrier = Structure
 ⟶⋆-Poset .Poset._≈_ = _⟷⋆_
 ⟶⋆-Poset .Poset._≤_ = _⟶⋆_
 ⟶⋆-Poset .Poset.isPartialOrder = ⟶⋆-isPartialOrder
@@ -128,7 +128,7 @@ open IsEquivalence ⟷⋆-isEquivalence
 ------------------------------------------------------------------------------
 -- Lift congruence rules to the preorder
 
-⟶⋆-map : (f : Op₁ Formula) (g : ∀ {R} → CongClosure R =[ f ]⇒ CongClosure R) → P ⟶⋆ P′ → f P ⟶⋆ f P′ 
+⟶⋆-map : (f : Op₁ Structure) (g : ∀ {R} → CongClosure R =[ f ]⇒ CongClosure R) → P ⟶⋆ P′ → f P ⟶⋆ f P′ 
 ⟶⋆-map f g = Star.gmap f (Sum.map (EqClosure.gmap f g) g)
 
 `◁⟩⋆_ : Q ⟶⋆ Q′ → (P `◁ Q) ⟶⋆ (P `◁ Q′)
@@ -301,7 +301,7 @@ open import Algebra.Definitions _⟶⋆_ using (_DistributesOver_)
 
 ------------------------------------------------------------------------------
 frame : Frame a (suc a) (suc a)
-frame .Frame.Carrier = Formula
+frame .Frame.Carrier = Structure
 frame .Frame._≈_ = _⟷⋆_
 frame .Frame._≲_ = _⟶⋆_
 frame .Frame.I = `I

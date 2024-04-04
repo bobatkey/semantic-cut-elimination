@@ -14,15 +14,15 @@ open import Relation.Binary.PropositionalEquality.Core as ≡ using (_≡_)
 
 module MAV.Base.Reasoning {a} (Atom : Set a) where
 
-open import MAV.Formula Atom
+open import MAV.Structure Atom
 open import MAV.Base Atom as MAV public hiding (_⟶⋆_)
 
 private
   variable
-    P P′ : Formula
-    Q Q′ : Formula
-    R R′ : Formula
-    S S′ : Formula
+    P P′ : Structure
+    Q Q′ : Structure
+    R R′ : Structure
+    S S′ : Structure
 
 module Deep where
 
@@ -32,13 +32,13 @@ module Deep where
   infixr 2 _∼⟨_⟨_
   infix  3 _∎
 
-  data _IsDerivableFrom_ : Formula → Formula → Set (suc a) where
-    _∼⟨_⟩_   : (P : Formula) → P ∼ᶜ Q → Q IsDerivableFrom R → P IsDerivableFrom R
-    _∼⟨_⟨_   : (P : Formula) → Q ∼ᶜ P → Q IsDerivableFrom R → P IsDerivableFrom R
-    _⟶⟨_⟩_  : (P : Formula) → P ⟶ᶜ Q → Q IsDerivableFrom R → P IsDerivableFrom R
-    _∎       : (P : Formula) → P IsDerivableFrom P
+  data _IsDerivableFrom_ : Structure → Structure → Set (suc a) where
+    _∼⟨_⟩_   : (P : Structure) → P ∼ᶜ Q → Q IsDerivableFrom R → P IsDerivableFrom R
+    _∼⟨_⟨_   : (P : Structure) → Q ∼ᶜ P → Q IsDerivableFrom R → P IsDerivableFrom R
+    _⟶⟨_⟩_  : (P : Structure) → P ⟶ᶜ Q → Q IsDerivableFrom R → P IsDerivableFrom R
+    _∎       : (P : Structure) → P IsDerivableFrom P
 
-  data _⟶⋆_ (P Q : Formula) : Set (suc a) where
+  data _⟶⋆_ (P Q : Structure) : Set (suc a) where
     begin_ : P IsDerivableFrom Q → P ⟶⋆ Q
 
   to-≃ : P ≃ Q → P IsDerivableFrom Q

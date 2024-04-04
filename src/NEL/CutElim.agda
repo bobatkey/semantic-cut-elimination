@@ -6,7 +6,7 @@ open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (ε; _�
 
 module NEL.CutElim {a} (Atom : Set a) where
 
-open import NEL.Formula Atom
+open import NEL.Structure Atom
 open import NEL.Base Atom as NEL
 import NEL.Symmetric Atom as SNEL
 open import NEL.Frame
@@ -94,5 +94,5 @@ sem-cut-elim P I≤P = q .L.*≤* (lift ε) .lower
         q : L.η P L.≤ L.ι
         q = L.≤-trans (p .fneg) L.ε≤ι
 
-cut-elim : (P : Formula) → (P SNEL.⟶⋆ `I) → P ⟶⋆ `I
+cut-elim : (P : Structure) → (P SNEL.⟶⋆ `I) → P ⟶⋆ `I
 cut-elim P prf = sem-cut-elim P ⟦ prf ⟧steps

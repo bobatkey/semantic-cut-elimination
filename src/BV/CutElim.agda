@@ -6,7 +6,7 @@ open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (ε; _�
 
 module BV.CutElim {a} (Atom : Set a) where
 
-open import BV.Formula Atom
+open import BV.Structure Atom
 open import BV.Base Atom as BV
 import BV.Symmetric Atom as SBV
 open import BV.Frame
@@ -75,5 +75,5 @@ sem-cut-elim P I≤P = q .L.*≤* (lift ε) .lower
         q : L.η P L.≤ L.ι
         q = L.≤-trans (p .fneg) L.ε≤ι
 
-cut-elim : (P : Formula) → (P SBV.⟶⋆ `I) → P ⟶⋆ `I
+cut-elim : (P : Structure) → (P SBV.⟶⋆ `I) → P ⟶⋆ `I
 cut-elim P prf = sem-cut-elim P ⟦ prf ⟧steps

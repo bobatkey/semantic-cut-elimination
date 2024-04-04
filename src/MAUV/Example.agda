@@ -12,7 +12,7 @@ module MAUV.Example where
 Atom : Set
 Atom = ⊥
 
-open import MAUV.Formula Atom
+open import MAUV.Structure Atom
 open import MAUV.CutElim Atom using (cut-elim)
 import MAUV.Base.Reasoning Atom as MAUV
 import MAUV.Symmetric Atom as SMAUV
@@ -21,7 +21,7 @@ import MAUV.Symmetric Atom as SMAUV
 --
 --  Normalising A proof that (`I `⊕ `I) `◁ (`I `& `I) ⊸ (`I `⊕ `I) `◁ (`I `& `I):
 
-example₁ : Formula
+example₁ : Structure
 example₁ = (`I `⊕ `I) `◁ (`I `& `I)
 
 SMAUV-proof-of-example₁ : (example₁ `⅋ `¬ example₁) SMAUV.⟶⋆ `I

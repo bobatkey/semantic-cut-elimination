@@ -23,17 +23,17 @@ module NEL.Interpretation
     (V : Atom → M .Model.Carrier)
   where
 
-open import NEL.Formula Atom
+open import NEL.Structure Atom
 open import NEL.Symmetric Atom
 
 private
   variable
-    P P′ : Formula
-    Q Q′ : Formula
+    P P′ : Structure
+    Q Q′ : Structure
 
 open Model M
 
-⟦_⟧ : Formula → Carrier
+⟦_⟧ : Structure → Carrier
 ⟦ `I     ⟧ = I
 ⟦ `+ x   ⟧ = V x
 ⟦ `- x   ⟧ = ¬ (V x)
@@ -67,7 +67,7 @@ dual-ok (P `⊗ Q) =
 ⟦ `⅋-identityʳ ⟧eq-ax = Eq.trans (⅋-cong Eq.refl mix) (⅋-identityʳ _)
 
 -- The interpretation is closed under congruence
-module _ {ℓ} {_𝓡_ : Rel Formula ℓ} where
+module _ {ℓ} {_𝓡_ : Rel Structure ℓ} where
 
   cong : (f : ∀ {P Q} → P 𝓡 Q → ⟦ P ⟧ ≈ ⟦ Q ⟧) → CongClosure _𝓡_ P Q → ⟦ P ⟧ ≈ ⟦ Q ⟧
   cong f (emb φ)   = f φ
@@ -103,7 +103,7 @@ module _ {ℓ} {_𝓡_ : Rel Formula ℓ} where
 ⟦ `ε   ⟧step-ax = ？-derelict
 
 -- The interpretation is closed under monotonicity
-module _ {ℓ} {_𝓡_ : Rel Formula ℓ} where
+module _ {ℓ} {_𝓡_ : Rel Structure ℓ} where
 
   mono : (f : ∀ {P Q} → P 𝓡 Q → ⟦ Q ⟧ ≲ ⟦ P ⟧) → CongClosure _𝓡_ P Q → ⟦ Q ⟧ ≲ ⟦ P ⟧
   mono f (emb φ)   = f φ

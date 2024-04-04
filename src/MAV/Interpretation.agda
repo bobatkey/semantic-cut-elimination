@@ -23,17 +23,17 @@ module MAV.Interpretation
     (V : Atom → M .Model.Carrier)
   where
 
-open import MAV.Formula Atom
+open import MAV.Structure Atom
 open import MAV.Symmetric Atom
 
 private
   variable
-    P P′ : Formula
-    Q Q′ : Formula
+    P P′ : Structure
+    Q Q′ : Structure
 
 open Model M
 
-⟦_⟧ : Formula → Carrier
+⟦_⟧ : Structure → Carrier
 ⟦ `I     ⟧ = I
 ⟦ `+ x   ⟧ = V x
 ⟦ `- x   ⟧ = ¬ (V x)
@@ -67,7 +67,7 @@ dual-ok (P `◁ Q) = Eq.trans (◁-cong (dual-ok P) (dual-ok Q)) (Eq.sym ◁-sel
 ⟦ `◁-identityˡ ⟧eq-ax = Eq.trans (◁-cong I-eq-J Eq.refl) (◁-identityˡ _)
 
 -- The interpretation is closed under congruence
-module _ {ℓ} {_𝓡_ : Rel Formula ℓ} where
+module _ {ℓ} {_𝓡_ : Rel Structure ℓ} where
 
   cong : (f : ∀ {P Q} → P 𝓡 Q → ⟦ P ⟧ ≈ ⟦ Q ⟧) → CongClosure _𝓡_ P Q → ⟦ P ⟧ ≈ ⟦ Q ⟧
   cong f (emb φ)   = f φ
@@ -109,7 +109,7 @@ module _ {ℓ} {_𝓡_ : Rel Formula ℓ} where
   ⊕-least (◁-mono (x≲x⊕y _ _) (x≲x⊕y _ _)) (◁-mono (y≲x⊕y _ _) (y≲x⊕y _ _))
 
 -- The interpretation is closed under monotonicity
-module _ {ℓ} {_𝓡_ : Rel Formula ℓ} where
+module _ {ℓ} {_𝓡_ : Rel Structure ℓ} where
 
   mono : (f : ∀ {P Q} → P 𝓡 Q → ⟦ Q ⟧ ≲ ⟦ P ⟧) → CongClosure _𝓡_ P Q → ⟦ Q ⟧ ≲ ⟦ P ⟧
   mono f (emb φ)   = f φ

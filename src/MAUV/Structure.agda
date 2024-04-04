@@ -7,7 +7,7 @@ open import Relation.Binary
 open import Relation.Binary.PropositionalEquality.Core using (_≡_; _≢_; refl)
 open import Relation.Nullary.Negation.Core using (¬_; contradiction)
 
-module BV.Formula {a} (Atom : Set a) where
+module MAUV.Structure {a} (Atom : Set a) where
 
 infix 20 `+_ 
 infix 20 `-_ 
@@ -15,38 +15,48 @@ infix 15 `¬_
 infix 10 _`◁_
 infix 10 _`⅋_
 infix 10 _`⊗_
+infix 10 _`&_
+infix 10 _`⊕_
 
-data Formula : Set a where
-  `I   : Formula
-  `+_  : Atom → Formula
-  `-_  : Atom → Formula
-  _`◁_ : Formula → Formula → Formula
-  _`⅋_ : Formula → Formula → Formula
-  _`⊗_ : Formula → Formula → Formula
+data Structure : Set a where
+  `I   : Structure
+  `𝟘  : Structure
+  `⊤  : Structure
+  `+_  : Atom → Structure
+  `-_  : Atom → Structure
+  _`◁_ : Structure → Structure → Structure
+  _`⅋_ : Structure → Structure → Structure
+  _`⊗_ : Structure → Structure → Structure
+  _`&_ : Structure → Structure → Structure
+  _`⊕_ : Structure → Structure → Structure
 
 private
   variable
-    P P′ : Formula
-    Q Q′ : Formula
-    R R′ : Formula
-    S S′ : Formula
+    P P′ : Structure
+    Q Q′ : Structure
+    R R′ : Structure
+    S S′ : Structure
 
-`¬_ : Formula → Formula
+`¬_ : Structure → Structure
 `¬ `I = `I
+`¬ `𝟘 = `⊤
+`¬ `⊤ = `𝟘
 `¬ (`+ A) = `- A
 `¬ (`- A) = `+ A
 `¬ (P `◁ Q) = `¬ P `◁ `¬ Q
 `¬ (P `⅋ Q) = `¬ P `⊗ `¬ Q
 `¬ (P `⊗ Q) = `¬ P `⅋ `¬ Q
+`¬ (P `& Q) = `¬ P `⊕ `¬ Q
+`¬ (P `⊕ Q) = `¬ P `& `¬ Q
 
 
-module _ {ℓ} (_∼_ : Rel Formula ℓ) where
+module _ {ℓ} (_∼_ : Rel Structure ℓ) where
   mutual
     private
-      _≃_ : Rel Formula (suc a ⊔ ℓ)
+      _≃_ : Rel Structure (suc a ⊔ ℓ)
       _≃_ = CongClosure
 
-    data CongClosure : Rel Formula (suc a ⊔ ℓ) where
+    data CongClosure : Rel Structure (suc a ⊔ ℓ) where
       emb   : P ∼ P′ → P ≃ P′
       _`⟨◁ : P ≃ P′ → (P `◁ Q) ≃ (P′ `◁ Q)
       `◁⟩_ : Q ≃ Q′ → (P `◁ Q) ≃ (P `◁ Q′)
@@ -54,16 +64,24 @@ module _ {ℓ} (_∼_ : Rel Formula ℓ) where
       `⊗⟩_ : Q ≃ Q′ → (P `⊗ Q) ≃ (P `⊗ Q′)
       _`⟨⅋ : P ≃ P′ → (P `⅋ Q) ≃ (P′ `⅋ Q)
       `⅋⟩_ : Q ≃ Q′ → (P `⅋ Q) ≃ (P `⅋ Q′)
+      _`⟨& : P ≃ P′ → (P `& Q) ≃ (P′ `& Q)
+      `&⟩_ : Q ≃ Q′ → (P `& Q) ≃ (P `& Q′)
+      _`⟨⊕ : P ≃ P′ → (P `⊕ Q) ≃ (P′ `⊕ Q)
+      `⊕⟩_ : Q ≃ Q′ → (P `⊕ Q) ≃ (P `⊕ Q′)
 
-_≡ᵇ`I : (P : Formula) → Bool
+_≡ᵇ`I : (P : Structure) → Bool
 `I       ≡ᵇ`I = true
+`𝟘      ≡ᵇ`I  = false
+`⊤      ≡ᵇ`I  = false
 (`+ A)   ≡ᵇ`I = false
 (`- A)   ≡ᵇ`I = false
 (P `◁ Q) ≡ᵇ`I = false
 (P `⅋ Q) ≡ᵇ`I = false
 (P `⊗ Q) ≡ᵇ`I = false
+(P `& Q) ≡ᵇ`I = false
+(P `⊕ Q) ≡ᵇ`I = false
 
-record NonUnit (P : Formula) : Set where
+record NonUnit (P : Structure) : Set where
   field
     nonUnit : T (not (P ≡ᵇ`I))
 
@@ -78,19 +96,31 @@ instance
   `⅋-nonUnit = _
   `⊗-nonUnit : ∀ {P Q} → NonUnit (P `⊗ Q)
   `⊗-nonUnit = _
+  `&-nonUnit : ∀ {P Q} → NonUnit (P `& Q)
+  `&-nonUnit = _
+  `⊕-nonUnit : ∀ {P Q} → NonUnit (P `⊕ Q)
+  `⊕-nonUnit = _
 
-_≟`I : (P : Formula) → Dec (P ≡ `I)
+_≟`I : (P : Structure) → Dec (P ≡ `I)
 `I       ≟`I = yes refl
+`𝟘      ≟`I = no λ ()
+`⊤      ≟`I = no λ ()
 (`+ A)   ≟`I = no (λ ())
 (`- A)   ≟`I = no (λ ())
 (P `◁ Q) ≟`I = no (λ ())
 (P `⅋ Q) ≟`I = no (λ ())
 (P `⊗ Q) ≟`I = no (λ ())
+(P `& Q) ≟`I = no (λ ())
+(P `⊕ Q) ≟`I = no (λ ())
 
 ≢-nonUnit : ∀ {P} → P ≢ `I → NonUnit P
 ≢-nonUnit {`I}     P≢`I = contradiction refl P≢`I 
+≢-nonUnit {`𝟘}    P≢`I = _
+≢-nonUnit {`⊤}    P≢`I = _
 ≢-nonUnit {`+ A}   P≢`I = _
 ≢-nonUnit {`- A}   P≢`I = _
 ≢-nonUnit {P `◁ Q} P≢`I = _
 ≢-nonUnit {P `⅋ Q} P≢`I = _
 ≢-nonUnit {P `⊗ Q} P≢`I = _
+≢-nonUnit {P `& Q} P≢`I = _
+≢-nonUnit {P `⊕ Q} P≢`I = _

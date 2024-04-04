@@ -15,20 +15,20 @@ import Relation.Binary.Construct.Closure.Equivalence as EqClosure
 
 module NEL.Symmetric {a} (Atom : Set a) where
 
-open import NEL.Formula Atom
+open import NEL.Structure Atom
 
 private
   variable
     A A′ : Atom
     B B′ : Atom
-    P P′ : Formula
-    Q Q′ : Formula
-    R R′ : Formula
-    S S′ : Formula
+    P P′ : Structure
+    Q Q′ : Structure
+    R R′ : Structure
+    S S′ : Structure
 
 infix 5 _∼_
 
-data _∼_ : Rel Formula a where
+data _∼_ : Rel Structure a where
   `⊗-assoc     : ((P `⊗ Q) `⊗ R) ∼ (P `⊗ (Q `⊗ R))
   `⊗-comm      : (P `⊗ Q) ∼ (Q `⊗ P)
   `⊗-identityʳ : (P `⊗ `I) ∼ P
@@ -41,17 +41,17 @@ data _∼_ : Rel Formula a where
 
 infix 5 _∼ᶜ_
 
-_∼ᶜ_ : Rel Formula (suc a)
+_∼ᶜ_ : Rel Structure (suc a)
 _∼ᶜ_ = CongClosure _∼_
 
 infix 5 _≃_
 
-_≃_ : Rel Formula (suc a)
+_≃_ : Rel Structure (suc a)
 _≃_ = EqClosure _∼ᶜ_
 
 infix 5 _⟶_
 
-data _⟶_ : Rel Formula a where
+data _⟶_ : Rel Structure a where
   `axiom    : ∀ P → P `⅋ `¬ P ⟶ `I
   `switch   : (P `⊗ Q) `⅋ R ⟶ P `⊗ (Q `⅋ R)
   `sequence : (P `◁ Q) `⅋ (R `◁ S) ⟶ (P `⅋ R) `◁ (Q `⅋ S)
@@ -72,17 +72,17 @@ data _⟶_ : Rel Formula a where
 
 infix 5 _⟶ᶜ_
 
-_⟶ᶜ_ : Rel Formula (suc a)
+_⟶ᶜ_ : Rel Structure (suc a)
 _⟶ᶜ_ = CongClosure _⟶_
 
 infix 5 _⟶₌_
 
-_⟶₌_ : Rel Formula (suc a)
+_⟶₌_ : Rel Structure (suc a)
 _⟶₌_ = _≃_ ∪ _⟶ᶜ_
 
 infix  5 _⟶⋆_
 
-_⟶⋆_ : Rel Formula (suc a)
+_⟶⋆_ : Rel Structure (suc a)
 _⟶⋆_ = Star _⟶₌_
 
 step : P ⟶ Q → P ⟶₌ Q
