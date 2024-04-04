@@ -93,8 +93,6 @@ module _ {ℓ} {_𝓡_ : Rel Structure ℓ} where
 ⟦ `sequence  ⟧step-ax = sequence
 ⟦ `cosequence ⟧step-ax = ⊗-◁-entropy _ _ _ _
 
-⟦ `mon ⟧step-ax = ？-monoidal
-⟦ `e↑ ⟧step-ax = ？-monoidal-unit
 ⟦ `e ⟧step-ax = ！-monoidal-unit
 ⟦ `p ⟧step-ax = p↓
 ⟦ `dis ⟧step-ax = ？-discard
