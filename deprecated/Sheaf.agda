@@ -299,7 +299,7 @@ module LiftSubidempotent (∨-idem : Subidempotent _≤_ _∨_) where
 --
 --   U (α (F ∙ G)) ≈ U (α F) ∙ U (α G)
 --
-module LiftIsPomonoid
+module Day
     {_∙_} {ε}
     (isPomonoid : IsPomonoid _≈_ _≤_ _∙_ ε)
     (∨-entropy : Entropy _≤_ _∨_ _∙_)
@@ -332,7 +332,7 @@ module LiftIsPomonoid
     ιˢ .≤-closed x≤y (lift y≤ε) = lift (≤-trans x≤y y≤ε)
     ιˢ .∨-closed t              = lift (⋁ˢ t)
 
-    open P.LiftIsPomonoid isPomonoid
+    open P.Day isPomonoid
 
     ◁ˢ-mono : Monotonic₂ _≤ˢ_ _≤ˢ_ _≤ˢ_ _◁ˢ_
     ◁ˢ-mono 𝓕₁≤𝓖₁ 𝓕₂≤𝓖₂ .*≤ˢ* = ∙-mono (U-mono 𝓕₁≤𝓖₁) (U-mono 𝓕₂≤𝓖₂) .*≤*
@@ -374,14 +374,14 @@ module LiftIsPomonoid
 
 ------------------------------------------------------------------------------
 -- Lift commutative pomonoids that distribute with the join to presheaves
-module LiftIsCommutativePomonoid
+module DayCommutative
     {_∙_} {ε}
     (isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _∙_ ε)
     (distrib : _DistributesOver_ _≤_ _∙_ _∨_)
   where
 
   open IsCommutativePomonoid isCommutativePomonoid
-  open P.LiftIsCommutativePomonoid isCommutativePomonoid
+  open P.DayCommutative isCommutativePomonoid
 
   distribˡ = distrib .proj₁
   distribʳ = distrib .proj₂
@@ -605,7 +605,7 @@ module LiftIsCommutativePomonoid
 
 ------------------------------------------------------------------------------
 -- Lift duoidals to sheaves
-module LiftIsDuoidal
+module DayDuoidal
     {_∙_} {_◁_} {ε} {ι}
     (isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _◁_ ε ι)
     (comm : Commutative _≈_ _∙_)
@@ -622,9 +622,9 @@ module LiftIsDuoidal
     ; comm       = comm
     }
 
-  open LiftIsCommutativePomonoid ∙-isCommutativePomonoid distrib
-  open LiftIsPomonoid ◁-isPomonoid ∨-entropy ∨-tidy
-  open P.LiftIsDuoidal isDuoidal
+  open DayCommutative ∙-isCommutativePomonoid distrib
+  open Day ◁-isPomonoid ∨-entropy ∨-tidy
+  open P.DayDuoidal isDuoidal
 
   ⊗ˢ-◁ˢ-entropy : Entropy _≤ˢ_ _⊗ˢ_ _◁ˢ_
   ⊗ˢ-◁ˢ-entropy 𝓕₁ 𝓖₁ 𝓕₂ 𝓖₂ =

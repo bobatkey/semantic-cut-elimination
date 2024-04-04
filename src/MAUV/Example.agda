@@ -94,7 +94,8 @@ MAUV-proof-of-example₁ =
       (`I `⅋ (`I `⊕ `I)) `& (`I `⅋ (`I `⊕ `I)) 
   ∼⟨ `&⟩ emb `⅋-comm  ⟨ 
     (`I `⅋ (`I `⊕ `I)) `& ((`I `⊕ `I) `⅋ `I)
-  ⟶⟨ `&⟩ (emb `right `⟨⅋) ⟩ (`I `⅋ (`I `⊕ `I)) `& (`I `⅋ `I) 
+  ⟶⟨ `&⟩ (emb `right `⟨⅋) ⟩
+    (`I `⅋ (`I `⊕ `I)) `& (`I `⅋ `I) 
   ∼⟨ `&⟩ emb `⅋-comm ⟩
     (`I `⅋ (`I `⊕ `I)) `& (`I `⅋ `I) 
   ∼⟨ `&⟩ emb `⅋-identityʳ ⟩

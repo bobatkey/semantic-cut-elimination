@@ -264,14 +264,14 @@ Hence, in MAV, inference rules are presented as rewrite rules.
 \end{displaymath}
 If $\vP\vInferFrom\vQ$, we say that $\vP$ can be inferred from $\vQ$, \ie the arrow points from conclusion to premise.
 
+\emph{Derivation}, written $\vInferFrom*$ is the reflexive, transitive closure of inference.
+\emph{Invertible derivation}, written $\vInferFromTo*$, is the symmetric core of derivation, \ie $\vP\vInferFromTo*\vQ=\vP\vInferFrom*\vQ\cap\vQ\vInferFrom*\vP$.
+\emph{Proofs} are derivations that terminate in the unit, \eg a derivation $\vP\vInferFrom*\vUnit$ is a proof of $\vP$.
+
 The inference rules come in dual pairs. For every rule $\vP\vInferFrom\vQ$, there is a dual rule $\vDual\vP\vInferFrom\vDual\vQ$.
 The exception is \cref{rule:Switch}, which is self-dual, up to commutativity.
 The \cref{rule:CoInteract}, \cref{rule:CoLeft}, and \cref{rule:CoRight} rules introduce of new structures going left-to-right.
 Normal proofs, which we define below, avoid these \emph{synthetic} rules.
-
-\begin{definition}\label[defn]{defn:derivation}
-  \emph{Derivation}, written $\vInferFrom*$ is the reflexive, transitive closure of inference.  \emph{Invertible inference}, written $\vBiInfer$, is the symmetric core of $\vInferFrom$, \ie ${\vBiInfer} = {\vInferFrom\cap\vInferTo}$. \emph{Invertible derivation}, written $\vBiInfer*$, is the symmetric core of derivation.  \emph{Proofs} are derivations that terminate in the unit, \eg a derivation $\vP\vInferFrom*\vUnit$ is a proof of $\vP$.
-\end{definition}
 
 \begin{remark}
   In BV, the structural connectives are usually presented as lists, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
@@ -291,7 +291,7 @@ Normal proofs, which we define below, avoid these \emph{synthetic} rules.
   Inferences rules are usually named with the combination of a letter and an up or down arrow, \eg \cref{rule:Interact} and \cref{rule:CoInteract} are $\iD$ and $\iU$, respectively. The exception are self-dual rules, which are named with a single letter, \eg \cref{rule:Switch} is usually named $\sw$.
 \end{remark}
 
-\begin{definition}\label{defn:normal}
+\begin{definition}\label[defn]{defn:normal}
   A derivation is \emph{normal} when it does not use \cref{rule:CoInteract} nor any of the other (\RuleName{CoX}) rules, and its uses of \cref{rule:Interact} are restricted to \cref{rule:AtomInteract}, as defined by the following axiom:
   \begin{displaymath}
     \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}

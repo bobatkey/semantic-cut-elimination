@@ -115,7 +115,7 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
 
   module L where
     open Algebra.Ordered.Construction.LowerSet poset public
-    open LiftIsCommutativePomonoid ⅋-isCommutativePomonoid public
+    open DayCommutative ⅋-isCommutativePomonoid public
       renaming
         ( _∙_             to _⅋_
         ; ∙-mono          to ⅋-mono
@@ -133,7 +133,7 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
 
   module I where
     open Algebra.Ordered.Construction.ZeroPlusIdeal +-pomagma 𝟘 public
-    open DayDistributive ⅋-isCommutativePomonoid ⅋-distrib-+ ⅋-distrib-𝟘 public
+    open DayCommutative ⅋-isCommutativePomonoid ⅋-distrib-+ ⅋-distrib-𝟘 public
       renaming
         ( _∙_             to _⅋_
         ; ∙-mono          to ⅋-mono

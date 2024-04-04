@@ -1,4 +1,4 @@
-\PassOptionsToPackage{dvipsnames}{xcolor}
+\PassOptionsToPackage{dvipsnames,table}{xcolor}
 \documentclass[twoside,11pt]{entics}
 \usepackage{enticsmacro}
 \usepackage[fixamsmath]{mathtools}
@@ -12,6 +12,8 @@
 \usepackage{stmaryrd}
 \usepackage{parskip}
 \usepackage{xspace}
+\usepackage{multirow}
+\usepackage{longtable}
 \usepackage[UKenglish,all]{foreign}
 \usepackage[goodsyntax]{virginialake}
 \vllineartrue%
@@ -80,9 +82,16 @@
   \usepackage[english]{babel}
   \usepackage{newunicodechar}
 \else % if luatex or xetex
-  \usepackage{unicode-math} % this also loads fontspec
+  \usepackage{unicode-math}
   \usepackage{newunicodechar}
 \fi
+\newunicodechar{∼}{\ensuremath{\mathnormal\sim}}
+\newunicodechar{≃}{\ensuremath{\mathnormal\simeq}}
+\newunicodechar{⟶}{\ensuremath{\mathnormal\longrightarrow}}
+\newunicodechar{⋆}{\ensuremath{\mathnormal\star}}
+\newunicodechar{⟷}{\ensuremath{\mathnormal\longleftrightarrow}}
+\newunicodechar{⟦}{\ensuremath{\mathnormal\llbracket}}
+\newunicodechar{⟧}{\ensuremath{\mathnormal\rrbracket}}
 
 % `\IfSingleTF`: Does the element consist of a single token?
 \ExplSyntaxOn
@@ -140,6 +149,20 @@
 }
 \makeatother
 
+% External URLs to the documentation
+\def\AgdaBaseUrl{https://bobatkey.github.io/semantic-cut-elimination/}
+\NewDocumentCommand{\AgdaModuleRef}{m}{%
+  \href{%
+    \AgdaBaseUrl#1.html}{%
+    \texttt{#1}}}
+\NewDocumentCommand{\AgdaRef}{s m v}{%
+  \href{%
+    \AgdaBaseUrl#2.html\##3}{%
+    \texttt{%
+      \IfBooleanF{#1}{#2\IfValueT{#3}{\IfBlankF{#3}{.}}}%
+      \IfValueT{#3}{#3}}}}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Syntax:                                                                    %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -171,7 +194,7 @@
 \def\vUnit{%
   \ensuremath{%
     \mathord{%
-      \makebox[\vPWidth][c]{\ensuremath{\mathnormal\circ}}}}}
+      \makebox[\vPWidth][c]{\ensuremath{\mathnormal{I}}}}}}
 
 % NOTE: Binary connectives are defined to be the same width.
 \usepackage{tikz}
@@ -222,7 +245,7 @@
   \ensuremath{%
     \mathrel{%
       \longleftarrow\IfBooleanTF{#1}{^\star}{}}}}
-\NewDocumentCommand{\vBiInfer}{s}{%
+\NewDocumentCommand{\vInferFromTo}{s}{%
   \ensuremath{%
     \mathrel{%
       \longleftrightarrow\IfBooleanTF{#1}{^\star}{}}}}
@@ -293,8 +316,6 @@
 % \newunicodechar{⅋}{\vParr}
 % \newunicodechar{⊕}{\vPlus}
 % \newunicodechar{▷}{\vSeq}
-% \newunicodechar{∼}{\ensuremath{\mathn ormal\sim}}
-% \newunicodechar{≡}{\ensuremath{\mathnormal\equiv}}
 % \newunicodechar{⟶}{\ensuremath{\mathnormal\longrightarrow}}
 % \newunicodechar{⋆}{\ensuremath{\mathnormal\star}}
 % \newunicodechar{⁺}{\ensuremath{^{+}}}
@@ -323,11 +344,11 @@
 \begin{frontmatter}
   \title{A Semantic Proof of Generalised Cut Elimination for Deep Inference\thanksref{ALL}}
   \thanks[ALL]{This work
-  was funded by the \href{https://www.ukri.org/about-us/epsrc/}{Engineering and Physical
-    Sciences Research
-    Council}: Grant number
-  \href{https://gow.epsrc.ukri.org/NGBOViewGrant.aspx?GrantRef=EP/T026960/1}{EP/T026960/1, \emph{AISEC: AI Secure and
-    Explainable by Construction}.}}
+    was funded by the \href{https://www.ukri.org/about-us/epsrc/}{Engineering and Physical
+      Sciences Research
+      Council}: Grant number
+    \href{https://gow.epsrc.ukri.org/NGBOViewGrant.aspx?GrantRef=EP/T026960/1}{EP/T026960/1, \emph{AISEC: AI Secure and
+        Explainable by Construction}.}}
   \author{Robert Atkey\thanksref{msp}\thanksref{bobemail}}
   \author{Wen Kokke\thanksref{msp}\thanksref{wenemail}}
   \address[msp]{%
@@ -409,8 +430,8 @@
 \bibliographystyle{entics}
 \bibliography{paper}
 
-% \appendix
+\appendix
 
-% \input{appendix/omitted-definitions}
+\input{appendix/table-of-statements}
 
 \end{document}

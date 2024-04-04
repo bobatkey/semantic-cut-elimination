@@ -313,7 +313,7 @@ module DayEntropic
     where
 
   private
-    module LMon = L.LiftIsPomonoid isPomonoid
+    module LMon = L.Day isPomonoid
 
   _◁_ : Ideal → Ideal → Ideal
   (I ◁ J) .ICarrier x =
@@ -410,7 +410,7 @@ module DayEntropic
       C.trans z≤z₁z₂ {!!}
 -}
 
-module DayDistributive
+module DayCommutative
     {_∙ᶜ_}
     {εᶜ}
     (isCommutativePomonoid : IsCommutativePomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ)
@@ -420,7 +420,7 @@ module DayDistributive
 
   private
     module Mon = IsCommutativePomonoid isCommutativePomonoid
-    module LMon = L.LiftIsCommutativePomonoid isCommutativePomonoid
+    module LMon = L.DayCommutative isCommutativePomonoid
 
   distribˡ = distrib .proj₁
   distribʳ = distrib .proj₂
@@ -614,9 +614,9 @@ module DayDuoidal
 
   private
     module Duo = IsCommutativeDuoidal isCommutativeDuoidal
-    module LDuo = L.LiftIsDuoidal Duo.isDuoidal
+    module LDuo = L.DayDuoidal Duo.isDuoidal
 
-  open DayDistributive Duo.∙-isCommutativePomonoid distrib ⊥ᶜ-distrib
+  open DayCommutative Duo.∙-isCommutativePomonoid distrib ⊥ᶜ-distrib
   open DayEntropic Duo.◁-isPomonoid ∨ᶜ-entropy ∨ᶜ-tidy ⊥ᶜ-expand ⊥ᶜ≤ιᶜ
 
   ∙-◁-entropy : Entropy _≤_ _∙_ _◁_

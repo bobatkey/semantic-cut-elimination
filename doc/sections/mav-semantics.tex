@@ -23,7 +23,7 @@ these constructions are well-known, but we have new results on lifting
 the Day construction of monoids on closed lower sets and the
 preservation of duoidal relationships that are required for MAV.
 
-\subsection{Pomonoidal, $*$-autonomous, and Duoidal Structure on Partial Orders}
+\subsection{Pomonoidal, $*$-autonomous, and Duoidal Structure on Partial Orders}\label{sec:mav-semantics-preliminaries}
 
 The semantics of MAV is a collection of interacting monoids
 on a partial order. We collect here the basic definitions and kinds of
@@ -153,7 +153,7 @@ order-theoretic language, using the definitions we have seen so far.
   $\sem{\vP\vPlus\vQ} = \sem{\vP} \oplus \sem{\vQ}$.
 \end{definition}
 
-\begin{lemma}
+\begin{lemma}\label[lem]{lem:dual-ok}
   For all $\vP$, $\sem{\vDual{\vP}} = \lnot \sem{\vP}$.
 \end{lemma}
 
@@ -176,6 +176,7 @@ order-theoretic language, using the definitions we have seen so far.
 \end{remark}
 
 \subsection{MAV-frames}
+\label{sec:mav-frames}
 
 To prove completeness of the normal proofs of MAV, we will construct a
 particular MAV-algebra from the structures and normal proofs. Since
@@ -222,7 +223,7 @@ to prove that all proofs in MAV can be normalised to normal proofs.
   MAV-frames (and MAV-algebras) are also very similar to the
   definition of a \emph{Concurrent Kleene Algebra} (CKA) due to Hoare,
   M{\"o}ller, Struth and Wehrman \cite[Definition
-  4.1]{Hoare_2011}. One difference is that we do not assume that $+$
+    4.1]{Hoare_2011}. One difference is that we do not assume that $+$
   is a join, nor do we assume the existence of infinitary
   joins. Consequently, we have no analogue of the Kleene Star. Another
   difference is that the duoidal relationship is reversed in
@@ -271,7 +272,7 @@ maintained through each construction.
 \subsubsection{Lower Sets and Day pomonoids}
 \label{sec:lower-sets}
 
-\begin{definition}
+\begin{definition}\label[defn]{defn:lower-set}
   Given a partial order $(A, \leq)$, the set of lower sets
   $\LowerSet{A}$ consists of subsets $F \subseteq A$ that are
   down-closed: $x \in F$ and $y \leq x$ implies $y \in F$. Lower sets
@@ -279,12 +280,11 @@ maintained through each construction.
   $\eta : A \to \LowerSet{A}$ as $\eta(x) = \{ y \mid y \leq x \}$.
 \end{definition}
 
-\begin{proposition}
+\begin{proposition}\label[defn]{defn:lower-set-embed-monotone}
   For any $(A, \leq)$, the function $\eta$ is monotone, and
   $(\LowerSet{A}, \subseteq)$ has meets and joins given by
   intersection and union respectively.
-  %
-  %  \bob{and $\eta$ preserves any meets that exist}
+  % \bob{and $\eta$ preserves any meets that exist}
 \end{proposition}
 
 \begin{proposition}\label[prop]{prop:day-construction}
@@ -353,7 +353,7 @@ For this section, we assume that $(A, \leq)$ is a partial order with a
 monotone binary operation $+ : A \times A \to A$ (we do not assume
 that $+$ is a join or even a pomonoid.)
 
-\begin{definition}
+\begin{definition}\label[defn]{defn:closed-lower-set}
   A lower set $F \in \LowerSet{A}$ is \emph{$+$-closed} if $x \in F$
   and $y \in F$ imply $x + y \in F$. $+$-closed lower sets are ordered
   by subset inclusion and form a partial order
@@ -507,7 +507,7 @@ that $+$ is a join or even a pomonoid.)
 
 To construct suitable MAV-algebras, we use the partial order version
 of the Chu construction \cite[Appendix by Po-Hsiang
-Chu]{Barr_1979}. The Chu construction builds $*$-autonomous categories
+  Chu]{Barr_1979}. The Chu construction builds $*$-autonomous categories
 from symmetric monoidal closed categories with pullbacks. In the
 partial order case, the requirement for pullbacks simplifies to binary
 meets. For this section, we let
@@ -602,7 +602,7 @@ pomonoids:
   partial order, as we saw in \Cref{prop:mav-algebra-consequences}.
 \end{remark}
 
-\begin{proposition}
+\begin{proposition}\label[prop]{prop:chu-monoid-duoidal}
   If $(\bullet, i)$ is duoidal over $(\lhd, j)$ on $(A, \leq)$, and
   $(\lhd, j)$ satisfies the conditions of \Cref{prop:chu-self-dual}, then $(\otimes, I)$ and $(\lhd, J)$ are in a
   duoidal relationship on $\Chu(A, k)$.
@@ -615,7 +615,8 @@ pomonoids:
   always duoidal.
 \end{proof}
 
-\subsection{Construction of MAV-algebras from MAV-frames}
+\subsubsection{Construction of MAV-algebras from MAV-frames}
+\label{sec:algebra-from-frame}
 
 The propositions in the preceeding three sections together prove that
 every MAV-frame yields an MAV-algebra:

@@ -102,7 +102,7 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
 
   module L where
     open Algebra.Ordered.Construction.LowerSet poset public
-    open LiftIsDuoidal ⅋-◁-isDuoidal public
+    open DayDuoidal ⅋-◁-isDuoidal public
       using
         ( ε
         ; _◁_
@@ -139,7 +139,7 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
         ; η-preserve-∙⁻¹ to η-preserve-⅋⁻¹
         ; ∙-◁-isDuoidal  to ⅋-◁-isDuoidal
         )
-    open LiftIsCommutativePomonoid ⅋-isCommutativePomonoid public
+    open DayCommutative ⅋-isCommutativePomonoid public
       using
         ( _⊸_
         ; ⊸-residual-to

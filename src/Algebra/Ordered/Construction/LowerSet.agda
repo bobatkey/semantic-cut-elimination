@@ -270,7 +270,7 @@ _⇒_ : LowerSet → LowerSet → LowerSet
 ------------------------------------------------------------------------------
 -- Lift monoids to presheaves
 
-module LiftIsPomonoid
+module Day
     {_∙ᶜ_}
     {εᶜ}
     (isPomonoid : IsPomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ)
@@ -347,7 +347,7 @@ module LiftIsPomonoid
       ; ∙-congʳ to ∙-congʳ
       )
 
-module LiftIsCommutativePomonoid
+module DayCommutative
     {_∙ᶜ_}
     {εᶜ}
     (isCommutativePomonoid : IsCommutativePomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ)
@@ -355,7 +355,7 @@ module LiftIsCommutativePomonoid
 
   private
     module Mon = IsCommutativePomonoid isCommutativePomonoid
-  open LiftIsPomonoid Mon.isPomonoid public
+  open Day Mon.isPomonoid public
 
   ∙-comm : Commutative _≈_ _∙_
   ∙-comm F G .proj₁ .*≤* (y , z , x≤yz , Fy , Gz) = 
@@ -484,7 +484,7 @@ module LiftIsCommutativePomonoid
     η-preserve-！ : ∀ {x} → η (！ᶜ x) ≤ ！ (η x)
     η-preserve-！ {x} .*≤* {z} (lift z≤!x) = x , z≤!x , lift C.refl
 
-module LiftIsDuoidal
+module DayDuoidal
     {_∙ᶜ_}
     {_◁ᶜ_}
     {εᶜ}
@@ -494,8 +494,8 @@ module LiftIsDuoidal
 
   private
     module Duo = IsDuoidal isDuoidal
-  open LiftIsPomonoid Duo.∙-isPomonoid public
-  open LiftIsPomonoid Duo.◁-isPomonoid public
+  open Day Duo.∙-isPomonoid public
+  open Day Duo.◁-isPomonoid public
     renaming
       ( _∙_             to _◁_
       ; ε               to ι
