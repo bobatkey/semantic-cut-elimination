@@ -7,6 +7,9 @@ on:
     branches: ["main"]
 
 jobs:
+  ################################################################################
+  # Check mechanisation & Build documentation
+  ################################################################################
   build:
     runs-on: ubuntu-latest
     steps:
@@ -22,18 +25,18 @@ jobs:
           name: html
           path: html
 
-  pages:
+  ################################################################################
+  # Publish documentation to GitHub Pages
+  ################################################################################
+  publish-documentation-to-github-pages:
     needs: build
-
     permissions:
       contents: read
       pages: write
       id-token: write
-
     concurrency:
       group: "pages"
       cancel-in-progress: false
-
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -45,3 +48,23 @@ jobs:
         with:
           path: html
       - uses: actions/deploy-pages@v2
+
+  ################################################################################
+  # Publish documentation to GitHub Releases
+  ################################################################################
+  publish-documentation-to-github-releases:
+    name: Publish package to GitHub Releases
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: html
+          path: html
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: html
+          fail_on_unmatched_files: true
