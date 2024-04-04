@@ -1,22 +1,28 @@
-\section{Conclusions and Future Work}\label{sec:future-work}
+\section{Extensions and Future Work}\label{sec:future-work}
+We have presented a semantic proof of generalised Cut elimination for the Multiplicative-Additive System Virtual (MAV), which reduces Horne's approximately 41 page proof to a 7 page proof.
 
-We have presented semantic proof of generalised Cut elimination for
-the Multiplicative-Additive System Virtual (MAV), reducing Horne's
-approximately 41 page proof to 7 and also providing an Agda
-mechanisation. Our proof technique also restricts easily to BV (we
-simply skip the use of $+$-closed lower sets and use lower sets
-directly instead). We believe that adding additive units ($\top$ and
-$0$ in Girard's notation) will be straightforward.
+Our proof technique is modular, and can be adapted with relative ease to a variety of related systems.
+To evidence this claim, we have adapted our Agda formalisation to prove generalised cut elimination to the following systems:
+\begin{description}
+  \item[BV]
+        The basic system does not have the additives (\ie $\vWith$ and $\vPlus$).
+        The proof is a straightforward restriction of our proof for MAV,
+        but only relies on lower sets, rather than $+$-closed lower sets.
+        See:
+        \begin{center}
+          \url{\AgdaBaseUrl/BV.CutElim.html}
+        \end{center}
+  \item[MAUV]
+        The multiplicative-additive-unital system adds the additive units (\ie $\top$ and $\mathbf{0}$, using Girard's notation).
+        The proof is a straightforward extension of our proof for MAV, and requires the use of lower sets which are $+$-closed as well as $0$-closed.
+  \item[NEL]
+        Non-commutative exponential logic~\cite{GuglielmiS11} extends BV with the exponentials (\ie $!$ and $?$, using Girard's notation).
+\end{description}
+The work opens up several paths for future work. The theory developed
+here for lifting Day pomonoids to $+$-closed lower sets enables alternative Cut-elimination proofs for other substructural logics, such as MALL and Bunched Implications (Okada's technique has already been applied here by Frumin~\cite{Frumin22:psc}).
+We find the technique of using $+$-closed lower sets rather than more opaque closure operators more revealing in how the
 
-This work opens up several paths for future work. The theory developed
-here for lifting Day pomonoids to $+$-closed lower sets should also
-enable alternative Cut-elimination proofs for other substructural
-logics, such as MALL and Bunched Implications (Okada's technique has
-already been applied here by Frumin \cite{Frumin22:psc}). We find the
-technique of using $+$-closed lower sets rather than more opaque
-closure operators more revealing in how the
-
-We also plan to investigate extensions of MAV with exponentials, as in
+We plan to investigate extensions of MAV with exponentials, as in
 the System NEL \cite{GuglielmiS11}, and Kleene Star operators which
 can be seen as the exponential for the $\vSeq$ connective. Adding a
 Kleene Star would tighten the connection with Concurrent Kleene
