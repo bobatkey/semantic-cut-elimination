@@ -2,7 +2,7 @@
 
 We present an algebraic semantics and semantic proof of generalised cut-elimination for the multiplicative-additive system MAV~\cite{Horne15:mav}, which extends the basic system BV\footnote{
       BV stands for \underline{B}asic System \underline{V}irtual, owing to an early interpretation of CCS interaction as the pairwise production and annihilation of virtual particles in physics~\cite[\Fn2]{Horne15:mav}.
-}~\cite{Guglielmi99:bv,Guglielmi07:sis} with the additives of multiplicative-additive linear logic~\cite[MALL]{Girard87:ll}. The proof technique also extends to the additive units.
+}~\cite{Guglielmi99:bv,Guglielmi07:sis} with the additives of multiplicative-additive linear logic~\cite[MALL]{Girard87:ll}. The proof technique also extends to the additive units and the exponentials.
 Our proofs are constructive and mechanised in Agda~\cite{Agda264}.
 
 \subsection{BV, MAV, and Deep Inference}
@@ -33,9 +33,9 @@ To our knowledge, all prior work on the metatheory of Deep Inference systems lik
 
 Our main contribution is the use of semantic techniques to derive the admissibility of identity expansion, cut, and the other \emph{co-} rules of MAV. To this end, we have developed a number of results on the semantics of BV and MAV:
 \begin{enumerate}
-\item In \Cref{sec:mav-algebras}, we propose MAV-algebras as the algebraic counterpart of MAV. In short, an MAV-algebra is a $*$-autonomous partial order with meets, and another partially ordered monoidal structure that is \emph{duoidal} with respect to the $*$-autonomous structure.
-\item Normal proofs (our name for the ``up'' fragment) as we define them in the next section do not {\it a priori} support all the structure of an MAV-algebra, so we define the weaker notion of \emph{MAV-frame} (\Cref{defn:mav-frame}). These play the same role as Kripke structures do for modal and substructural logics. The first main technical contribution of the paper is in showing that every MAV-frame can be completed to an MAV-algebra.
-\item We then show that MAV-frames are strongly complete (in the terminology of Okada) for MAV by proving that the MAV-frame constructed from normal proofs can be used to deduce that all MAV-provable structures have normal proofs in \Cref{thm:cut-elim}. Completeness in the usual sense also follows in \Cref{thm:completeness}.
+      \item In \Cref{sec:mav-algebras}, we propose MAV-algebras as the algebraic counterpart of MAV. In short, an MAV-algebra is a $*$-autonomous partial order with meets, and another partially ordered monoidal structure that is \emph{duoidal} with respect to the $*$-autonomous structure.
+      \item Normal proofs (our name for the ``up'' fragment) as we define them in the next section do not {\it a priori} support all the structure of an MAV-algebra, so we define the weaker notion of \emph{MAV-frame} (\Cref{defn:mav-frame}). These play the same role as Kripke structures do for modal and substructural logics. The first main technical contribution of the paper is in showing that every MAV-frame can be completed to an MAV-algebra.
+      \item We then show that MAV-frames are strongly complete (in the terminology of Okada) for MAV by proving that the MAV-frame constructed from normal proofs can be used to deduce that all MAV-provable structures have normal proofs in \Cref{thm:cut-elim}. Completeness in the usual sense also follows in \Cref{thm:completeness}.
 \end{enumerate}
 
 We describe the MAV Deep Inference system in \Cref{sec:mav-syntax} and motivate the idea for readers not familiar with such systems.
