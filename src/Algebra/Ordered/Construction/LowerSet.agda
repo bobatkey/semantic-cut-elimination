@@ -9,8 +9,8 @@ open import Algebra.Ordered.Structures.Residuated
 open import Algebra.Ordered.Structures.Duoidal
 open import Function using (flip)
 open import Data.Empty as Empty using ()
-open import Data.Product as Product using (_×_; _,_; -,_; ∃-syntax; Σ-syntax; swap)
-open import Data.Sum as Sum using (_⊎_)
+open import Data.Product using (_×_; _,_; proj₁; proj₂; <_,_>; -,_; ∃-syntax; Σ-syntax; swap)
+open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
 open import Data.Unit as Unit using ()
 open import Relation.Binary using (Poset; Reflexive; Transitive; IsPartialOrder; IsPreorder; Monotonic₁; Monotonic₂; Minimum)
 open import Relation.Binary.Construct.Core.Symmetric as SymCore using (SymCore)
@@ -132,19 +132,22 @@ _∧_ : LowerSet → LowerSet → LowerSet
 (F ∧ G) .ICarrier x = F .ICarrier x × G .ICarrier x
 (F ∧ G) .≤-closed x≤y (Fy , Gy) = (F .≤-closed x≤y Fy , G .≤-closed x≤y Gy)
 
-proj₁ : (F ∧ G) ≤ F
-proj₁ .*≤* = Product.proj₁
+x∧y≤x : (F ∧ G) ≤ F
+x∧y≤x .*≤* = proj₁
 
-proj₂ : (F ∧ G) ≤ G
-proj₂ .*≤* = Product.proj₂
+x∧y≤y : (F ∧ G) ≤ G
+x∧y≤y .*≤* = proj₂
 
-⟨_,_⟩ : F ≤ G → F ≤ H → F ≤ (G ∧ H)
-⟨ H≤F , H≤G ⟩ .*≤* = Product.< H≤F .*≤* , H≤G .*≤* >
+∧-greatest : F ≤ G → F ≤ H → F ≤ (G ∧ H)
+∧-greatest H≤F H≤G .*≤* = < H≤F .*≤* , H≤G .*≤* >
+
+∧-infimum : Infimum _≤_ _∧_
+∧-infimum F G = (x∧y≤x , x∧y≤y , λ H → ∧-greatest)
 
 ∧-isMeetSemilattice : IsMeetSemilattice _≈_ _≤_ _∧_
 ∧-isMeetSemilattice = record
   { isPartialOrder = ≤-isPartialOrder
-  ; infimum        = λ F G → (proj₁ , proj₂ , λ H → ⟨_,_⟩)
+  ; infimum        = ∧-infimum
   }
 
 ∧-meetSemilattice : MeetSemilattice _ _ _
@@ -203,27 +206,30 @@ open import Relation.Binary.Lattice.Properties.BoundedMeetSemilattice ∧-⊤-bo
   ; comm = ∧-comm
   }
 
--- ------------------------------------------------------------------------------
--- -- Construct a join semilattice for presheaves
+------------------------------------------------------------------------------
+-- Construct a join semilattice for presheaves
 
 _∨_ : LowerSet → LowerSet → LowerSet
 (F ∨ G) .ICarrier x = F .ICarrier x ⊎ G .ICarrier x
-(F ∨ G) .≤-closed x≤y (Sum.inj₁ Fy) = Sum.inj₁ (F .≤-closed x≤y Fy)
-(F ∨ G) .≤-closed x≤y (Sum.inj₂ Gy) = Sum.inj₂ (G .≤-closed x≤y Gy)
+(F ∨ G) .≤-closed x≤y (inj₁ Fy) = inj₁ (F .≤-closed x≤y Fy)
+(F ∨ G) .≤-closed x≤y (inj₂ Gy) = inj₂ (G .≤-closed x≤y Gy)
 
-inj₁ : F ≤ (F ∨ G)
-inj₁ .*≤* = Sum.inj₁
+x≤x∨y : F ≤ (F ∨ G)
+x≤x∨y .*≤* = inj₁
 
-inj₂ : G ≤ (F ∨ G)
-inj₂ .*≤* = Sum.inj₂
+y≤x∨y : G ≤ (F ∨ G)
+y≤x∨y .*≤* = inj₂
 
-[_,_] : F ≤ H → G ≤ H → (F ∨ G) ≤ H
-[ H≥F , H≥G ] .*≤* = Sum.[ H≥F .*≤* , H≥G .*≤* ]
+∨-least : F ≤ H → G ≤ H → (F ∨ G) ≤ H
+∨-least H≥F H≥G .*≤* = [ H≥F .*≤* , H≥G .*≤* ]
+
+∨-supremum : Supremum _≤_ _∨_
+∨-supremum F G = (x≤x∨y , y≤x∨y , λ H → ∨-least)
 
 ∨-isJoinSemilattice : IsJoinSemilattice _≈_ _≤_ _∨_
 ∨-isJoinSemilattice = record
   { isPartialOrder = ≤-isPartialOrder
-  ; supremum       = λ F G → (inj₁ , inj₂ , λ H → [_,_])
+  ; supremum       = ∨-supremum
   }
 
 ⊥ : LowerSet
@@ -239,14 +245,8 @@ inj₂ .*≤* = Sum.inj₂
   ; minimum = ⊥-minimum
   }
 
-open IsJoinSemilattice ∨-isJoinSemilattice
-  using ()
-  renaming
-    ( supremum to ∨-supremum
-    )
-
--- ------------------------------------------------------------------------------
--- -- Construct a residuated pomonoid for presheaves
+------------------------------------------------------------------------------
+-- Construct a residuated pomonoid for presheaves
 
 _⇒_ : LowerSet → LowerSet → LowerSet
 (F ⇒ G) .ICarrier x = ∀ {y} → y ≤ᶜ x → F .ICarrier y → G .ICarrier y
@@ -303,26 +303,26 @@ module LiftIsPomonoid
   ε = η εᶜ
 
   ∙-identityˡ : LeftIdentity _≈_ ε _∙_
-  ∙-identityˡ F .Product.proj₁ .*≤* (y , z , x≤yz , lift y≤ε , Fz) =
+  ∙-identityˡ F .proj₁ .*≤* (y , z , x≤yz , lift y≤ε , Fz) =
     F .≤-closed (C.trans x≤yz (C.trans (Mon.mono y≤ε C.refl) (C.≤-respʳ-≈ (Mon.identityˡ z) C.refl) )) Fz
-  ∙-identityˡ F .Product.proj₂ .*≤* Fx =
+  ∙-identityˡ F .proj₂ .*≤* Fx =
     (-, -, C.≤-respˡ-≈ (Mon.identityˡ _) C.refl , lift C.refl , Fx)
 
   ∙-identityʳ : RightIdentity _≈_ ε _∙_
-  ∙-identityʳ F .Product.proj₁ .*≤* (y , z , x≤yz , Fy , lift z≤ε) =
+  ∙-identityʳ F .proj₁ .*≤* (y , z , x≤yz , Fy , lift z≤ε) =
     F .≤-closed (C.trans x≤yz (C.trans (Mon.mono C.refl z≤ε) (C.≤-respʳ-≈ (Mon.identityʳ y) C.refl) )) Fy
-  ∙-identityʳ F .Product.proj₂ .*≤* Fx =
+  ∙-identityʳ F .proj₂ .*≤* Fx =
     (-, -, C.≤-respˡ-≈ (Mon.identityʳ _) C.refl , Fx , lift C.refl)
 
   ∙-identity : Identity _≈_ ε _∙_
   ∙-identity = (∙-identityˡ , ∙-identityʳ)
 
   ∙-assoc : Associative _≈_ _∙_
-  ∙-assoc F G H .Product.proj₁ .*≤* (y , z , x≤yz , (u , v , y≤uv , Fu , Gv) , Hz) =
+  ∙-assoc F G H .proj₁ .*≤* (y , z , x≤yz , (u , v , y≤uv , Fu , Gv) , Hz) =
     let x≤u∙v∙z = C.trans x≤yz (C.trans (Mon.mono y≤uv C.refl) (C.≤-respʳ-≈ (Mon.assoc u v z)  C.refl)) in
       (-, -, x≤u∙v∙z , Fu , (-, -, C.refl , Gv , Hz))
 
-  ∙-assoc F G H .Product.proj₂ .*≤* (y , z , x≤yz , Fy , (u , v , z≤uv , Gu , Hv)) =
+  ∙-assoc F G H .proj₂ .*≤* (y , z , x≤yz , Fy , (u , v , z≤uv , Gu , Hv)) =
     let x≤y∙u∙v = C.trans x≤yz (C.trans (Mon.mono C.refl z≤uv) (C.≤-respˡ-≈ (Mon.assoc y u v) C.refl)) in
       (-, -, x≤y∙u∙v , (-, -, C.refl , Fy , Gu) , Hv)
 
@@ -361,9 +361,9 @@ module LiftIsCommutativePomonoid
   open LiftIsPomonoid Mon.isPomonoid public
 
   ∙-comm : Commutative _≈_ _∙_
-  ∙-comm F G .Product.proj₁ .*≤* (y , z , x≤yz , Fy , Gz) = 
+  ∙-comm F G .proj₁ .*≤* (y , z , x≤yz , Fy , Gz) = 
     (-, -, C.trans x≤yz (C.≤-respˡ-≈ (Mon.comm z y) C.refl) , Gz , Fy)
-  ∙-comm F G .Product.proj₂ .*≤* (y , z , x≤yz , Gy , Fz) = 
+  ∙-comm F G .proj₂ .*≤* (y , z , x≤yz , Gy , Fz) = 
     (-, -, C.trans x≤yz (C.≤-respˡ-≈ (Mon.comm z y) C.refl) , Fz , Gy)
 
   ∙-isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _∙_ ε
