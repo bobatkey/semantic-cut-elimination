@@ -20,7 +20,7 @@ endif
 
 AGDA_DIR := $(shell $(AGDA) --print-agda-dir)
 SOURCES_LAGDA := $(wildcard sections/*.lagda.tex)
-SOURCES := .latexmkrc agda.sty $(MAIN).tex $(MAIN).bib $(wildcard sections/*.tex)
+SOURCES := .latexmkrc agda.sty $(MAIN).tex $(MAIN).bib $(wildcard sections/*.tex) $(wildcard appendix/*.tex)
 
 .PHONY: build
 build: $(MAIN).pdf
@@ -41,6 +41,15 @@ agda.sty: $(AGDA_DIR)/latex/agda.sty
 	@echo "Please review the file and modify it as needed."
 
 ###########
+## ArXiv ##
+###########
+
+SUPPORTFILES=entics.bst entics.cls enticsmacro.sty virginialake.sty
+
+arxiv.tar.gz: $(MAIN).pdf $(SUPPORTFILES)
+	tar czf $@ $(SOURCES) $(MAIN).bbl $(SUPPORTFILES)
+
+###########
 ## Clean ##
 ###########
 
@@ -51,6 +60,7 @@ GEN_AGDA_BUILD := $(wildcard _build)
 
 .PHONY: clean
 clean:
+	rm -f arxiv.tar.gz
 	$(LATEXMK) -C $(MAIN).tex
 ifneq (,$(GEN_LAGDA_TEX))
 	rm -f $(addprefix ./,$(GEN_LAGDA_TEX))
