@@ -266,6 +266,8 @@ Hence, in MAV, inference rules are presented as rewrite rules.
 \end{displaymath}
 If $\vP\vInferFrom\vQ$, we say that $\vP$ can be inferred from $\vQ$, \ie the arrow points from conclusion to premise.
 
+\textbf{N.B.}\ $\vP\vInferFrom\vQ$ is an inference rule, is \emph{not a sequent}. In sequent calculus notation, it is $\frac{\vQ}{\vP}$, \emph{not} $\vP\vdash\vQ$.
+
 \emph{Derivation}, written $\vInferFrom*$ is the reflexive, transitive closure of inference.
 \emph{Invertible derivation}, written $\vInferFromTo*$, is the symmetric core of derivation, \ie $\vP\vInferFromTo*\vQ=\vP\vInferFrom*\vQ\cap\vQ\vInferFrom*\vP$.
 \emph{Proofs} are derivations that terminate in the unit, \eg a derivation $\vP\vInferFrom*\vUnit$ is a proof of $\vP$.
