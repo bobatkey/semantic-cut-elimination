@@ -1,6 +1,6 @@
 \section{The system MAV}\label{sec:mav-syntax}
 
-In Deep Inference terminology, proofs operate on \emph{structures}, which simultaneously play the role of formulas and sequents in traditional Sequent Calculus systems. There are a number of different notations in the literature for the structures of BV and related systems. For familiarity's sake, we opt for a notation similar to normal Linear Logic, albeit extended with the self-dual non-commutative connective $\vSeq$.
+In Deep Inference terminology, proofs operate on \emph{structures}, which simultaneously play the role of formulas and sequents in traditional Sequent Calculus systems. There are a number of different notations in the literature for the structures of BV and related systems. For familiarity's sake, we opt for a notation similar to the formulas of normal Linear Logic, albeit extended with the self-dual non-commutative connective $\vSeq$.
 
 The structures of MAV are formed from positive and negative atoms ($\vPos\va$ and $\vNeg\va$) drawn from some set of atomic propositions, units ($\vUnit$), the non-commutative connective \emph{seq} ($\vSeq$), the multiplicative connectives \emph{tensor} and \emph{par} ($\vTens$ and $\vParr$) and additive connectives \emph{with} and \emph{plus} ($\vWith$ and $\vPlus$).
 \begin{displaymath}
@@ -133,7 +133,7 @@ In rule (\ref{rule:CutLL}), as in any branching inference rule, the branching en
 In BV, disjointness is internalised by the $\vTens$ connective.
 Hence, it plays the same role as branching does in sequent calculus.
 This would give us rule (\ref{rule:CutBVBad}) for BV.
-However, as BV's inference rules can work arbitrarily deep in the structure, the surrounding context of pars is unnecessary---and too restrictive. Hence, the cut for BV is rule (\ref{rule:CutBV}).
+However, as BV's inference rules can work arbitrarily deep in the structure, and the system contains the \cref{rule:Switch} rule, the surrounding context of $\vParr$s is unnecessary---and too restrictive. Hence, the cut for BV is rule (\ref{rule:CutBV}).
 \begin{center}
   $\inlineequation[rule:CutLL]{%
       \vlderivation{\vliin{}{}{%
@@ -156,7 +156,7 @@ However, as BV's inference rules can work arbitrarily deep in the structure, the
 \end{center}
 Beautifully, internalising branching makes the symmetry between the axiom and cut plain to see. In BV, to acknowledge this symmetry and the connection with CSS, the axiom and cut rules are referred to as \emph{interaction} and \emph{co-interaction}.
 
-Proof trees are a cumbersome presentation for BV's derivations---they are convenient for trees, but cumbersome in the absence of branching.
+Proof trees are a cumbersome presentation for BV's derivations---they are convenient for branching sequent proofs, but BV derivations are sequences of structures.
 \emph{Rewriting systems}, on the other hand, are a well-known and convenient notation for such derivations.
 Hence, in MAV, inference rules are presented as rewrite rules.
 
@@ -272,9 +272,9 @@ If $\vP\vInferFrom\vQ$, we say that $\vP$ can be inferred from $\vQ$, \ie the ar
 \emph{Invertible derivation}, written $\vInferFromTo*$, is the symmetric core of derivation, \ie $\vP\vInferFromTo*\vQ=\vP\vInferFrom*\vQ\cap\vQ\vInferFrom*\vP$.
 \emph{Proofs} are derivations that terminate in the unit, \eg a derivation $\vP\vInferFrom*\vUnit$ is a proof of $\vP$.
 
-The inference rules come in dual pairs. For every rule $\vP\vInferFrom\vQ$, there is a dual rule $\vDual\vP\vInferFrom\vDual\vQ$.
+The inference rules come in dual pairs. For every rule $\vP\vInferFrom\vQ$, there is a dual rule $\vDual\vQ\vInferFrom\vDual\vP$.
 The exception is \cref{rule:Switch}, which is self-dual, up to commutativity.
-The \cref{rule:CoInteract}, \cref{rule:CoLeft}, and \cref{rule:CoRight} rules introduce of new structures going left-to-right.
+The \cref{rule:CoInteract}, \cref{rule:CoLeft}, and \cref{rule:CoRight} rules introduce new structures going left-to-right.
 Normal proofs, which we define below, avoid these \emph{synthetic} rules.
 
 \begin{remark}

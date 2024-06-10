@@ -12,7 +12,7 @@ To our knowledge, the semantics of MAV have not been previously
 studied in the literature. The rules are an extension of MALL, so an
 \emph{MAV-algebra} will partly be a $*$-autonomous partial order
 (\Cref{defn:star-autonomous}) with meets and joins. The additional
-structure for seq satisfies the conditions of a duoidal category
+structure for $\vSeq$ satisfies the conditions of a duoidal category
 \cite[Definition 6.1]{Aguiar_2010} (\Cref{defn:duoidal}). We show that
 MAV is sound for MAV-algebras in \Cref{thm:soundness}.
 
@@ -25,7 +25,7 @@ preservation of duoidal relationships that are required for MAV.
 
 \subsection{Pomonoidal, $*$-autonomous, and Duoidal Structure on Partial Orders}\label{sec:mav-semantics-preliminaries}
 
-The semantics of MAV is a collection of interacting monoids
+The algebraic semantics of MAV is a collection of interacting monoids
 on a partial order. We collect here the basic definitions and kinds of
 interaction we will need.
 
@@ -46,7 +46,7 @@ interaction we will need.
 
 Linear logic adds a duality, or negation, to a commutative
 pomonoid structure. Semantically, duality with commutativity is
-captured in the definition of $*$-autonomous category is, due to Barr~\cite{Barr_1979}. For our purposes, we need the partial order
+captured in the definition of $*$-autonomous category, due to Barr~\cite{Barr_1979}. For our purposes, we need the partial order
 analogue, also called a CL algebra by Troelstra~\cite{Troelstra92:lll}.
 
 \begin{definition}\label[defn]{defn:star-autonomous}
@@ -249,7 +249,7 @@ to prove that all proofs in MAV can be normalised to normal proofs.
   by duality from the other connectives by the constructions in the
   rest of this section. This corresponds to the fact that the
   \textsc{Co-X} rules in MAV that we wish to show admissible are the
-  ones that mention the $\otimes$ and $\oplus$ connectives, with the
+  ones that mention the $\vTens$ and $\vPlus$ connectives, with the
   exception of \cref{rule:Switch}, which has a special role to play in
   \Cref{prop:embedding-sem} in mediating interaction.
 \end{remark}
