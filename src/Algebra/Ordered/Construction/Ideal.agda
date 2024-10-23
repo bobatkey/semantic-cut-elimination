@@ -5,7 +5,8 @@ open import Algebra
 open import Algebra.Ordered
 open import Algebra.Ordered.Consequences
 import Algebra.Ordered.Construction.LowerSet
-open import Function using (Equivalence; const; flip)
+open import Function using (const; flip)
+open import Function.EquiInhabited using (_↔_)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; <_,_>; -,_; Σ-syntax; ∃; ∃-syntax)
 open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
 open import Data.Unit as Unit using ()
@@ -549,10 +550,8 @@ module DayCommutative
     where open PosetReasoning ≤-poset
 
   ⊸-residual : RightResidual _≤_ _∙_ _⊸_
-  ⊸-residual .Equivalence.to        = ⊸-residual-to
-  ⊸-residual .Equivalence.from      = ⊸-residual-from
-  ⊸-residual .Equivalence.to-cong   = λ { PropEq.refl → PropEq.refl }
-  ⊸-residual .Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
+  ⊸-residual ._↔_.to        = ⊸-residual-to
+  ⊸-residual ._↔_.from      = ⊸-residual-from
 
   ⊸-∙-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈_ _≤_ _∙_ _⊸_ ε
   ⊸-∙-isResiduatedCommutativePomonoid = record

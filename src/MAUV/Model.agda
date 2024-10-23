@@ -7,7 +7,7 @@ open import Algebra using (_DistributesOver_)
 open import Algebra.Ordered
 open import Algebra.Ordered.Consequences using (supremum∧residuated⇒distrib)
 open import Data.Product using (_,_; proj₁; proj₂)
-open import Function using (Equivalence)
+open import Function.EquiInhabited using (_↔_)
 open import Relation.Binary using (IsEquivalence; IsPartialOrder; Minimum)
 open import Relation.Binary.Lattice using (IsBoundedMeetSemilattice; IsBoundedJoinSemilattice)
 
@@ -185,7 +185,7 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
                          (reflexive (Eq.sym ◁-self-dual))))))
 
   ⊥-⊗-distrib : ∀ {x} → (𝟘 ⊗ x) ≲ 𝟘
-  ⊥-⊗-distrib = ⊗-⊸-residuated .proj₁ .Equivalence.from (𝟘-minimum _)
+  ⊥-⊗-distrib = ⊗-⊸-residuated .proj₁ ._↔_.from (𝟘-minimum _)
 
   ⊕-⊗-distrib : _DistributesOver_ _≲_ _⊗_ _⊕_
   ⊕-⊗-distrib =

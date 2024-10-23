@@ -7,7 +7,7 @@ open import Algebra using (_DistributesOver_)
 open import Algebra.Ordered
 open import Algebra.Ordered.Consequences using (supremum∧residuated⇒distrib)
 open import Data.Product using (_,_; proj₁; proj₂)
-open import Function using (Equivalence)
+open import Function.EquiInhabited using (_↔_)
 open import Relation.Binary using (IsEquivalence; IsPartialOrder; Monotonic₁)
 open import Relation.Binary.Lattice using (IsMeetSemilattice; IsJoinSemilattice)
 
@@ -167,7 +167,7 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
 
   p↓ : ∀ {x y} → ！ (x ⅋ y) ≲ (！ x ⅋ ？ y)
   p↓ = trans (！-mono (reflexive (⅋-comm _ _)))
-       (trans (⊗-⊸-residuated .proj₂ .Equivalence.to
+       (trans (⊗-⊸-residuated .proj₂ ._↔_.to
                 (trans ！-monoidal
                       (！-mono (trans linear-distrib
                                (trans (⅋-mono (reflexive (⊗-comm _ _)) refl)

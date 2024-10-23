@@ -17,7 +17,6 @@ import Relation.Binary.Construct.Closure.Equivalence as EqClosure
 open import Relation.Binary.Construct.Closure.ReflexiveTransitive using (Star; ε; _◅_; _◅◅_)
 import Relation.Binary.Construct.Closure.ReflexiveTransitive as Star
 import Relation.Binary.Construct.Closure.ReflexiveTransitive.Properties as StarProps
-import Relation.Binary.PropositionalEquality.Core as PropEq
 import Relation.Binary.Reasoning.PartialOrder as PartialOrderReasoning
 
 module BV.Base {a} (Atom : Set a) where

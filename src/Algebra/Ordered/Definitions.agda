@@ -12,7 +12,7 @@
 open import Relation.Binary.Core using (Rel)
 open import Relation.Nullary using (¬_)
 
-module Algebra.Ordered.Definitions 
+module Algebra.Ordered.Definitions
     {a ℓ} {A : Set a} -- The underlying set
     (_≲_ : Rel A ℓ)   -- The underlying order relation
   where
@@ -20,7 +20,7 @@ module Algebra.Ordered.Definitions
 open import Algebra.Core
 open import Data.Product
 open import Function using (flip)
-open import Function.Bundles using (_⇔_)
+open import Function.EquiInhabited using (_↔_)
 
 ------------------------------------------------------------------------
 -- Properties of operations
@@ -29,13 +29,13 @@ open import Function.Bundles using (_⇔_)
 -- additional equality proofs.
 
 LeftResidual : Op₂ A → Op₂ A → Set _
-LeftResidual _∙_ _⇦_ = ∀ {x y z} → (x ∙ y) ≲ z ⇔ x ≲ (z ⇦ y)
+LeftResidual _∙_ _⇦_ = ∀ {x y z} → (x ∙ y) ≲ z ↔ x ≲ (z ⇦ y)
 
 LeftEval : Op₂ A → Op₂ A → Set _
 LeftEval _∙_ _⇦_ = ∀ {x y} → ((y ⇦ x) ∙ x) ≲ y
 
 RightResidual : Op₂ A → Op₂ A → Set _
-RightResidual _∙_ _⇨_ = ∀ {x y z} → (x ∙ y) ≲ z ⇔ y ≲ (x ⇨ z)
+RightResidual _∙_ _⇨_ = ∀ {x y z} → (x ∙ y) ≲ z ↔ y ≲ (x ⇨ z)
 
 RightEval : Op₂ A → Op₂ A → Set _
 RightEval _∙_ _⇨_ = ∀ {x y} → (x ∙ (x ⇨ y)) ≲ y

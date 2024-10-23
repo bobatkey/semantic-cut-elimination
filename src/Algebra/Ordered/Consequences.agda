@@ -13,7 +13,7 @@ module Algebra.Ordered.Consequences where
 open import Algebra.Core
 open import Data.Product using (_,_; proj₁; proj₂)
 open import Function using (flip)
-open import Function.Bundles using (_⇔_)
+open import Function.EquiInhabited using (_↔_)
 open import Relation.Binary using (IsPreorder)
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 
@@ -29,15 +29,13 @@ module _
   open import Algebra.Ordered.Definitions _≲_
   open import Relation.Binary.Lattice.Definitions
   open IsPreorder isPreorder
-  open Function.Equivalence
+  open _↔_
 
   comm∧residual⇒residuated : ∀ {∙ ⇨} → Commutative _≈_ ∙ → RightResidual ∙ ⇨ → Residuated ∙ (flip ⇨) ⇨
   comm∧residual⇒residuated comm residual .proj₁ .to x∙y≲z =
     residual .to (trans (≲-respˡ-≈ (comm _ _) refl) x∙y≲z)
   comm∧residual⇒residuated comm residual .proj₁ .from x≲z⇦y =
     trans (≲-respˡ-≈ (comm _ _) refl) (residual .from x≲z⇦y)
-  comm∧residual⇒residuated comm residual .proj₁ .to-cong PropEq.refl = PropEq.refl
-  comm∧residual⇒residuated comm residual .proj₁ .from-cong PropEq.refl = PropEq.refl
   comm∧residual⇒residuated comm residual .proj₂ = residual
 
   supremum∧residualʳ⇒distribˡ : ∀ {∨ ∙ ⇨} → Supremum _≲_ ∨ → RightResidual ∙ ⇨ → _DistributesOverˡ_ _≲_ ∙ ∨

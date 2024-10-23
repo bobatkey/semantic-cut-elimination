@@ -25,10 +25,10 @@ open import Algebra.Ordered.Consequences
 open import Algebra.Ordered.Definitions _≲_
 open import Data.Product using (_,_; proj₁; proj₂)
 open import Function using (flip; _$_)
+open import Function.EquiInhabited using (_↔_)
 open import Level using (_⊔_)
 open import Relation.Binary
 open import Relation.Binary.Consequences using (mono₂⇒cong₂)
-open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 import Relation.Binary.Reasoning.Setoid as SetoidReasoning
 import Relation.Binary.Reasoning.PartialOrder as PosetReasoning
 
@@ -364,10 +364,10 @@ record IsResiduatedPromagma (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ�
   residualʳ = proj₂ residuated
 
   evalˡ : LeftEval ∙ ⇦
-  evalˡ = residualˡ .Function.Equivalence.from refl
+  evalˡ = residualˡ ._↔_.from refl
 
   evalʳ : RightEval ∙ ⇨
-  evalʳ = residualʳ .Function.Equivalence.from refl
+  evalʳ = residualʳ ._↔_.from refl
 
   mono-antiˡ : MonotonicAntitonic _≲_ _≲_ _≲_ ⇦
   mono-antiˡ w≲x z≲y
@@ -377,7 +377,7 @@ record IsResiduatedPromagma (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ�
     $ trans z≲y
     $ residualʳ .to
     $ residualˡ .from refl
-    where open Function.Equivalence using (to; from)
+    where open _↔_ using (to; from)
 
   anti-monoʳ : AntitonicMonotonic _≲_ _≲_ _≲_ ⇨
   anti-monoʳ {w} {x} {y} {z} x≲w y≲z
@@ -387,7 +387,7 @@ record IsResiduatedPromagma (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ�
     $ trans x≲w
     $ residualˡ .to
     $ residualʳ .from refl
-    where open Function.Equivalence using (to; from)
+    where open _↔_ using (to; from)
 
 record IsResiduatedProsemigroup (∙ ⇦ ⇨ : Op₂ A) : Set (a ⊔ ℓ₁ ⊔ ℓ₂) where
   field
@@ -798,10 +798,8 @@ record IsStarAutonomous (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ �
     where open PosetReasoning poset
 
   residualʳ : RightResidual _⊗_ _⊸_
-  residualʳ .Function.Equivalence.to = residualʳ-to
-  residualʳ .Function.Equivalence.from = residualʳ-from
-  residualʳ .Function.Equivalence.to-cong PropEq.refl = PropEq.refl
-  residualʳ .Function.Equivalence.from-cong PropEq.refl = PropEq.refl
+  residualʳ ._↔_.to = residualʳ-to
+  residualʳ ._↔_.from = residualʳ-from
 
   ⊗-⊸-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _⊗_ _⊸_ ε
   ⊗-⊸-isResiduatedCommutativePomonoid = record

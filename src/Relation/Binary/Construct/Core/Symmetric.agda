@@ -6,7 +6,6 @@ open import Algebra.Definitions
 open import Data.Product using (_,_; proj₁; proj₂; swap)
 open import Function using (flip)
 open import Relation.Binary
-import Relation.Binary.PropositionalEquality as PropEq
 open import Relation.Binary.Construct.Closure.Symmetric using (SymClosure; fwd; bwd)
 import Relation.Binary.Construct.Closure.Symmetric as SymClosure
 import Relation.Binary.Construct.Flip.EqAndOrd as Flip

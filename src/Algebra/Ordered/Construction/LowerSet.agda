@@ -5,6 +5,7 @@ open import Algebra
 open import Algebra.Ordered
 open import Algebra.Ordered.Consequences using (comm∧residual⇒residuated; supremum∧residuated⇒distrib)
 open import Function using (flip)
+open import Function.EquiInhabited using (_↔_)
 open import Data.Empty as Empty using ()
 open import Data.Product using (_×_; _,_; proj₁; proj₂; <_,_>; -,_; ∃-syntax; Σ-syntax; swap)
 open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
@@ -256,10 +257,8 @@ _⇒_ : LowerSet → LowerSet → LowerSet
 ⇒-residualʳ-from G≤F⇒H .*≤* (Fx , Gx) = G≤F⇒H .*≤* Gx C.refl Fx
 
 ⇒-residualʳ : RightResidual _≤_ _∧_ _⇒_
-⇒-residualʳ .Function.Equivalence.to        = ⇒-residualʳ-to
-⇒-residualʳ .Function.Equivalence.from      = ⇒-residualʳ-from
-⇒-residualʳ .Function.Equivalence.to-cong   = λ { PropEq.refl → PropEq.refl }
-⇒-residualʳ .Function.Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
+⇒-residualʳ ._↔_.to        = ⇒-residualʳ-to
+⇒-residualʳ ._↔_.from      = ⇒-residualʳ-from
 
 ⇒-∧-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈_ _≤_ _∧_ _⇒_ ⊤
 ⇒-∧-isResiduatedCommutativePomonoid = record
@@ -382,10 +381,8 @@ module DayCommutative
     H .≤-closed (C.trans x≤y∙z (C.≤-respˡ-≈ (Mon.comm _ _) C.refl)) (G≤F⊸H .*≤* Gz Fy)
 
   ⊸-residual : RightResidual _≤_ _∙_ _⊸_
-  ⊸-residual .Function.Equivalence.to        = ⊸-residual-to
-  ⊸-residual .Function.Equivalence.from      = ⊸-residual-from
-  ⊸-residual .Function.Equivalence.to-cong   = λ { PropEq.refl → PropEq.refl }
-  ⊸-residual .Function.Equivalence.from-cong = λ { PropEq.refl → PropEq.refl }
+  ⊸-residual ._↔_.to        = ⊸-residual-to
+  ⊸-residual ._↔_.from      = ⊸-residual-from
 
   ⊸-∙-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈_ _≤_ _∙_ _⊸_ ε
   ⊸-∙-isResiduatedCommutativePomonoid = record 

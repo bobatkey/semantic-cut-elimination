@@ -9,7 +9,7 @@ module Algebra.Ordered.Construction.Chu where
 
 open import Level
 open import Data.Product as Product using (_×_; _,_; proj₁; proj₂; swap)
-open import Function using (Equivalence)
+open import Function.EquiInhabited using (_↔_)
 open import Algebra.Core using (Op₁; Op₂)
 open import Algebra.Ordered
 open import Algebra.Ordered.Consequences using (supremum∧residualʳ⇒distribˡ)
@@ -199,9 +199,9 @@ module Construction
 
   private
     Λˡ : ∀ {x y z} → (x ∙ᶜ y) ≤ᶜ z → x ≤ᶜ (y -∙ᶜ z)
-    Λˡ = C.residualˡ .Equivalence.to
+    Λˡ = C.residualˡ ._↔_.to
     Λʳ : ∀ {x y z} → (x ∙ᶜ y) ≤ᶜ z → y ≤ᶜ (x -∙ᶜ z)
-    Λʳ = C.residualʳ .Equivalence.to
+    Λʳ = C.residualʳ ._↔_.to
 
   ⊗-identityˡ : LeftIdentity _≈_ ε _⊗_
   ⊗-identityˡ X .proj₁ .fpos = C.reflexive (C.identityˡ _)
@@ -396,7 +396,7 @@ module Construction
   ⊤ : Chu
   ⊤ .pos = ⊤ᶜ
   ⊤ .neg = ⊥ᶜ
-  ⊤ .int = C.residualʳ .Equivalence.from (C.minimum _)
+  ⊤ .int = C.residualʳ ._↔_.from (C.minimum _)
 
   ⊤-maximum : Maximum _≤_ ⊤
   ⊤-maximum x .fpos = C.maximum _
