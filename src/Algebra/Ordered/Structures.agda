@@ -8,7 +8,7 @@
 -- The contents of this module should be accessed via
 -- `Algebra.Ordered`.
 
-{-# OPTIONS --postfix-projections --without-K --safe #-}
+{-# OPTIONS --postfix-projections --without-K --safe --cubical-compatible #-}
 
 open import Relation.Binary.Core using (Rel; _⇒_)
 

@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --safe --without-K #-}
+{-# OPTIONS --postfix-projections --safe --without-K --cubical-compatible #-}
 
 open import Level
 open import Algebra

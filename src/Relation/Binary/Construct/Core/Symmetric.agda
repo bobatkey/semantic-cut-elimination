@@ -1,4 +1,4 @@
-{-# OPTIONS --safe --without-K #-}
+{-# OPTIONS --safe --without-K --cubical-compatible #-}
 
 open import Level using (Level; _⊔_)
 open import Algebra.Core

@@ -1,4 +1,4 @@
-{-# OPTIONS --postfix-projections --safe --without-K #-}
+{-# OPTIONS --postfix-projections --safe --without-K --cubical-compatible #-}
 
 module Algebra.Ordered.Construction.Chu where
 
