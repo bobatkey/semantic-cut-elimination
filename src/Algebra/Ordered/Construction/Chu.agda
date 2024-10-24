@@ -187,15 +187,31 @@ module Construction
   ⊗-comm .fpos = C.reflexive (C.comm _ _)
   ⊗-comm .fneg = C.∧-greatest (C.x∧y≤y _ _) (C.x∧y≤x _ _)
 
-{- TODO: need general (un)curry
-  embed-⊗ : ∀ {x y} → embed (x ∙ y) ≤ embed x ⊗ embed y
-  embed-⊗ .fpos = C.refl
-  embed-⊗ .fneg = C.trans (C.x∧y≤y _ _) {!!}
+  uncurry : (x -∙ᶜ (y -∙ᶜ z)) ≤ᶜ ((x ∙ᶜ y) -∙ᶜ z)
+  uncurry = C.residualˡ ._↔_.to
+              (C.trans (C.reflexive (C.Eq.sym (C.assoc _ _ _)))
+              (C.trans (C.mono (C.residualˡ ._↔_.from C.refl) C.refl)
+                       (C.residualˡ ._↔_.from C.refl)))
 
-  ⊗-embed : ∀ {x y} → embed x ⊗ embed y ≤ embed (x ∙ y)
+  curry : ((x ∙ᶜ y) -∙ᶜ z) ≤ᶜ (x -∙ᶜ (y -∙ᶜ z))
+  curry = C.residualˡ ._↔_.to
+         (C.residualˡ ._↔_.to (C.trans (C.reflexive (C.assoc _ _ _))
+                                      (C.residualˡ ._↔_.from C.refl)))
+
+  curry' : ((x ∙ᶜ y) -∙ᶜ z) ≤ᶜ (y -∙ᶜ (x -∙ᶜ z))
+  curry' = C.residualˡ ._↔_.to
+          (C.residualˡ ._↔_.to (C.trans (C.reflexive (C.assoc _ _ _))
+                              (C.trans (C.mono C.refl (C.reflexive (C.comm _ _)))
+                                       (C.residualˡ ._↔_.from C.refl))))
+
+
+  embed-⊗ : ∀ {x y} → embed (x ∙ᶜ y) ≤ embed x ⊗ embed y
+  embed-⊗ .fpos = C.refl
+  embed-⊗ .fneg = C.trans (C.x∧y≤y _ _) uncurry
+
+  ⊗-embed : ∀ {x y} → embed x ⊗ embed y ≤ embed (x ∙ᶜ y)
   ⊗-embed .fpos = C.refl
-  ⊗-embed .fneg = C.∧-greatest {!!} {!!}
--}
+  ⊗-embed .fneg = C.∧-greatest curry' curry
 
   private
     Λˡ : ∀ {x y z} → (x ∙ᶜ y) ≤ᶜ z → x ≤ᶜ (y -∙ᶜ z)
