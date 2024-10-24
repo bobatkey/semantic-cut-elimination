@@ -115,7 +115,7 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
       )
 
   open IsMeetSemilattice &-isMeet public
-    using 
+    using
       ( infimum
       )
     renaming
@@ -128,11 +128,11 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
   x ⊕ y = ¬ (¬ x & ¬ y)
 
   x≲x⊕y : ∀ x y → x ≲ (x ⊕ y)
-  x≲x⊕y x y = 
+  x≲x⊕y x y =
     trans (reflexive (Eq.sym (¬-involutive _))) (¬-mono (x&y≲x _ _))
 
   y≲x⊕y : ∀ x y → y ≲ (x ⊕ y)
-  y≲x⊕y x y = 
+  y≲x⊕y x y =
     trans (reflexive (Eq.sym (¬-involutive _))) (¬-mono (x&y≲y _ _))
 
   ⊕-least : ∀ {x y z} → x ≲ z → y ≲ z → (x ⊕ y) ≲ z
@@ -141,7 +141,7 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
 
   ⊕-isJoinSemilattice : IsJoinSemilattice _≈_ _≲_ _⊕_
   ⊕-isJoinSemilattice = record
-    { isPartialOrder = isPartialOrder 
+    { isPartialOrder = isPartialOrder
     ; supremum       = λ x y →  x≲x⊕y x y , y≲x⊕y x y , λ z → ⊕-least
     }
 

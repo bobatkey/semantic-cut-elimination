@@ -44,20 +44,20 @@ mutual
   reflect `I = I.≤-refl
   reflect (`+ A) =
     I.⊸-residual-to (I.≤-trans I.η-preserve-∙⁻¹ (I.η-mono ((step `axiom) ◅ ε)))
-  reflect (`- A) = 
+  reflect (`- A) =
     I.≤-refl
-  reflect (P `⅋ Q) = 
+  reflect (P `⅋ Q) =
     I.≤-trans I.η-preserve-∙ (I.⅋-mono (reflect P) (reflect Q))
-  reflect (P `⊗ Q) = 
+  reflect (P `⊗ Q) =
     I.∧-greatest
       (I.⊸-residual-to (I.≤-trans (I.⅋-mono (reify Q) I.≤-refl) (I.≤-trans (interact P Q) (reflect P))))
       (I.⊸-residual-to (I.≤-trans (I.⅋-mono (reify P) (I.η-mono (fwd `⊗-comm ◅ ε))) (I.≤-trans (interact Q P) (reflect Q))))
-  reflect (P `& Q) = 
-    I.≤-trans I.η-preserve-∨ 
+  reflect (P `& Q) =
+    I.≤-trans I.η-preserve-∨
       (I.∨-least
         (I.≤-trans (reflect P) I.x≤x∨y)
         (I.≤-trans (reflect Q) I.y≤x∨y))
-  reflect (P `⊕ Q) = 
+  reflect (P `⊕ Q) =
     I.∧-greatest
       (I.≤-trans (I.η-mono (step `left ◅ ε)) (reflect P))
       (I.≤-trans (I.η-mono (step `right ◅ ε)) (reflect Q))

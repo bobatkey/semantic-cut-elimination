@@ -9,8 +9,8 @@ open import Relation.Nullary.Negation.Core using (¬_; contradiction)
 
 module MAV.Structure {a} (Atom : Set a) where
 
-infix 20 `+_ 
-infix 20 `-_ 
+infix 20 `+_
+infix 20 `-_
 infix 15 `¬_
 infix 10 _`◁_
 infix 10 _`⅋_
@@ -106,7 +106,7 @@ _≟`I : (P : Structure) → Dec (P ≡ `I)
 (P `⊕ Q) ≟`I = no (λ ())
 
 ≢-nonUnit : ∀ {P} → P ≢ `I → NonUnit P
-≢-nonUnit {`I}     P≢`I = contradiction refl P≢`I 
+≢-nonUnit {`I}     P≢`I = contradiction refl P≢`I
 ≢-nonUnit {`+ A}   P≢`I = _
 ≢-nonUnit {`- A}   P≢`I = _
 ≢-nonUnit {P `◁ Q} P≢`I = _

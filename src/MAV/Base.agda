@@ -127,7 +127,7 @@ open IsEquivalence ⟷⋆-isEquivalence
 ------------------------------------------------------------------------------
 -- Lift congruence rules to the preorder
 
-⟶⋆-map : (f : Op₁ Structure) (g : ∀ {R} → CongClosure R =[ f ]⇒ CongClosure R) → P ⟶⋆ P′ → f P ⟶⋆ f P′ 
+⟶⋆-map : (f : Op₁ Structure) (g : ∀ {R} → CongClosure R =[ f ]⇒ CongClosure R) → P ⟶⋆ P′ → f P ⟶⋆ f P′
 ⟶⋆-map f g = Star.gmap f (Sum.map (EqClosure.gmap f g) g)
 
 `◁⟩⋆_ : Q ⟶⋆ Q′ → (P `◁ Q) ⟶⋆ (P `◁ Q′)
@@ -167,7 +167,7 @@ P⟶⋆P′ `⟨⊕⋆ = ⟶⋆-map _ _`⟨⊕ P⟶⋆P′
 -- Deriving full versions of switch and sequence
 
 -- `switch⋆ : (P `⊗ Q) `⅋ R ⟶⋆ P `⊗ (Q `⅋ R)
--- `switch⋆ {P} {Q} {R} with P ≟`I | R ≟`I 
+-- `switch⋆ {P} {Q} {R} with P ≟`I | R ≟`I
 -- ... |     P≟`I | yes refl = `⅋-unit ◅ P `⊗⟩ `⅋-unit⁻¹ ◅ ε
 -- ... | yes refl | no  R≢`I = `⊗-comm `⟨⅋ R ◅ `⊗-unit `⟨⅋ R ◅ `⊗-unit⁻¹ ◅ `⊗-comm ◅ ε
 -- ... | no  P≢`I | no  R≢`I = `switch {{≢-nonUnit P≢`I}} {{≢-nonUnit R≢`I}} ◅ ε
@@ -260,7 +260,6 @@ P⟶⋆P′ `⟨⊕⋆ = ⟶⋆-map _ _`⟨⊕ P⟶⋆P′
 `⅋-`◁-isDuoidal .IsDuoidal.∙-idem-ι = fwd `⅋-identityʳ ◅ ε
 `⅋-`◁-isDuoidal .IsDuoidal.◁-idem-ε = bwd `◁-identityʳ ◅ ε
 `⅋-`◁-isDuoidal .IsDuoidal.ε≲ι = ε
-
 `⅋-`◁-isCommutativeDuoidal : IsCommutativeDuoidal _⟷⋆_ _⟶⋆_ _`⅋_ _`◁_ `I `I
 `⅋-`◁-isCommutativeDuoidal .IsCommutativeDuoidal.isDuoidal = `⅋-`◁-isDuoidal
 `⅋-`◁-isCommutativeDuoidal .IsCommutativeDuoidal.∙-comm P Q = fwd∧bwd `⅋-comm
@@ -312,4 +311,3 @@ frame .Frame.⅋-◁-isCommutativeDuoidal = `⅋-`◁-isCommutativeDuoidal
 frame .Frame.⅋-distrib-& = `⅋-distrib-`&
 frame .Frame.&-◁-entropy = `&-`◁-entropy
 frame .Frame.&-tidy = step `tidy ◅ ε
-    

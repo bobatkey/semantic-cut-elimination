@@ -45,7 +45,7 @@ module Deep where
   to-≃ {P} {.P} ε                     = P ∎
   to-≃ {P} {Q} (SymClosure.fwd φ ◅ ψ) = P ∼⟨ φ ⟩ to-≃ ψ
   to-≃ {P} {Q} (SymClosure.bwd φ ◅ ψ) = P ∼⟨ φ ⟨ to-≃ ψ
-  
+
   to-⟶ : P ⟶ Q → P IsDerivableFrom Q
   to-⟶ {P} {Q} P⟶Q = P ⟶⟨ emb P⟶Q ⟩ Q ∎
 

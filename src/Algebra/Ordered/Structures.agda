@@ -666,7 +666,7 @@ record IsStarAutonomous (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ �
       ¬ (z ⊗ x)
     ∎
     where open PosetReasoning poset
-  
+
   -- NOTE: `*-aut⁻¹` is the LEFT inverse *-autonomous property.
   *-autʳ⁻¹ : ∀ {x y z} → y ≲ ¬ (z ⊗ x) → (x ⊗ y) ≲ ¬ z
   *-autʳ⁻¹ {x} {y} {z} y≲¬zx =
@@ -788,11 +788,11 @@ record IsStarAutonomous (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ �
   residualʳ-from {x} {y} {z} y≲x⊸z =
     begin
       x ⊗ y
-    ≈⟨ ⊗-comm _ _ ⟩ 
+    ≈⟨ ⊗-comm _ _ ⟩
       y ⊗ x
     ≤⟨ *-aut⁻¹ (≤-respʳ-≈ (¬-cong (⊗-congʳ (¬-involutive _))) y≲x⊸z) ⟩
       ¬ (¬ z)
-    ≈⟨ ¬-involutive _ ⟩ 
+    ≈⟨ ¬-involutive _ ⟩
       z
     ∎
     where open PosetReasoning poset
@@ -833,7 +833,7 @@ record IsStarAutonomous (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ �
 
   -- FIXME: This is expansion.
   coev : ∀ {x} → ε ≲ (x ⅋ ¬ x)
-  coev {x} = 
+  coev {x} =
     begin
       ε
     ≤⟨ residualʳ-to (reflexive (⊗-identityʳ x)) ⟩
@@ -849,7 +849,7 @@ record IsStarAutonomous (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ �
   linear-distribˡ {x} {y} {z} = *-aut $
     begin
       (x ⊗ (z ⅋ y)) ⊗ ¬ z
-    ≈⟨ ⊗-assoc _ _ _ ⟩ 
+    ≈⟨ ⊗-assoc _ _ _ ⟩
       (x ⊗ ((z ⅋ y) ⊗ ¬ z))
     ≈⟨ ⊗-congˡ (⊗-congʳ (⅋-congʳ (¬-involutive _))) ⟨
       (x ⊗ ((¬ (¬ z) ⅋ y) ⊗ ¬ z))
@@ -887,4 +887,3 @@ record IsStarAutonomous (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ �
       ((x ⊗ y) ⅋ z)
     ∎
     where open PosetReasoning poset
- 
