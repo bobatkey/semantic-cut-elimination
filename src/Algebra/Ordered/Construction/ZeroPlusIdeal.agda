@@ -411,6 +411,7 @@ module DayEntropic
       C.trans z≤z₁z₂ {!!}
 -}
 
+-- FIXME: could do Day without commutative as well
 module DayCommutative
     {_∙ᶜ_}
     {εᶜ}
@@ -596,6 +597,46 @@ module DayCommutative
     { isCommutativePomonoid = ∙-isCommutativePomonoid
     ; residuated = comm∧residual⇒residuated ≤-isPreorder ∙-comm ⊸-residual
     }
+
+  module Exp (！ᶜ : Op₁ Carrier)
+      (！ᶜ-discard   : ∀ {x} → ！ᶜ x ≤ᶜ εᶜ)
+      (！ᶜ-duplicate : ∀ {x} → ！ᶜ x ≤ᶜ (！ᶜ x ∙ᶜ ！ᶜ x))
+      (！ᶜ-derelict  : ∀ {x} → ！ᶜ x ≤ᶜ x)
+      (！ᶜ-dig       : ∀ {x} → ！ᶜ x ≤ᶜ ！ᶜ (！ᶜ x))
+      where
+
+    private
+      module LExp = LMon.Exp ！ᶜ ！ᶜ-discard ！ᶜ-duplicate ！ᶜ-derelict ！ᶜ-dig
+
+    ！ : Ideal → Ideal
+    ！ I = α (LExp.！ (U I))
+
+    ！-monoidal-unit : ε ≤ ！ ε
+    ！-monoidal-unit =
+      ≤-trans (α-mono LExp.！-monoidal-unit) (α-mono (LExp.！-mono unit))
+
+    ！-monoidal : (！ I ∙ ！ J) ≤ ！ (I ∙ J)
+    ！-monoidal = ≤-trans (α-monoidal .proj₁)
+                 (≤-trans (α-mono LExp.！-monoidal)
+                 (α-mono (LExp.！-mono unit)))
+
+    ！-mono : Monotonic₁ _≤_ _≤_ ！
+    ！-mono I≤J = α-mono (LExp.！-mono (U-mono I≤J))
+
+    ！-discard : ！ I ≤ ε
+    ！-discard = α-mono LExp.！-discard
+
+    ！-duplicate : ！ I ≤ (！ I ∙ ！ I)
+    ！-duplicate = ≤-trans (α-mono LExp.！-duplicate) (α-monoidal .proj₂)
+
+    ！-derelict : ！ I ≤ I
+    ！-derelict = ≤-trans (α-mono LExp.！-derelict) counit
+
+    ！-dig : ！ I ≤ ！ (！ I)
+    ！-dig = ≤-trans (α-mono LExp.！-dig) (α-mono (LExp.！-mono unit))
+
+    η-preserve-！ : η (！ᶜ x) ≤ ！ (η x)
+    η-preserve-！ = ≤-trans (α-mono LExp.η-preserve-！) (α-mono (LExp.！-mono unit))
 
 module DayDuoidal
     {_∙ᶜ_}
