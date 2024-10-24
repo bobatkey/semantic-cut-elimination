@@ -43,6 +43,16 @@ import NEL.Symmetric
 import NEL.Interpretation
 import NEL.CutElim
 
+-- Generalised Semantic Cut Elimination for MAUVE:
+-- The Multiplicative-Additive-Unital System Virtual with Exponentials.
+import MAUVE.Structure
+import MAUVE.Base
+import MAUVE.Frame
+import MAUVE.Model
+import MAUVE.Symmetric
+import MAUVE.Interpretation
+import MAUVE.CutElim
+
 -- The Chu Construction, Ideals, and Lower Sets.
 import Algebra.Ordered.Construction.Chu
 import Algebra.Ordered.Construction.Ideal
