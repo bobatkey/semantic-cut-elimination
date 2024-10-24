@@ -165,7 +165,7 @@ open import Relation.Binary.Lattice.Properties.MeetSemilattice ∧-meetSemilatti
 
 ∧-⊤-isPosemigroup : IsPosemigroup _≈_ _≤_ _∧_
 ∧-⊤-isPosemigroup = record
-  { isPomagma = record 
+  { isPomagma = record
     { isPartialOrder = ≤-isPartialOrder
     ; mono = ∧-monotonic
     }
@@ -275,7 +275,7 @@ module Day
     (isPomonoid : IsPomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ)
   where
 
-  private 
+  private
     module Mon = IsPomonoid isPomonoid
 
   _∙_ : LowerSet → LowerSet → LowerSet
@@ -357,15 +357,15 @@ module DayCommutative
   open Day Mon.isPomonoid public
 
   ∙-comm : Commutative _≈_ _∙_
-  ∙-comm F G .proj₁ .*≤* (y , z , x≤yz , Fy , Gz) = 
+  ∙-comm F G .proj₁ .*≤* (y , z , x≤yz , Fy , Gz) =
     (-, -, C.trans x≤yz (C.≤-respˡ-≈ (Mon.comm z y) C.refl) , Gz , Fy)
-  ∙-comm F G .proj₂ .*≤* (y , z , x≤yz , Gy , Fz) = 
+  ∙-comm F G .proj₂ .*≤* (y , z , x≤yz , Gy , Fz) =
     (-, -, C.trans x≤yz (C.≤-respˡ-≈ (Mon.comm z y) C.refl) , Fz , Gy)
 
   ∙-isCommutativePomonoid : IsCommutativePomonoid _≈_ _≤_ _∙_ ε
   ∙-isCommutativePomonoid = record
     { isPomonoid = ∙-isPomonoid
-    ; comm       = ∙-comm 
+    ; comm       = ∙-comm
     }
 
   _⊸_ : LowerSet → LowerSet → LowerSet
@@ -373,11 +373,11 @@ module DayCommutative
   (F ⊸ G) .≤-closed x≤z f Fy = G .≤-closed (Mon.mono x≤z C.refl) (f Fy)
 
   ⊸-residual-to : (F ∙ G) ≤ H → G ≤ (F ⊸ H)
-  ⊸-residual-to F∙G≤H .*≤* Gx Fy = 
+  ⊸-residual-to F∙G≤H .*≤* Gx Fy =
     F∙G≤H .*≤* (-, -, C.≤-respˡ-≈ (Mon.comm _ _) C.refl , Fy , Gx)
 
   ⊸-residual-from : G ≤ (F ⊸ H) → (F ∙ G) ≤ H
-  ⊸-residual-from {G} {F} {H} G≤F⊸H .*≤* (_ , _ , x≤y∙z , Fy , Gz) = 
+  ⊸-residual-from {G} {F} {H} G≤F⊸H .*≤* (_ , _ , x≤y∙z , Fy , Gz) =
     H .≤-closed (C.trans x≤y∙z (C.≤-respˡ-≈ (Mon.comm _ _) C.refl)) (G≤F⊸H .*≤* Gz Fy)
 
   ⊸-residual : RightResidual _≤_ _∙_ _⊸_
@@ -385,13 +385,13 @@ module DayCommutative
   ⊸-residual ._↔_.from      = ⊸-residual-from
 
   ⊸-∙-isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈_ _≤_ _∙_ _⊸_ ε
-  ⊸-∙-isResiduatedCommutativePomonoid = record 
-    { isCommutativePomonoid = ∙-isCommutativePomonoid 
-    ; residuated = comm∧residual⇒residuated ≤-isPreorder ∙-comm ⊸-residual 
+  ⊸-∙-isResiduatedCommutativePomonoid = record
+    { isCommutativePomonoid = ∙-isCommutativePomonoid
+    ; residuated = comm∧residual⇒residuated ≤-isPreorder ∙-comm ⊸-residual
     }
 
   ∙-∨-distrib : _DistributesOver_ _≤_ _∙_ _∨_
-  ∙-∨-distrib = supremum∧residuated⇒distrib ≤-isPreorder ∨-supremum 
+  ∙-∨-distrib = supremum∧residuated⇒distrib ≤-isPreorder ∨-supremum
     (IsResiduatedCommutativePomonoid.residuated ⊸-∙-isResiduatedCommutativePomonoid)
 
   -- Exponentials
@@ -495,6 +495,23 @@ module DayCommutative
 
     η-preserve-！ : ∀ {x} → η (！ᶜ x) ≤ ！ (η x)
     η-preserve-！ {x} .*≤* {z} (lift z≤!x) = ！ᶜ x , z≤!x , leaf , lift ！ᶜ-derelict
+
+    -- If ！ᶜ is a monoidal monotone operator, then η preserves it strongly.
+    module _
+        (！ᶜ-monoidal-unit : εᶜ ≤ᶜ ！ᶜ εᶜ)
+        (！ᶜ-monoidal      : ∀ {x y} → (！ᶜ x ∙ᶜ ！ᶜ y) ≤ᶜ ！ᶜ (x ∙ᶜ y))
+        (！ᶜ-mono          : ∀ {x y} → (x ≤ᶜ y) → ！ᶜ x ≤ᶜ ！ᶜ y)
+        where
+
+      !-context-lemma : ∀ {a} → !-context a → a ≤ᶜ ！ᶜ a
+      !-context-lemma nil = ！ᶜ-monoidal-unit
+      !-context-lemma (pair !a !b) =
+        C.trans (Mon.mono (!-context-lemma !a) (!-context-lemma !b)) ！ᶜ-monoidal
+      !-context-lemma leaf = ！ᶜ-dig
+
+      η-preserve-！⁻¹ : ∀ {x} → ！ (η x) ≤ η (！ᶜ x)
+      η-preserve-！⁻¹ {x} .*≤* {z} (z' , z≤z' , !z' , lift z'≤x) =
+        lift (C.trans z≤z' (C.trans (!-context-lemma !z') (！ᶜ-mono z'≤x)))
 
 module DayDuoidal
     {_∙ᶜ_}

@@ -377,9 +377,9 @@ module DayEntropic
     Ideal.≤-closed
       (α (L.η x) ◁ α (L.η y))
         (C.trans z≤c (`⋁-map-eval _ c))
-          (`⋁-closed {α (L.η x) ◁ α (L.η y)} 
-            (`⋁-map 
-              (L.≤-trans LMon.η-preserve-∙ 
+          (`⋁-closed {α (L.η x) ◁ α (L.η y)}
+            (`⋁-map
+              (L.≤-trans LMon.η-preserve-∙
                 (L.≤-trans (LMon.∙-mono unit unit) (U-monoidal .proj₂))) c))
 
 {-
@@ -662,4 +662,3 @@ module DayDuoidal
                 counit))
     ; ε≲ι = ε≤ι
     }
-  
