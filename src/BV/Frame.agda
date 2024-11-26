@@ -159,7 +159,7 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
     units-iso .Product.proj₁ = L.ε≤ι
     units-iso .Product.proj₂ .*≤* x≤I = x≤I
 
-    private 
+    private
       module C where
         open Algebra.Ordered.Construction.Chu.Construction
             L.⊸-⅋-isResiduatedCommutativePomonoid
@@ -167,10 +167,10 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
             L.∨-⊥-isBoundedJoinSemilattice
             L.ε
           public
-        
+
         K-m : (L.ε L.◁ L.ε) L.≤ L.ε
         K-m = L.≤-trans (L.◁-mono (L.≤-reflexive units-iso) L.≤-refl) (L.≤-reflexive (L.◁-identityˡ _))
-        
+
         K-u : L.ι L.≤ L.ε
         K-u = L.≤-reflexive (L.Eq.sym units-iso)
 
@@ -192,10 +192,10 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
 
     ⊗-◁-isCommutativeDuoidal : IsCommutativeDuoidal C._≈_ C._≤_ C._⊗_ C._◁_ C.ε C.ι
     ⊗-◁-isCommutativeDuoidal = record
-      { isDuoidal = C.⊗-◁-isDuoidal 
-      ; ∙-comm    = C.⊗-isCommutativePomonoid .IsCommutativePomonoid.comm 
+      { isDuoidal = C.⊗-◁-isDuoidal
+      ; ∙-comm    = C.⊗-isCommutativePomonoid .IsCommutativePomonoid.comm
       }
-  
+
   open C public using (Chu)
 
   model : Model (suc (suc (a ⊔ ℓ₂))) (a ⊔ ℓ₂) (a ⊔ ℓ₂)

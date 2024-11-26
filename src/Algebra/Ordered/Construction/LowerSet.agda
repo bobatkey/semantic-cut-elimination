@@ -513,6 +513,91 @@ module DayCommutative
       η-preserve-！⁻¹ {x} .*≤* {z} (z' , z≤z' , !z' , lift z'≤x) =
         lift (C.trans z≤z' (C.trans (!-context-lemma !z') (！ᶜ-mono z'≤x)))
 
+  module Dagger0 where
+    † : LowerSet → LowerSet
+    † F .ICarrier x = Σ[ z ∈ Carrier ] (x ≤ᶜ z × z ≤ᶜ εᶜ × F .ICarrier z)
+    † F .≤-closed x≤y (z , y≤z , z≤ε , Fz) = z , C.trans x≤y y≤z , z≤ε , Fz
+
+    monoidal-unit : ε ≤ † ε
+    monoidal-unit .*≤* (lift x≤ε) = εᶜ , x≤ε , C.refl , (lift C.refl)
+
+
+
+    -- This doesn't work!
+    -- duplicate : † F ≤ † F ∙ † F
+    -- duplicate .*≤* {x} (z , x≤z , z≤ε , Fz) =
+    --   z , z , {!!} ,
+    --   {!!} ,
+    --   {!!}
+
+    η-preserve-† : x ≤ᶜ εᶜ → η x ≤ † (η x)
+    η-preserve-† {x} x≤ε .*≤* {z} (lift z≤x) = x , z≤x , x≤ε , lift C.refl
+
+  module Dagger1 where
+    -- “† F” means that this is provable free of its current context.
+
+    † : LowerSet → LowerSet
+    † F .ICarrier x = x ≤ᶜ εᶜ × F .ICarrier εᶜ
+    † F .≤-closed x≤y (y≤ε , Fε) = C.trans x≤y y≤ε , Fε
+
+    †-mono : (F ≤ G) → † F ≤ † G
+    †-mono F≤G .*≤* {x} (x≤ε , Fε) = x≤ε , F≤G .*≤* Fε
+
+    monoidal-unit : ε ≤ † ε
+    monoidal-unit .*≤* {x} (lift x≤ε) = x≤ε , lift C.refl
+
+    monoidal : † F ∙ † G ≤ † (F ∙ G)
+    monoidal .*≤* {x} (y₁ , y₂ , x≤y₁y₂ , (y₁≤ε , Fε) , (y₂≤ε , Gε)) =
+       C.trans x≤y₁y₂ (C.trans (Mon.mono y₁≤ε y₂≤ε) {!!}) ,
+       εᶜ , εᶜ , {!!} , Fε , Gε
+
+    discard : † F ≤ ε
+    discard .*≤* {x} (x≤ε , Fε) = lift x≤ε
+
+    derelict : † F ≤ F
+    derelict {F} .*≤* {x} (x≤ε , Fε) = F .≤-closed x≤ε Fε
+
+    dig : † F ≤ † († F)
+    dig {F} .*≤* {x} (x≤ε , Fε) = x≤ε , C.refl , Fε
+
+    duplicate : † F ≤ † F ∙ † F
+    duplicate .*≤* {x} (x≤ε , Fε) =
+      εᶜ , εᶜ , C.trans x≤ε {!!} ,
+      (C.refl , Fε) ,
+      (C.refl , Fε)
+
+{-
+    η-preserve-† : εᶜ ≤ᶜ x → η x ≤ † (η x)
+    η-preserve-† x≤ε .*≤* {z} (lift z≤x) = {!!} , {!!}
+-}
+
+  module Dagger2 where
+    -- “† F” means that this is provable free of its current context.
+
+    † : LowerSet → LowerSet
+    † F .ICarrier x = F .ICarrier εᶜ
+    † F .≤-closed x≤y Fε = Fε
+
+    †-mono : (F ≤ G) → † F ≤ † G
+    †-mono F≤G .*≤* {x} Fε = F≤G .*≤* Fε
+
+    monoidal-unit : ε ≤ † ε
+    monoidal-unit .*≤* {x} (lift x≤ε) = lift C.refl
+
+    monoidal : † F ∙ † G ≤ † (F ∙ G)
+    monoidal .*≤* {x} (y₁ , y₂ , x≤y₁y₂ , Fε , Gε) =
+       εᶜ , εᶜ , {!!} , Fε , Gε
+
+    discard : † F ≤ ε
+    discard .*≤* {x} Fε = {!!}
+
+    derelict : † F ≤ F
+    derelict {F} .*≤* {x} Fε = {!!}
+
+    dig : † F ≤ † († F)
+    dig {F} .*≤* {x} Fε = Fε
+
+
 module DayDuoidal
     {_∙ᶜ_}
     {_◁ᶜ_}

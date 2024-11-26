@@ -24,10 +24,10 @@ module Algebra.Ordered.Construction.Ideal {c ℓ₁ ℓ₂} (pomagma : Pomagma c
 private
   module C = Pomagma pomagma
 
-open C 
+open C
   using
     ( Carrier
-    ) 
+    )
   renaming
     ( _∙_ to _∨ᶜ_
     ; _≤_ to _≤ᶜ_
@@ -274,8 +274,8 @@ private
 
 η-preserve-∨ : α (L.η (x ∨ᶜ y)) ≤ α (L.η x) ∨ α (L.η y)
 η-preserve-∨ {x}{y} .*≤* {z} (c , z≤c) =
-  let d , c≤d = helper c in 
-    Ideal.≤-closed (α (L.η x) ∨ α (L.η y)) 
+  let d , c≤d = helper c in
+    Ideal.≤-closed (α (L.η x) ∨ α (L.η y))
       (C.trans z≤c c≤d) (`⋁-closed d)
 
 
@@ -350,9 +350,9 @@ module DayEntropic
     Ideal.≤-closed
       (α (L.η x) ◁ α (L.η y))
         (C.trans z≤c (`⋁-map-eval _ c))
-          (`⋁-closed {α (L.η x) ◁ α (L.η y)} 
-            (`⋁-map 
-              (L.≤-trans LMon.η-preserve-∙ 
+          (`⋁-closed {α (L.η x) ◁ α (L.η y)}
+            (`⋁-map
+              (L.≤-trans LMon.η-preserve-∙
                 (L.≤-trans (LMon.∙-mono unit unit) (U-monoidal .proj₂))) c))
 
 {-
@@ -560,8 +560,8 @@ module DayCommutative
     }
 
 module DayDuoidal
-    {_∙ᶜ_} 
-    {_◁ᶜ_} 
+    {_∙ᶜ_}
+    {_◁ᶜ_}
     {εᶜ}
     {ιᶜ}
     (isCommutativeDuoidal : IsCommutativeDuoidal _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ _◁ᶜ_ εᶜ ιᶜ)
@@ -620,4 +620,3 @@ module DayDuoidal
                 counit))
     ; ε≲ι = ε≤ι
     }
-   
