@@ -154,7 +154,7 @@ However, as BV's inference rules can work arbitrarily deep in the structure, and
           \vC\vPlug{\vUnit}}{%
           \vlhy{\vC\vPlug{\vP\vTens\vDual\vP}}}}}$
 \end{center}
-Beautifully, internalising branching makes the symmetry between the axiom and cut plain to see. In BV, to acknowledge this symmetry and the connection with CSS, the axiom and cut rules are referred to as \emph{interaction} and \emph{co-interaction}.
+Beautifully, internalising branching makes the symmetry between the axiom and cut plain to see. In BV, to acknowledge this symmetry and the connection with Milner's CCS, the axiom and cut rules are referred to as \emph{interaction} and \emph{co-interaction}.
 
 Proof trees are a cumbersome presentation for BV's derivations---they are convenient for branching sequent proofs, but BV derivations are sequences of structures.
 \emph{Rewriting systems}, on the other hand, are a well-known and convenient notation for such derivations.
@@ -291,12 +291,13 @@ Normal proofs, which we define below, avoid these \emph{synthetic} rules.
     $\inlineequation[notation:vlpr]{%
         \vlderivation{\vlpr{}{}{\vP}}}$
   \end{center}
+
   The relation between the deductive system for BV and rewrite systems is well-known, \eg by Kahramanogullari~\cite{Kahramanogullari08:maude}, who implements proof search for several deep inference systems in Maude~\cite{ClavelDELMMQ02:maude}.
   Inferences rules are usually named with the combination of a letter and an up or down arrow, \eg \cref{rule:Interact} and \cref{rule:CoInteract} are $\iD$ and $\iU$, respectively. The exception are self-dual rules, which are named with a single letter, \eg \cref{rule:Switch} is usually named $\sw$.
 \end{remark}
 
 \begin{definition}\label[defn]{defn:normal}
-  A derivation is \emph{normal} when it does not use \cref{rule:CoInteract} nor any of the other (\RuleName{CoX}) rules, and its uses of \cref{rule:Interact} are restricted to \cref{rule:AtomInteract}, as defined by the following axiom:
+  A derivation is \emph{normal} when it does not use \cref{rule:CoInteract} nor any of the other (\RuleName{Co-}) rules, and its uses of \cref{rule:Interact} are restricted to \cref{rule:AtomInteract}, as defined by the following axiom:
   \begin{displaymath}
     \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
       \makebox[\vInferFromDefnWidthOfLHS][l]{$\vNeg\va\vParr\vPos\va$}
@@ -308,4 +309,4 @@ Normal proofs, which we define below, avoid these \emph{synthetic} rules.
 \end{definition}
 Normal derivations avoid the use of rules that introduce new structures into proofs, and so can be termed \emph{analytic} in contrast to the need for the synthetic rules to synthesise new structures.
 
-Our main result, \Cref{thm:cut-elim}, is that every structure that is provable in full MAV also has a normal proof. Therefore, the system with only analytic rules is complete for MAV provability. Horne \cite{Horne15:mav} proves this result via a syntactic proof involving rewriting and termination measures. In the following sections, we construct a semantic proof that normal proofs are complete for MAV.
+Our main result, \Cref{thm:cut-elim}, is that every structure that is provable in full MAV also has a normal proof. Therefore, the system with only analytic rules is complete for MAV provability. Horne \cite{Horne15:mav} proves this result via a syntactic proof involving rewriting and termination measures. In the following sections, we construct a semantic proof that normal proofs are complete for MAV. In \Cref{sec:future-work}, we report on extensions of the same technique to variants of MAV.

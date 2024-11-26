@@ -32,9 +32,14 @@ To evidence this claim, we have adapted our Agda formalisation to prove generali
         \begin{center}
           \url{\AgdaBaseUrl/NEL.CutElim.html}
         \end{center}
+  \item[MAUVE]
+    The combination of all the previous systems is MAUVE: \textbf{M}ultiplicative-\textbf{A}dditive-\textbf{U}nital System \textbf{V}irtual with \textbf{E}xponentials. The construction of exponentials on lower sets extends to $0$- and $+$-closed ideals. The source code of the proof is available at the following URL:
+    \begin{center}
+      \url{\AgdaBaseUrl/MAUVE.CutElim.html}
+    \end{center}
 \end{description}
 The work opens up several paths for future work.
-The theory, developed here, for lifting Day pomonoids to $+$-closed lower sets enables alternative Cut-elimination proofs for other substructural logics, such as MALL and Bunched Implications. (Okada's technique has already been applied to Bunched Implications by Frumin~\cite{Frumin22:psc}.)
+The theory developed here for lifting Day pomonoids to $+$-closed lower sets enables alternative Cut-elimination proofs for other substructural logics, such as MALL and Bunched Implications. (Okada's technique has already been adapted to Bunched Implications by Frumin~\cite{Frumin22:psc}.)
 We find the technique of using $+$-closed lower sets more revealing in how the join structure is preserved than the use of impredicative closure operators in Frumin's proof or double negation closure in Okada's.
 
 We plan to investigate extensions of MAV with exponentials, as in the system NEL, and with a Kleene Star operator, which can be seen as the exponential for the $\vSeq$ connective. Adding a Kleene Star would tighten the connection with Concurrent Kleene Algebras we highlighted in~\Cref{remark:cka}. It would interesting to see to what extent MAV can be seen as a logic for processes represented as elements of MAV-frames.
