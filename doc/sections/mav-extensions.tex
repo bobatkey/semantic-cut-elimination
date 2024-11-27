@@ -42,11 +42,11 @@ The work opens up several paths for future work.
 The theory developed here for lifting Day pomonoids to $+$-closed lower sets enables alternative Cut-elimination proofs for other substructural logics, such as MALL and Bunched Implications. (Okada's technique has already been adapted to Bunched Implications by Frumin~\cite{Frumin22:psc}.)
 We find the technique of using $+$-closed lower sets more revealing in how the join structure is preserved than the use of impredicative closure operators in Frumin's proof or double negation closure in Okada's.
 
-We plan to investigate extensions of MAV with exponentials, as in the system NEL, and with a Kleene Star operator, which can be seen as the exponential for the $\vSeq$ connective. Adding a Kleene Star would tighten the connection with Concurrent Kleene Algebras we highlighted in~\Cref{remark:cka}. It would interesting to see to what extent MAV can be seen as a logic for processes represented as elements of MAV-frames.
-Furthermore, we plan to investigate fixpoint operators following Baelde~\cite{Baelde12} and De, Jafarrahmani and Saurin~\cite{De22:psc}.
+We plan to investigate extensions of MAV with a Kleene Star operator, which can be seen as the exponential for the $\vSeq$ connective. Adding a Kleene Star would tighten the connection with Concurrent Kleene Algebras we highlighted in~\Cref{remark:cka}. It would interesting to see to what extent MAV can be seen as a logic for processes represented as elements of MAV-frames.
+More generally, we plan to investigate fixpoint operators following Baelde~\cite{Baelde12} and De, Jafarrahmani and Saurin~\cite{De22:psc}.
 The latters' use of Okada's technique is not compatible with Agda's type theory, as it relies on impredicativity to construct fixpoints with the double negation closure. We believe that our more direct predicative technique will be able to use Agda's inductive and coinductive types.
 
-Lastly, we plan to extend our semantics of BV and MAV to a categorical semantics that considers equalities between proofs as well as provability.
+Lastly, we plan to extend our semantics of BV and MAV to a category-theoretic semantics that considers equalities between proofs as well as provability.
 Such a semantics ought to be useful for treating MAV as a session-typed language, as considered by Ciobanu and Horne~\cite{Ciobanu_2016}.
 The necessary analogue of MAV-algebras has already been investigated by Blute, Panangaden, and Slavnov~\cite{Blute_2010} as BV-categories, which are Aguiar and Mahajan's 2-monoidal (or duoidal) categories~\cite{Aguiar_2010} extended with duality.
 The key task will be to categorify the constructions in this paper to show how the categorical analogue of MAV-frames induces MAV-categories.
