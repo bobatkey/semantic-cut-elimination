@@ -533,6 +533,7 @@ module DayCommutative
     η-preserve-† : x ≤ᶜ εᶜ → η x ≤ † (η x)
     η-preserve-† {x} x≤ε .*≤* {z} (lift z≤x) = x , z≤x , x≤ε , lift C.refl
 
+{-
   module Dagger1 where
     -- “† F” means that this is provable free of its current context.
 
@@ -565,12 +566,14 @@ module DayCommutative
       εᶜ , εᶜ , C.trans x≤ε {!!} ,
       (C.refl , Fε) ,
       (C.refl , Fε)
+-}
 
 {-
     η-preserve-† : εᶜ ≤ᶜ x → η x ≤ † (η x)
     η-preserve-† x≤ε .*≤* {z} (lift z≤x) = {!!} , {!!}
 -}
 
+{-
   module Dagger2 where
     -- “† F” means that this is provable free of its current context.
 
@@ -596,7 +599,7 @@ module DayCommutative
 
     dig : † F ≤ † († F)
     dig {F} .*≤* {x} Fε = Fε
-
+-}
 
 module DayDuoidal
     {_∙ᶜ_}
