@@ -374,54 +374,38 @@
     {\texttt{\normalshape me@wen.works}}}
   \begin{abstract}
     \emph{Multiplicative-Additive System Virtual} (MAV) is a logic
-    that extends \emph{Multiplicative-Additive Linear Logic} with a
-    self-dual non-commutative operator expressing the concept of
-    ``before'' or ``sequencing''. MAV is also an extenson of the the
-    logic \emph{Basic System Virtual} (BV) with additives. Formulas in
-    BV have an appealing reading as processes with parallel and
-    sequential composition. MAV adds internal and external choice
-    operators. BV and MAV are also closely related to \emph{Concurrent
-      Kleene Algebras}.
-
-    \medskip
-
-    Proof systems for MAV and BV
-    are \emph{Deep Inference} systems, which allow inference rules to
-    be applied anywhere inside a structure.
-    As with any proof system, a key question is whether proofs in MAV
-    can be reduced to a normal form, removing detours and the
-    introduction of structures not present in the original goal. In
-    Sequent Calcluli systems, this property is referred to as
-    \emph{Cut Elimination}. Deep Inference systems have an analogous
-    Cut rule and other rules that are not present in normalised
-    proofs. Cut Elimination for Deep Inference systems has the same
-    metatheoretic benefits as for Sequent Calculi systems, including
-    consistency and decidability.
-
-    \medskip
-
+    that extends Multiplicative-Additive Linear Logic with a self-dual
+    non-commutative operator expressing the concept of ``before'' or
+    ``sequencing''. MAV is also an extenson of the the logic Basic
+    System Virtual (BV) with additives. Formulas in BV have an
+    appealing reading as processes with parallel and sequential
+    composition. MAV adds internal and external choice operators. BV
+    and MAV are also closely related to Concurrent Kleene Algebras.
+    
+    Proof systems for MAV and BV are Deep Inference systems, which
+    allow inference rules to be applied anywhere inside a
+    structure. As with any proof system, a key question is whether
+    proofs in MAV can be reduced to a normal form, removing detours
+    and the introduction of structures not present in the original
+    goal. In Sequent Calcluli systems, this property is referred to as
+    Cut Elimination. Deep Inference systems have an analogous Cut rule
+    and other rules that are not present in normalised proofs. Cut
+    Elimination for Deep Inference systems has the same metatheoretic
+    benefits as for Sequent Calculi systems, including consistency and
+    decidability.
+    
     Proofs of Cut Elimination for BV, MAV, and other Deep Inference
     systems present in the literature have relied on intrincate
-    syntactic reasoning and complex termination measures. For Linear
-    Logic, Okada has pioneered semantic proofs of Cut Elimination,
-    using Girard's Phase Space model of Linear Logic and techniques
-    akin to Normalisation by Evaluation in $\lambda$-calculus, which
-    avoid this intrincate reasoning, but these have not been extended
-    to the Deep Inference systems for BV and MAV.
+    syntactic reasoning and complex termination measures.
 
-    \medskip
-
-    In this work, we present a concise semantic proof that all MAV
-    proofs can be reduced to a normal form avoiding the Cut rule and
-    other ``non analytic'' rules. Due to the self-dual ``before''
-    connective, we cannot use Okada's Phase Space technique, which
-    relies on closure under double negation. We build the model more
-    directly using closed lower sets and the Chu construction. We also
-    develop soundness and completeness proofs of MAV (and BV) with
-    respect to a class of models. We have mechanised all our proofs in
-    the Agda proof assistant, which provides both assurance of their
-    correctness as well as yielding an executable normalisation
-    procedure.
+    We present a concise semantic proof that all MAV proofs can be
+    reduced to a normal form avoiding the Cut rule and other ``non
+    analytic'' rules. We also develop soundness and completeness
+    proofs of MAV (and BV) with respect to a class of models. We have
+    mechanised all our proofs in the Agda proof assistant, which
+    provides both assurance of their correctness as well as yielding
+    an executable normalisation procedure. Our technique extends
+    include exponentials and the additive units.
   \end{abstract}
   \begin{keyword}
     Linear Logic, Deep Inference, Algebraic Semantics, Metatheory
