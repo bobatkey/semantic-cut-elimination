@@ -20,6 +20,7 @@
             fdsymbol stmaryrd
             vntex enumitem
             parskip multirow ec metafont
+            cclicenses microtype thmtools helvetic
           ;
         };
 
@@ -59,6 +60,23 @@ export PATH="${pkgs.lib.makeBinPath buildInputs}";
 export DIR=$(pwd);
 mkdir -p "$DIR"/doc/.cache/texmf-var;
 cd doc/
+env TEXMFHOME="$DIR/doc/.cache" TEXMFVAR="$DIR/doc/.cache/texmf-var" make AGDA=agda
+'';
+            installPhase = ''
+mkdir -p $out;
+cp paper.pdf $out/
+'';
+          };
+          journal-paper = pkgs.stdenvNoCC.mkDerivation rec {
+            name = "Paper on Semantic Cut Elimination for Deep Inference (Journal Version)";
+            src = self;
+            buildInputs = [ pkgs.coreutils tex agda pkgs.gnumake pkgs.which pkgs.bash ];
+            phases = ["unpackPhase" "buildPhase" "installPhase"];
+            buildPhase = ''
+export PATH="${pkgs.lib.makeBinPath buildInputs}";
+export DIR=$(pwd);
+mkdir -p "$DIR"/doc/.cache/texmf-var;
+cd journal-version
 env TEXMFHOME="$DIR/doc/.cache" TEXMFVAR="$DIR/doc/.cache/texmf-var" make AGDA=agda
 '';
             installPhase = ''
