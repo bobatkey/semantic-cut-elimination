@@ -45,3 +45,17 @@ As far as we are aware, the semantics of BV and its extensions have not been con
 All of our proofs have been mechanised and checked in the Agda proof assistant \cite{Agda264}. We briefly discuss the mechanisation in \Cref{sec:mechanisation} and provide a hyperlinked guide to the proof relating it to our mathematical development in \Cref{sec:table-of-statments}. Aside from the benefits of checking the proof, the Agda proof is executable and yields a program for normalising proofs.
 
 We present our proof for MAV specifically, but note that essentially the same proof applies to the subsystem BV as well. We have also extended the proof technique to include the additive units, and with exponentials (System NEL, analysed by Guglielmi and Stra{\ss}burger \cite{Burger_2011,GuglielmiS11}). We discuss further extensions in \Cref{sec:future-work}.
+
+\subsection{Differences from the MFPS version}
+
+\bob{This is a wishlist for now...}
+
+\begin{enumerate}
+\item We present Systems BV, MAV, NEL, MAUV, and MAUVE in full in \autoref{sec:mav-syntax}.
+\item We include several examples of the use of the systems, in \autoref{sec:mav-examples}, including its use in establishing simulation results, and the similarity with Concurrent Kleene Algebras.
+\item We include more explanation of why Okada's Phase Space semantic approach does not work for BV and its extensions.
+\item We explicitly define the semantics of each of the systems we consider in \autoref{sec:mav-semantics}.
+\item We explore the consequences of completeness more thoroughly \bob{What?}
+\item We add the Kleene star to the systems explored.
+\item Links to the Agda formalisation are now inline, instead of being in the appendix.
+\end{enumerate}
