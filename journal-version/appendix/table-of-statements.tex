@@ -1,0 +1,204 @@
+\section{Statements and corresponding Agda definitions}
+\label{sec:table-of-statments}
+
+The table below lists the main definitions, propositions, and theorems in the paper together with the qualified name of the corresponding Agda definition.
+The names of the Agda definitions are hyperlinked to the HTML rendition of the source code, which is available at the following URL:
+\begin{center}
+  \url{\AgdaBaseUrl}
+\end{center}
+If the version of the paper you are reading does not support hyperlinks, you can reconstruct the URL to any definition by taking the URL above, adding a \texttt{/}, the module path followed by \texttt{.html}, and the definition name prefixed with a \texttt{\#}.
+For instance, the URL to the definition of \texttt{\`{}¬\_} is:
+\begin{center}
+  \texttt{\AgdaBaseUrl/MAV.Structure.html\#\`{}¬\_}
+\end{center}
+The table has three columns.
+The first gives an intuitive name to the definition, proposition, or theorem statement.
+The second links to its statement in the paper, if applicable.
+The third gives the name of the corresponding Agda definition, and links to its statement online.
+\vspace*{2ex}
+\begin{longtable}[c]{lll}
+  \caption{Statements and corresponding Agda definitions.}
+  \label[tbl]{tbl:index}
+  \\
+  \longtableheader{\Cref{sec:mav-syntax}}%
+  \\
+  Structures
+   & $\vP,\vQ,\vR,\vS$
+   & \AgdaRef{MAV.Structure}+Structure+
+  \\
+  Duality
+   & $\vDual\vP$
+   & \AgdaRef{MAV.Structure}+`¬_+[\`{}¬\_]
+  \\
+  Symmetric MAV
+   &
+   &
+  \\
+  \quad Equality
+   & $\vEquiv$
+   & \AgdaRef{MAV.Symmetric}+_≃_+
+  \\
+  \quad Inference
+   & $\vInferFrom$
+   & \AgdaRef{MAV.Symmetric}+_⟶_+
+  \\
+  \quad Derivation
+   & $\vInferFrom*$
+   & \AgdaRef{MAV.Symmetric}+_⟶⋆_+
+  \\
+  \quad Invertible derivation
+   & $\vInferFromTo*$
+   & \AgdaRef{MAV.Symmetric}+_⟷⋆_+
+  \\
+  Normal MAV
+   & \Cref{defn:normal}
+   &
+  \\
+  \quad Equality
+   & $\vEquiv$
+   & \AgdaRef{MAV.Base}+_≃_+
+  \\
+  \quad Inference
+   & $\vInferFrom$
+   & \AgdaRef{MAV.Base}+_⟶_+
+  \\
+  \quad Derivation
+   & $\vInferFrom*$
+   & \AgdaRef{MAV.Base}+_⟶⋆_+
+  \\
+  \quad Invertible derivation
+   & $\vInferFromTo*$
+   & \AgdaRef{MAV.Base}+_⟷⋆_+
+  \\[2ex]
+  \longtableheader{\Cref{sec:mav-semantics-preliminaries}}%
+  \\
+  Pomonoids
+   & \Cref{defn:pomonoid}
+   & \AgdaRef*{Algebra.Ordered.Structures}+IsPomonoid+
+  \\
+  \quad if Commutative
+   & \Cref{defn:pomonoid}
+   & \AgdaRef*{Algebra.Ordered.Structures}+IsCommutativePomonoid+
+  \\
+  \quad if Residuated
+   & \Cref{defn:residual}
+   & \AgdaRef*{Algebra.Ordered.Structures}+IsResiduatedCommutativePomonoid+
+  \\
+  \quad if Duoidal
+   & \Cref{defn:duoidal}
+   & \AgdaRef*{Algebra.Ordered.Structures}+IsDuoidal+
+  \\
+  $*$-autonomous partial order
+   & \Cref{defn:star-autonomous}
+   & \AgdaRef*{Algebra.Ordered.Structures}+IsStarAutonomous+
+  \\
+  \longtablemodule{Algebra.Orderd.Structures}%
+  \\[2ex]
+  \longtableheader{\Cref{sec:mav-algebras}}%
+  \\
+  MAV-algebra
+   & \Cref{defn:mav-algebra}
+   & \AgdaRef{MAV.Model}+Model+
+  \\
+  Interpretation
+   & \Cref{defn:mav-interpretation}
+   & \AgdaRef{MAV.Interpretation}+⟦_⟧+
+  \\
+  Soundness
+   & \Cref{thm:soundness}
+   &
+  \\
+  \quad for Equality
+   &
+   & \AgdaRef{MAV.Interpretation}+⟦_⟧eq+
+  \\
+  \quad for Inference
+   &
+   & \AgdaRef{MAV.Interpretation}+⟦_⟧step+
+  \\
+  \quad for Derivation
+   &
+   & \AgdaRef{MAV.Interpretation}+⟦_⟧steps+
+  \\[2ex]
+  \longtableheader{\Cref{sec:mav-frames}}%
+  \\
+  MAV-frame
+   & \Cref{defn:mav-frame}
+   & \AgdaRef{MAV.Frame}+Frame+
+  \\
+  Normal MAV-frame
+   & \Cref{prop:nmav-frame}
+   & \AgdaRef{MAV.Base}+frame+
+  \\[2ex]
+  \longtableheader{\Cref{sec:lower-sets}}%
+  \\
+  Lower sets
+   & \Cref{defn:lower-set}
+   & \AgdaRef*{Algebra.Ordered.Construction.LowerSet}+LowerSet+
+  \\
+  Day pomonoid
+   & \Cref{prop:day-construction}
+   & \texttt{module} \AgdaRef*{Algebra.Ordered.Construction.LowerSet}+Day+
+  \\
+  \quad if Commutative
+   & \Cref{prop:day-construction}
+   & \texttt{module} \AgdaRef*{Algebra.Ordered.Construction.LowerSet}+DayCommutative+
+  \\
+  \quad if Duoidal
+   & \Cref{prop:lower-set-duoidal}
+   & \texttt{module} \AgdaRef*{Algebra.Ordered.Construction.LowerSet}+DayDuoidal+
+  \\
+  \longtablemodule{Algebra.Ordered.Construction.LowerSet}%
+  \\[2ex]
+  \longtableheader{\Cref{sec:closed-lower-sets}}%
+  \\
+  +-closed lower sets
+   & \Cref{defn:closed-lower-set}
+   & \AgdaRef*{Algebra.Ordered.Construction.Ideal}+Ideal+
+  \\
+  +-closed Day pomonoid
+   &
+   &
+  \\
+  \quad if Commutative
+   & \Cref{prop:closed-monoid-distrib}
+   & \texttt{module} \AgdaRef*{Algebra.Ordered.Construction.Ideal}+DayCommutative+
+  \\
+  \quad if Duoidal
+   & \Cref{prop:closed-monoid-duoidal}
+   & \texttt{module} \AgdaRef*{Algebra.Ordered.Construction.Ideal}+DayDuoidal+
+  \\
+  \longtablemodule{Algebra.Ordered.Construction.Ideal}%
+  \\[2ex]
+  \longtableheader{\Cref{sec:chu}}%
+  \\
+  Chu construction
+   & \Cref{defn:chu}
+   & \AgdaRef*{Algebra.Ordered.Construction.Chu}+Construction.Chu+
+  \\
+  \quad for duoidal pomonoids
+   & \Cref{prop:chu-monoid-duoidal}
+   & \texttt{module} \AgdaRef*{Algebra.Ordered.Construction.Chu}+Construction.SelfDual+
+  \\
+  \longtablemodule{Algebra.Ordered.Construction.Chu}%
+  \\[2ex]
+  \longtableheader{\Cref{sec:algebra-from-frame}}%
+  \\
+  MAV-algebras from MAV-frames
+   & \Cref{thm:algebra-from-frame}
+   & \AgdaRef{MAV.Frame}+FrameModel.model+
+  % \\
+  %  & \Cref{thm:mavframe-soundness}
+  \\[2ex]
+  \longtableheader{\Cref{sec:mav-cut-elimination}}%
+  \\
+  Main lemma
+   & \Cref{prop:embedding-sem}
+   & \AgdaRef{MAV.CutElim}+main-lemma+
+  \\
+  Generalised cut-elimination
+   & \Cref{thm:cut-elim}
+   & \AgdaRef{MAV.CutElim}+cut-elim+
+  % \\
+  %  & \Cref{thm:completeness}
+\end{longtable}
