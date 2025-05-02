@@ -1,13 +1,15 @@
-\PassOptionsToPackage{dvipsnames,table}{xcolor}
-\documentclass[twoside,11pt]{entics}
-\usepackage{enticsmacro}
-\usepackage[fixamsmath]{mathtools}
+\documentclass{lmcs}
+
+\keywords{Linear Logic, Deep Inference, Algebraic Semantics, Metatheory}
+
+\usepackage{hyperref}
 \usepackage{mathcommand}
 \usepackage{graphicx}
 \usepackage{cmll}
 \usepackage{mathpartir}
 \usepackage[all]{xy}
 \usepackage[inline]{enumitem}
+\usepackage{amssymb}
 \usepackage{fdsymbol}
 \usepackage{stmaryrd}
 \usepackage{parskip}
@@ -19,398 +21,69 @@
 \usepackage[goodsyntax]{virginialake}
 \vllineartrue%
 %\usepackage{url}
-\sloppy
-% The following is enclosed to allow easy detection of differences in
-% ascii coding.
-% Upper-case    A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
-% Lower-case    a b c d e f g h i j k l m n o p q r s t u v w x y z
-% Digits        0 1 2 3 4 5 6 7 8 9
-% Exclamation   !           Double quote "          Hash (number) #
-% Dollar        $           Percent      %          Ampersand     &
-% Acute accent  '           Left paren   (          Right paren   )
-% Asterisk      *           Plus         +          Comma         ,
-% Minus         -           Point        .          Solidus       /
-% Colon         :           Semicolon    ;          Less than     <
-% Equals        =           Greater than >          Question mark ?
-% At            @           Left bracket [          Backslash     \
-% Right bracket ]           Circumflex   ^          Underscore    _
-% Grave accent  `           Left brace   {          Vertical bar  |
-% Right brace   }           Tilde        ~
+%\sloppy
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Your Corresponding Editor will provide the following information:          %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\def\conf{MFPS 2024}
-\volume{4}%
-\def\volu{NN}%
-\def\papno{nn}%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Please fill in the following information:                                  %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\def\lastname{Atkey, Kokke}
-% ^-- If more than three authors, use et al.
-\def\runtitle{Semantic Cut Elimation for MAV}
-% ^-- Short title appears in the running header on even pages. 
-\def\copynames{R. Atkey, W. Kokke}
-% ^-- Fill in the first initial and last name of the authors
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Claiming Creative Commons copyright here:                                  %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\def\CCB{CC@symbol}
-% ^-- Be sure the correct Creative Commons copyright symbol is chosen.
-%     See Section 2 of:
-%     https://mirrors.concertpass.com/tex-archive/fonts/ccicons/ccicons.pdf
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Preamble:                                                                  %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Abbreviation for `Chapter'
-\def\C{Ch.\ }
-% Abbreviation for `Footnote'
-\def\Fn{Fn.\ }
-% Abbreviation for `Section'
-\renewcommand{\S}{Sec.\ }
-
-% Set up unicode support
-\usepackage{iftex}
-\ifPDFTeX
-  \usepackage[T1,T5]{fontenc}
-  \usepackage[utf8]{inputenc}
-  \usepackage[english]{babel}
-  \usepackage{newunicodechar}
-\else % if luatex or xetex
-  \usepackage{unicode-math}
-  \usepackage{newunicodechar}
-\fi
-\newunicodechar{∼}{\ensuremath{\mathnormal\sim}}
-\newunicodechar{≃}{\ensuremath{\mathnormal\simeq}}
-\newunicodechar{⟶}{\ensuremath{\mathnormal\longrightarrow}}
-\newunicodechar{⋆}{\ensuremath{\mathnormal\star}}
-\newunicodechar{⟷}{\ensuremath{\mathnormal\longleftrightarrow}}
-\newunicodechar{⟦}{\ensuremath{\mathnormal\llbracket}}
-\newunicodechar{⟧}{\ensuremath{\mathnormal\rrbracket}}
-
-% `\IfSingleTF`: Does the element consist of a single token?
-\ExplSyntaxOn
-\cs_new_eq:NN \IfSingleTF \tl_if_single:nTF
-\ExplSyntaxOff
-
-% Set up cleveref with custom labels (via Fabrizio Montesi)
-\usepackage[nameinlink]{cleveref}
-\makeatletter
-\newcommand{\customlabel}[4][0]{%
-	\protected@write\@auxout{}{\string\newlabel{#3}{{#4}{\thepage}{#4}{#3}{}}}%
-	\protected@write\@auxout{}{\string\newlabel{#3@cref}{{[#2][#1][#1]#4}{\thepage}}}}
-\makeatother
-
-% Custom labels for theorem environments
-\crefname{rule}{rule}{rules}
-\crefname{defn}{definition}{definitions}
-\crefname{lem}{lemma}{lemmas}
-\crefname{thm}{theorem}{theorems}
-\crefname{prop}{proposition}{propositions}
-
-% Custom labels for rules
-\NewDocumentCommand{\RuleName}{m}{\textsc{#1}}
-\NewDocumentCommand{\RuleLabel}{s o m}{%
-  \IfValueTF{#2}{%
-    \customlabel{Rule}{#2}{\RuleName{#3}}%
-    \IfBooleanF{#1}{\hypertarget{#2}{\RuleName{#3}}}
-  }{%
-    \customlabel{Rule}{rule:#3}{\RuleName{#3}}%
-    \IfBooleanF{#1}{\hypertarget{rule:#3}{\RuleName{#3}}}
-  }}
-\crefformat{Rule}{#2(#1)#3}
-
-% Numbered inline equations
-\makeatletter
-\newcommand*{\inlineequation}[2][]{%
-  \begingroup
-    % Put \refstepcounter at the beginning, because
-    % package `hyperref' sets the anchor here.
-    \refstepcounter{equation}%
-    \ifx\\#1\\%
-    \else
-      \label{#1}%
-    \fi
-    % prevent line breaks inside equation
-    \relpenalty=10000 %
-    \binoppenalty=10000 %
-    % equation
-    \ensuremath{%
-      % \displaystyle % larger fractions, ...
-      #2%
-    }%
-    ~\@eqnnum%
-  \endgroup
-}
-\makeatother
-
-% External URLs to the documentation
-\def\AgdaBaseUrl{https://bobatkey.github.io/semantic-cut-elimination/MFPS/2024}
-\NewDocumentCommand{\AgdaModuleRef}{m}{%
-  \href{%
-    \AgdaBaseUrl/#1.html}{%
-    \texttt{#1}}}
-\NewDocumentCommand{\AgdaRef}{s m v o}{%
-  \href{%
-    \AgdaBaseUrl/#2.html\##3}{%
-    \texttt{%
-      \IfBooleanF{#1}{#2.}%
-      \IfValueTF{#4}{#4}{#3}}}}
-
-% Helpers for table
-\newcommand{\longtableheader}[1]{%
-  \rowcolor{lightgray}
-  \multicolumn{3}{l}{#1}}
-\newcommand{\longtablemodule}[1]{%
-  \multicolumn{3}{r}{%
-    \small%
-    (The preceding definitions can be found under \AgdaModuleRef{#1}.)}}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Syntax:                                                                    %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Metavariables
-\newcommandPIE\va[0]{\alpha#1#2#3}
-\newcommandPIE\vb[0]{\beta#1#2#3}
-\newcommandPIE\vP[0]{P#1#2#3}
-\newcommandPIE\vQ[0]{Q#1#2#3}
-\newcommandPIE\vR[0]{R#1#2#3}
-\newcommandPIE\vS[0]{S#1#2#3}
-\newcommandPIE\vC[0]{\mathcal{C}#1#2#3}
-\newcommandPIE\vD[0]{\mathcal{D}#1#2#3}
-\newcommandPIE\vGG[0]{\Gamma#1#2#3}
-\newcommandPIE\vGD[0]{\Delta#1#2#3}
-\newcommandPIE\vSS[0]{\mathcal{S}#1#2#3}
-
-% Connectives
-
-% \newcommand{\vDual}[1]{\IfSingleTF{#1}{#1}{(#1)}^{\perp}}
-\newcommand{\vDual}[1]{\overline{#1}}
-\newcommand{\vPos}[1]{#1}%{#1^{+}}%
-\newcommand{\vNeg}[1]{\vDual{#1}}%{#1^{-}}%{\bar{#1}}%
-
-% NOTE: Unit is defined to match `\vP` in width.
-\newlength{\vPWidth}
-\settowidth{\vPWidth}{$\vP$}
-
-\def\vUnit{%
-  \ensuremath{%
-    \mathord{%
-      \makebox[\vPWidth][c]{\ensuremath{\mathnormal{I}}}}}}
-
-% NOTE: Binary connectives are defined to be the same width.
-\usepackage{tikz}
-\newlength{\vlpaWidth}
-\settowidth{\vlpaWidth}{$\vlpa$}
-\newlength{\vlseWidth}
-\settowidth{\vlseWidth}{$\vlse$}
-\newlength{\vOpWidth}
-\pgfmathsetlength{\vOpWidth}{max(\vlpaWidth,\vlseWidth)}
-
-\def\vTens{%
-  \ensuremath{%
-    \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\vlte}}}}}
-\def\vParr{%
-  \ensuremath{%
-    \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\vlpa}}}}}
-\def\vPlus{%
-  \ensuremath{%
-    \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\vlor}}}}}
-\def\vWith{%
-  \ensuremath{%
-    \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\vlan}}}}}
-\def\vSeq{%
-  \ensuremath{%
-    \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\vlse}}}}}
-\def\vTo{%
-  \ensuremath{%
-    \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\vlli}}}}}
-
-% Contexts
-\newcommand{\vEmpty}[0]{\ensuremath{\vlhole}}
-\newcommand{\vPlug}[1]{\ensuremath{\{#1\}}}
-
-% Relations
-\NewDocumentCommand{\vEquiv}{s}{%
-  \ensuremath{\simeq}}
-\NewDocumentCommand{\vInferFrom}{s}{%
-  \ensuremath{%
-    \mathrel{%
-      \longrightarrow\IfBooleanTF{#1}{^\star}{}}}}
-\NewDocumentCommand{\vInferTo}{s}{%
-  \ensuremath{%
-    \mathrel{%
-      \longleftarrow\IfBooleanTF{#1}{^\star}{}}}}
-\NewDocumentCommand{\vInferFromTo}{s}{%
-  \ensuremath{%
-    \mathrel{%
-      \longleftrightarrow\IfBooleanTF{#1}{^\star}{}}}}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Semantics:                                                                 %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newcommand{\LowerSet}[1]{\widehat{#1}}
-\newcommand{\Day}[1]{\mathop{\widehat{#1}}}
-\newcommand{\ClosedLowerSet}[1]{\widehat{#1}^+}
-\newcommand{\ClosedDay}[1]{\mathop{\widehat{#1}^+}}
-\newcommand{\Chu}{\mathrm{Chu}}
-\newcommand{\op}{\mathrm{op}}
-\newcommand{\NMAV}{\textsc{NMav}\xspace}
-\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
-
-% Connectives
-
-\newcommand{\aDual}[1]{\neg\IfSingleTF{#1}{#1}{(#1)}}
-% \newcommand{\aDual}[1]{\overline{#1}}
-
-\def\aUnit{%
-  \ensuremath{%
-    \mathord{%
-      \makebox[\vPWidth][c]{\ensuremath{\mathnormal\circ}}}}}
-\def\aTens{%
-  \ensuremath{%
-    \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\vlte}}}}}
-\def\aParr{%
-  \ensuremath{%
-    \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\vlpa}}}}}
-\def\aPlus{%
-  \ensuremath{%
-    \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\vlor}}}}}
-\def\aWith{%
-  \ensuremath{%
-    \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\vlan}}}}}
-\def\aSeq{%
-  \ensuremath{%
-    \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\vlse}}}}}
-\def\aTo{%
-  \ensuremath{%
-    \mathbin{%
-      \makebox[\vOpWidth][c]{\ensuremath{\vlli}}}}}
-
-\newcommand{\ChuEmbed}{\eta^c}
-\newcommand{\ClosedLowerEmbed}{\eta^+}
-\newcommand{\LowerEmbed}{\eta}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Agda:                                                                      %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Include agda.sty
-% \usepackage[bw]{agda}
-% \usepackage{ifthen}
-
-% \usepackage{textcomp} % provide euro and other symbols
-% \newunicodechar{−}{\ensuremath{\mathnormal-}}
-% \newunicodechar{α}{\ensuremath{\alpha}}
-% \newunicodechar{⊗}{\vTens}
-% \newunicodechar{⅋}{\vParr}
-% \newunicodechar{⊕}{\vPlus}
-% \newunicodechar{▷}{\vSeq}
-% \newunicodechar{⟶}{\ensuremath{\mathnormal\longrightarrow}}
-% \newunicodechar{⋆}{\ensuremath{\mathnormal\star}}
-% \newunicodechar{⁺}{\ensuremath{^{+}}}
-% \newunicodechar{���}{\ensuremath{^{-}}}
-% \newunicodechar{¹}{\ensuremath{^{1}}}
-% \newunicodechar{′}{\ensuremath{^{\prime}}}
-% \newunicodechar{∀}{\ensuremath{\mathnormal\forall}}
-
-% Set up TODO macros
-\usepackage{todonotes}
-\presetkeys{todonotes}{inline}{}
-\newcommand{\wen}[2][]{\todo[%
-  author=Wen,%
-  color=Thistle,%
-  textcolor=Black,#1]{#2}}
-\newcommand{\bob}[2][]{\todo[%
-  author=Bob,%
-  color=Turquoise,%
-  textcolor=Black,#1]{#2}}
+\input{local-macros}
 
 \begin{document}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Frontmatter                                                                %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frontmatter}
-  \title{A Semantic Proof of Generalised Cut Elimination for Deep Inference\thanksref{ALL}}
-  \thanks[ALL]{This work
-    was funded by the \href{https://www.ukri.org/about-us/epsrc/}{Engineering and Physical
-      Sciences Research
-      Council}: Grant number
-    \href{https://gow.epsrc.ukri.org/NGBOViewGrant.aspx?GrantRef=EP/T026960/1}{EP/T026960/1, \emph{AISEC: AI Secure and
-        Explainable by Construction}.}}
-  \author{Robert Atkey\thanksref{msp}\thanksref{bobemail}}
-  \author{Wen Kokke\thanksref{wenemail}}
-  \address[msp]{%
-    Mathematically Structured Programming Group\\
-    Computer and Information Sciences\\
-    University of Strathclyde\\
-    Glasgow, Scotland, UK}
-  \thanks[bobemail]%
-  {Email: \href{robert.atkey@strath.ac.uk}%
-    {\texttt{\normalshape robert.atkey@strath.ac.uk}}}
-  % ^-- If all authors share same institution, only list the address once, after the second author. There also is a link from the first author to the co-author's address to show how to list affiliations to more than one institution, when needed. 
-  \thanks[wenemail]%
-  {Email: \href{me@wen.works}%
-    {\texttt{\normalshape me@wen.works}}}
-  \begin{abstract}
-    \emph{Multiplicative-Additive System Virtual} (MAV) is a logic
-    that extends Multiplicative-Additive Linear Logic with a self-dual
-    non-commutative operator expressing the concept of ``before'' or
-    ``sequencing''. MAV is also an extenson of the the logic Basic
-    System Virtual (BV) with additives. Formulas in BV have an
-    appealing reading as processes with parallel and sequential
-    composition. MAV adds internal and external choice operators. BV
-    and MAV are also closely related to Concurrent Kleene Algebras.
-    
-    Proof systems for MAV and BV are Deep Inference systems, which
-    allow inference rules to be applied anywhere inside a
-    structure. As with any proof system, a key question is whether
-    proofs in MAV can be reduced to a normal form, removing detours
-    and the introduction of structures not present in the original
-    goal. In Sequent Calcluli systems, this property is referred to as
-    Cut Elimination. Deep Inference systems have an analogous Cut rule
-    and other rules that are not present in normalised proofs. Cut
-    Elimination for Deep Inference systems has the same metatheoretic
-    benefits as for Sequent Calculi systems, including consistency and
-    decidability.
-    
-    Proofs of Cut Elimination for BV, MAV, and other Deep Inference
-    systems present in the literature have relied on intrincate
-    syntactic reasoning and complex termination measures.
+\title{A Semantic Proof of Generalised Cut Elimination for Deep Inference}
+\titlecomment{Longer version of the MFPS version}
+\thanks{This work was funded by the
+  \href{https://www.ukri.org/about-us/epsrc/}{Engineering and Physical
+    Sciences Research Council}: Grant number
+  \href{https://gow.epsrc.ukri.org/NGBOViewGrant.aspx?GrantRef=EP/T026960/1}{EP/T026960/1,
+    \emph{AISEC: AI Secure and Explainable by Construction}.}}
 
-    We present a concise semantic proof that all MAV proofs can be
-    reduced to a normal form avoiding the Cut rule and other ``non
-    analytic'' rules. We also develop soundness and completeness
-    proofs of MAV (and BV) with respect to a class of models. We have
-    mechanised all our proofs in the Agda proof assistant, which
-    provides both assurance of their correctness as well as yielding
-    an executable normalisation procedure. Our technique extends to
-    include exponentials and the additive units.
-  \end{abstract}
-  \begin{keyword}
-    Linear Logic, Deep Inference, Algebraic Semantics, Metatheory
-  \end{keyword}
-\end{frontmatter}
+\author[R. Atkey]{Robert Atkey}[a]
+\author[W. Kokke]{Wen Kokke}[b]
+
+\address{Mathematically Structured Programming Group\\
+  Computer and Information Sciences\\
+  University of Strathclyde\\
+  Glasgow, Scotland, UK}
+\email{robert.atkey@strath.ac.uk}
+
+\address{}
+\email{me@wen.works}
+
+% FIXME: shorten this
+\begin{abstract}
+  \emph{Multiplicative-Additive System Virtual} (MAV) is a logic that
+  extends Multiplicative-Additive Linear Logic with a self-dual
+  non-commutative operator expressing the concept of ``before'' or
+  ``sequencing''. MAV is also an extenson of the the logic Basic
+  System Virtual (BV) with additives. Formulas in BV have an appealing
+  reading as processes with parallel and sequential composition. MAV
+  adds internal and external choice operators. BV and MAV are also
+  closely related to Concurrent Kleene Algebras.
+
+  Proof systems for MAV and BV are Deep Inference systems, which allow
+  inference rules to be applied anywhere inside a structure. As with
+  any proof system, a key question is whether proofs in MAV can be
+  reduced to a normal form, removing detours and the introduction of
+  structures not present in the original goal. In Sequent Calcluli
+  systems, this property is referred to as Cut Elimination. Deep
+  Inference systems have an analogous Cut rule and other rules that
+  are not present in normalised proofs. Cut Elimination for Deep
+  Inference systems has the same metatheoretic benefits as for Sequent
+  Calculi systems, including consistency and decidability.
+
+  Proofs of Cut Elimination for BV, MAV, and other Deep Inference
+  systems present in the literature have relied on intrincate
+  syntactic reasoning and complex termination measures.
+
+  We present a concise semantic proof that all MAV proofs can be
+  reduced to a normal form avoiding the Cut rule and other ``non
+  analytic'' rules. We also develop soundness and completeness proofs
+  of MAV (and BV) with respect to a class of models. We have
+  mechanised all our proofs in the Agda proof assistant, which
+  provides both assurance of their correctness as well as yielding an
+  executable normalisation procedure. Our technique extends to include
+  exponentials and the additive units.
+\end{abstract}
+
+\maketitle
 
 \input{sections/introduction}
 %\input{sections/contribution}
@@ -420,20 +93,20 @@
 \input{sections/mav-mechanisation}
 \input{sections/mav-extensions}
 
-\begin{acknowledgement}
-  We would like to thank Ross Horne for helpful comments and pointers
-  to related work. This work was funded by the
-  \href{https://www.ukri.org/about-us/epsrc/}{UKRI Engineering and
-    Physical Sciences Research Council (EPSRC)}, grant number
-  \href{https://gow.epsrc.ukri.org/NGBOViewGrant.aspx?GrantRef=EP/T026960/1}{EP/T026960/1}
-  ``\emph{AISEC: AI Secure and Explainable by Construction}''.
-\end{acknowledgement}
+\section*{Acknowledgements}
 
-\bibliographystyle{entics}
+We would like to thank Ross Horne for helpful comments and pointers to
+related work. This work was funded by the
+\href{https://www.ukri.org/about-us/epsrc/}{UKRI Engineering and
+  Physical Sciences Research Council (EPSRC)}, grant number
+\href{https://gow.epsrc.ukri.org/NGBOViewGrant.aspx?GrantRef=EP/T026960/1}{EP/T026960/1}
+``\emph{AISEC: AI Secure and Explainable by Construction}''.
+
+\bibliographystyle{alpha}
 \bibliography{paper}
 
-\appendix
+% \appendix
 
-\input{appendix/table-of-statements}
+% \input{appendix/table-of-statements}
 
 \end{document}

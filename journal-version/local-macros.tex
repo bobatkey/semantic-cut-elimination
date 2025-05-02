@@ -1,0 +1,276 @@
+% Abbreviation for `Chapter'
+\def\C{Ch.\ }
+% Abbreviation for `Footnote'
+\def\Fn{Fn.\ }
+% Abbreviation for `Section'
+\renewcommand{\S}{Sec.\ }
+
+% Set up unicode support
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1,T5]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage[english]{babel}
+  \usepackage{newunicodechar}
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \usepackage{newunicodechar}
+\fi
+\newunicodechar{∼}{\ensuremath{\mathnormal\sim}}
+\newunicodechar{≃}{\ensuremath{\mathnormal\simeq}}
+\newunicodechar{⟶}{\ensuremath{\mathnormal\longrightarrow}}
+\newunicodechar{⋆}{\ensuremath{\mathnormal\star}}
+\newunicodechar{⟷}{\ensuremath{\mathnormal\longleftrightarrow}}
+\newunicodechar{⟦}{\ensuremath{\mathnormal\llbracket}}
+\newunicodechar{⟧}{\ensuremath{\mathnormal\rrbracket}}
+
+% `\IfSingleTF`: Does the element consist of a single token?
+\ExplSyntaxOn
+\cs_new_eq:NN \IfSingleTF \tl_if_single:nTF
+\ExplSyntaxOff
+
+% Set up cleveref with custom labels (via Fabrizio Montesi)
+\usepackage[nameinlink]{cleveref}
+\makeatletter
+\newcommand{\customlabel}[4][0]{%
+        \protected@write\@auxout{}{\string\newlabel{#3}{{#4}{\thepage}{#4}{#3}{}}}%
+        \protected@write\@auxout{}{\string\newlabel{#3@cref}{{[#2][#1][#1]#4}{\thepage}}}}
+\makeatother
+
+% Custom labels for theorem environments
+\crefname{rule}{rule}{rules}
+\crefname{defn}{definition}{definitions}
+\crefname{lem}{lemma}{lemmas}
+\crefname{thm}{theorem}{theorems}
+\crefname{prop}{proposition}{propositions}
+
+% Custom labels for rules
+\NewDocumentCommand{\RuleName}{m}{\textsc{#1}}
+\NewDocumentCommand{\RuleLabel}{s o m}{%
+  \IfValueTF{#2}{%
+    \customlabel{Rule}{#2}{\RuleName{#3}}%
+    \IfBooleanF{#1}{\hypertarget{#2}{\RuleName{#3}}}
+  }{%
+    \customlabel{Rule}{rule:#3}{\RuleName{#3}}%
+    \IfBooleanF{#1}{\hypertarget{rule:#3}{\RuleName{#3}}}
+  }}
+\crefformat{Rule}{#2(#1)#3}
+
+% Numbered inline equations
+\makeatletter
+\newcommand*{\inlineequation}[2][]{%
+  \begingroup
+    % Put \refstepcounter at the beginning, because
+    % package `hyperref' sets the anchor here.
+    \refstepcounter{equation}%
+    \ifx\\#1\\%
+    \else
+      \label{#1}%
+    \fi
+    % prevent line breaks inside equation
+    \relpenalty=10000 %
+    \binoppenalty=10000 %
+    % equation
+    \ensuremath{%
+      % \displaystyle % larger fractions, ...
+      #2%
+    }%
+    ~\@eqnnum%
+  \endgroup
+}
+\makeatother
+
+% External URLs to the documentation
+\def\AgdaBaseUrl{https://bobatkey.github.io/semantic-cut-elimination/MFPS/2024}
+\NewDocumentCommand{\AgdaModuleRef}{m}{%
+  \href{%
+    \AgdaBaseUrl/#1.html}{%
+    \texttt{#1}}}
+\NewDocumentCommand{\AgdaRef}{s m v o}{%
+  \href{%
+    \AgdaBaseUrl/#2.html\##3}{%
+    \texttt{%
+      \IfBooleanF{#1}{#2.}%
+      \IfValueTF{#4}{#4}{#3}}}}
+
+% Helpers for table
+\newcommand{\longtableheader}[1]{%
+  \rowcolor{lightgray}
+  \multicolumn{3}{l}{#1}}
+\newcommand{\longtablemodule}[1]{%
+  \multicolumn{3}{r}{%
+    \small%
+    (The preceding definitions can be found under \AgdaModuleRef{#1}.)}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Syntax:                                                                    %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Metavariables
+\newcommandPIE\va[0]{\alpha#1#2#3}
+\newcommandPIE\vb[0]{\beta#1#2#3}
+\newcommandPIE\vP[0]{P#1#2#3}
+\newcommandPIE\vQ[0]{Q#1#2#3}
+\newcommandPIE\vR[0]{R#1#2#3}
+\newcommandPIE\vS[0]{S#1#2#3}
+\newcommandPIE\vC[0]{\mathcal{C}#1#2#3}
+\newcommandPIE\vD[0]{\mathcal{D}#1#2#3}
+\newcommandPIE\vGG[0]{\Gamma#1#2#3}
+\newcommandPIE\vGD[0]{\Delta#1#2#3}
+\newcommandPIE\vSS[0]{\mathcal{S}#1#2#3}
+
+% Connectives
+
+% \newcommand{\vDual}[1]{\IfSingleTF{#1}{#1}{(#1)}^{\perp}}
+\newcommand{\vDual}[1]{\overline{#1}}
+\newcommand{\vPos}[1]{#1}%{#1^{+}}%
+\newcommand{\vNeg}[1]{\vDual{#1}}%{#1^{-}}%{\bar{#1}}%
+
+% NOTE: Unit is defined to match `\vP` in width.
+\newlength{\vPWidth}
+\settowidth{\vPWidth}{$\vP$}
+
+\def\vUnit{%
+  \ensuremath{%
+    \mathord{%
+      \makebox[\vPWidth][c]{\ensuremath{\mathnormal{I}}}}}}
+
+% NOTE: Binary connectives are defined to be the same width.
+\usepackage{tikz}
+\newlength{\vlpaWidth}
+\settowidth{\vlpaWidth}{$\vlpa$}
+\newlength{\vlseWidth}
+\settowidth{\vlseWidth}{$\vlse$}
+\newlength{\vOpWidth}
+\pgfmathsetlength{\vOpWidth}{max(\vlpaWidth,\vlseWidth)}
+
+\def\vTens{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlte}}}}}
+\def\vParr{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlpa}}}}}
+\def\vPlus{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlor}}}}}
+\def\vWith{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlan}}}}}
+\def\vSeq{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlse}}}}}
+\def\vTo{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlli}}}}}
+
+% Contexts
+\newcommand{\vEmpty}[0]{\ensuremath{\vlhole}}
+\newcommand{\vPlug}[1]{\ensuremath{\{#1\}}}
+
+% Relations
+\NewDocumentCommand{\vEquiv}{s}{%
+  \ensuremath{\simeq}}
+\NewDocumentCommand{\vInferFrom}{s}{%
+  \ensuremath{%
+    \mathrel{%
+      \longrightarrow\IfBooleanTF{#1}{^\star}{}}}}
+\NewDocumentCommand{\vInferTo}{s}{%
+  \ensuremath{%
+    \mathrel{%
+      \longleftarrow\IfBooleanTF{#1}{^\star}{}}}}
+\NewDocumentCommand{\vInferFromTo}{s}{%
+  \ensuremath{%
+    \mathrel{%
+      \longleftrightarrow\IfBooleanTF{#1}{^\star}{}}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Semantics:                                                                 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\LowerSet}[1]{\widehat{#1}}
+\newcommand{\Day}[1]{\mathop{\widehat{#1}}}
+\newcommand{\ClosedLowerSet}[1]{\widehat{#1}^+}
+\newcommand{\ClosedDay}[1]{\mathop{\widehat{#1}^+}}
+\newcommand{\Chu}{\mathrm{Chu}}
+\newcommand{\op}{\mathrm{op}}
+\newcommand{\NMAV}{\textsc{NMav}\xspace}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+
+% Connectives
+
+\newcommand{\aDual}[1]{\neg\IfSingleTF{#1}{#1}{(#1)}}
+% \newcommand{\aDual}[1]{\overline{#1}}
+
+\def\aUnit{%
+  \ensuremath{%
+    \mathord{%
+      \makebox[\vPWidth][c]{\ensuremath{\mathnormal\circ}}}}}
+\def\aTens{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlte}}}}}
+\def\aParr{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlpa}}}}}
+\def\aPlus{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlor}}}}}
+\def\aWith{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlan}}}}}
+\def\aSeq{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlse}}}}}
+\def\aTo{%
+  \ensuremath{%
+    \mathbin{%
+      \makebox[\vOpWidth][c]{\ensuremath{\vlli}}}}}
+
+\newcommand{\ChuEmbed}{\eta^c}
+\newcommand{\ClosedLowerEmbed}{\eta^+}
+\newcommand{\LowerEmbed}{\eta}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Agda:                                                                      %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Include agda.sty
+% \usepackage[bw]{agda}
+% \usepackage{ifthen}
+
+% \usepackage{textcomp} % provide euro and other symbols
+% \newunicodechar{−}{\ensuremath{\mathnormal-}}
+% \newunicodechar{α}{\ensuremath{\alpha}}
+% \newunicodechar{⊗}{\vTens}
+% \newunicodechar{⅋}{\vParr}
+% \newunicodechar{⊕}{\vPlus}
+% \newunicodechar{▷}{\vSeq}
+% \newunicodechar{⟶}{\ensuremath{\mathnormal\longrightarrow}}
+% \newunicodechar{⋆}{\ensuremath{\mathnormal\star}}
+% \newunicodechar{⁺}{\ensuremath{^{+}}}
+% \newunicodechar{���}{\ensuremath{^{-}}}
+% \newunicodechar{¹}{\ensuremath{^{1}}}
+% \newunicodechar{′}{\ensuremath{^{\prime}}}
+% \newunicodechar{∀}{\ensuremath{\mathnormal\forall}}
+
+% Set up TODO macros
+\usepackage{todonotes}
+\presetkeys{todonotes}{inline}{}
+\newcommand{\wen}[2][]{\todo[%
+  author=Wen,%
+  color=Thistle,%
+  textcolor=Black,#1]{#2}}
+\newcommand{\bob}[2][]{\todo[%
+  author=Bob,%
+  color=Turquoise,%
+  textcolor=Black,#1]{#2}}

@@ -277,7 +277,7 @@ The exception is \cref{rule:Switch}, which is self-dual, up to commutativity.
 The \cref{rule:CoInteract}, \cref{rule:CoLeft}, and \cref{rule:CoRight} rules introduce new structures going left-to-right.
 Normal proofs, which we define below, avoid these \emph{synthetic} rules.
 
-\begin{remark}
+\begin{rem}
   In BV, the structural connectives are usually presented as lists, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
   % The equations defining duality are usually included in the decidable equality on structures.
   Inferences, derivations, and proofs are presented vertically, as (\ref{notation:vlin}), (\ref{notation:vlde}), and (\ref{notation:vlpr}), respectively.
@@ -294,9 +294,9 @@ Normal proofs, which we define below, avoid these \emph{synthetic} rules.
 
   The relation between the deductive system for BV and rewrite systems is well-known, \eg by Kahramanogullari~\cite{Kahramanogullari08:maude}, who implements proof search for several deep inference systems in Maude~\cite{ClavelDELMMQ02:maude}.
   Inferences rules are usually named with the combination of a letter and an up or down arrow, \eg \cref{rule:Interact} and \cref{rule:CoInteract} are $\iD$ and $\iU$, respectively. The exception are self-dual rules, which are named with a single letter, \eg \cref{rule:Switch} is usually named $\sw$.
-\end{remark}
+\end{rem}
 
-\begin{definition}\label[defn]{defn:normal}
+\begin{defi}\label[defn]{defn:normal}
   A derivation is \emph{normal} when it does not use \cref{rule:CoInteract} nor any of the other (\RuleName{Co-}) rules, and its uses of \cref{rule:Interact} are restricted to \cref{rule:AtomInteract}, as defined by the following axiom:
   \begin{displaymath}
     \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
@@ -306,7 +306,7 @@ Normal proofs, which we define below, avoid these \emph{synthetic} rules.
        & \RuleLabel{AtomInteract}
     \end{array}
   \end{displaymath}
-\end{definition}
+\end{defi}
 Normal derivations avoid the use of rules that introduce new structures into proofs, and so can be termed \emph{analytic} in contrast to the need for the synthetic rules to synthesise new structures.
 
 Our main result, \Cref{thm:cut-elim}, is that every structure that is provable in full MAV also has a normal proof. Therefore, the system with only analytic rules is complete for MAV provability. Horne \cite{Horne15:mav} proves this result via a syntactic proof involving rewriting and termination measures. In the following sections, we construct a semantic proof that normal proofs are complete for MAV. In \Cref{sec:future-work}, we report on extensions of the same technique to variants of MAV.

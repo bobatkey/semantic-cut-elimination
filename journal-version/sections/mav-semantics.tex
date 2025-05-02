@@ -29,40 +29,40 @@ The algebraic semantics of MAV is a collection of interacting monoids
 on a partial order. We collect here the basic definitions and kinds of
 interaction we will need.
 
-\begin{definition}\label[defn]{defn:pomonoid}
+\begin{defi}\label[defn]{defn:pomonoid}
   A \emph{partial order monoid (pomonoid)} $(\bullet, i)$ on a poset
   $(A, \leq)$ comprises a binary operator $\bullet : A \times A \to A$
   that is monotone in both arguments and an element $i \in A$ such
   that the usual monoid laws hold. A \emph{commutative pomonoid} is a
   pomonoid where additionally $x \bullet y = y \bullet x$.
-\end{definition}
+\end{defi}
 
-\begin{definition}\label[defn]{defn:residual}
+\begin{defi}\label[defn]{defn:residual}
   A commutative pomonoid $(\bullet, i)$ on a poset $(A, \leq)$ is
   \emph{residuated} if there is a function
   $\rightblackspoon : A \times A \to A$ such that $x \bullet y \leq z$
   iff $x \leq y \rightblackspoon z$.
-\end{definition}
+\end{defi}
 
 Linear logic adds a duality, or negation, to a commutative
 pomonoid structure. Semantically, duality with commutativity is
 captured in the definition of $*$-autonomous category, due to Barr~\cite{Barr_1979}. For our purposes, we need the partial order
 analogue, also called a CL algebra by Troelstra~\cite{Troelstra92:lll}.
 
-\begin{definition}\label[defn]{defn:star-autonomous}
+\begin{defi}\label[defn]{defn:star-autonomous}
   A \emph{$*$-autonomous partial order} is a structure
   $(A, \leq, \otimes, I, \lnot)$ where $(\otimes, I)$ is a pomonoid on
   $(A, \leq)$ and $\lnot : A^\op \to A$ is an anti-monotone and
   involutive operator on $A$, together satisfying
   $x \otimes y \leq \lnot z$ iff $x \leq \lnot (y \otimes z)$.  A
   $*$-autonomous partial order satisfies \emph{mix} if $\lnot I = I$.
-\end{definition}
+\end{defi}
 
-\begin{remark}
+\begin{rem}
   The structure of a $*$-autonomous partial order has a number of
   immediate consequences, but we leave description of these until
   after the definition of MAV-algebra in \Cref{defn:mav-algebra}.
-\end{remark}
+\end{rem}
 
 BV and MAV extend linear logic by adding a non-commutative pomonoid
 structure that interacts with the existing pomonoid via a kind of
@@ -74,7 +74,7 @@ describe one pomonoid as being \emph{duoidal over} another to
 emphasise the non-symmetric nature of the relationship, and by analogy
 with one monoid distributing over another.
 
-\begin{definition}\label[defn]{defn:duoidal}
+\begin{defi}\label[defn]{defn:duoidal}
   A pomonoid $(\bullet, i)$ is \emph{duoidal over} another pomonoid
   $(\lhd, j)$ on a partial order $(A, \leq)$ if the following
   inequalities hold:
@@ -84,16 +84,16 @@ with one monoid distributing over another.
     \item $i \leq i \lhd i$
     \item $i \leq j$
   \end{enumerate}
-\end{definition}
+\end{defi}
 
-\begin{remark}
+\begin{rem}
   In the case when the two pomonoids share a common unit the last
   three conditions for a duoidal relationship are automatically
   satisfied. We can also ignore the existence of the units and just
   describe two binary operators as being duoidal. If $\bullet$ is a
   join, or $\lhd$ is a meet, then all the conditions for a duoidal
   relationship are automatically met.
-\end{remark}
+\end{rem}
 
 \subsection{MAV-algebras}
 \label{sec:mav-algebras}
@@ -102,7 +102,7 @@ We define MAV-algebras as the algebraic semantics of MAV. The
 definition is a direct translation of the rules of MAV into
 order-theoretic language, using the definitions we have seen so far.
 
-\begin{definition}\label[defn]{defn:mav-algebra}
+\begin{defi}\label[defn]{defn:mav-algebra}
   An \emph{MAV-algebra} is a structure
   $(A, \leq, \otimes, \lhd, I, \lnot)$ with the following properties:
   \begin{enumerate}
@@ -112,9 +112,9 @@ order-theoretic language, using the definitions we have seen so far.
     \item $(\otimes, I)$ is duoidal over $(\lhd, I)$.
     \item $(A, \leq)$ has binary meets, which we write as $x \with y$.
   \end{enumerate}
-\end{definition}
+\end{defi}
 
-\begin{proposition}\label[prop]{prop:mav-algebra-consequences}
+\begin{prop}\label[prop]{prop:mav-algebra-consequences}
   Let $(A, \leq, \otimes, \lhd, I, \lnot)$ be a MAV-algebra.
   \begin{enumerate}
     \item There is another commutative pomonoid structure $(\parr, I)$ on
@@ -136,9 +136,9 @@ order-theoretic language, using the definitions we have seen so far.
     \item $\oplus$ is duoidal over $\lhd$:
           $(w \lhd x) \oplus (y \lhd z) \leq (x \oplus y) \lhd (x \oplus z)$.
   \end{enumerate}
-\end{proposition}
+\end{prop}
 
-\begin{definition}\label[defn]{defn:mav-interpretation}
+\begin{defi}\label[defn]{defn:mav-interpretation}
   Let $\mathit{At}$ be a set of atomic propositions. Given an
   MAV-algebra $(A, \leq, \otimes, \lhd, I, \lnot)$ and valuation
   $V : \mathit{At} \to A$, define the interpretation of MAV Formulas
@@ -151,29 +151,29 @@ order-theoretic language, using the definitions we have seen so far.
   $\sem{\vP\vSeq\vQ} = \sem{\vP}\lhd\sem{\vQ}$,
   $\sem{\vP\vWith\vQ} = \sem{\vP} \with \sem{\vQ}$, and
   $\sem{\vP\vPlus\vQ} = \sem{\vP} \oplus \sem{\vQ}$.
-\end{definition}
+\end{defi}
 
-\begin{lemma}\label[lem]{lem:dual-ok}
+\begin{lem}\label[lem]{lem:dual-ok}
   For all $\vP$, $\sem{\vDual{\vP}} = \lnot \sem{\vP}$.
-\end{lemma}
+\end{lem}
 
-\begin{theorem}\label[thm]{thm:soundness}
+\begin{thm}\label[thm]{thm:soundness}
   The interpretation in \Cref{defn:mav-interpretation} is sound:
   for all structures $\vP$,
   if $\vP\vInferFrom*\vUnit$,
   then $I \leq \sem{\vP}$.
-\end{theorem}
+\end{thm}
 
 \begin{proof}
   Each of the required inequalities has been established in
   \Cref{prop:mav-algebra-consequences}.
 \end{proof}
 
-\begin{remark}
+\begin{rem}
   More generally, if $P \vInferFrom* Q$ in MAV, then
   $\sem{Q} \leq \sem{P}$ in an MAV-algebra. Note that the ordering is
   reversed! It will be reversed again in the definition of MAV-frame.
-\end{remark}
+\end{rem}
 
 \subsection{MAV-frames}
 \label{sec:mav-frames}
@@ -187,7 +187,7 @@ MAV-frame. In \Cref{sec:mav-cut-elimination} we will show that
 the MAV-algebra constructed from the normal proof MAV-frame allows us
 to prove that all proofs in MAV can be normalised to normal proofs.
 
-\begin{definition}\label[defn]{defn:mav-frame}
+\begin{defi}\label[defn]{defn:mav-frame}
   An \emph{MAV-frame} is a structure $(F, \leq, \parr, \lhd, i, +)$
   where $(F, \leq)$ is a partial order, $(F, \leq, \parr, i)$ is a
   commutative pomonoid, $(F, \leq, \lhd, i)$ is a pomonoid, $+$ is a
@@ -199,14 +199,14 @@ to prove that all proofs in MAV can be normalised to normal proofs.
     \item $(w \lhd x) + (y \lhd z) \leq (w + y) \lhd (x + z)$
     \item $i + i \leq i$
   \end{enumerate}
-\end{definition}
+\end{defi}
 
-\begin{remark}
+\begin{rem}
   An MAV-frame is essentially two duoidal relationships and a
   distributivity law.
-\end{remark}
+\end{rem}
 
-\begin{remark}
+\begin{rem}
   MAV-frames have a intuitive reading as CCS-like process algebras
   (see Milner \cite{Milner89:CC} for an introduction to CCS). If we
   assume the existence of a collection of ``action'' elements
@@ -217,9 +217,9 @@ to prove that all proofs in MAV can be normalised to normal proofs.
   interesting avenue for future work would be to discover to what
   extent MAV can be thought of as a logic for processes in this
   process algebra.
-\end{remark}
+\end{rem}
 
-\begin{remark}\label[remark]{remark:cka}
+\begin{rem}\label[remark]{remark:cka}
   MAV-frames (and MAV-algebras) are also very similar to the
   definition of a \emph{Concurrent Kleene Algebra} (CKA) due to Hoare,
   M{\"o}ller, Struth and Wehrman \cite[Definition
@@ -230,9 +230,9 @@ to prove that all proofs in MAV can be normalised to normal proofs.
   MAV-frames, indicating that MAV-frames capture evolution of
   processes while MAV-algebras and CKA capture properties of
   processes.
-\end{remark}
+\end{rem}
 
-\begin{proposition}\label[prop]{prop:nmav-frame}
+\begin{prop}\label[prop]{prop:nmav-frame}
   The \emph{normal proof MAV-frame} \NMAV is the partial order arising
   as the quotient of the preorder formed from the structures of MAV
   and $\vP\leq\vQ$ if there is a normal derivation
@@ -241,9 +241,9 @@ to prove that all proofs in MAV can be normalised to normal proofs.
   is the set of all MAV structures.  The required (in)equalities
   follow directly from the definition of $\vInferFrom*$ for normal
   proofs.
-\end{proposition}
+\end{prop}
 
-\begin{remark}
+\begin{rem}
   The construction of the MAV-frame \NMAV does not use the $\vTens$
   and $\vPlus$ structure of MAV directly.  This structure is recovered
   by duality from the other connectives by the constructions in the
@@ -252,7 +252,7 @@ to prove that all proofs in MAV can be normalised to normal proofs.
   ones that mention the $\vTens$ and $\vPlus$ connectives, with the
   exception of \cref{rule:Switch}, which has a special role to play in
   \Cref{prop:embedding-sem} in mediating interaction.
-\end{remark}
+\end{rem}
 
 \subsection{Constructing MAV-algebras from MAV-frames}
 
@@ -272,22 +272,22 @@ maintained through each construction.
 \subsubsection{Lower Sets and Day pomonoids}
 \label{sec:lower-sets}
 
-\begin{definition}\label[defn]{defn:lower-set}
+\begin{defi}\label[defn]{defn:lower-set}
   Given a partial order $(A, \leq)$, the set of lower sets
   $\LowerSet{A}$ consists of subsets $F \subseteq A$ that are
   down-closed: $x \in F$ and $y \leq x$ implies $y \in F$. Lower sets
   are ordered by inclusion. Define the embedding
   $\eta : A \to \LowerSet{A}$ as $\eta(x) = \{ y \mid y \leq x \}$.
-\end{definition}
+\end{defi}
 
-\begin{proposition}\label[defn]{defn:lower-set-embed-monotone}
+\begin{prop}\label[defn]{defn:lower-set-embed-monotone}
   For any $(A, \leq)$, the function $\eta$ is monotone, and
   $(\LowerSet{A}, \subseteq)$ has meets and joins given by
   intersection and union respectively.
   % \bob{and $\eta$ preserves any meets that exist}
-\end{proposition}
+\end{prop}
 
-\begin{proposition}\label[prop]{prop:day-construction}
+\begin{prop}\label[prop]{prop:day-construction}
   If $(\bullet, i)$ is a pomonoid on $(A, \leq)$, then there is a
   corresponding \emph{Day pomonoid} $(\Day{\bullet}, \Day{i})$ on
   $\LowerSet{A}$ defined as
@@ -303,26 +303,26 @@ maintained through each construction.
     \item The embedding preserves the monoid:
           $\eta(x \bullet y) = \eta(x) \Day\bullet \eta(y)$.
   \end{enumerate}
-\end{proposition}
+\end{prop}
 
-\begin{remark}
+\begin{rem}
   \Cref{prop:day-construction} is the Day monoidal product on functor
   categories \cite{Day_1970} restricted to the case of partial orders
   and lower sets.
-\end{remark}
+\end{rem}
 
-\begin{remark}
+\begin{rem}
   When $(A, \leq)$ is an MAV-frame, \Cref{prop:day-construction} gives us two pomonoids
   $(\Day{\parr}, \Day{I})$ and $(\Day{\lhd}, \Day{I})$ on
   $\LowerSet{A}$. Moreover, the next proposition states that the
   duoidal relationship between these monoids is preserved by the Day
   construction:
-\end{remark}
+\end{rem}
 
-\begin{proposition}\label[prop]{prop:lower-set-duoidal}
+\begin{prop}\label[prop]{prop:lower-set-duoidal}
   If $(\bullet, i)$ is duoidal over $(\lhd, j)$ then
   $(\Day{\bullet}, \Day{i})$ is duoidal over $(\Day{\lhd}, \Day{j})$.
-\end{proposition}
+\end{prop}
 
 \subsubsection{$+$-closed Lower Sets}
 \label{sec:closed-lower-sets}
@@ -353,20 +353,20 @@ For this section, we assume that $(A, \leq)$ is a partial order with a
 monotone binary operation $+ : A \times A \to A$ (we do not assume
 that $+$ is a join or even a pomonoid.)
 
-\begin{definition}\label[defn]{defn:closed-lower-set}
+\begin{defi}\label[defn]{defn:closed-lower-set}
   A lower set $F \in \LowerSet{A}$ is \emph{$+$-closed} if $x \in F$
   and $y \in F$ imply $x + y \in F$. $+$-closed lower sets are ordered
   by subset inclusion and form a partial order
   $(\ClosedLowerSet{A}, \subseteq)$.
-\end{definition}
+\end{defi}
 
-\begin{proposition}
+\begin{prop}
   Let $U : \ClosedLowerSet{A} \to \LowerSet{A}$ be the ``forgetful''
   function that forgets the $+$-closed property. There is a monotone
   function $\alpha : \LowerSet{A} \to \ClosedLowerSet{A}$ such that
   for all $F \in \ClosedLowerSet{A}$, $\alpha(U F) = F$ and for all
   $F \in \LowerSet{A}$, $F \subseteq U (\alpha F)$.
-\end{proposition}
+\end{prop}
 
 \begin{proof}
   To define $\alpha$, we close lower sets under all
@@ -387,36 +387,36 @@ that $+$ is a join or even a pomonoid.)
   $F \subseteq U(\alpha F)$ by the $\mathsf{leaf}$ constructor.
 \end{proof}
 
-\begin{definition}
+\begin{defi}
   Define the embedding $\eta^+ : A \to \ClosedLowerSet{A}$ as
   $\eta^+(x) = \alpha(\eta(x))$.
-\end{definition}
+\end{defi}
 
-\begin{remark}
+\begin{rem}
   By this proposition, $U \circ \alpha$ is a closure operator on
   $\LowerSet{A}$ \cite{Davey_2002}, and the closed elements are
   those of $\ClosedLowerSet{A}$. The next proposition is standard for
   showing that meets and joins exist on the closed elements for some
   closure operator.
-\end{remark}
+\end{rem}
 
-\begin{proposition}
+\begin{prop}
   $(\ClosedLowerSet{A}, \subseteq)$ has all meets and joins. In the
   binary case, meets are defined by intersection and joins are defined
   by $F \lor G = \alpha (U F \cup U G)$.
-\end{proposition}
+\end{prop}
 
-\begin{proposition}\label[prop]{prop:closed-eta-preserve-joins}
+\begin{prop}\label[prop]{prop:closed-eta-preserve-joins}
   $\eta^+(x + y) \subseteq \eta^+(x) \lor \eta^+(y)$.
-\end{proposition}
+\end{prop}
 
-\begin{remark}
+\begin{rem}
   \Cref{prop:closed-eta-preserve-joins} is the reason for
   requiring $+$-closure. This property will allow us to prove the
   crucial embedding property for all structures in \Cref{sec:mav-cut-elimination}.
-\end{remark}
+\end{rem}
 
-\begin{proposition}\label[prop]{prop:closed-monoid-distrib}
+\begin{prop}\label[prop]{prop:closed-monoid-distrib}
   For a commutative pomonoid $(\bullet, i)$ on $(A, \leq)$ that
   distributes over $+$
   (i.e., $(x + y) \bullet z \leq (x \bullet z) + (y \bullet z)$ holds), we have that
@@ -424,7 +424,7 @@ that $+$ is a join or even a pomonoid.)
   $\ClosedDay{j} = \alpha(\Day{j})$ define a residuated commutative
   pomonoid on $\ClosedLowerSet{A}$. Moreover,
   $\eta^+(x \bullet y) = \eta^+(x) \ClosedDay{\bullet} \eta^+(y)$.
-\end{proposition}
+\end{prop}
 
 \begin{proof}
   Define an operation
@@ -441,7 +441,7 @@ that $+$ is a join or even a pomonoid.)
   sets is already $+$-closed, by distributivity.
 \end{proof}
 
-\begin{proposition}\label[prop]{prop:closed-monoid-duoidal}
+\begin{prop}\label[prop]{prop:closed-monoid-duoidal}
   For a pomonoid $(\lhd, j)$ on $(A, \leq)$, if this satisfies
   $(w \lhd x) + (y \lhd z) \leq (w + y) \lhd (x + z)$ then the Day
   construction
@@ -454,7 +454,7 @@ that $+$ is a join or even a pomonoid.)
   $(\ClosedDay{\lhd}, \ClosedDay{j})$ form a pomonoid on
   $(\ClosedLowerSet{A}, \subseteq)$. Moreover,
   $\eta^+(x \lhd y) \leq \eta^+(x) \ClosedDay{\lhd} \eta^+(y)$.
-\end{proposition}
+\end{prop}
 
 \begin{proof}
   Since $+$ is duoidal over $(\lhd, j)$, the Day monoid $\Day{\lhd}$
@@ -463,13 +463,13 @@ that $+$ is a join or even a pomonoid.)
   since $j + j \leq j$.
 \end{proof}
 
-\begin{remark}
+\begin{rem}
   Generalising the situation for the unit $j$ in \Cref{prop:closed-monoid-duoidal}, $\eta(x)$ is closed for any $x$
   such that $x + x \leq x$. Note that if $+$ were a join on
   $(A, \leq)$, then this would automatically be satisfied.
-\end{remark}
+\end{rem}
 
-\begin{remark}
+\begin{rem}
   We have used the same decoration $\ClosedDay{\bullet}$ and
   $\ClosedDay{\lhd}$ for two separate constructions of pomonoids on
   $+$-closed lower sets. We will be careful to distinguish which we
@@ -478,22 +478,22 @@ that $+$ is a join or even a pomonoid.)
   be constructed by \Cref{prop:closed-monoid-distrib}; and
   a non-symmetric operator like $\lhd$ will be duoidal under $+$ and
   so $\ClosedDay{\lhd}$ will be constructed by \Cref{prop:closed-monoid-duoidal}.
-\end{remark}
+\end{rem}
 
-\begin{remark}
+\begin{rem}
   If we have two pomonoids on $(A, \leq)$ that share a unit, then the
   two constructions of units in \Cref{prop:closed-monoid-distrib,prop:closed-monoid-duoidal} will yield the same element of
   $\ClosedLowerSet{A}$.
-\end{remark}
+\end{rem}
 
-\begin{proposition}
+\begin{prop}
   If $(\bullet, i)$ is duoidal over $(\lhd, j)$ on $(A, \leq)$, and
   $(\bullet, i)$ distributes over $+$ (as in \Cref{prop:closed-monoid-distrib}) and $+$ is duoidal over
   $(\lhd, j)$ (as in \Cref{prop:closed-monoid-duoidal}),
   then $(\ClosedDay{\bullet}, \ClosedDay{i})$ is duoidal over
   $(\ClosedDay{\lhd}, \ClosedDay{j})$ on
   $(\ClosedLowerSet{A}, \subseteq)$.
-\end{proposition}
+\end{prop}
 
 \begin{proof}
   The duoidal relationship established in \Cref{prop:lower-set-duoidal} carries over thanks to the properties
@@ -514,16 +514,16 @@ meets. For this section, we let
 $(A, \leq, \bullet, i, \rightblackspoon)$ be a partial order with a
 residuated pomonoid structure and all binary meets.
 
-\begin{definition}\label[defn]{defn:chu}
+\begin{defi}\label[defn]{defn:chu}
   Let $k$ be an element of $A$. $\Chu(A, k)$ is the partial order with
   elements pairs $(a^+, a^-)$ such that $a^+ \bullet a^- \leq k$, with
   ordering $(a^+,a^-) \sqsubseteq (b^+, b^-)$ when $a^+ \leq b^+$ and
   $b^- \leq a^-$. There is a monotone embedding function
   $\ChuEmbed : A \to \Chu(A, k)$ defined as
   $\ChuEmbed(x) = (x, x \rightblackspoon k)$.
-\end{definition}
+\end{defi}
 
-\begin{proposition}
+\begin{prop}
   $(\Chu(A, k), \sqsubseteq)$ has a $*$-autonomous structure defined
   as:
   \begin{displaymath}
@@ -536,36 +536,36 @@ residuated pomonoid structure and all binary meets.
   Moreover,
   $\ChuEmbed(x \bullet y) = \ChuEmbed(x) \otimes \ChuEmbed(y)$ and
   $\ChuEmbed(i) = I$.
-\end{proposition}
+\end{prop}
 
-\begin{remark}
+\begin{rem}
   If we choose $k = i$, then $(\Chu(A, i), \sqsubseteq)$ has
   $*$-autonomous structure that satisfies \emph{mix}.
-\end{remark}
+\end{rem}
 
-\begin{proposition}\label[prop]{prop:chu-meets}
+\begin{prop}\label[prop]{prop:chu-meets}
   If $A$ has binary joins, then $(\Chu(A, k), \sqsubseteq)$ has
   binary meets, given by
   $(a^+,a^-) \with (b^+,b^-) = (a^+ \land b^+, a^- \lor b^-)$.
-\end{proposition}
+\end{prop}
 
-\begin{remark}
+\begin{rem}
   Since $(\Chu(A, k), \sqsubseteq, \otimes, I, \lnot)$ is a
   $*$-autonomous partial order, then \Cref{prop:chu-meets}
   also means that $\Chu(A, k)$ has all binary joins, with
   $(a^+, a^-) \oplus (b^+, b^-) = (a^+ \lor b^+, a^- \land b^-)$.
-\end{remark}
+\end{rem}
 
 We now turn to the self-dual duoidal structure required to interpret
 the $\vSeq$ connective. First we transfer pomonoids from $(A, \leq)$
 to self-dual pomonoids on $(\Chu(A, k), \sqsubseteq)$ provided they
 interact well with $k$:
-\begin{proposition}\label[prop]{prop:chu-self-dual}
+\begin{prop}\label[prop]{prop:chu-self-dual}
   Let $(\lhd, j)$ be a pomonoid on $(A, \leq)$ such that
   $(\bullet, i)$ is duoidal over $k \lhd k \leq k$ and $j \leq k$,
   then $x \lhd y = (x^+ \lhd y^+, x^- \lhd y^-)$ and $J = (j, j)$ form
   a self-dual pomonoid on $\Chu(A, k)$.
-\end{proposition}
+\end{prop}
 
 \begin{proof}
   $x\lhd y$ is well-defined because
@@ -574,12 +574,12 @@ interact well with $k$:
   $j \bullet j \leq j \leq k$. The pomonoid laws all transfer directly.
 \end{proof}
 
-\begin{remark}
+\begin{rem}
   When $k = j$, the two conditions in the proposition are
   automatically satisfied. Moreover, if $k = i = j$, then not only
   does the $*$-autonomous structure satisfy \emph{mix}, but we also
   have $I =J$.
-\end{remark}
+\end{rem}
 
 Finally, we need to show that if $(\bullet, j)$ is duoidal over
 $(\lhd, j)$, then their Chu counterparts are in the same
@@ -587,26 +587,26 @@ relationship. Due to the use of residuals in the definition of
 $\otimes$, we need the following fact about duoidal residuated
 pomonoids:
 
-\begin{lemma}\label[lem]{lem:duoidal-residual}
+\begin{lem}\label[lem]{lem:duoidal-residual}
   If $(\bullet, j)$ is duoidal over $(\lhd, j)$ in a partial order
   $(A, \leq)$ and $(\bullet, j)$ has a residual $\rightblackspoon$,
   then
   $(w \rightblackspoon x) \lhd (y \rightblackspoon z) \leq (w \lhd y)
     \rightblackspoon (x \lhd z)$.
-\end{lemma}
+\end{lem}
 
-\begin{remark}
+\begin{rem}
   \Cref{lem:duoidal-residual} is in some sense the
   ``intuitionistic'' version of the duoidal relationship for $\parr$
   arising as the dual of that for $\otimes$ in a $*$-autonomous
   partial order, as we saw in \Cref{prop:mav-algebra-consequences}.
-\end{remark}
+\end{rem}
 
-\begin{proposition}\label[prop]{prop:chu-monoid-duoidal}
+\begin{prop}\label[prop]{prop:chu-monoid-duoidal}
   If $(\bullet, i)$ is duoidal over $(\lhd, j)$ on $(A, \leq)$, and
   $(\lhd, j)$ satisfies the conditions of \Cref{prop:chu-self-dual}, then $(\otimes, I)$ and $(\lhd, J)$ are in a
   duoidal relationship on $\Chu(A, k)$.
-\end{proposition}
+\end{prop}
 
 \begin{proof}
   For the positive half of the Chu construction, this is a direct
@@ -621,18 +621,18 @@ pomonoids:
 The propositions in the preceeding three sections together prove that
 every MAV-frame yields an MAV-algebra:
 
-\begin{theorem}\label[thm]{thm:algebra-from-frame}
+\begin{thm}\label[thm]{thm:algebra-from-frame}
   If $(F, \leq, \parr, \lhd, i, +)$ is an MAV-frame, then
   $(\Chu(\ClosedLowerSet{F}, \ClosedDay{i}), \sqsubseteq)$ has the
   structure of an MAV-algebra.
-\end{theorem}
+\end{thm}
 
 With this theorem we can define a notion of validity in MAV in terms
 of truth in all MAV-frame generated algebras. By \Cref{thm:soundness},
 MAV is sound for this notion of validity:
 
-\begin{theorem}\label[thm]{thm:mavframe-soundness}
+\begin{thm}\label[thm]{thm:mavframe-soundness}
   MAV is sound for the MAV-frame semantics: if $P \vInferFrom* \vUnit$
   then for all MAV-frames $F$, $I \sqsubseteq \sem{P}$ in
   $(\Chu(\ClosedLowerSet{F}, \ClosedDay{i}), \sqsubseteq)$.
-\end{theorem}
+\end{thm}

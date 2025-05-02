@@ -14,9 +14,9 @@ interpretation in the MAV-algebra derived from the MAV-frame of normal
 proofs \NMAV{} that will allow us to derive the admissibility of all
 the non-normal proof rules of MAV.
 
-\begin{proposition}\label[prop]{prop:embedding-sem}
+\begin{prop}\label[prop]{prop:embedding-sem}
   For all structures $\vP$, $\sem{\vP} \sqsubseteq \lnot (\ChuEmbed(\ClosedLowerEmbed(P)))$.
-\end{proposition}
+\end{prop}
 
 \begin{proof}
   By \Cref{defn:chu}, this statement comprises two inclusions
@@ -87,9 +87,9 @@ the non-normal proof rules of MAV.
   Using the residuation property of $\ClosedDay{\bullet}$ we can conclude.
 \end{proof}
 
-\begin{theorem}\label[thm]{thm:cut-elim}
+\begin{thm}\label[thm]{thm:cut-elim}
   If $\vP\vInferFrom*\vUnit$ in MAV, then there is a normal proof $\vP\vInferFrom*\vUnit$.
-\end{theorem}
+\end{thm}
 
 \begin{proof}
   By \Cref{thm:soundness}, $\vP\vInferFrom*\vUnit$ in MAV
@@ -105,9 +105,9 @@ the non-normal proof rules of MAV.
 Another consequence of \Cref{prop:embedding-sem} is that
 MAV is complete for the MAV-frame semantics:
 
-\begin{theorem}\label[thm]{thm:completeness}
+\begin{thm}\label[thm]{thm:completeness}
   MAV is complete for the MAV-frame semantics: if, for all MAV-frames
   $F$, $\sem{\vUnit} \sqsubseteq \sem{\vP}$ in
   $(\Chu(\ClosedLowerSet{F}, \ClosedDay{I}), \sqsubseteq)$, then
   $\vP\vInferFrom*\vUnit$.
-\end{theorem}
+\end{thm}
