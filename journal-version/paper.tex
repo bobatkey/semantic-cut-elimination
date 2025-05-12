@@ -40,49 +40,18 @@
   Glasgow, Scotland, UK}
 \email{robert.atkey@strath.ac.uk}
 
-\address{}
+\address{Well-Typed}
 \email{me@wen.works}
 
 % FIXME: shorten this
 \begin{abstract}
-  \emph{Multiplicative-Additive System Virtual} (MAV) is a logic that
-  extends Multiplicative-Additive Linear Logic with a self-dual
-  non-commutative operator expressing the concept of ``before'' or
-  ``sequencing''. MAV is also an extenson of the the logic Basic
-  System Virtual (BV) with additives. Formulas in BV have an appealing
-  reading as processes with parallel and sequential composition. MAV
-  adds internal and external choice operators. BV and MAV are also
-  closely related to Concurrent Kleene Algebras.
-
-  Proof systems for MAV and BV are Deep Inference systems, which allow
-  inference rules to be applied anywhere inside a structure. As with
-  any proof system, a key question is whether proofs in MAV can be
-  reduced to a normal form, removing detours and the introduction of
-  structures not present in the original goal. In Sequent Calcluli
-  systems, this property is referred to as Cut Elimination. Deep
-  Inference systems have an analogous Cut rule and other rules that
-  are not present in normalised proofs. Cut Elimination for Deep
-  Inference systems has the same metatheoretic benefits as for Sequent
-  Calculi systems, including consistency and decidability.
-
-  Proofs of Cut Elimination for BV, MAV, and other Deep Inference
-  systems present in the literature have relied on intrincate
-  syntactic reasoning and complex termination measures.
-
-  We present a concise semantic proof that all MAV proofs can be
-  reduced to a normal form avoiding the Cut rule and other ``non
-  analytic'' rules. We also develop soundness and completeness proofs
-  of MAV (and BV) with respect to a class of models. We have
-  mechanised all our proofs in the Agda proof assistant, which
-  provides both assurance of their correctness as well as yielding an
-  executable normalisation procedure. Our technique extends to include
-  exponentials and the additive units.
+  We prove cut-elimination properties for some Deep Inference systems
+  using semantic techniques.
 \end{abstract}
 
 \maketitle
 
 \input{sections/introduction}
-%\input{sections/contribution}
 \input{sections/mav-syntax}
 \input{sections/mav-semantics}
 \input{sections/mav-cut-elimination}

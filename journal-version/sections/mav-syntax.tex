@@ -1,72 +1,54 @@
-\section{The system MAV}\label{sec:mav-syntax}
+\section{Deep Inference Proof Calculi}
+\label{sec:deep-inference-calculi}
 
-In Deep Inference terminology, proofs operate on \emph{structures}, which simultaneously play the role of formulas and sequents in traditional Sequent Calculus systems. There are a number of different notations in the literature for the structures of BV and related systems. For familiarity's sake, we opt for a notation similar to the formulas of normal Linear Logic, albeit extended with the self-dual non-commutative connective $\vSeq$.
+Deep Inference systems differ from Sequent Calculus systems in two major respects. Firstly, proofs operate on \emph{structures}, which simultaneously play the role of formulas and sequents in traditional Sequent Calculus systems. There are a number of different notations in the literature for the structures of BV and related systems. For familiarity's sake, we opt for a notation similar to the formulas of normal Linear Logic, albeit extended with the self-dual non-commutative connective $\vSeq$ when we consider this connective below. Secondly, Deep Inference proofs allow structures to be operated on at any depth in a structure, instead of only at the top-level as in Sequent Calculus proofs.
 
-The structures of MAV are formed from positive and negative atoms ($\vPos\va$ and $\vNeg\va$) drawn from some set of atomic propositions, units ($\vUnit$), the non-commutative connective \emph{seq} ($\vSeq$), the multiplicative connectives \emph{tensor} and \emph{par} ($\vTens$ and $\vParr$) and additive connectives \emph{with} and \emph{plus} ($\vWith$ and $\vPlus$).
+As not all readers will be familiar with Deep Inference formalisms, we present Deep Inference proof calculi starting with the Deep Inference version of Multiplicative Linear Logic with Mix (MLL+Mix), which is usually given as a Sequent Calculus \cite{Girard87:ll}. As a Deep Inference system, MLL has an appealing concise definition with just two rules, \cref{sec:mll-calculus}.
+
+The use of Deep Inference is then justified by the addition of the sequencing connective $\vSeq$, giving Guglielmi's Basic System Virtual (BV) in \cref{sec:bv-calculus}. BV is extended in two directions, first with exponentials to give Non-commutative Exponential Logic (NEL), \cref{sec:nel-calculus}, and second with additives to give Multiplicative-Additive-Unital System Virtual (MAUV), \cref{sec:mauv-calculus}. Finally, we combine these extensions into Multiplicative-Additive-Unital System Virtual with Exponentials (MAUVE) in \cref{sec:mauve-calculus}.
+
+\subsection{MLL+Mix: Multiplicative Linear Logic with Mix}
+\label{sec:mll-calculus}
+
+The structures of MLL are formed from positive and negative atoms
+($\vPos\va$ and $\vNeg\va$) drawn from some set of atomic
+propositions, units ($\vUnit$) and the multiplicative connectives
+\emph{tensor} and \emph{par} ($\vTens$ and $\vParr$).
 \begin{displaymath}
   \vP,\vQ,\vR,\vS
   \Coloneq \vPos\va
   \mid     \vNeg\va
   \mid     \vUnit
-  \mid     \vP\vSeq \vQ
   \mid     \vP\vTens\vQ
   \mid     \vP\vParr\vQ
-  \mid     \vP\vWith\vQ
-  \mid     \vP\vPlus\vQ
 \end{displaymath}
-Duality ($\vDual\vP$) is an involutive function on structures that obeys the De Morgan laws for the multiplicative and additive connectives and preserves the self-dual connective $\vSeq$.
+Duality ($\vDual\vP$) is an involutive function on structures that obeys the De Morgan laws for the multiplicative connectives.
 \begin{displaymath}
   \begin{array}{
       lcl @{\hspace{1cm}}
       lcl @{\hspace{1cm}}
       lcl @{\hspace{1cm}}
       lcl}
-    \multicolumn{3}{l}{}
-    % \vDual{\vPos\va}
-    %  & =
-    %  & \vNeg\va
-     & \vDual{\vUnit}
-     & =
-     & \vUnit
-     & \vDual{\vP\vTens\vQ}
-     & =
-     & \vDual\vP \vParr \vDual\vQ
-     & \vDual{\vP\vParr\vQ}
-     & =
-     & \vDual\vP \vTens \vDual\vQ
-    \\
     \vDual{\vNeg\va}
-     & =
-     & \vPos\va
-     & \vDual{\vP\vSeq \vQ}
-     & =
-     & \vDual\vP \vSeq  \vDual\vQ
-     & \vDual{\vP\vWith\vQ}
-     & =
-     & \vDual\vP \vPlus \vDual\vQ
-     & \vDual{\vP\vPlus\vQ}
-     & =
-     & \vDual\vP \vWith \vDual\vQ
+    & =
+    & \vPos\va
+    & \vDual{\vUnit}
+    & =
+    & \vUnit
+    & \vDual{\vP\vTens\vQ}
+    & =
+    & \vDual\vP \vParr \vDual\vQ
+    & \vDual{\vP\vParr\vQ}
+    & =
+    & \vDual\vP \vTens \vDual\vQ
   \end{array}
 \end{displaymath}
-Structures are considered equivalent modulo the equality $\vEquiv$, which is the smallest congruence defined by the associativity, commutativity, and identity laws that ensure that $(\vSeq,\vUnit)$ forms a monoid, and $(\vTens,\vUnit)$ and $(\vParr,\vUnit)$ form commutative monoids.
+Structures are considered equivalent modulo the equality $\vEquiv$, which is the smallest congruence defined by the associativity, commutativity, and identity laws that ensure that $(\vTens,\vUnit)$ and $(\vParr,\vUnit)$ form commutative monoids.
 \begin{displaymath}
   \begin{array}{
       l@{\;\vEquiv\;}ll @{\hspace{1cm}}
       l@{\;\vEquiv\;}ll @{\hspace{1cm}}
       l@{\;\vEquiv\;}ll}
-    \vP\vSeq\vUnit
-     & \vP
-     & \RuleLabel*[seq-runit]{\vSeq-Unit\textsuperscript{R}}
-     &
-    \vUnit\vSeq\vP
-     & \vP
-     & \RuleLabel*[seq-lunit]{\vSeq-Unit\textsuperscript{L}}
-     &
-    \vP\vSeq(\vQ\vSeq\vR)
-     & (\vP\vSeq\vQ)\vSeq\vR
-     & \RuleLabel*[seq-assoc]{\vSeq-Assoc}
-    \\
     \vP\vTens\vUnit
      & \vP
      & \RuleLabel*[tens-unit]{\vTens-Unit}
@@ -92,27 +74,22 @@ Structures are considered equivalent modulo the equality $\vEquiv$, which is the
      & \RuleLabel*[parr-assoc]{\vParr-Assoc}
   \end{array}
 \end{displaymath}
+
 Structure contexts are one-hole contexts over structures. Plugging ($\vC\vPlug\vP$) replaces the hole in $\vC$ with $\vP$.
 \begin{displaymath}
   \vC,\vD
   \Coloneq \vEmpty
-  \mid     \vC\vSeq \vQ
-  \mid     \vP\vSeq \vD
   \mid     \vC\vTens\vQ
   \mid     \vP\vTens\vD
   \mid     \vC\vParr\vQ
   \mid     \vP\vParr\vD
-  \mid     \vC\vWith\vQ
-  \mid     \vP\vWith\vD
-  \mid     \vC\vPlus\vQ
-  \mid     \vP\vPlus\vD
 \end{displaymath}
-The inference rules of MAV are presented as a \emph{rewriting system} on structures. As this may be surprising to readers unfamiliar with deep inference, let us examine how this presentation relates to the usual presentation of linear logic.
+The inference rules of MLL+Mix are presented as a \emph{rewriting system} on structures. As this may be surprising to readers unfamiliar with Deep Inference, let us examine how this presentation relates to the usual Sequent Calculus presentation of linear logic.
 Rule~(\ref{rule:AxiomLL}), shown below, is the axiom rule in the usual one-sided presentation of linear logic.
 In the one-sided presentation, the turnstile is vestigial syntax, and can be removed.
-In BV, the $\vParr$ connective plays the same role as the comma does in the antecedent of a linear logic sequent, and the $\vUnit$ plays the same role as the empty sequent, which would give us rule~(\ref{rule:AxiomBV-bad}) for BV.
-However, BV's inference rules can work arbitrarily deep in the structure. (Hence, \emph{deep} inference.)
-Hence, the axiom for BV is rule~(\ref{rule:AxiomBV}), where $\vC$ is a one-hole structure context.
+In Deep Inference systems for MLL, the $\vParr$ connective plays the same role as the comma does in the antecedent of a linear logic sequent, and the $\vUnit$ plays the same role as the empty sequent, which would give us rule~(\ref{rule:AxiomBV-bad}).
+However, inference rules can work arbitrarily deep in the structure. (Hence, \emph{Deep} Inference.)
+Hence, the axiom in a Deep Inference system is rule~(\ref{rule:AxiomBV}), where $\vC$ is a one-hole structure context.
 \begin{center}
   $\inlineequation[rule:AxiomLL]{%
       \vlderivation{\vlin{}{}{\vdash\vP,\vDual\vP}{\vlhy{}}}}$
@@ -130,10 +107,10 @@ Hence, the axiom for BV is rule~(\ref{rule:AxiomBV}), where $\vC$ is a one-hole 
 \end{center}
 Rule (\ref{rule:CutLL}) is the cut rule in the usual one-sided presentation of linear logic.
 In rule (\ref{rule:CutLL}), as in any branching inference rule, the branching enforces the \emph{disjointness} of the premise derivations.
-In BV, disjointness is internalised by the $\vTens$ connective.
+In Deep Inference, disjointness is internalised by the $\vTens$ connective.
 Hence, it plays the same role as branching does in sequent calculus.
-This would give us rule (\ref{rule:CutBVBad}) for BV.
-However, as BV's inference rules can work arbitrarily deep in the structure, and the system contains the \cref{rule:Switch} rule, the surrounding context of $\vParr$s is unnecessary---and too restrictive. Hence, the cut for BV is rule (\ref{rule:CutBV}).
+This would give us rule (\ref{rule:CutBVBad}).
+However, as inference rules can work arbitrarily deep in the structure, and the system contains the \cref{rule:Switch} rule, the surrounding context of $\vParr$s is unnecessary---and too restrictive. Hence, Cut in Deep Inference is rule (\ref{rule:CutBV}).
 \begin{center}
   $\inlineequation[rule:CutLL]{%
       \vlderivation{\vliin{}{}{%
@@ -154,13 +131,12 @@ However, as BV's inference rules can work arbitrarily deep in the structure, and
           \vC\vPlug{\vUnit}}{%
           \vlhy{\vC\vPlug{\vP\vTens\vDual\vP}}}}}$
 \end{center}
-Beautifully, internalising branching makes the symmetry between the axiom and cut plain to see. In BV, to acknowledge this symmetry and the connection with Milner's CCS, the axiom and cut rules are referred to as \emph{interaction} and \emph{co-interaction}.
+Beautifully, internalising branching makes the symmetry between the axiom and cut plain to see. To acknowledge this symmetry and the connection with Milner's CCS, the axiom and cut rules are referred to as \emph{interaction} and \emph{co-interaction}.
 
-Proof trees are a cumbersome presentation for BV's derivations---they are convenient for branching sequent proofs, but BV derivations are sequences of structures.
+Proof trees are a cumbersome presentation for Deep Inference derivations---they are convenient for branching Sequent Calculus proofs, but Deep Inference derivations are really sequences of structures, where all branching is represented within those structures.
 \emph{Rewriting systems}, on the other hand, are a well-known and convenient notation for such derivations.
-Hence, in MAV, inference rules are presented as rewrite rules.
+Therefore, following Horne \cite{Horne15:mav}, we present the inference rules as rewrite rules.
 
-\emph{Inference}, written $\vInferFrom$, is the smallest relation defined by the following axioms:
 % NOTE: These shenanigans are for cross-text table alignment.
 \newlength{\vInferFromDefnWidthOfLBL}%
 \settowidth{\vInferFromDefnWidthOfLBL}{$\RuleName{AtomAxiom}$}%
@@ -168,117 +144,80 @@ Hence, in MAV, inference rules are presented as rewrite rules.
 \settowidth{\vInferFromDefnWidthOfLHS}{$(\vP\vSeq\vQ)\vParr(\vR\vSeq\vS)$}%
 \newlength{\vInferFromDefnWidthOfRHS}%
 \settowidth{\vInferFromDefnWidthOfRHS}{$(\vP\vParr\vR)\vWith(\vQ\vParr\vR)$}%
-\begin{displaymath}
-  \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
-    \vP\vParr\vDual\vP
-     & \vInferFrom
-     & \vUnit
-     & \makebox[\vInferFromDefnWidthOfLBL][l]{$\RuleLabel{Interact}$}
-    \\
-    (\vP\vTens\vQ)\vParr\vR
-     & \vInferFrom
-     & \vP\vTens(\vQ\vParr\vR)
-     & \RuleLabel{Switch}
-    \\
-    \vUnit\vWith\vUnit
-     & \vInferFrom
-     & \vUnit
-     & \RuleLabel{Tidy}
-    \\
-    (\vP\vSeq\vQ)\vParr(\vR\vSeq\vS)
-     & \vInferFrom
-     & (\vP\vParr\vR)\vSeq(\vQ\vParr\vS)
-     & \RuleLabel{Sequence}
-    \\
-    \vP\vPlus\vQ
-     & \vInferFrom
-     & \vP
-     & \RuleLabel{Left}
-    \\
-    \vP\vPlus\vQ
-     & \vInferFrom
-     & \vQ
-     & \RuleLabel{Right}
-    \\
-    (\vP\vWith\vQ)\vParr\vR
-     & \vInferFrom
-     & (\vP\vParr\vR)\vWith(\vQ\vParr\vR)
-     & \RuleLabel{External}
-    \\
-    (\vP\vSeq\vQ)\vWith(\vR\vSeq\vS)
-     & \vInferFrom
-     & (\vP\vWith\vR)\vSeq(\vQ\vWith\vS)
-     & \RuleLabel{Medial}
-    \\
-     &
-     &
-     &
-    \\
-    \vUnit
-     & \vInferFrom
-     & \vP\vTens\vDual\vP
-     & \RuleLabel{CoInteract}
-    \\
-    \vUnit
-     & \vInferFrom
-     & \vUnit \vPlus \vUnit
-     & \RuleLabel{CoTidy}
-    \\
-    (\vP\vTens\vR)\vSeq(\vQ\vTens\vS)
-     & \vInferFrom
-     & (\vP\vSeq\vQ)\vTens(\vR\vSeq\vS)
-     & \RuleLabel{CoSequence}
-    \\
-    \vP
-     & \vInferFrom
-     & \vP\vWith\vQ
-     & \RuleLabel{CoLeft}
-    \\
-    \vQ
-     & \vInferFrom
-     & \vP\vWith\vQ
-     & \RuleLabel{CoRight}
-    \\
-    (\vP \vTens \vR) \vPlus (\vQ \vTens \vR)
-     & \vInferFrom
-     & (\vP \vPlus \vQ) \vTens \vR
-     & \RuleLabel{CoExternal}
-    \\
-    (\vP \vPlus \vR) \vSeq (\vQ \vPlus \vS)
-     & \vInferFrom
-     & (\vP \vSeq \vQ) \vPlus (\vR \vSeq \vS)
-     & \RuleLabel{CoMedial}
-    \\
-     &
-     &
-     &
-    \\
-    \vC\vPlug\vP\vInferFrom\vC\vPlug\vQ
-     & \text{if}
-     & \vP\vInferFrom\vQ
-     & \RuleLabel{Mono}
-    % \\
-    % \vP\vInferFrom\vQ
-    %  & \text{if}
-    %  & \vP\vEquiv\vQ
-    %  & \RuleLabel{Equiv}
-  \end{array}
-\end{displaymath}
-If $\vP\vInferFrom\vQ$, we say that $\vP$ can be inferred from $\vQ$, \ie the arrow points from conclusion to premise.
 
-\textbf{N.B.}\ $\vP\vInferFrom\vQ$ is an inference rule, \emph{not a sequent}. In sequent calculus notation, it is $\frac{\vQ}{\vP}$, \emph{not} $\vP\vdash\vQ$.
 
-\emph{Derivation}, written $\vInferFrom*$ is the reflexive, transitive closure of inference.
-\emph{Invertible derivation}, written $\vInferFromTo*$, is the symmetric core of derivation, \ie $\vP\vInferFromTo*\vQ=\vP\vInferFrom*\vQ\cap\vQ\vInferFrom*\vP$.
-\emph{Proofs} are derivations that terminate in the unit, \eg a derivation $\vP\vInferFrom*\vUnit$ is a proof of $\vP$.
-
-The inference rules come in dual pairs. For every rule $\vP\vInferFrom\vQ$, there is a dual rule $\vDual\vQ\vInferFrom\vDual\vP$.
-The exception is \cref{rule:Switch}, which is self-dual, up to commutativity.
-The \cref{rule:CoInteract}, \cref{rule:CoLeft}, and \cref{rule:CoRight} rules introduce new structures going left-to-right.
-Normal proofs, which we define below, avoid these \emph{synthetic} rules.
+\begin{defi}
+  \emph{Inference} in MLL+Mix, written $\vInferFrom$, is the smallest relation defined by the following axioms:
+  \begin{displaymath}
+    \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
+      \vP\vParr\vDual\vP
+      & \vInferFrom
+      & \vUnit
+      & \makebox[\vInferFromDefnWidthOfLBL][l]{$\RuleLabel{Interact}$}
+      \\
+      (\vP\vTens\vQ)\vParr\vR
+      & \vInferFrom
+      & \vP\vTens(\vQ\vParr\vR)
+      & \RuleLabel{Switch}
+      \\
+      &
+      &
+      &
+      \\
+      \vUnit
+      & \vInferFrom
+      & \vP\vTens\vDual\vP
+      & \RuleLabel{CoInteract}
+      \\
+      &
+      &
+      &
+      \\
+      \vC\vPlug\vP\vInferFrom\vC\vPlug\vQ
+      & \text{if}
+      & \vP\vInferFrom\vQ
+      & \RuleLabel{Mono}
+      % \\
+      % \vP\vInferFrom\vQ
+      % & \text{if}
+      % & \vP\vEquiv\vQ
+      % & \RuleLabel{Equiv}
+    \end{array}
+  \end{displaymath}
+  If $\vP\vInferFrom\vQ$, we say that $\vP$ can be inferred from $\vQ$, \ie the arrow points from conclusion to premise.
+\end{defi}
 
 \begin{rem}
-  In BV, the structural connectives are usually presented as lists, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
+  $\vP\vInferFrom\vQ$ is an inference rule, \emph{not a sequent}. In
+  Sequent Calculus notation, it is $\frac{\vQ}{\vP}$, \emph{not}
+  $\vP\vdash\vQ$. The sequent $\vP \vdash \vQ$ is expressed as
+  $\vDual{\vP} \vParr \vQ$.
+\end{rem}
+
+\begin{defi}
+  \emph{Derivation}, written $\vInferFrom*$ is the reflexive, transitive closure of inference.
+  \emph{Invertible derivation}, written $\vInferFromTo*$, is the symmetric core of derivation, \ie $\vP\vInferFromTo*\vQ=\vP\vInferFrom*\vQ\cap\vQ\vInferFrom*\vP$.
+  \emph{Proofs} are derivations that terminate in the unit, \eg a derivation $\vP\vInferFrom*\vUnit$ is a proof of $\vP$.
+\end{defi}
+
+In general in Deep Inference, inference rules come in dual pairs. For every rule $\vP\vInferFrom\vQ$, there is a dual rule $\vDual\vQ\vInferFrom\vDual\vP$. In MLL+Mix, the only dual pair is \cref{rule:Interact} and \cref{rule:CoInteract}. The \cref{rule:Switch} rule is self-dual up to commutativity. As we extend the system in the sections below, every new rules will have a dual counterpart. As can be seen by comparing the \cref{rule:Interact} and \cref{rule:CoInteract} rules, the difference is that (reading left-to-right) the \cref{rule:CoInteract} rule is \emph{synthetic}, in that it generates structures on the right-hand side that did not appear on the left, as opposed to the \emph{analytic} rule \cref{rule:Interact}, which does not introduce any new structures.
+
+\begin{defi}\label[defn]{defn:normal}
+  A derivation is \emph{normal} when it does not use \cref{rule:CoInteract} and its uses of \cref{rule:Interact} are restricted to \cref{rule:AtomInteract}, as defined by the following axiom:
+  \begin{displaymath}
+    \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
+      \makebox[\vInferFromDefnWidthOfLHS][l]{$\vNeg\va\vParr\vPos\va$}
+       & \vInferFrom
+       & \makebox[\vInferFromDefnWidthOfRHS][l]{$\vUnit$}
+       & \RuleLabel{AtomInteract}
+    \end{array}
+  \end{displaymath}
+\end{defi}
+
+Our main collection of results, broadly named cut-elimination, and presented in \cref{sec:cut-elimination}, is that for each of the systems we present in this section, every provable structure has a normal proof. The absence of \cref{rule:CoInteract} corresponds to Cut Elimination in Sequent Calculus, and the restriction of \cref{rule:Interact} to atoms corresponds to Identity Expansion.
+
+\begin{rem}
+  In many presentations of Deep Inference systems, the structural connectives are usually presented as lists, distinguished only by their brackets: $\vP\vTens\vQ$ is written as $\vls(\vP;\vQ)$; $\vP\vParr\vQ$ is written as $\vls[\vP;\vQ]$; and $\vP\vSeq\vQ$ is written as $\vls<\vP;\vQ>$.
   % The equations defining duality are usually included in the decidable equality on structures.
   Inferences, derivations, and proofs are presented vertically, as (\ref{notation:vlin}), (\ref{notation:vlde}), and (\ref{notation:vlpr}), respectively.
   \begin{center}
@@ -296,17 +235,26 @@ Normal proofs, which we define below, avoid these \emph{synthetic} rules.
   Inferences rules are usually named with the combination of a letter and an up or down arrow, \eg \cref{rule:Interact} and \cref{rule:CoInteract} are $\iD$ and $\iU$, respectively. The exception are self-dual rules, which are named with a single letter, \eg \cref{rule:Switch} is usually named $\sw$.
 \end{rem}
 
-\begin{defi}\label[defn]{defn:normal}
-  A derivation is \emph{normal} when it does not use \cref{rule:CoInteract} nor any of the other (\RuleName{Co-}) rules, and its uses of \cref{rule:Interact} are restricted to \cref{rule:AtomInteract}, as defined by the following axiom:
-  \begin{displaymath}
-    \begin{array}{lcl@{\hspace{0.5cm}}|@{\hspace{0.5cm}}l}
-      \makebox[\vInferFromDefnWidthOfLHS][l]{$\vNeg\va\vParr\vPos\va$}
-       & \vInferFrom
-       & \makebox[\vInferFromDefnWidthOfRHS][l]{$\vUnit$}
-       & \RuleLabel{AtomInteract}
-    \end{array}
-  \end{displaymath}
-\end{defi}
-Normal derivations avoid the use of rules that introduce new structures into proofs, and so can be termed \emph{analytic} in contrast to the need for the synthetic rules to synthesise new structures.
+\subsection{BV: Basic System Virtual}
+\label{sec:bv-calculus}
 
-Our main result, \Cref{thm:cut-elim}, is that every structure that is provable in full MAV also has a normal proof. Therefore, the system with only analytic rules is complete for MAV provability. Horne \cite{Horne15:mav} proves this result via a syntactic proof involving rewriting and termination measures. In the following sections, we construct a semantic proof that normal proofs are complete for MAV. In \Cref{sec:future-work}, we report on extensions of the same technique to variants of MAV.
+The Basic System Virtual (BV) extends structures with the non-commutative sequencing operation $\vSeq$...
+
+This new connective is self-dual...
+
+And we assume that is is a monoid with $\vI$ as its unit...
+
+Structure contexts are extended ...
+
+Add two new rules...
+
+
+
+\subsection{NEL: Non-commutative Exponential Logic}
+\label{sec:nel-calculus}
+
+\subsection{MAUV: Multiplicative-Additive Unital System Virtual}
+\label{sec:mauv-calculus}
+
+\subsection{MAUVE: Multiplicative-Additive Unital System Virtual with Exponentials}
+\label{sec:mauve-calculus}
