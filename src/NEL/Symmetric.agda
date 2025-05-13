@@ -69,7 +69,12 @@ data _⟶_ : Rel Structure a where
   `cut        : ∀ P → `I ⟶ P `⊗ `¬ P
   `cosequence : (P `⊗ R) `◁ (Q `⊗ S) ⟶ (P `◁ Q) `⊗ (R `◁ S)
 
-  -- FIXME: all the symmetric versions of the exponential rules
+  `co-e     : `I ⟶ `? `I
+  `co-p     : `? (P `⊗ Q) ⟶ `? P `⊗ `! Q
+  `co-dis   : `I ⟶ `! P
+  `co-dup   : (`! P `⊗ `! P) ⟶ `! P
+  `co-δ     : `! `! P ⟶ `! P
+  `co-ε     : P ⟶ `! P
 
 infix 5 _⟶ᶜ_
 

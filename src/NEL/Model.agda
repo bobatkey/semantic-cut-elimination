@@ -174,3 +174,14 @@ record Model c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
                                (trans (⅋-mono ev refl)
                                       (reflexive (⅋-identityˡ _))))))))
               (reflexive (⅋-comm _ _)))
+
+  ！-？-dual : ∀ {x} → ！ x ≈ ¬ (？ (¬ x))
+  ！-？-dual = Eq.trans (Eq.sym (¬-involutive _))
+                        (¬-cong (¬-cong (！-cong (Eq.sym (¬-involutive _)))))
+
+  p↑ : ∀ {x y} → (？ x ⊗ ！ y) ≲ ？ (x ⊗ y)
+  p↑ = trans (reflexive (Eq.sym (¬-involutive _)))
+             (¬-mono (trans (！-mono (¬-mono (⊗-mono (reflexive (¬-involutive _))
+                                                     (reflexive (¬-involutive _)))))
+                     (trans p↓
+                            (¬-mono (⊗-mono refl (reflexive ！-？-dual))))))

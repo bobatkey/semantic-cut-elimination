@@ -100,6 +100,13 @@ module _ {ℓ} {_𝓡_ : Rel Structure ℓ} where
 ⟦ `δ   ⟧step-ax = ？-dig
 ⟦ `ε   ⟧step-ax = ？-derelict
 
+⟦ `co-e ⟧step-ax = ？-monoidal-unit
+⟦ `co-p ⟧step-ax = p↑
+⟦ `co-dis ⟧step-ax = ！-discard
+⟦ `co-dup ⟧step-ax = ！-duplicate
+⟦ `co-δ ⟧step-ax = ！-dig
+⟦ `co-ε ⟧step-ax = ！-derelict
+
 -- The interpretation is closed under monotonicity
 module _ {ℓ} {_𝓡_ : Rel Structure ℓ} where
 
