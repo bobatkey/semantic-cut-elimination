@@ -56,6 +56,7 @@ import MAUVE.CutElim
 -- The Chu Construction, Ideals, and Lower Sets.
 import Algebra.Ordered.Construction.Chu
 import Algebra.Ordered.Construction.Ideal
+import Algebra.Ordered.Construction.ZeroPlusIdeal
 import Algebra.Ordered.Construction.LowerSet
 
 -- Ordered algebraic structures.
