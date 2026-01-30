@@ -138,23 +138,23 @@ U-cong (J≤I , I≤J) = U-mono J≤I , U-mono I≤J
 
 data Context (F : LowerSet) : Carrier → Set (c ⊔ ℓ₂) where
   leaf : ∀ {x} → F .L.ICarrier x → Context F x
-  bot  : (x : Carrier) → x ≤ᶜ ⊥ᶜ → Context F x
+  bot  : ∀ {x} → x ≤ᶜ ⊥ᶜ → Context F x
   node : ∀ {x y z} → Context F x → Context F y → z ≤ᶜ (x ∨ᶜ y) → Context F z
 
 Context-≤ : x ≤ᶜ y → Context F y → Context F x
 Context-≤ {x} {y} {F} x≤y (leaf Fy) = leaf (L.≤-closed F x≤y Fy)
-Context-≤ x≤y (bot y y≤⊥) = bot _ (C.trans x≤y y≤⊥)
+Context-≤ x≤y (bot y≤⊥) = bot (C.trans x≤y y≤⊥)
 Context-≤ x≤y (node {z₁} {z₂} ϕ₁ ϕ₂ y≤z₁∨z₂) = node ϕ₁ ϕ₂ (C.trans x≤y y≤z₁∨z₂)
 
 α : LowerSet → Ideal
 α F .ICarrier = Context F
 α F .≤-closed = Context-≤
-α F .0-closed = bot ⊥ᶜ C.refl
+α F .0-closed = bot C.refl
 α F .∨-closed Fx Fy = node Fx Fy C.refl
 
 Context-mono : F L.≤ G → Context F x → Context G x
 Context-mono F≤G (leaf x) = leaf (F≤G .L.*≤* x)
-Context-mono F≤G (bot x x≤⊥) = bot x x≤⊥
+Context-mono F≤G (bot x≤⊥) = bot x≤⊥
 Context-mono {x = z} F≤G (node Ix Iy z≤x∨y) = node (Context-mono F≤G Ix) (Context-mono F≤G Iy) z≤x∨y
 
 α-mono : F L.≤ G → α F ≤ α G
@@ -165,7 +165,7 @@ Context-mono {x = z} F≤G (node Ix Iy z≤x∨y) = node (Context-mono F≤G Ix)
 
 ideals-closed : Context (U I) x → I .ICarrier x
 ideals-closed {I} (leaf Ix) = Ix
-ideals-closed {I} (bot x x≤⊥) = I .≤-closed x≤⊥ (I .0-closed)
+ideals-closed {I} (bot x≤⊥) = I .≤-closed x≤⊥ (I .0-closed)
 ideals-closed {I} {z} (node Ix Iy z≤x∨y) =
   I .≤-closed z≤x∨y (I .∨-closed (ideals-closed Ix) (ideals-closed Iy))
 
@@ -273,15 +273,15 @@ Context-preserve-∨ (leaf (lift z≤x∨y)) =
   node (leaf (inj₁ (leaf (lift C.refl))))
        (leaf (inj₂ (leaf (lift C.refl))))
        z≤x∨y
-Context-preserve-∨ (bot x x≤⊥) = bot x x≤⊥
+Context-preserve-∨ (bot x≤⊥) = bot x≤⊥
 Context-preserve-∨ (node ϕ₁ ϕ₂ x) = node (Context-preserve-∨ ϕ₁) (Context-preserve-∨ ϕ₂) x
 
 η-preserve-∨ : η (x ∨ᶜ y) ≤ η x ∨ η y
 η-preserve-∨ .*≤* = Context-preserve-∨
 
 Context-preserve-⊥ : Context (L.η ⊥ᶜ) x → Context L.⊥ x
-Context-preserve-⊥ (leaf x) = bot _ (x .lower)
-Context-preserve-⊥ (bot _ x≤⊥) = bot _ x≤⊥
+Context-preserve-⊥ (leaf x) = bot (x .lower)
+Context-preserve-⊥ (bot x≤⊥) = bot x≤⊥
 Context-preserve-⊥ (node ϕ₁ ϕ₂ x≤y₁∨y₂) = node (Context-preserve-⊥ ϕ₁) (Context-preserve-⊥ ϕ₂) x≤y₁∨y₂
 
 η-preserve-⊥ᶜ : η ⊥ᶜ ≤ ⊥
@@ -401,16 +401,16 @@ module DayCommutative
   -- “Multiplication” of contexts
   Context-∙ : Context F x → Context G y → Context (F LMon.∙ G) (x ∙ᶜ y)
   Context-∙ (leaf Fx) (leaf Gy) = leaf (_ , _ , C.refl , Fx , Gy)
-  Context-∙ (leaf Fx) (bot _ y≤⊥) = bot _ (C.trans (Mon.mono C.refl y≤⊥) (C.trans (C.reflexive (Mon.comm _ _)) ⊥ᶜ-distrib))
+  Context-∙ (leaf Fx) (bot y≤⊥) = bot (C.trans (Mon.mono C.refl y≤⊥) (C.trans (C.reflexive (Mon.comm _ _)) ⊥ᶜ-distrib))
   Context-∙ (leaf Fx) (node ψ₁ ψ₂ y≤y₁∙y₂) =
     node (Context-∙ (leaf Fx) ψ₁) (Context-∙ (leaf Fx) ψ₂) (C.trans (Mon.mono C.refl y≤y₁∙y₂) (distribˡ _ _ _))
-  Context-∙ (bot _ x≤⊥) ψ = bot _ (C.trans (Mon.mono x≤⊥ C.refl) ⊥ᶜ-distrib)
+  Context-∙ (bot x≤⊥) ψ = bot (C.trans (Mon.mono x≤⊥ C.refl) ⊥ᶜ-distrib)
   Context-∙ (node ϕ₁ ϕ₂ x≤x₁∙x₂) ψ =
     node (Context-∙ ϕ₁ ψ) (Context-∙ ϕ₂ ψ) (C.trans (Mon.mono x≤x₁∙x₂ C.refl) (distribʳ _ _ _))
 
   Context-strong : Context (U (α F) LMon.∙ U (α G)) z → Context (F LMon.∙ G) z
   Context-strong (leaf (x , y , z≤x∙y , ϕ₁ , ϕ₂)) = Context-≤ z≤x∙y (Context-∙ ϕ₁ ϕ₂)
-  Context-strong (bot x x≤⊥) = bot x x≤⊥
+  Context-strong (bot x≤⊥) = bot x≤⊥
   Context-strong (node ϕ₁ ϕ₂ z≤x∨y) = node (Context-strong ϕ₁) (Context-strong ϕ₂) z≤x∨y
 
   α-monoidal : (α F ∙ α G) ≈ α (F LMon.∙ G)
@@ -636,7 +636,7 @@ module DayDuoidal
 
   Context-tidy : Context (L.η ιᶜ) z → z ≤ᶜ ιᶜ
   Context-tidy (leaf x) = x .lower
-  Context-tidy (bot _ z≤⊥) = C.trans z≤⊥ ⊥ᶜ≤ιᶜ
+  Context-tidy (bot z≤⊥) = C.trans z≤⊥ ⊥ᶜ≤ιᶜ
   Context-tidy (node ϕ₁ ϕ₂ z≤x₁∨x₂) = C.trans z≤x₁∨x₂ (C.trans (C.mono (Context-tidy ϕ₁) (Context-tidy ϕ₂)) ∨ᶜ-tidy)
 
   ε≤ι : ε ≤ ι
