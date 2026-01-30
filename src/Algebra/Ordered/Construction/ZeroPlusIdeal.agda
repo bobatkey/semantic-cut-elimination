@@ -1,17 +1,19 @@
 {-# OPTIONS --postfix-projections --safe --without-K --no-exact-split --cubical-compatible #-}
 
-open import Level
-open import Algebra
+open import Level using (_⊔_; Level; suc; Lift; lift; lower)
+open import Algebra using (Associative; LeftIdentity; RightIdentity; Identity; _DistributesOver_; Commutative; Op₁)
 open import Algebra.Ordered
-open import Algebra.Ordered.Consequences
+  using (Pomagma; IsPomonoid; Entropy; IsCommutativePomonoid; CommutativePomonoid; RightResidual; IsResiduatedCommutativePomonoid; IsCommutativeDuoidal; IsDuoidal)
+open import Algebra.Ordered.Consequences using (comm∧residual⇒residuated)
 import Algebra.Ordered.Construction.LowerSet
 open import Function using (const; flip)
 open import Function.EquiInhabited using (_↔_)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; <_,_>; -,_; Σ-syntax; ∃; ∃-syntax)
 open import Data.Unit as Unit using ()
-open import Relation.Binary
+open import Data.Sum using (inj₁; inj₂)
+open import Relation.Binary using (IsPartialOrder; IsPreorder; Poset; Setoid; Maximum; Minimum; Monotonic₁; Monotonic₂)
 open import Relation.Binary.Construct.Core.Symmetric as SymCore using (SymCore)
-open import Relation.Binary.Lattice
+open import Relation.Binary.Lattice using (Infimum; IsMeetSemilattice; IsBoundedMeetSemilattice; Supremum; IsJoinSemilattice; IsBoundedJoinSemilattice)
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 import Relation.Binary.Construct.Flip.EqAndOrd as Flip
 open import Relation.Unary using (Pred; _⊆_)
@@ -120,6 +122,7 @@ open IsPartialOrder ≤-isPartialOrder
 
 ------------------------------------------------------------------------------
 -- From ideals to lower sets
+
 U : Ideal → LowerSet
 U I .L.ICarrier = I .ICarrier
 U I .L.≤-closed = I .≤-closed
@@ -131,39 +134,52 @@ U-cong : I ≈ J → U I L.≈ U J
 U-cong (J≤I , I≤J) = U-mono J≤I , U-mono I≤J
 
 ------------------------------------------------------------------------------
--- Turn a lower set into an ideal by closing under ∨
+-- Closure under finite join-like things
 
-data `⋁ (F : LowerSet) : Set (c ⊔ ℓ₂) where
-  leaf : (x : Carrier) → F .L.ICarrier x → `⋁ F
-  `⊥   : `⋁ F
-  node : `⋁ F → `⋁ F → `⋁ F
+data Context (F : LowerSet) : Carrier → Set (c ⊔ ℓ₂) where
+  leaf : ∀ {x} → F .L.ICarrier x → Context F x
+  bot  : (x : Carrier) → x ≤ᶜ ⊥ᶜ → Context F x
+  node : ∀ {x y z} → Context F x → Context F y → z ≤ᶜ (x ∨ᶜ y) → Context F z
 
-`⋁-eval : `⋁ F → Carrier
-`⋁-eval (leaf x _) = x
-`⋁-eval `⊥        = ⊥ᶜ
-`⋁-eval (node c d) = `⋁-eval c ∨ᶜ `⋁-eval d
-
-`⋁-map : F L.≤ G → `⋁ F → `⋁ G
-`⋁-map F≤G (leaf x Fx) = leaf x (F≤G .L.*≤* Fx)
-`⋁-map F≤G `⊥         = `⊥
-`⋁-map F≤G (node c d)  = node (`⋁-map F≤G c) (`⋁-map F≤G d)
-
-`⋁-map-eval : (F≤G : F L.≤ G) (c : `⋁ F) → `⋁-eval c ≤ᶜ `⋁-eval (`⋁-map F≤G c)
-`⋁-map-eval F≤G (leaf x Fx) = C.refl
-`⋁-map-eval F≤G `⊥         = C.refl
-`⋁-map-eval F≤G (node c d) = C.mono (`⋁-map-eval F≤G c) (`⋁-map-eval F≤G d)
+Context-≤ : x ≤ᶜ y → Context F y → Context F x
+Context-≤ {x} {y} {F} x≤y (leaf Fy) = leaf (L.≤-closed F x≤y Fy)
+Context-≤ x≤y (bot y y≤⊥) = bot _ (C.trans x≤y y≤⊥)
+Context-≤ x≤y (node {z₁} {z₂} ϕ₁ ϕ₂ y≤z₁∨z₂) = node ϕ₁ ϕ₂ (C.trans x≤y y≤z₁∨z₂)
 
 α : LowerSet → Ideal
-α F .ICarrier x = Σ[ t ∈ `⋁ F ] (x ≤ᶜ `⋁-eval t)
-α F .≤-closed x≤y (t , y≤t) = t , C.trans x≤y y≤t
-α F .0-closed = `⊥ , C.refl
-α F .∨-closed (s , x≤s) (t , y≤t) = node s t , C.mono x≤s y≤t
+α F .ICarrier = Context F
+α F .≤-closed = Context-≤
+α F .0-closed = bot ⊥ᶜ C.refl
+α F .∨-closed Fx Fy = node Fx Fy C.refl
+
+Context-mono : F L.≤ G → Context F x → Context G x
+Context-mono F≤G (leaf x) = leaf (F≤G .L.*≤* x)
+Context-mono F≤G (bot x x≤⊥) = bot x x≤⊥
+Context-mono {x = z} F≤G (node Ix Iy z≤x∨y) = node (Context-mono F≤G Ix) (Context-mono F≤G Iy) z≤x∨y
 
 α-mono : F L.≤ G → α F ≤ α G
-α-mono F≤G .*≤* (t , x≤t) = `⋁-map F≤G t , C.trans x≤t (`⋁-map-eval F≤G t)
+α-mono F≤G .*≤* = Context-mono F≤G
 
 α-cong : ∀ {F G} → F L.≈ G → α F ≈ α G
 α-cong (G≤F , F≤G) = (α-mono G≤F , α-mono F≤G)
+
+ideals-closed : Context (U I) x → I .ICarrier x
+ideals-closed {I} (leaf Ix) = Ix
+ideals-closed {I} (bot x x≤⊥) = I .≤-closed x≤⊥ (I .0-closed)
+ideals-closed {I} {z} (node Ix Iy z≤x∨y) =
+  I .≤-closed z≤x∨y (I .∨-closed (ideals-closed Ix) (ideals-closed Iy))
+
+counit : α (U I) ≤ I
+counit {I} .*≤* = ideals-closed
+
+counit⁻¹ : I ≤ α (U I)
+counit⁻¹ {I} .*≤* = leaf
+
+counit-≈ : I ≈ α (U I)
+counit-≈ = counit⁻¹ , counit
+
+unit : F L.≤ U (α F)
+unit .L.*≤* = leaf
 
 ------------------------------------------------------------------------------
 η : Carrier → Ideal
@@ -171,26 +187,6 @@ data `⋁ (F : LowerSet) : Set (c ⊔ ℓ₂) where
 
 η-mono : x ≤ᶜ y → η x ≤ η y
 η-mono x≤y = α-mono (L.η-mono x≤y)
-
-------------------------------------------------------------------------------
--- U and α form a Galois connection
-
-`⋁-closed : (t : `⋁ (U I)) → I .ICarrier (`⋁-eval t)
-`⋁-closed {I} (leaf x ϕ) = ϕ
-`⋁-closed {I} `⊥         = I .0-closed
-`⋁-closed {I} (node c d) = I .∨-closed (`⋁-closed c) (`⋁-closed d)
-
-counit : α (U I) ≤ I
-counit {I} .*≤* (t , x≤t) = I .≤-closed x≤t (`⋁-closed t)
-
-counit⁻¹ : I ≤ α (U I)
-counit⁻¹ .*≤* Ix = leaf _ Ix , C.refl
-
-counit-≈ : I ≈ α (U I)
-counit-≈ = counit⁻¹ , counit
-
-unit : F L.≤ U (α F)
-unit .L.*≤* Fx = leaf _ Fx , C.refl
 
 ------------------------------------------------------------------------------
 -- Binary meets
@@ -252,8 +248,7 @@ y≤x∨y : J ≤ (I ∨ J)
 y≤x∨y = ≤-trans counit⁻¹ (α-mono L.y≤x∨y)
 
 ∨-least : I ≤ K → J ≤ K → (I ∨ J) ≤ K
-∨-least {I} {K} {J} I≤K J≤K .*≤* (t , x≤t) =
-  K .≤-closed (C.trans x≤t (`⋁-map-eval _ t)) (`⋁-closed (`⋁-map (L.∨-least (U-mono I≤K) (U-mono J≤K)) t))
+∨-least I≤K J≤K = ≤-trans (α-mono (L.∨-least (U-mono I≤K) (U-mono J≤K))) counit
 
 ∨-supremum : Supremum _≤_ _∨_
 ∨-supremum I J = (x≤x∨y , y≤x∨y , λ K → ∨-least)
@@ -273,34 +268,24 @@ y≤x∨y = ≤-trans counit⁻¹ (α-mono L.y≤x∨y)
   ; minimum = ⊥-minimum
   }
 
-private
-  helper : (c : `⋁ (L.η (x ∨ᶜ y))) → Σ[ d ∈ `⋁ (U (α (L.η x) ∨ α (L.η y))) ] (`⋁-eval c ≤ᶜ `⋁-eval d)
-  helper {x}{y} (leaf z (lift z≤x∨y)) =
-    (node (leaf x (x≤x∨y .*≤* ((leaf x (lift C.refl)) , C.refl)))
-          (leaf y (y≤x∨y .*≤* ((leaf y (lift C.refl)) , C.refl)))) ,
-    z≤x∨y
-  helper `⊥ = `⊥ , C.refl
-  helper (node c₁ c₂) =
-    let (d₁ , c₁≤d₁) , (d₂ , c₂≤d₂) = helper c₁ , helper c₂
-    in node d₁ d₂ , C.mono c₁≤d₁ c₂≤d₂
+Context-preserve-∨ : Context (L.η (x ∨ᶜ y)) z → Context (U (α (L.η x)) L.∨ U (α (L.η y))) z
+Context-preserve-∨ (leaf (lift z≤x∨y)) =
+  node (leaf (inj₁ (leaf (lift C.refl))))
+       (leaf (inj₂ (leaf (lift C.refl))))
+       z≤x∨y
+Context-preserve-∨ (bot x x≤⊥) = bot x x≤⊥
+Context-preserve-∨ (node ϕ₁ ϕ₂ x) = node (Context-preserve-∨ ϕ₁) (Context-preserve-∨ ϕ₂) x
 
-η-preserve-∨ : α (L.η (x ∨ᶜ y)) ≤ α (L.η x) ∨ α (L.η y)
-η-preserve-∨ {x}{y} .*≤* {z} (c , z≤c) =
-  let d , c≤d = helper c in
-    Ideal.≤-closed (α (L.η x) ∨ α (L.η y))
-      (C.trans z≤c c≤d) (`⋁-closed d)
+η-preserve-∨ : η (x ∨ᶜ y) ≤ η x ∨ η y
+η-preserve-∨ .*≤* = Context-preserve-∨
 
-private
-  preserve-⊥ᶜ-helper : (c : `⋁ (L.η ⊥ᶜ)) → Σ[ d ∈ `⋁ L.⊥ ] (`⋁-eval c ≤ᶜ `⋁-eval d)
-  preserve-⊥ᶜ-helper (leaf x (lift x≤⊥ᶜ)) = `⊥ , x≤⊥ᶜ
-  preserve-⊥ᶜ-helper `⊥ = `⊥ , C.refl
-  preserve-⊥ᶜ-helper (node c₁ c₂) =
-    let (d₁ , c₁≤d₁) , (d₂ , c₂≤d₂) = preserve-⊥ᶜ-helper c₁ , preserve-⊥ᶜ-helper c₂
-    in node d₁ d₂ , C.mono c₁≤d₁ c₂≤d₂
+Context-preserve-⊥ : Context (L.η ⊥ᶜ) x → Context L.⊥ x
+Context-preserve-⊥ (leaf x) = bot _ (x .lower)
+Context-preserve-⊥ (bot _ x≤⊥) = bot _ x≤⊥
+Context-preserve-⊥ (node ϕ₁ ϕ₂ x≤y₁∨y₂) = node (Context-preserve-⊥ ϕ₁) (Context-preserve-⊥ ϕ₂) x≤y₁∨y₂
 
-η-preserve-⊥ᶜ : α (L.η ⊥ᶜ) ≤ ⊥
-η-preserve-⊥ᶜ .*≤* (c , x≤c) =
-  let d , c≤d = preserve-⊥ᶜ-helper c in d , C.trans x≤c c≤d
+η-preserve-⊥ᶜ : η ⊥ᶜ ≤ ⊥
+η-preserve-⊥ᶜ .*≤* = Context-preserve-⊥
 
 ------------------------------------------------------------------------------
 module DayEntropic
@@ -373,43 +358,18 @@ module DayEntropic
   U-monoidal-ι .proj₂ .L.*≤* x≤ε = x≤ε
 
   η-preserve-◁ : η (x ∙ᶜ y) ≤ η x ◁ η y
-  η-preserve-◁ {x} {y} .*≤* {z} (c , z≤c) =
-    Ideal.≤-closed
-      (α (L.η x) ◁ α (L.η y))
-        (C.trans z≤c (`⋁-map-eval _ c))
-          (`⋁-closed {α (L.η x) ◁ α (L.η y)}
-            (`⋁-map
-              (L.≤-trans LMon.η-preserve-∙
-                (L.≤-trans (LMon.∙-mono unit unit) (U-monoidal .proj₂))) c))
-
-{-
-  -- FIXME: this doesn't work
-  module _ (idem : ∀ {x} → x ∨ᶜ x ≤ᶜ x) where
-
-    open IsPomonoid isPomonoid using (mono)
-
-    -- FIXME: this is the same combination function as below
-    _∙ᶜ'_ : `⋁ F → `⋁ G → `⋁ (F LMon.∙ G)
-    leaf x Fx  ∙ᶜ' leaf y Gy  = leaf (x ∙ᶜ y) (x , y , C.refl , Fx , Gy)
-    leaf x Fx  ∙ᶜ' node d₁ d₂ = node (leaf x Fx ∙ᶜ' d₁) (leaf x Fx ∙ᶜ' d₂)
-    node c₁ c₂ ∙ᶜ' d          = node (c₁ ∙ᶜ' d) (c₂ ∙ᶜ' d)
-
-    ∙ᵗ-`⋁-eval : (c : `⋁ F)(d : `⋁ G) → `⋁-eval (c ∙ᶜ' d) ≤ᶜ `⋁-eval c ∙ᶜ `⋁-eval d
-    ∙ᵗ-`⋁-eval (leaf x Fx)  (leaf y Gy)  = C.refl
-    ∙ᵗ-`⋁-eval (leaf x Fx)  (node d₁ d₂) =
-       C.trans (C.mono (∙ᵗ-`⋁-eval (leaf x Fx) d₁) (∙ᵗ-`⋁-eval (leaf x Fx) d₂))
-      (C.trans (∨-entropy _ _ _ _)
-               (mono idem C.refl))
-    ∙ᵗ-`⋁-eval (node c₁ c₂) d =
-      C.trans (C.mono (∙ᵗ-`⋁-eval c₁ d) (∙ᵗ-`⋁-eval c₂ d))
-      (C.trans (∨-entropy _ _ _ _)
-      (mono C.refl idem))
-
-    η-preserve-◁⁻¹ : α (η x) ◁ α (η y) ≤ α (η (x ∙ᶜ y))
-    η-preserve-◁⁻¹ {x}{y} .*≤* {z} (z₁ , z₂ , z≤z₁z₂ , (c₁ , z₁≤c) , (c₂ , z₂≤c)) =
-      `⋁-map η-preserve-∙⁻¹ (c₁ ∙ᶜ' c₂) ,
-      C.trans z≤z₁z₂ {!!}
--}
+  η-preserve-◁ {x} {y} = begin
+      α (L.η (x ∙ᶜ y))
+    ≤⟨ α-mono LMon.η-preserve-∙ ⟩
+      α (L.η x LMon.∙ L.η y)
+    ≤⟨ α-mono (LMon.∙-mono unit unit) ⟩
+      α (U (α (L.η x)) LMon.∙ U (α (L.η y)))
+    ≤⟨ α-mono (U-monoidal .proj₂) ⟩
+      α (U (α (L.η x) ◁ α (L.η y)))
+    ≤⟨ counit ⟩
+      α (L.η x) ◁ α (L.η y)
+    ∎
+    where open PosetReasoning ≤-poset
 
 -- FIXME: could do Day without commutative as well
 module DayCommutative
@@ -433,34 +393,28 @@ module DayCommutative
   ε : Ideal
   ε = α LMon.ε
 
-  _∙ᵗ_ : `⋁ F → `⋁ G → `⋁ (F LMon.∙ G)
-  leaf x Fx  ∙ᵗ leaf y Gy  = leaf (x ∙ᶜ y) (x , y , C.refl , Fx , Gy)
-  leaf x Fx  ∙ᵗ node d₁ d₂ = node (leaf x Fx ∙ᵗ d₁) (leaf x Fx ∙ᵗ d₂)
-  leaf x Fx  ∙ᵗ `⊥        = `⊥
-  `⊥        ∙ᵗ leaf y Gy  = `⊥
-  `⊥        ∙ᵗ `⊥         = `⊥
-  `⊥        ∙ᵗ node d₁ d₂ = `⊥
-  node c₁ c₂ ∙ᵗ d          = node (c₁ ∙ᵗ d) (c₂ ∙ᵗ d)
+  -- FIXME: if εᶜ is closed under ⟘ and ∨, then η εᶜ is automatically
+  -- an ideal, and we do not need to complete it. This is done in the
+  -- Day Duoidal section below, but is useful even without the
+  -- duoidality assumption.
 
-  ∙ᵗ-`⋁-eval : (c : `⋁ F)(d : `⋁ G) → `⋁-eval c ∙ᶜ `⋁-eval d ≤ᶜ `⋁-eval (c ∙ᵗ d)
-  ∙ᵗ-`⋁-eval (leaf x Fx)  (leaf y Gy)  = C.refl
-  ∙ᵗ-`⋁-eval (leaf x Fx)  (node d₁ d₂) = C.trans (distribˡ _ _ _) (C.mono (∙ᵗ-`⋁-eval (leaf x Fx) d₁) (∙ᵗ-`⋁-eval (leaf x Fx) d₂))
-  ∙ᵗ-`⋁-eval (leaf x Fx)  `⊥           = C.trans (C.reflexive (Mon.comm _ _)) ⊥ᶜ-distrib
-  ∙ᵗ-`⋁-eval `⊥           (leaf x x₁) = ⊥ᶜ-distrib
-  ∙ᵗ-`⋁-eval `⊥           `⊥          = ⊥ᶜ-distrib
-  ∙ᵗ-`⋁-eval `⊥           (node d d₁) = ⊥ᶜ-distrib
-  ∙ᵗ-`⋁-eval (node c₁ c₂) d            = C.trans (distribʳ _ _ _) (C.mono (∙ᵗ-`⋁-eval c₁ d) (∙ᵗ-`⋁-eval c₂ d))
+  -- “Multiplication” of contexts
+  Context-∙ : Context F x → Context G y → Context (F LMon.∙ G) (x ∙ᶜ y)
+  Context-∙ (leaf Fx) (leaf Gy) = leaf (_ , _ , C.refl , Fx , Gy)
+  Context-∙ (leaf Fx) (bot _ y≤⊥) = bot _ (C.trans (Mon.mono C.refl y≤⊥) (C.trans (C.reflexive (Mon.comm _ _)) ⊥ᶜ-distrib))
+  Context-∙ (leaf Fx) (node ψ₁ ψ₂ y≤y₁∙y₂) =
+    node (Context-∙ (leaf Fx) ψ₁) (Context-∙ (leaf Fx) ψ₂) (C.trans (Mon.mono C.refl y≤y₁∙y₂) (distribˡ _ _ _))
+  Context-∙ (bot _ x≤⊥) ψ = bot _ (C.trans (Mon.mono x≤⊥ C.refl) ⊥ᶜ-distrib)
+  Context-∙ (node ϕ₁ ϕ₂ x≤x₁∙x₂) ψ =
+    node (Context-∙ ϕ₁ ψ) (Context-∙ ϕ₂ ψ) (C.trans (Mon.mono x≤x₁∙x₂ C.refl) (distribʳ _ _ _))
 
-  α-helper : (c : `⋁ (U (α F) LMon.∙ U (α G))) → x ≤ᶜ `⋁-eval c → Σ[ d ∈ `⋁ (F LMon.∙ G) ] (x ≤ᶜ `⋁-eval d)
-  α-helper (leaf y (y₁ , y₂ , y≤y₁y₂ , (c , y₁≤c) , (d , y₂≤d))) x≤y =
-    (c ∙ᵗ d) , C.trans x≤y (C.trans y≤y₁y₂ (C.trans (Mon.mono y₁≤c y₂≤d) (∙ᵗ-`⋁-eval c d)))
-  α-helper `⊥ x≤y = `⊥ , x≤y
-  α-helper (node c d) x≤cd =
-    let (c' , c≤c') , (d' , d≤d') = α-helper c C.refl , α-helper d C.refl
-    in (node c' d') , (C.trans x≤cd (C.mono c≤c' d≤d'))
+  Context-strong : Context (U (α F) LMon.∙ U (α G)) z → Context (F LMon.∙ G) z
+  Context-strong (leaf (x , y , z≤x∙y , ϕ₁ , ϕ₂)) = Context-≤ z≤x∙y (Context-∙ ϕ₁ ϕ₂)
+  Context-strong (bot x x≤⊥) = bot x x≤⊥
+  Context-strong (node ϕ₁ ϕ₂ z≤x∨y) = node (Context-strong ϕ₁) (Context-strong ϕ₂) z≤x∨y
 
   α-monoidal : (α F ∙ α G) ≈ α (F LMon.∙ G)
-  α-monoidal .proj₁ .*≤* (c , x≤c)  = α-helper c x≤c
+  α-monoidal .proj₁ .*≤* = Context-strong
   α-monoidal .proj₂ = α-mono (LMon.∙-mono unit unit)
 
   ∙-mono : Monotonic₂ _≤_ _≤_ _≤_ _∙_
@@ -680,19 +634,20 @@ module DayDuoidal
     ∎
     where open PosetReasoning ≤-poset
 
-  tidy : (c : `⋁ LDuo.ι) → `⋁-eval c ≤ᶜ ιᶜ
-  tidy (leaf x (lift x≤ι)) = x≤ι
-  tidy `⊥ = ⊥ᶜ≤ιᶜ
-  tidy (node c d) = C.trans (C.mono (tidy c) (tidy d)) ∨ᶜ-tidy
+  Context-tidy : Context (L.η ιᶜ) z → z ≤ᶜ ιᶜ
+  Context-tidy (leaf x) = x .lower
+  Context-tidy (bot _ z≤⊥) = C.trans z≤⊥ ⊥ᶜ≤ιᶜ
+  Context-tidy (node ϕ₁ ϕ₂ z≤x₁∨x₂) = C.trans z≤x₁∨x₂ (C.trans (C.mono (Context-tidy ϕ₁) (Context-tidy ϕ₂)) ∨ᶜ-tidy)
 
   ε≤ι : ε ≤ ι
-  ε≤ι .*≤* (t , x≤t) = lift (C.trans x≤t (C.trans (`⋁-map-eval LDuo.ε≤ι t) (tidy (`⋁-map LDuo.ε≤ι t))))
+  ε≤ι .*≤* ϕ .lower = Context-tidy (Context-mono (L.η-mono Duo.ε≲ι) ϕ)
 
   ∙-◁-isDuoidal : IsDuoidal _≈_ _≤_ _∙_ _◁_ ε ι
   ∙-◁-isDuoidal = record
     { ∙-isPomonoid = IsCommutativePomonoid.isPomonoid ∙-isCommutativePomonoid
     ; ◁-isPomonoid = ◁-isPomonoid
     ; ∙-◁-entropy = ∙-◁-entropy
+      -- FIXME: split these two out
     ; ∙-idem-ι = ≤-trans (α-mono (LDuo.∙-mono (U-monoidal-ι .proj₁) (U-monoidal-ι .proj₁)))
                 (≤-trans (α-mono LDuo.∙-idem-ι)
                 (≤-trans (α-mono (U-monoidal-ι .proj₂))

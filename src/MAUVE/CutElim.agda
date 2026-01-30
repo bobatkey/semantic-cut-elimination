@@ -30,7 +30,7 @@ interactᴾ P Q .L.*≤* {x} (y , z , x≤y⅋z , ϕ₁ , lift z≤P⊗Q) =
         ◅◅ (`⅋⟩⋆ z≤P⊗Q)
         ◅◅ (bwd `⅋-comm ◅ ε)
         ◅◅ (step `switch ◅ ε)
-        ◅◅ (`⊗⟩⋆ ((bwd `⅋-comm ◅ ε) ◅◅ (ϕ₁ {Q} ((I.leaf Q (lift ε)) , ε)) .lower))
+        ◅◅ (`⊗⟩⋆ ((bwd `⅋-comm ◅ ε) ◅◅ (ϕ₁ {Q} (I.leaf (lift ε))) .lower))
         ◅◅ fwd `⊗-identityʳ ◅ ε)
 
 interact : (P Q : Structure) → (I.η Q I.⊸ I.ι) I.⅋ I.η (P `⊗ Q) I.≤ I.η P
@@ -114,7 +114,7 @@ main-lemma P .fpos = reify' P
 main-lemma P .fneg = reflect P
 
 sem-cut-elim : (P : Structure) → C.ε ≤ ⟦ P ⟧ → P ⟶⋆ `I
-sem-cut-elim P I≤P = q .I.*≤* (I.leaf P (lift ε) , ε) .lower
+sem-cut-elim P I≤P = q .I.*≤* (I.leaf (lift ε)) .lower
   where p : C.ε ≤ C.¬ (embed P)
         p = C.≤-trans I≤P (main-lemma P)
         q : I.η P I.≤ I.ι

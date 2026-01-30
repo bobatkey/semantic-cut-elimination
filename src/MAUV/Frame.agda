@@ -158,7 +158,7 @@ module FrameModel {a ℓ₁ ℓ₂} (frame : Frame a ℓ₁ ℓ₂) where
 
   units-iso : I.ε I.≈ I.ι
   units-iso .Product.proj₁ = I.ε≤ι
-  units-iso .Product.proj₂ .*≤* {x} x≤I = I.leaf x x≤I , refl
+  units-iso .Product.proj₂ .*≤* {x} x≤I = I.leaf x≤I
 
   module C where
     private

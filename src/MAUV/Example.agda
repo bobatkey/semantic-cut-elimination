@@ -30,88 +30,48 @@ SMAUV-proof-of-example₁ = SMAUV.step (`axiom example₁) ◅ ε
 
 -- MAUV-proof-of-example₁ : (example₁ `⅋ `¬ example₁) MAUV.Deep.⟶⋆ `I
 MAUV-proof-of-example₁ : (example₁ `⅋ `¬ example₁) MAUV.⟶⋆ `I
-MAUV-proof-of-example₁ = 
-  -- {! Deep.to (cut-elim _ SMAUV-proof-of-example₁) !}
+MAUV-proof-of-example₁ =
+--   {! Deep.to (cut-elim _ SMAUV-proof-of-example₁) !}
   begin
-    ((`I `⊕ `I) `◁ (`I `& `I)) `⅋ ((`I `& `I) `◁ (`I `⊕ `I)) 
-  ∼⟨ emb `⅋-comm ⟨ 
-    ((`I `& `I) `◁ (`I `⊕ `I)) `⅋ ((`I `⊕ `I) `◁ (`I `& `I)) 
-  ∼⟨ emb `⅋-comm ⟨ 
-    ((`I `⊕ `I) `◁ (`I `& `I)) `⅋ ((`I `& `I) `◁ (`I `⊕ `I)) 
-  ∼⟨ emb `⅋-comm ⟨ 
-    ((`I `& `I) `◁ (`I `⊕ `I)) `⅋ ((`I `⊕ `I) `◁ (`I `& `I)) 
-  ∼⟨ emb `⅋-comm ⟨ 
-    ((`I `⊕ `I) `◁ (`I `& `I)) `⅋ ((`I `& `I) `◁ (`I `⊕ `I)) 
-  ∼⟨ emb `⅋-comm ⟨ 
-    ((`I `& `I) `◁ (`I `⊕ `I)) `⅋ ((`I `⊕ `I) `◁ (`I `& `I)) 
-  ∼⟨ emb `⅋-comm ⟨ 
-    ((`I `⊕ `I) `◁ (`I `& `I)) `⅋ ((`I `& `I) `◁ (`I `⊕ `I)) 
-  ∼⟨ emb `⅋-comm ⟨ 
-    ((`I `& `I) `◁ (`I `⊕ `I)) `⅋ ((`I `⊕ `I) `◁ (`I `& `I)) 
-  ∼⟨ emb `⅋-comm ⟨ 
-    ((`I `⊕ `I) `◁ (`I `& `I)) `⅋ ((`I `& `I) `◁ (`I `⊕ `I)) 
-  ∼⟨ emb `⅋-comm ⟨ 
-    ((`I `& `I) `◁ (`I `⊕ `I)) `⅋ ((`I `⊕ `I) `◁ (`I `& `I)) 
-  ∼⟨ emb `⅋-comm ⟨ 
-    ((`I `⊕ `I) `◁ (`I `& `I)) `⅋ ((`I `& `I) `◁ (`I `⊕ `I)) 
-  ∼⟨ emb `⅋-comm ⟨ 
-    ((`I `& `I) `◁ (`I `⊕ `I)) `⅋ ((`I `⊕ `I) `◁ (`I `& `I))
-  ⟶⟨ emb `sequence ⟩
-      ((`I `& `I) `⅋ (`I `⊕ `I)) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) 
-  ∼⟨ emb `⅋-comm `⟨◁ ⟨ 
-    ((`I `⊕ `I) `⅋ (`I `& `I)) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) 
-  ∼⟨ emb `⅋-comm `⟨◁ ⟨ 
-    ((`I `& `I) `⅋ (`I `⊕ `I)) `◁ ((`I `⊕ `I) `⅋ (`I `& `I))
-  ⟶⟨ emb `external `⟨◁ ⟩
-      ((`I `⅋ (`I `⊕ `I)) `& (`I `⅋ (`I `⊕ `I))) `◁  ((`I `⊕ `I) `⅋ (`I `& `I))  
-  ∼⟨ (`&⟩ emb `⅋-comm) `⟨◁ ⟨ 
-    ((`I `⅋ (`I `⊕ `I)) `& ((`I `⊕ `I) `⅋ `I)) `◁  ((`I `⊕ `I) `⅋ (`I `& `I))  
-  ∼⟨ (`&⟩ emb `⅋-comm) `⟨◁ ⟨ 
-    ((`I `⅋ (`I `⊕ `I)) `& (`I `⅋ (`I `⊕ `I))) `◁  ((`I `⊕ `I) `⅋ (`I `& `I))  
-  ∼⟨ (`&⟩ emb `⅋-comm) `⟨◁ ⟩
-    ((`I `⅋ (`I `⊕ `I)) `& ((`I `⊕ `I) `⅋ `I)) `◁  ((`I `⊕ `I) `⅋ (`I `& `I))  
-  ∼⟨ (`&⟩ emb `⅋-identityʳ) `⟨◁ ⟩
-    ((`I `⅋ (`I `⊕ `I)) `& (`I `⊕ `I)) `◁ ((`I `⊕ `I) `⅋ (`I `& `I))  
-  ∼⟨ (emb `⅋-comm `⟨&) `⟨◁ ⟨ 
-    (((`I `⊕ `I) `⅋ `I) `& (`I `⊕ `I)) `◁ ((`I `⊕ `I) `⅋ (`I `& `I))  
-  ∼⟨ (emb `⅋-comm `⟨&) `⟨◁ ⟨ 
-    ((`I `⅋ (`I `⊕ `I)) `& (`I `⊕ `I)) `◁ ((`I `⊕ `I) `⅋ (`I `& `I))  
-  ∼⟨ (emb `⅋-comm `⟨&) `⟨◁ ⟩
-    (((`I `⊕ `I) `⅋ `I) `& (`I `⊕ `I)) `◁ ((`I `⊕ `I) `⅋ (`I `& `I))  
-  ∼⟨ (emb `⅋-identityʳ `⟨&) `⟨◁ ⟩
-    ((`I `⊕ `I) `& (`I `⊕ `I)) `◁ ((`I `⊕ `I) `⅋ (`I `& `I))
-  ⟶⟨ (`&⟩ emb `right) `⟨◁ ⟩
-    ((`I `⊕ `I) `& `I) `◁ ((`I `⊕ `I) `⅋ (`I `& `I))
-  ⟶⟨ (emb `left `⟨&) `⟨◁ ⟩ 
-    (`I `& `I) `◁ ((`I `⊕ `I) `⅋ (`I `& `I))
-  ⟶⟨ emb `tidy `⟨◁ ⟩
-    `I `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) 
-  ∼⟨ emb `◁-identityˡ ⟩
-    (`I `⊕ `I) `⅋ (`I `& `I) 
-  ∼⟨ emb `⅋-comm ⟨ 
-    (`I `& `I) `⅋ (`I `⊕ `I)
-  ⟶⟨ emb `external ⟩
-      (`I `⅋ (`I `⊕ `I)) `& (`I `⅋ (`I `⊕ `I)) 
-  ∼⟨ `&⟩ emb `⅋-comm  ⟨ 
-    (`I `⅋ (`I `⊕ `I)) `& ((`I `⊕ `I) `⅋ `I)
-  ⟶⟨ `&⟩ (emb `right `⟨⅋) ⟩
-    (`I `⅋ (`I `⊕ `I)) `& (`I `⅋ `I) 
-  ∼⟨ `&⟩ emb `⅋-comm ⟩
-    (`I `⅋ (`I `⊕ `I)) `& (`I `⅋ `I) 
-  ∼⟨ `&⟩ emb `⅋-identityʳ ⟩
-    (`I `⅋ (`I `⊕ `I)) `& `I 
-  ∼⟨ emb `⅋-comm `⟨& ⟨ 
-    ((`I `⊕ `I) `⅋ `I) `& `I
-  ⟶⟨ (emb `left `⟨⅋) `⟨& ⟩
-    (`I `⅋ `I) `& `I 
-  ∼⟨ emb `⅋-comm `⟨& ⟩
-    (`I `⅋ `I) `& `I 
-  ∼⟨ emb `⅋-identityʳ `⟨& ⟩
-    `I `& `I
-  ⟶⟨ emb `tidy ⟩
-    `I
-  ∎
-  -- where open MAUV.Deep
+     ((`I `⊕ `I) `◁ (`I `& `I)) `⅋ ((`I `& `I) `◁ (`I `⊕ `I)) ∼⟨ emb `⅋-comm ⟨
+     ((`I `& `I) `◁ (`I `⊕ `I)) `⅋ ((`I `⊕ `I) `◁ (`I `& `I)) ∼⟨ emb `⅋-comm ⟨
+     ((`I `⊕ `I) `◁ (`I `& `I)) `⅋ ((`I `& `I) `◁ (`I `⊕ `I)) ∼⟨ emb `⅋-comm ⟨
+     ((`I `& `I) `◁ (`I `⊕ `I)) `⅋ ((`I `⊕ `I) `◁ (`I `& `I)) ∼⟨ emb `⅋-comm ⟨
+     ((`I `⊕ `I) `◁ (`I `& `I)) `⅋ ((`I `& `I) `◁ (`I `⊕ `I)) ∼⟨ emb `⅋-comm ⟨
+     ((`I `& `I) `◁ (`I `⊕ `I)) `⅋ ((`I `⊕ `I) `◁ (`I `& `I)) ∼⟨ emb `⅋-comm ⟨
+     ((`I `⊕ `I) `◁ (`I `& `I)) `⅋ ((`I `& `I) `◁ (`I `⊕ `I)) ∼⟨ emb `⅋-comm ⟨
+     ((`I `& `I) `◁ (`I `⊕ `I)) `⅋ ((`I `⊕ `I) `◁ (`I `& `I)) ∼⟨ emb `⅋-comm ⟨
+     ((`I `⊕ `I) `◁ (`I `& `I)) `⅋ ((`I `& `I) `◁ (`I `⊕ `I)) ∼⟨ emb `⅋-comm ⟨
+     ((`I `& `I) `◁ (`I `⊕ `I)) `⅋ ((`I `⊕ `I) `◁ (`I `& `I)) ∼⟨ emb `⅋-comm ⟨
+     ((`I `⊕ `I) `◁ (`I `& `I)) `⅋ ((`I `& `I) `◁ (`I `⊕ `I)) ∼⟨ emb `⅋-comm ⟨
+     ((`I `& `I) `◁ (`I `⊕ `I)) `⅋ ((`I `⊕ `I) `◁ (`I `& `I)) ⟶⟨ emb `sequence ⟩
+     ((`I `& `I) `⅋ (`I `⊕ `I)) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) ∼⟨ emb `⅋-comm `⟨◁ ⟨
+     ((`I `⊕ `I) `⅋ (`I `& `I)) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) ∼⟨ emb `⅋-comm `⟨◁ ⟨
+     ((`I `& `I) `⅋ (`I `⊕ `I)) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) ⟶⟨ emb `external `⟨◁ ⟩
+     ((`I `⅋ (`I `⊕ `I)) `& (`I `⅋ (`I `⊕ `I))) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) ∼⟨ (`&⟩ emb `⅋-comm) `⟨◁ ⟨
+     ((`I `⅋ (`I `⊕ `I)) `& ((`I `⊕ `I) `⅋ `I)) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) ∼⟨ (`&⟩ emb `⅋-comm) `⟨◁ ⟨
+     ((`I `⅋ (`I `⊕ `I)) `& (`I `⅋ (`I `⊕ `I))) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) ∼⟨ (`&⟩ emb `⅋-comm) `⟨◁ ⟩
+     ((`I `⅋ (`I `⊕ `I)) `& ((`I `⊕ `I) `⅋ `I)) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) ∼⟨ (`&⟩ emb `⅋-identityʳ) `⟨◁ ⟩
+     ((`I `⅋ (`I `⊕ `I)) `& (`I `⊕ `I)) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) ⟶⟨ (`&⟩ emb `right) `⟨◁ ⟩
+     ((`I `⅋ (`I `⊕ `I)) `& `I) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) ∼⟨ (emb `⅋-comm `⟨&) `⟨◁ ⟨
+     (((`I `⊕ `I) `⅋ `I) `& `I) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) ∼⟨ (emb `⅋-comm `⟨&) `⟨◁ ⟨
+     ((`I `⅋ (`I `⊕ `I)) `& `I) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) ∼⟨ (emb `⅋-comm `⟨&) `⟨◁ ⟩
+     (((`I `⊕ `I) `⅋ `I) `& `I) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) ∼⟨ (emb `⅋-identityʳ `⟨&) `⟨◁ ⟩
+     ((`I `⊕ `I) `& `I) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) ⟶⟨ (emb `left `⟨&) `⟨◁ ⟩
+     (`I `& `I) `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) ⟶⟨ emb `tidy `⟨◁ ⟩
+     `I `◁ ((`I `⊕ `I) `⅋ (`I `& `I)) ∼⟨ emb `◁-identityˡ ⟩
+     (`I `⊕ `I) `⅋ (`I `& `I) ∼⟨ emb `⅋-comm ⟨
+     (`I `& `I) `⅋ (`I `⊕ `I) ⟶⟨ emb `external ⟩
+     (`I `⅋ (`I `⊕ `I)) `& (`I `⅋ (`I `⊕ `I)) ∼⟨ `&⟩ emb `⅋-comm ⟨
+     (`I `⅋ (`I `⊕ `I)) `& ((`I `⊕ `I) `⅋ `I) ⟶⟨ `&⟩ (emb `right `⟨⅋) ⟩
+     (`I `⅋ (`I `⊕ `I)) `& (`I `⅋ `I) ∼⟨ `&⟩ emb `⅋-comm ⟩
+     (`I `⅋ (`I `⊕ `I)) `& (`I `⅋ `I) ∼⟨ `&⟩ emb `⅋-identityʳ ⟩
+     (`I `⅋ (`I `⊕ `I)) `& `I ∼⟨ emb `⅋-comm `⟨& ⟨
+     ((`I `⊕ `I) `⅋ `I) `& `I ⟶⟨ (emb `left `⟨⅋) `⟨& ⟩
+     (`I `⅋ `I) `& `I ∼⟨ emb `⅋-comm `⟨& ⟩
+     (`I `⅋ `I) `& `I ∼⟨ emb `⅋-identityʳ `⟨& ⟩
+     `I `& `I ⟶⟨ emb `tidy ⟩
+     `I ∎
   where open MAUV
 
 _ : cut-elim _ SMAUV-proof-of-example₁ ≡ MAUV-proof-of-example₁
