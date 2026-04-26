@@ -253,8 +253,15 @@ _⇒_ : LowerSet → LowerSet → LowerSet
 ⇒-residualʳ-to : (F ∧ G) ≤ H → G ≤ (F ⇒ H)
 ⇒-residualʳ-to {F} {G} {H} F∧G≤H .*≤* Gx y≤x Fy = F∧G≤H .*≤* (Fy , G .≤-closed y≤x Gx)
 
+⇒-residualˡ-to : (F ∧ G) ≤ H → F ≤ (G ⇒ H)
+⇒-residualˡ-to {F} {G} {H} F∧G≤H .*≤* Fx y≤x Gy = F∧G≤H .*≤* (F .≤-closed y≤x Fx , Gy)
+
 ⇒-residualʳ-from : G ≤ (F ⇒ H) → (F ∧ G) ≤ H
 ⇒-residualʳ-from G≤F⇒H .*≤* (Fx , Gx) = G≤F⇒H .*≤* Gx C.refl Fx
+
+⇒-residualˡ-from : F ≤ (G ⇒ H) → (F ∧ G) ≤ H
+⇒-residualˡ-from F≤G⇒H .*≤* (Fx , Gx) = F≤G⇒H .*≤* Fx C.refl Gx
+
 
 ⇒-residualʳ : RightResidual _≤_ _∧_ _⇒_
 ⇒-residualʳ ._↔_.to        = ⇒-residualʳ-to

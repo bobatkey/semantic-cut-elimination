@@ -13,7 +13,7 @@ open import Data.Unit as Unit using ()
 open import Data.Sum using (inj₁; inj₂)
 open import Relation.Binary using (IsPartialOrder; IsPreorder; Poset; Setoid; Maximum; Minimum; Monotonic₁; Monotonic₂)
 open import Relation.Binary.Construct.Core.Symmetric as SymCore using (SymCore)
-open import Relation.Binary.Lattice using (Infimum; IsMeetSemilattice; IsBoundedMeetSemilattice; Supremum; IsJoinSemilattice; IsBoundedJoinSemilattice)
+open import Relation.Binary.Lattice using (Infimum; IsMeetSemilattice; IsBoundedMeetSemilattice; Supremum; IsJoinSemilattice; IsBoundedJoinSemilattice; IsHeytingAlgebra; IsBoundedLattice; IsLattice)
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
 import Relation.Binary.Construct.Flip.EqAndOrd as Flip
 open import Relation.Unary using (Pred; _⊆_)
@@ -215,7 +215,6 @@ x∧y≤y .*≤* = proj₂
   ; infimum        = ∧-infimum
   }
 
--- FIXME: under what conditions does α preserve meets?
 
 ⊤ : Ideal
 ⊤ .ICarrier x = Lift _ Unit.⊤
@@ -231,6 +230,13 @@ x∧y≤y .*≤* = proj₂
   { isMeetSemilattice = ∧-isMeetSemilattice
   ; maximum = ⊤-maximum
   }
+
+U-∧ : U I L.∧ U J L.≤ U (I ∧ J)
+U-∧ .L.*≤* ij = ij
+
+U-∧⁻¹ : U (I ∧ J) L.≤ U I L.∧ U J
+U-∧⁻¹ .L.*≤* ij = ij
+
 
 ------------------------------------------------------------------------------
 -- Binary joins
@@ -279,6 +285,8 @@ Context-preserve-∨ (node ϕ₁ ϕ₂ x) = node (Context-preserve-∨ ϕ₁) (C
 η-preserve-∨ : η (x ∨ᶜ y) ≤ η x ∨ η y
 η-preserve-∨ .*≤* = Context-preserve-∨
 
+-- FIXME: if ∨ᶜ is actually a join, then we also have η x ∨ η y ≤ η (x ∨ᶜ y) too
+
 Context-preserve-⊥ : Context (L.η ⊥ᶜ) x → Context L.⊥ x
 Context-preserve-⊥ (leaf x) = bot (x .lower)
 Context-preserve-⊥ (bot x≤⊥) = bot x≤⊥
@@ -286,6 +294,103 @@ Context-preserve-⊥ (node ϕ₁ ϕ₂ x≤y₁∨y₂) = node (Context-preserve
 
 η-preserve-⊥ᶜ : η ⊥ᶜ ≤ ⊥
 η-preserve-⊥ᶜ .*≤* = Context-preserve-⊥
+
+------------------------------------------------------------------------------
+isLattice : IsLattice _≈_ _≤_ _∨_ _∧_
+isLattice .IsLattice.isPartialOrder = ≤-isPartialOrder
+isLattice .IsLattice.supremum = ∨-supremum
+isLattice .IsLattice.infimum = ∧-infimum
+
+isBoundedLattice : IsBoundedLattice _≈_ _≤_ _∨_ _∧_ ⊤ ⊥
+isBoundedLattice .IsBoundedLattice.isLattice = isLattice
+isBoundedLattice .IsBoundedLattice.maximum = ⊤-maximum
+isBoundedLattice .IsBoundedLattice.minimum = ⊥-minimum
+
+------------------------------------------------------------------------------
+-- If there is a meet in C and it distributes over ∨ᶜ, then we get a
+-- Heying algebra
+module Distributive
+     {_∧ᶜ_}
+     (isInfimum : Infimum _≤ᶜ_ _∧ᶜ_)
+     (distrib   : _DistributesOver_ _≤ᶜ_ _∧ᶜ_ _∨ᶜ_)
+   where
+
+  Context-∧ : ∀ {F G x y} → Context F x → Context G y → Context (F L.∧ G) (x ∧ᶜ y)
+  Context-∧ {F} {G} {x} {y} (leaf Fx) (leaf Gy) =
+    leaf (F .L.≤-closed (isInfimum x y .proj₁) Fx ,
+          G .L.≤-closed (isInfimum x y .proj₂ .proj₁) Gy)
+  Context-∧ (leaf _) (bot π) = bot (C.trans (isInfimum _ _ .proj₂ .proj₁) π)
+  Context-∧ (leaf Fx) (node {x₁} {x₂} ψ₁ ψ₂ π) =
+    node (Context-∧ (leaf Fx) ψ₁)
+         (Context-∧ (leaf Fx) ψ₂)
+         (C.trans (isInfimum _ _ .proj₂ .proj₂ _
+                     (isInfimum _ _ .proj₁)
+                     (C.trans (isInfimum _ _ .proj₂ .proj₁) π))
+                  (distrib .proj₁ _ x₁ x₂))
+  Context-∧ (bot π) _ = bot (C.trans (isInfimum _ _ .proj₁) π)
+  Context-∧ (node ϕ₁ ϕ₂ π) ψ =
+    node (Context-∧ ϕ₁ ψ) (Context-∧ ϕ₂ ψ)
+         (C.trans (isInfimum _ _ .proj₂ .proj₂ _
+                     (C.trans (isInfimum _ _ .proj₁) π)
+                     (isInfimum _ _ .proj₂ .proj₁))
+                  (distrib .proj₂ _ _ _))
+
+  α-preserve-∧ : (α F ∧ α G) ≈ α (F L.∧ G)
+  α-preserve-∧ .proj₁ .*≤* (Fx , Gx) =
+    Context-≤ (isInfimum _ _ .proj₂ .proj₂ _ C.refl C.refl) (Context-∧ Fx Gx)
+  α-preserve-∧ .proj₂ = ∧-greatest (α-mono L.x∧y≤x) (α-mono L.x∧y≤y)
+
+  _⇒_ : Ideal → Ideal → Ideal
+  (I ⇒ J) .ICarrier x = ∀ {y} → y ≤ᶜ x → I .ICarrier y → J .ICarrier y
+  (I ⇒ J) .≤-closed {x}{z} x≤z f {y} y≤x Iy = f (C.trans y≤x x≤z) Iy
+  (I ⇒ J) .0-closed y≤⊥ _ = J .≤-closed y≤⊥ (J .0-closed)
+  (I ⇒ J) .∨-closed {x₁}{x₂} f₁ f₂ {y} y≤x₁∨x₂ Iy =
+    J .≤-closed (C.trans (isInfimum _ _ .proj₂ .proj₂ _ y≤x₁∨x₂ C.refl)
+                         (distrib .proj₂ y x₁ x₂))
+      (J .∨-closed (f₁ (isInfimum x₁ y .proj₁)
+                       (I .≤-closed (isInfimum x₁ y .proj₂ .proj₁) Iy))
+                   (f₂ (isInfimum x₂ y .proj₁)
+                       (I .≤-closed (isInfimum x₂ y .proj₂ .proj₁) Iy)))
+
+  U⇒ : U (I ⇒ J) L.≤ (U I L.⇒ U J)
+  U⇒ .L.*≤* f = f
+
+  U⇒⁻¹ : (U I L.⇒ U J) L.≤ U (I ⇒ J)
+  U⇒⁻¹ .L.*≤* f = f
+
+  ⇒-residual-to : (I ∧ J) ≤ K → I ≤ (J ⇒ K)
+  ⇒-residual-to {I}{J}{K} IJ≤K = begin
+      I
+    ≤⟨ counit⁻¹ ⟩
+      α (U I)
+    ≤⟨ α-mono (L.⇒-residualˡ-to (L.≤-trans U-∧ (U-mono IJ≤K))) ⟩
+      α (U J L.⇒ U K)
+    ≤⟨ α-mono U⇒⁻¹ ⟩
+      α (U (J ⇒ K))
+    ≤⟨ counit ⟩
+      J ⇒ K
+    ∎
+    where open PosetReasoning ≤-poset
+
+  ⇒-residual-from : I ≤ (J ⇒ K) → (I ∧ J) ≤ K
+  ⇒-residual-from {I}{J}{K} I≤J⇒K = begin
+      I ∧ J
+    ≤⟨ counit⁻¹ ⟩
+      α (U (I ∧ J))
+    ≤⟨ α-mono U-∧⁻¹ ⟩
+      α (U I L.∧ U J)
+    ≤⟨ α-mono (L.⇒-residualˡ-from (L.≤-trans (U-mono I≤J⇒K) U⇒)) ⟩
+      α (U K)
+    ≤⟨ counit ⟩
+      K
+    ∎
+    where open PosetReasoning ≤-poset
+
+  isHeytingAlgebra : IsHeytingAlgebra _≈_ _≤_ _∨_ _∧_ _⇒_ ⊤ ⊥
+  isHeytingAlgebra .IsHeytingAlgebra.isBoundedLattice = isBoundedLattice
+  isHeytingAlgebra .IsHeytingAlgebra.exponential w x y =
+    ⇒-residual-to ,
+    ⇒-residual-from
 
 ------------------------------------------------------------------------------
 module DayEntropic
