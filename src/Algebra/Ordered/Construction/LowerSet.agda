@@ -274,6 +274,57 @@ _⇒_ : LowerSet → LowerSet → LowerSet
   }
 
 ------------------------------------------------------------------------------
+-- Lift functors to presheaves
+
+module Modality
+    (f : Carrier → Carrier)
+    (f-mono : ∀ {x y} → x ≤ᶜ y → f x ≤ᶜ f y)
+--    {_∧ᶜ_} (∧ᶜ-isMeetSemilattice : IsMeetSemilattice _≈ᶜ_ _≤ᶜ_ _∧ᶜ_)
+  where
+
+  Ff : LowerSet → LowerSet
+  Ff F .ICarrier x = Σ[ y ∈ Carrier ] (x ≤ᶜ f y × F .ICarrier y)
+  Ff F .≤-closed x≤y (y , x≤fy , Fy) = y , C.trans x≤y x≤fy , Fy
+
+  Ff-mono : F ≤ G → Ff F ≤ Ff G
+  Ff-mono F≤G .*≤* (y , x≤fy , Gy) = y , x≤fy , F≤G .*≤* Gy
+
+{-
+  -- FIXME: if f is strong wrt a meet on C, then so is Ff
+  Ff-strength : F ∧ Ff G ≤ Ff (F ∧ G)
+  Ff-strength {F} {G} .*≤* {x} (Fx , (y , x≤fy , Gy)) =
+    x ∧ᶜ y , (C.trans (∧ᶜ-greatest C.refl x≤fy) {!!}) ,
+    F .≤-closed {!!} Fx ,
+    G .≤-closed {!!} Gy
+    where open IsMeetSemilattice ∧ᶜ-isMeetSemilattice
+            renaming (∧-greatest to ∧ᶜ-greatest)
+
+  -- FIXME: if f is inflationary, then so is Ff
+  Ff-inflate : F ≤ Ff F
+  Ff-inflate .*≤* {x} Fx = x , {!!} , Fx
+
+  -- FIXME: if f is idempotent, then so is Ff
+  Ff-idem : Ff (Ff F) ≤ Ff F
+  Ff-idem .*≤* {x} (y , x≤fy , (z , y≤fz , Fz)) = z , {!!} , Fz
+-}
+
+  -- FIXME: same as F .ICarrier (f y)
+  --
+  -- but would have a ∀ if we had a relation instead of a function.
+  Fr : LowerSet → LowerSet
+  Fr F .ICarrier x = ∀ y → y ≤ᶜ f x → F .ICarrier y
+  Fr F .≤-closed x≤y ϕ z z≤fx = ϕ z (C.trans z≤fx (f-mono x≤y))
+
+  Fr-mono : F ≤ G → Fr F ≤ Fr G
+  Fr-mono F≤G .*≤* ϕ = λ y z → F≤G .*≤* (ϕ y z)
+
+  adjoint₁ : Ff F ≤ G → F ≤ Fr G
+  adjoint₁ {F} {G} FfF≤G .*≤* {x} Fx y fy≤x = FfF≤G .*≤* (x , fy≤x , Fx)
+
+  adjoint₂ : F ≤ Fr G → Ff F ≤ G
+  adjoint₂ F≤FrG .*≤* {x} (y , x≤fy , Fy) = F≤FrG .*≤* Fy x x≤fy
+
+------------------------------------------------------------------------------
 -- Lift monoids to presheaves
 
 module Day

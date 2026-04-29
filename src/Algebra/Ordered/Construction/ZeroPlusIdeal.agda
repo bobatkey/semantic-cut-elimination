@@ -392,6 +392,31 @@ module Distributive
     ⇒-residual-to ,
     ⇒-residual-from
 
+module Modality (f : Carrier → Carrier) (f-mono : ∀ {x y} → x ≤ᶜ y → f x ≤ᶜ f y) where
+
+  module M = L.Modality f f-mono
+
+  ◯ : Ideal → Ideal
+  ◯ I = α (M.Ff (U I))
+
+  ◯-mono : I ≤ J → ◯ I ≤ ◯ J
+  ◯-mono I≤J = α-mono (M.Ff-mono (U-mono I≤J))
+
+  -- Strength:
+  --   x ∧ α (Ff (U y))
+  -- ≤ α (U x) ∧ α (Ff (U y))  -- assuming distributivity
+  -- ≤ α (U x ∧ Ff (U y))
+  -- ≤ α (Ff (U x ∧ U y))
+  -- = α (Ff (U (x ∧ y)))
+
+  -- Pointedness:
+  -- x ≤ α (U x) ≤ α (Ff (U x)) = ◯ x
+
+  -- Can't get this to work without either a special case, or if Ff
+  -- commutes with disjunction.
+
+  -- α (Ff (U (α (Ff (U I))))) ≤
+
 ------------------------------------------------------------------------------
 module DayEntropic
     {_∙ᶜ_}
