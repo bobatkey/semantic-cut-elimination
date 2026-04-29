@@ -279,7 +279,6 @@ _⇒_ : LowerSet → LowerSet → LowerSet
 module Modality
     (f : Carrier → Carrier)
     (f-mono : ∀ {x y} → x ≤ᶜ y → f x ≤ᶜ f y)
---    {_∧ᶜ_} (∧ᶜ-isMeetSemilattice : IsMeetSemilattice _≈ᶜ_ _≤ᶜ_ _∧ᶜ_)
   where
 
   Ff : LowerSet → LowerSet
@@ -288,6 +287,25 @@ module Modality
 
   Ff-mono : F ≤ G → Ff F ≤ Ff G
   Ff-mono F≤G .*≤* (y , x≤fy , Gy) = y , x≤fy , F≤G .*≤* Gy
+
+  module Monoidal
+        {_∧ᶜ_ ⊤ᶜ}
+        (∧ᶜ-isBoundedMeetSemilattice : IsBoundedMeetSemilattice _≈ᶜ_ _≤ᶜ_ _∧ᶜ_ ⊤ᶜ)
+        (f-monoidal-unit : ⊤ᶜ ≤ᶜ f ⊤ᶜ)
+        (f-monoidal      : ∀ {x y} → f x ∧ᶜ f y ≤ᶜ f (x ∧ᶜ y))
+      where
+
+    module M = IsBoundedMeetSemilattice ∧ᶜ-isBoundedMeetSemilattice
+
+    Ff-monoidal-unit : ⊤ ≤ Ff ⊤
+    Ff-monoidal-unit .*≤* (lift _) =
+      ⊤ᶜ , C.trans (M.maximum _) f-monoidal-unit , lift _
+
+    Ff-monoidal : Ff F ∧ Ff G ≤ Ff (F ∧ G)
+    Ff-monoidal {F} {G} .*≤* {x} ((y , x≤fy , Fy) , (z , x≤fz , Gz)) =
+      y ∧ᶜ z ,
+      C.trans (M.∧-greatest x≤fy x≤fz) f-monoidal ,
+      (F .≤-closed (M.x∧y≤x _ _) Fy , G .≤-closed (M.x∧y≤y _ _) Gz)
 
 {-
   -- FIXME: if f is strong wrt a meet on C, then so is Ff
@@ -308,9 +326,8 @@ module Modality
   Ff-idem .*≤* {x} (y , x≤fy , (z , y≤fz , Fz)) = z , {!!} , Fz
 -}
 
-  -- FIXME: same as F .ICarrier (f y)
-  --
-  -- but would have a ∀ if we had a relation instead of a function.
+  -- FIXME: same as F .ICarrier (f y), but could be generalised to
+  -- having a relation instead.
   Fr : LowerSet → LowerSet
   Fr F .ICarrier x = ∀ y → y ≤ᶜ f x → F .ICarrier y
   Fr F .≤-closed x≤y ϕ z z≤fx = ϕ z (C.trans z≤fx (f-mono x≤y))

@@ -15,7 +15,6 @@ open import Relation.Binary using (IsPartialOrder; IsPreorder; Poset; Setoid; Ma
 open import Relation.Binary.Construct.Core.Symmetric as SymCore using (SymCore)
 open import Relation.Binary.Lattice using (Infimum; IsMeetSemilattice; IsBoundedMeetSemilattice; Supremum; IsJoinSemilattice; IsBoundedJoinSemilattice; IsHeytingAlgebra; IsBoundedLattice; IsLattice)
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
-import Relation.Binary.Construct.Flip.EqAndOrd as Flip
 open import Relation.Unary using (Pred; _⊆_)
 import Relation.Binary.Reasoning.PartialOrder as PosetReasoning
 import Relation.Binary.Reasoning.Setoid as SetoidReasoning
@@ -225,6 +224,12 @@ x∧y≤y .*≤* = proj₂
 ⊤-maximum : Maximum _≤_ ⊤
 ⊤-maximum x .*≤* _ = lift Unit.tt
 
+U-⊤ : U ⊤ L.≤ L.⊤
+U-⊤ .L.*≤* _ = lift Unit.tt
+
+U-⊤⁻¹ : L.⊤ L.≤ U ⊤
+U-⊤⁻¹ .L.*≤* _ = lift Unit.tt
+
 ∧-⊤-isBoundedMeetSemilattice : IsBoundedMeetSemilattice _≈_ _≤_ _∧_ ⊤
 ∧-⊤-isBoundedMeetSemilattice = record
   { isMeetSemilattice = ∧-isMeetSemilattice
@@ -392,7 +397,10 @@ module Distributive
     ⇒-residual-to ,
     ⇒-residual-from
 
-module Modality (f : Carrier → Carrier) (f-mono : ∀ {x y} → x ≤ᶜ y → f x ≤ᶜ f y) where
+module Modality
+    (f : Carrier → Carrier)
+    (f-mono : ∀ {x y} → x ≤ᶜ y → f x ≤ᶜ f y)
+  where
 
   module M = L.Modality f f-mono
 
@@ -401,6 +409,36 @@ module Modality (f : Carrier → Carrier) (f-mono : ∀ {x y} → x ≤ᶜ y →
 
   ◯-mono : I ≤ J → ◯ I ≤ ◯ J
   ◯-mono I≤J = α-mono (M.Ff-mono (U-mono I≤J))
+
+  module Monoidal
+        {_∧ᶜ_ ⊤ᶜ}
+        (∧ᶜ-isBoundedMeetSemilattice : IsBoundedMeetSemilattice _≈ᶜ_ _≤ᶜ_ _∧ᶜ_ ⊤ᶜ)
+        (f-monoidal-unit : ⊤ᶜ ≤ᶜ f ⊤ᶜ)
+        (f-monoidal      : ∀ {x y} → f x ∧ᶜ f y ≤ᶜ f (x ∧ᶜ y))
+        (distrib   : _DistributesOver_ _≤ᶜ_ _∧ᶜ_ _∨ᶜ_)
+      where
+
+    module H = Distributive (IsBoundedMeetSemilattice.infimum ∧ᶜ-isBoundedMeetSemilattice) distrib
+    module MM = M.Monoidal ∧ᶜ-isBoundedMeetSemilattice f-monoidal-unit f-monoidal
+
+    ◯-monoidal-unit : ⊤ ≤ ◯ ⊤
+    ◯-monoidal-unit = ≤-trans counit⁻¹ (α-mono (L.≤-trans U-⊤ (L.≤-trans MM.Ff-monoidal-unit (M.Ff-mono U-⊤⁻¹))))
+
+    ◯-monoidal : (◯ I ∧ ◯ J) ≤ ◯ (I ∧ J)
+    ◯-monoidal {I}{J} = begin
+        ◯ I ∧ ◯ J
+      ≡⟨⟩
+        α (M.Ff (U I)) ∧ α (M.Ff (U J))
+      ≤⟨ H.α-preserve-∧ .proj₁ ⟩
+        α (M.Ff (U I) L.∧ M.Ff (U J))
+      ≤⟨ α-mono MM.Ff-monoidal ⟩
+        α (M.Ff (U I L.∧ U J))
+      ≤⟨ α-mono (M.Ff-mono U-∧) ⟩
+        α (M.Ff (U (I ∧ J)))
+      ≡⟨⟩
+        ◯ (I ∧ J)
+      ∎
+      where open PosetReasoning ≤-poset
 
   -- Strength:
   --   x ∧ α (Ff (U y))
@@ -412,10 +450,19 @@ module Modality (f : Carrier → Carrier) (f-mono : ∀ {x y} → x ≤ᶜ y →
   -- Pointedness:
   -- x ≤ α (U x) ≤ α (Ff (U x)) = ◯ x
 
-  -- Can't get this to work without either a special case, or if Ff
-  -- commutes with disjunction.
+  -- Join: Can't get this to work without either a special case, or if
+  --   Ff commutes with disjunction in the sense that U (α (Ff x)) ≤
+  --   Ff (U (α x)) via a distributive law? which is true either if we
+  --   can build case splits into monadic sequences of effects,
+  --   somehow.
 
   -- α (Ff (U (α (Ff (U I))))) ≤
+
+  -- Extract:
+  --   α (Ff (U x)) ≤ α (U x) ≤ x
+  --
+  -- Cojoin: (uses 'unit')
+  --   α (Ff (U x)) ≤ α (Ff (Ff (U x))) ≤ α (Ff (U (α (Ff (U x)))))
 
 ------------------------------------------------------------------------------
 module DayEntropic
