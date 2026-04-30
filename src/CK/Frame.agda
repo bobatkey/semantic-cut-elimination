@@ -39,7 +39,6 @@ record Frame c ℓ₁ ℓ₂ : Set (a ⊔ suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
     -- ∀ x y z → R x y → R x z → (Σ[ w ∈ Carrier ] R x w × w ≤ x × w ≤ y)
 
     isDistributiveLattice : IsDistributiveLattice _≈_ _≤_ _∨_ _∧_
-    isMinimum             : Minimum _≤_ ⊥
     isMaximum             : Maximum _≤_ ⊤
 
     atom    : Atom → Carrier

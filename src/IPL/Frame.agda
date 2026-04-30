@@ -22,7 +22,6 @@ record Frame c ℓ₁ ℓ₂ : Set (a ⊔ suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
     ⊥       : Carrier
 
     isDistributiveLattice : IsDistributiveLattice _≈_ _≤_ _∨_ _∧_
-    isMinimum             : Minimum _≤_ ⊥
 
     atom    : Atom → Carrier
 

@@ -1,6 +1,6 @@
 {-# OPTIONS --postfix-projections --safe #-}
 
-module IPL.Completeness {a} (Atom : Set a) {- c ℓ₁ ℓ₂ -} where
+module IPL.Completeness {a} (Atom : Set a) where
 
 open import Level using (suc; _⊔_; lift)
 open import Data.Unit using (tt)

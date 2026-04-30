@@ -67,7 +67,6 @@ syntacticFrame .Frame._∨_ = _`∨_
 syntacticFrame .Frame.⊥ = `⊥
 syntacticFrame .Frame.⊤ = `⊤
 syntacticFrame .Frame.isDistributiveLattice = isDistributiveLattice
-syntacticFrame .Frame.isMinimum χ = falseE (assump here)
 syntacticFrame .Frame.isMaximum ϕ = trueI
 syntacticFrame .Frame.atom = `atom
 syntacticFrame .Frame.□ = `□
