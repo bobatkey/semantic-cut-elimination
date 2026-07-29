@@ -25,17 +25,6 @@
         };
 
         agda = pkgs.agda.withPackages (ps: [ ps.standard-library ]);
-
-          # (ps: [ (ps.standard-library.overrideAttrs (oldAttrs: {
-          #   version = "2.2";
-          #   src = pkgs.fetchFromGitHub {
-          #     repo = "agda-stdlib";
-          #     owner = "agda";
-          #     rev = "v2.2";
-          #     hash = "sha256-/Fy5EOSbVNXt6Jq0yKSnlNPW4SYfn+eCTAYFnMZrbR0=";
-          #     #hash = "sha256-TjGvY3eqpF+DDwatT7A78flyPcTkcLHQ1xcg+MKgCoE=";
-          #   };
-          # })) ]);
       in rec {
         packages = {
           html-doc = pkgs.stdenvNoCC.mkDerivation rec {
