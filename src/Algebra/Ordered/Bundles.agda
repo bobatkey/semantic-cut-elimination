@@ -285,6 +285,46 @@ record CommutativePomonoid c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂))
   open CommutativePromonoid commutativePromonoid public
     using (commutativeSemigroup; commutativeMonoid)
 
+-- Residuated
+record ResiduatedCommutativePomonoid c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
+  infix  4 _≈_ _≤_
+  infixl 7 _∙_
+  infixr 5 _⊸_
+  field
+    Carrier               : Set c
+    _≈_                   : Rel Carrier ℓ₁  -- The underlying equality.
+    _≤_                   : Rel Carrier ℓ₂  -- The partial order.
+    _∙_                   : Op₂ Carrier     -- The monoid multiplication.
+    _⊸_                   : Op₂ Carrier     -- The residual of the monoid
+    ε                     : Carrier         -- The monoid unit.
+    isResiduatedCommutativePomonoid : IsResiduatedCommutativePomonoid _≈_ _≤_ _∙_ _⊸_ ε
+
+  open IsResiduatedCommutativePomonoid isResiduatedCommutativePomonoid public
+
+  pomonoid : Pomonoid c ℓ₁ ℓ₂
+  pomonoid = record { isPomonoid = isPomonoid }
+
+  open Pomonoid pomonoid public using
+    ( preorder
+    ; poset
+    ; magma
+    ; promagma
+    ; pomagma
+    ; semigroup
+    ; prosemigroup
+    ; posemigroup
+    ; monoid
+    ; promonoid
+    )
+
+  commutativePromonoid : CommutativePromonoid c ℓ₁ ℓ₂
+  commutativePromonoid =
+    record { isCommutativePromonoid = isCommutativePromonoid }
+
+  open CommutativePromonoid commutativePromonoid public
+    using (commutativeSemigroup; commutativeMonoid)
+
+
 -- Partially ordered semirings (posemirings)
 
 record Posemiring c ℓ₁ ℓ₂ : Set (suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where

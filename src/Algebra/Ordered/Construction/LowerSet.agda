@@ -341,6 +341,117 @@ module Modality
   adjoint₂ : F ≤ Fr G → Ff F ≤ G
   adjoint₂ F≤FrG .*≤* {x} (y , x≤fy , Fy) = F≤FrG .*≤* Fy x x≤fy
 
+module RelationalModality
+    (R : Carrier → Carrier → Set (c ⊔ ℓ₂))
+    (≤-R : ∀ {x y z} → x ≤ᶜ y → R y z → R x z)
+  where
+
+  ◯ : LowerSet → LowerSet
+  ◯ F .ICarrier x = Σ[ z ∈ Carrier ] (R x z × F .ICarrier z)
+  ◯ F .≤-closed x≤y (z , Ryz , Fz) = z , ≤-R x≤y Ryz , Fz
+
+  ◯-mono : F ≤ G → ◯ F ≤ ◯ G
+  ◯-mono F≤G .*≤* (z , Rxz , Fz) = z , Rxz , F≤G .*≤* Fz
+
+  module Necessity
+    (nec : ∀ x → Σ[ y ∈ Carrier ] R x y)
+    (K   : ∀ x y z → R x y → R x z → Σ[ w ∈ Carrier ] (R x w × w ≤ᶜ y × w ≤ᶜ z))
+    where
+
+    ◯-Nec : ⊤ ≤ ◯ ⊤
+    ◯-Nec .*≤* {x} (lift _) =
+      nec x .proj₁ , nec x .proj₂ , lift _
+
+    -- If I have ◯-Nec, I can recover R-nec
+    -- If I have ◯-K, I can recover R-K:
+    --    ◯-K .*≤* {x} (y , Rxy , refl) (z , Rxz , refl) = (w , Rxw , w≤y , w≤z)
+
+    ◯-K : ◯ F ∧ ◯ G ≤ ◯ (F ∧ G)
+    ◯-K {F} {G} .*≤* {x} ((y , Rxy , Fy) , (z , Rxz , Gz)) =
+      let w , Rxw , w≤y , w≤z = K x y z Rxy Rxz in
+      w , Rxw , F .≤-closed w≤y Fy , G .≤-closed w≤z Gz
+
+  module Inflationary
+    (R-inflate : ∀ x → R x x)
+    where
+
+    ◯-inflate : F ≤ ◯ F
+    ◯-inflate .*≤* {x} Fx = x , R-inflate x , Fx
+
+  module Deflationary
+    (R-deflate : ∀ {x y} → R x y → x ≤ᶜ y)
+    where
+
+    ◯-deflate : ◯ F ≤ F
+    ◯-deflate {F} .*≤* {x} (z , Rxz , Fz) = F .≤-closed (R-deflate Rxz) Fz
+
+  module Strong
+    (R-strong : ∀ {x z} → R x z → Σ[ w ∈ Carrier ] (R x w × w ≤ᶜ x × w ≤ᶜ z))
+    where
+
+    ◯-strong : F ∧ ◯ G ≤ ◯ (F ∧ G)
+    ◯-strong {F} {G} .*≤* {x} (Fx , (z , Rxz , Gz)) =
+      let w , Rxw , w≤x , w≤z = R-strong Rxz in
+      w , Rxw , F .≤-closed w≤x Fx , G .≤-closed w≤z Gz
+
+    ◯-inflate2 : (∀ x → Σ[ y ∈ Carrier ] R x y) → F ≤ ◯ F
+    ◯-inflate2 {F} R-nec .*≤* {x} Fx =
+      let y , Rxy = R-nec x
+          w , Rxw , w≤x , w≤y = R-strong Rxy
+      in w , Rxw , F .≤-closed w≤x Fx
+
+  module Idem (R-trans : ∀ {x y z} → R x y → R y z → R x z) where
+    ◯-idem : ◯ (◯ F) ≤ ◯ F
+    ◯-idem {F} .*≤* {x} (y , Rxy , (z , Ryz , Fz)) =
+      z , R-trans Rxy Ryz , Fz
+
+  module Four (R-4 : ∀ {x z} → R x z → Σ[ y ∈ Carrier ] (R x y × R y z)) where
+
+    ◯-4 : ◯ F ≤ ◯ (◯ F)
+    ◯-4 {F} .*≤* (z , Rxz , Fz) =
+      let y , Rxy , Ryz = R-4 Rxz in
+      y , Rxy , z , Ryz , Fz
+
+  module Adjoint (R-≤ : ∀ {x y z} → y ≤ᶜ z → R x y → R x z) where
+
+    □ : LowerSet → LowerSet
+    □ F .ICarrier x = ∀ z → R z x → F .ICarrier z
+    □ F .≤-closed x≤y f z Rzy = f z (R-≤ x≤y Rzy)
+
+    adjoint₁ : ◯ F ≤ G → F ≤ □ G
+    adjoint₁ ◯F≤G .*≤* Fx z Rzx = ◯F≤G .*≤* (_ , Rzx , Fx)
+
+    adjoint₂ : F ≤ □ G → ◯ F ≤ G
+    adjoint₂ F≤□G .*≤* {x} (z , Rxz , Fz) = F≤□G .*≤* Fz x Rxz
+
+    unit : F ≤ □ (◯ F)
+    unit = adjoint₁ ≤-refl
+
+    counit : ◯ (□ F) ≤ F
+    counit = adjoint₂ ≤-refl
+
+    -- Doesn't work? Relation is the wrong way round
+    -- I : (◯ F ⇒ □ G) ≤ □ (F ⇒ G)
+    -- I .*≤* {x} f z Rzx {w} w≤z Fw = f C.refl (w , {!!} , Fw) _ (≤-R w≤z Rzx)
+
+    -- If R is reflexive, then □ is deflationary
+    -- If R is transitive, then □ has comultiplication
+    --   I think these follow from general facts about adjoints where one is a monad
+
+{-
+  module Box where
+
+    -- FIXME: for a Stirling-Plotkin thing, need to complete this to a
+    -- functor; same for the ⋄.
+    □ : LowerSet → LowerSet
+    □ F .ICarrier x = ∀ z → R x z → F .ICarrier z
+    □ F .≤-closed {x} {y} x≤y f z Rxz = f z (≤-R {!!} Rxz)
+
+  -- We also have ◯ (F ∨ G) ≤ ◯ F ∨ ◯ G, but not when the Lower Sets
+  -- are C-closed, which is required for interpreting disjunction
+  -- intuitionistically.
+-}
+
 ------------------------------------------------------------------------------
 -- Lift monoids to presheaves
 
