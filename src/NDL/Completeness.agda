@@ -1,0 +1,71 @@
+{-# OPTIONS --postfix-projections --safe #-}
+
+module NDL.Completeness {a} (Atom : Set a) where
+
+open import Level using (suc; _⊔_; lift)
+open import Data.Unit using (tt)
+open import Data.Product using (_,_)
+open import Data.Sum using (inj₁; inj₂)
+open import NDL.Formula Atom
+open import NDL.NaturalDeduction Atom
+open import NDL.Model Atom
+open import NDL.Frame Atom
+open import NDL.SyntacticFrame Atom
+
+_⨾_⊧_ : Frame a a a → context → formula → Set a
+F ⨾ Γ ⊧ ϕ = Ctxt⟦ Γ ⟧ ℳ.≤ Fm⟦ ϕ ⟧
+  where ℳ = model F
+        open import NDL.Interpretation Atom ℳ
+
+_⊧_ : context → formula → Set (a ⊔ suc a)
+Γ ⊧ ϕ = (F : Frame a a a) → F ⨾ Γ ⊧ ϕ
+
+soundness : ∀ {Γ ϕ} → Γ ⊢ ϕ → Γ ⊧ ϕ
+soundness π F = Proof⟦ π ⟧
+  where ℳ = model F
+        open import NDL.Interpretation Atom ℳ
+
+open import Algebra.Ordered.Construction.ZeroPlusIdeal
+
+module _ where
+
+  ℳ : NDLModel (suc a) a a
+  ℳ = model syntacticFrame
+
+  open import NDL.Interpretation Atom ℳ
+
+  open Ideal
+
+  mutual
+    reflect : ∀ ϕ → Fm⟦ ϕ ⟧ .ICarrier ϕ
+    reflect (atom x) = leaf (lift (assump here))
+    reflect (ϕ ∧ ψ) =
+      Fm⟦ ϕ ⟧ .≤-closed (andE1 (assump here)) (reflect ϕ) ,
+      Fm⟦ ψ ⟧ .≤-closed (andE2 (assump here)) (reflect ψ)
+    reflect (ϕ ∨ ψ) =
+      node (leaf (inj₁ (reflect ϕ))) (leaf (inj₂ (reflect ψ))) (assump here)
+    reflect ⊤ = lift tt
+    reflect ⊥ = bot (assump here)
+
+    reify : ∀ ϕ Γ → Fm⟦ ϕ ⟧ .ICarrier Γ → ε -, Γ ⊢ ϕ
+    reify (atom x) Γ (leaf (lift π)) = π
+    reify (atom x) Γ (bot π) = bot π
+    reify (atom x) Γ (node π₁ π₂ π) = orE π (reify _ _ π₁) (reify _ _ π₂)
+    reify (ϕ ∧ ψ) Γ (π₁ , π₂) = andI (reify ϕ Γ π₁) (reify ψ Γ π₂)
+    reify (ϕ ∨ ψ) Γ (leaf (inj₁ π)) = orI1 (reify ϕ Γ π)
+    reify (ϕ ∨ ψ) Γ (leaf (inj₂ π)) = orI2 (reify ψ Γ π)
+    reify (ϕ ∨ ψ) Γ (bot π) = bot π
+    reify (ϕ ∨ ψ) Γ (node π₁ π₂ π) = orE π (reify _ _ π₁) (reify _ _ π₂)
+    reify ⊤ Γ π = top
+    reify ⊥ Γ (bot π) = π
+    reify ⊥ Γ (node π₁ π₂ π) = orE π (reify _ _ π₁) (reify _ _ π₂)
+
+  reflect-context : ∀ Γ → Ctxt⟦ Γ ⟧ .ICarrier (context→formula Γ)
+  reflect-context ε = reflect formula.⊤
+  reflect-context (Γ -, ϕ) =
+    (Ctxt⟦ Γ ⟧ .≤-closed (andE1 (assump here)) (reflect-context Γ)) ,
+    (Fm⟦ ϕ ⟧ .≤-closed (andE2 (assump here)) (reflect ϕ))
+
+completeness : ∀ {Γ ϕ} → Γ ⊧ ϕ → Γ ⊢ ϕ
+completeness {Γ} {ϕ} σ =
+  subst (context-Sub Γ) (reify ϕ _ (σ syntacticFrame .*≤* (reflect-context Γ)))
