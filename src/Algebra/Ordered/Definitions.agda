@@ -25,9 +25,6 @@ open import Function.EquiInhabited using (_↔_)
 ------------------------------------------------------------------------
 -- Properties of operations
 
--- FIXME: the use of ⇔ here introduces noise. There is no need for the
--- additional equality proofs.
-
 LeftResidual : Op₂ A → Op₂ A → Set _
 LeftResidual _∙_ _⇦_ = ∀ {x y z} → (x ∙ y) ≲ z ↔ x ≲ (z ⇦ y)
 
@@ -74,3 +71,9 @@ Superidempotent ∙ = ∀ x → ∙ SuperidempotentOn x
 
 LinearDistribution : Op₂ A → Op₂ A → Set _
 LinearDistribution _⊗_ _⅋_ = ∀ x y z → (x ⊗ (y ⅋ z)) ≲ ((x ⊗ y) ⅋ z)
+
+Inflationary : Op₁ A → Set _
+Inflationary M = ∀ x → x ≲ M x
+
+Closed : Op₁ A → Set _
+Closed M = ∀ x → M (M x) ≲ M x

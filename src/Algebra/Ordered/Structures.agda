@@ -887,3 +887,15 @@ record IsStarAutonomous (_⊗_ : Op₂ A) (ε : A) (¬ : A → A) : Set (a ⊔ �
       ((x ⊗ y) ⅋ z)
     ∎
     where open PosetReasoning poset
+
+record IsClosureOp (M : Op₁ A) : Set (a ⊔ ℓ₂) where
+  field
+    mono    : Monotonic₁ _≲_ _≲_ M
+    inflate : Inflationary M
+    closed  : Closed M
+
+record IsStrongClosureOp (M : Op₁ A) (_∙_ : Op₂ A) : Set (a ⊔ ℓ₂) where
+  field
+    isClosureOp : IsClosureOp M
+    strength    : ∀ {x y} → (x ∙ M y) ≲ M (x ∙ y)
+  open IsClosureOp isClosureOp public
