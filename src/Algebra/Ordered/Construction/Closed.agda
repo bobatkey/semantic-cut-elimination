@@ -8,7 +8,7 @@ open import Relation.Binary
 open import Algebra.Ordered
   using (IsClosureOp)
 open import Relation.Binary.Lattice.Definitions using (Infimum; Supremum)
-open import Relation.Binary.Lattice.Structures using (IsBoundedMeetSemilattice; IsBoundedJoinSemilattice; IsMeetSemilattice; IsJoinSemilattice; IsBoundedLattice)
+open import Relation.Binary.Lattice.Structures using (IsBoundedMeetSemilattice; IsBoundedJoinSemilattice; IsMeetSemilattice; IsJoinSemilattice; IsBoundedLattice; IsLattice)
 import Relation.Binary.Reasoning.PartialOrder as PosetReasoning
 import Relation.Binary.Reasoning.Setoid as SetoidReasoning
 
@@ -182,23 +182,24 @@ module _ {_-∙_} (-∙-residual : RightResidual _≤_ _∙_ _-∙_) where
   ⊸-residual .to ϕ .*≤* = -∙-residual .to (A.trans (C.inflate _) (ϕ .*≤*))
   ⊸-residual {X} {Y} {Z} .from ϕ .*≤* =
     A.trans (C.mono (-∙-residual .from (ϕ .*≤*))) (Z .closed)
+-}
 
 ------------------------------------------------------------------------------
 -- Meets and Joins
 
-module bounded-lattice
-    {_∨_ _∧_ : Op₂ A} {⊤ ⊥ : A}
-    (isBoundedLattice : IsBoundedLattice _≈_ _≤_ _∨_ _∧_ ⊤ ⊥)
+module BoundedLattice
+    {_∨_ _∧_ : Op₂ P.Carrier} {⊤ ⊥ : P.Carrier}
+    (P-isBoundedLattice : IsBoundedLattice P._≈_ P._≤_ _∨_ _∧_ ⊤ ⊥)
   where
 
-  open IsBoundedLattice isBoundedLattice
+  open IsBoundedLattice P-isBoundedLattice
 
   _⊓_ : Elt → Elt → Elt
   (X ⊓ Y) .elt = X .elt ∧ Y .elt
   (X ⊓ Y) .closed =
     ∧-greatest
-      (A.trans (C.mono (x∧y≤x _ _)) (X .closed))
-      (A.trans (C.mono (x∧y≤y _ _)) (Y .closed))
+      (P.trans (C.mono (x∧y≤x _ _)) (X .closed))
+      (P.trans (C.mono (x∧y≤y _ _)) (Y .closed))
 
   x⊓y≤x : ∀ X Y → (X ⊓ Y) ≤ X
   x⊓y≤x X Y .*≤* = x∧y≤x (X .elt) (Y .elt)
@@ -221,21 +222,21 @@ module bounded-lattice
       X .elt                  ≤⟨ x≤x∨y _ _ ⟩
       X .elt ∨ Y .elt         ≤⟨ C.inflate _ ⟩
       𝐂 (X .elt ∨ Y .elt)    ∎
-    where open PosetReasoning (record { isPartialOrder = A.isPartialOrder })
+    where open PosetReasoning (record { isPartialOrder = P.isPartialOrder })
 
   y≤x⊔y : ∀ X Y → Y ≤ (X ⊔ Y)
   y≤x⊔y X Y .*≤* = begin
       Y .elt                  ≤⟨ y≤x∨y _ _ ⟩
       X .elt ∨ Y .elt         ≤⟨ C.inflate _ ⟩
       𝐂 (X .elt ∨ Y .elt)    ∎
-    where open PosetReasoning (record { isPartialOrder = A.isPartialOrder })
+    where open PosetReasoning (record { isPartialOrder = P.isPartialOrder })
 
   ⊔-least : ∀ x y z → x ≤ z → y ≤ z → (x ⊔ y) ≤ z
   ⊔-least X Y Z X≤Z Y≤Z .*≤* = begin
       𝐂 (X .elt ∨ Y .elt)    ≤⟨ C.mono (∨-least (X≤Z .*≤*) (Y≤Z .*≤*)) ⟩
       𝐂 (Z .elt)             ≤⟨ Z .closed ⟩
       Z .elt                  ∎
-    where open PosetReasoning (record { isPartialOrder = A.isPartialOrder })
+    where open PosetReasoning (record { isPartialOrder = P.isPartialOrder })
 
   ⊔-supremum : Supremum _≤_ _⊔_
   ⊔-supremum X Y = x≤x⊔y X Y , y≤x⊔y X Y , ⊔-least X Y
@@ -254,7 +255,16 @@ module bounded-lattice
   𝟘 .closed = C.closed _
 
   𝟘-minimum : Minimum _≤_ 𝟘
-  𝟘-minimum X .*≤* = A.trans (C.mono (minimum _)) (X .closed)
+  𝟘-minimum X .*≤* = P.trans (C.mono (minimum _)) (X .closed)
+
+  isBoundedLattice : IsBoundedLattice _≈_ _≤_ _⊔_ _⊓_ ⟙ 𝟘
+  isBoundedLattice .IsBoundedLattice.isLattice .IsLattice.isPartialOrder = ≤-isPartialOrder
+  isBoundedLattice .IsBoundedLattice.isLattice .IsLattice.supremum = ⊔-supremum
+  isBoundedLattice .IsBoundedLattice.isLattice .IsLattice.infimum = ⊓-infimum
+  isBoundedLattice .IsBoundedLattice.maximum = ⟙-maximum
+  isBoundedLattice .IsBoundedLattice.minimum = 𝟘-minimum
+
+{-
 
 ------------------------------------------------------------------------------
 -- Unary operators, aka “modalities”

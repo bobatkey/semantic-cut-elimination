@@ -36,9 +36,9 @@ _≈_ = SymCore _≤_
 ≤-isPartialOrder .IsPartialOrder.isPreorder .IsPreorder.trans = ≤-trans
 ≤-isPartialOrder .IsPartialOrder.antisym ϕ≤ψ ψ≤ϕ = ϕ≤ψ , ψ≤ϕ
 
-∨-isPomagma : IsPomagma _≈_ _≤_ _∨_
+∨-isPomagma : IsPomagma _≈_ _≤_ _`∨_
 ∨-isPomagma .IsPomagma.isPartialOrder = ≤-isPartialOrder
 ∨-isPomagma .IsPomagma.mono π₁ π₂ = orE (assump here) (orI1 π₁) (orI2 π₂)
 
 syntacticFrame : Frame a a a
-syntacticFrame = record { ⊥ = ⊥; isPomagma = ∨-isPomagma; atom = atom }
+syntacticFrame = record { ⊥ = `⊥; isPomagma = ∨-isPomagma; atom = `atom }

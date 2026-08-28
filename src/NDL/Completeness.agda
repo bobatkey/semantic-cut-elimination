@@ -38,30 +38,30 @@ module _ where
 
   mutual
     reflect : ∀ ϕ → Fm⟦ ϕ ⟧ .ICarrier ϕ
-    reflect (atom x) = leaf (lift (assump here))
-    reflect (ϕ ∧ ψ) =
+    reflect (`atom x) = leaf (lift (assump here))
+    reflect (ϕ `∧ ψ) =
       Fm⟦ ϕ ⟧ .≤-closed (andE1 (assump here)) (reflect ϕ) ,
       Fm⟦ ψ ⟧ .≤-closed (andE2 (assump here)) (reflect ψ)
-    reflect (ϕ ∨ ψ) =
+    reflect (ϕ `∨ ψ) =
       node (leaf (inj₁ (reflect ϕ))) (leaf (inj₂ (reflect ψ))) (assump here)
-    reflect ⊤ = lift tt
-    reflect ⊥ = bot (assump here)
+    reflect `⊤ = lift tt
+    reflect `⊥ = bot (assump here)
 
     reify : ∀ ϕ Γ → Fm⟦ ϕ ⟧ .ICarrier Γ → ε -, Γ ⊢ ϕ
-    reify (atom x) Γ (leaf (lift π)) = π
-    reify (atom x) Γ (bot π) = bot π
-    reify (atom x) Γ (node π₁ π₂ π) = orE π (reify _ _ π₁) (reify _ _ π₂)
-    reify (ϕ ∧ ψ) Γ (π₁ , π₂) = andI (reify ϕ Γ π₁) (reify ψ Γ π₂)
-    reify (ϕ ∨ ψ) Γ (leaf (inj₁ π)) = orI1 (reify ϕ Γ π)
-    reify (ϕ ∨ ψ) Γ (leaf (inj₂ π)) = orI2 (reify ψ Γ π)
-    reify (ϕ ∨ ψ) Γ (bot π) = bot π
-    reify (ϕ ∨ ψ) Γ (node π₁ π₂ π) = orE π (reify _ _ π₁) (reify _ _ π₂)
-    reify ⊤ Γ π = top
-    reify ⊥ Γ (bot π) = π
-    reify ⊥ Γ (node π₁ π₂ π) = orE π (reify _ _ π₁) (reify _ _ π₂)
+    reify (`atom x) Γ (leaf (lift π)) = π
+    reify (`atom x) Γ (bot π) = falseE π
+    reify (`atom x) Γ (node π₁ π₂ π) = orE π (reify _ _ π₁) (reify _ _ π₂)
+    reify (ϕ `∧ ψ) Γ (π₁ , π₂) = andI (reify ϕ Γ π₁) (reify ψ Γ π₂)
+    reify (ϕ `∨ ψ) Γ (leaf (inj₁ π)) = orI1 (reify ϕ Γ π)
+    reify (ϕ `∨ ψ) Γ (leaf (inj₂ π)) = orI2 (reify ψ Γ π)
+    reify (ϕ `∨ ψ) Γ (bot π) = falseE π
+    reify (ϕ `∨ ψ) Γ (node π₁ π₂ π) = orE π (reify _ _ π₁) (reify _ _ π₂)
+    reify `⊤ Γ π = trueI
+    reify `⊥ Γ (bot π) = π
+    reify `⊥ Γ (node π₁ π₂ π) = orE π (reify _ _ π₁) (reify _ _ π₂)
 
   reflect-context : ∀ Γ → Ctxt⟦ Γ ⟧ .ICarrier (context→formula Γ)
-  reflect-context ε = reflect formula.⊤
+  reflect-context ε = reflect `⊤
   reflect-context (Γ -, ϕ) =
     (Ctxt⟦ Γ ⟧ .≤-closed (andE1 (assump here)) (reflect-context Γ)) ,
     (Fm⟦ ϕ ⟧ .≤-closed (andE2 (assump here)) (reflect ϕ))
