@@ -192,23 +192,23 @@ module BoundedLattice
     (P-isBoundedLattice : IsBoundedLattice P._≈_ P._≤_ _∨_ _∧_ ⊤ ⊥)
   where
 
-  open IsBoundedLattice P-isBoundedLattice
+  module PBL = IsBoundedLattice P-isBoundedLattice
 
   _⊓_ : Elt → Elt → Elt
   (X ⊓ Y) .elt = X .elt ∧ Y .elt
   (X ⊓ Y) .closed =
-    ∧-greatest
-      (P.trans (C.mono (x∧y≤x _ _)) (X .closed))
-      (P.trans (C.mono (x∧y≤y _ _)) (Y .closed))
+    PBL.∧-greatest
+      (P.trans (C.mono (PBL.x∧y≤x _ _)) (X .closed))
+      (P.trans (C.mono (PBL.x∧y≤y _ _)) (Y .closed))
 
   x⊓y≤x : ∀ X Y → (X ⊓ Y) ≤ X
-  x⊓y≤x X Y .*≤* = x∧y≤x (X .elt) (Y .elt)
+  x⊓y≤x X Y .*≤* = PBL.x∧y≤x (X .elt) (Y .elt)
 
   x⊓y≤y : ∀ X Y → (X ⊓ Y) ≤ Y
-  x⊓y≤y X Y .*≤* = x∧y≤y (X .elt) (Y .elt)
+  x⊓y≤y X Y .*≤* = PBL.x∧y≤y (X .elt) (Y .elt)
 
   ⊓-greatest : ∀ X Y Z → Z ≤ X → Z ≤ Y → Z ≤ (X ⊓ Y)
-  ⊓-greatest X Y Z Z≤X Z≤Y .*≤* = ∧-greatest (Z≤X .*≤*) (Z≤Y .*≤*)
+  ⊓-greatest X Y Z Z≤X Z≤Y .*≤* = PBL.∧-greatest (Z≤X .*≤*) (Z≤Y .*≤*)
 
   ⊓-infimum : Infimum _≤_ _⊓_
   ⊓-infimum x y = x⊓y≤x x y , x⊓y≤y x y , ⊓-greatest x y
@@ -219,21 +219,21 @@ module BoundedLattice
 
   x≤x⊔y : ∀ X Y → X ≤ (X ⊔ Y)
   x≤x⊔y X Y .*≤* = begin
-      X .elt                  ≤⟨ x≤x∨y _ _ ⟩
+      X .elt                  ≤⟨ PBL.x≤x∨y _ _ ⟩
       X .elt ∨ Y .elt         ≤⟨ C.inflate _ ⟩
       𝐂 (X .elt ∨ Y .elt)    ∎
     where open PosetReasoning (record { isPartialOrder = P.isPartialOrder })
 
   y≤x⊔y : ∀ X Y → Y ≤ (X ⊔ Y)
   y≤x⊔y X Y .*≤* = begin
-      Y .elt                  ≤⟨ y≤x∨y _ _ ⟩
+      Y .elt                  ≤⟨ PBL.y≤x∨y _ _ ⟩
       X .elt ∨ Y .elt         ≤⟨ C.inflate _ ⟩
       𝐂 (X .elt ∨ Y .elt)    ∎
     where open PosetReasoning (record { isPartialOrder = P.isPartialOrder })
 
   ⊔-least : ∀ x y z → x ≤ z → y ≤ z → (x ⊔ y) ≤ z
   ⊔-least X Y Z X≤Z Y≤Z .*≤* = begin
-      𝐂 (X .elt ∨ Y .elt)    ≤⟨ C.mono (∨-least (X≤Z .*≤*) (Y≤Z .*≤*)) ⟩
+      𝐂 (X .elt ∨ Y .elt)    ≤⟨ C.mono (PBL.∨-least (X≤Z .*≤*) (Y≤Z .*≤*)) ⟩
       𝐂 (Z .elt)             ≤⟨ Z .closed ⟩
       Z .elt                  ∎
     where open PosetReasoning (record { isPartialOrder = P.isPartialOrder })
@@ -245,22 +245,25 @@ module BoundedLattice
 
   ⟙ : Elt
   ⟙ .elt = ⊤
-  ⟙ .closed = maximum _
+  ⟙ .closed = PBL.maximum _
 
   ⟙-maximum : Maximum _≤_ ⟙
-  ⟙-maximum x .*≤* = maximum _
+  ⟙-maximum x .*≤* = PBL.maximum _
 
   𝟘 : Elt
   𝟘 .elt = 𝐂 ⊥
   𝟘 .closed = C.closed _
 
   𝟘-minimum : Minimum _≤_ 𝟘
-  𝟘-minimum X .*≤* = P.trans (C.mono (minimum _)) (X .closed)
+  𝟘-minimum X .*≤* = P.trans (C.mono (PBL.minimum _)) (X .closed)
+
+  isLattice : IsLattice _≈_ _≤_ _⊔_ _⊓_
+  isLattice .IsLattice.isPartialOrder = ≤-isPartialOrder
+  isLattice .IsLattice.supremum = ⊔-supremum
+  isLattice .IsLattice.infimum = ⊓-infimum
 
   isBoundedLattice : IsBoundedLattice _≈_ _≤_ _⊔_ _⊓_ ⟙ 𝟘
-  isBoundedLattice .IsBoundedLattice.isLattice .IsLattice.isPartialOrder = ≤-isPartialOrder
-  isBoundedLattice .IsBoundedLattice.isLattice .IsLattice.supremum = ⊔-supremum
-  isBoundedLattice .IsBoundedLattice.isLattice .IsLattice.infimum = ⊓-infimum
+  isBoundedLattice .IsBoundedLattice.isLattice = isLattice
   isBoundedLattice .IsBoundedLattice.maximum = ⟙-maximum
   isBoundedLattice .IsBoundedLattice.minimum = 𝟘-minimum
 

@@ -68,3 +68,16 @@ import Algebra.Ordered.Structures
 
 -- Symmetric Closure.
 import Relation.Binary.Construct.Core.Symmetric
+
+-- Some other logics
+import MIPL.Completeness
+import IPL.Completeness
+import IML.Completeness
+import NDL.Completeness
+import CK.Completeness
+
+import MIPL.Completeness2
+import IPL.Completeness2
+import IML.Completeness2
+import NDL.Completeness2
+-- import CK.Completeness2

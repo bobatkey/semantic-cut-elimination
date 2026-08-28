@@ -26,58 +26,10 @@ open Elt
 open _≤_
 open _≈_
 
-------------------------------------------------------------------------------
--- Bounded Lattice. FIXME: move this to another file
-_∧_ : Elt → Elt → Elt
-(x ∧ y) .elt = x .elt H.∧ y .elt
-(x ∧ y) .closed =
-  let open PosetReasoning H.poset in
-  H.∧-greatest
-    (begin 𝐂 (x .elt H.∧ y .elt) ≤⟨ C.mono (H.x∧y≤x _ _) ⟩
-           𝐂 (x .elt)            ≤⟨ x .closed ⟩
-           x .elt                ∎)
-    (begin 𝐂 (x .elt H.∧ y .elt) ≤⟨ C.mono (H.x∧y≤y _ _) ⟩
-           𝐂 (y .elt)            ≤⟨ y .closed ⟩
-           y .elt                ∎)
-
-∧-isInfimum : Infimum _≤_ _∧_
-∧-isInfimum x y .proj₁ .*≤* = H.x∧y≤x _ _
-∧-isInfimum x y .proj₂ .proj₁ .*≤* = H.x∧y≤y _ _
-∧-isInfimum x y .proj₂ .proj₂ z z≤x z≤y .*≤* = H.∧-greatest (z≤x .*≤*) (z≤y .*≤*)
-
-⊤ : Elt
-⊤ .elt = H.⊤
-⊤ .closed = H.maximum _
-
-⊤-maximum : Maximum _≤_ ⊤
-⊤-maximum x .*≤* = H.maximum _
-
-_∨_ : Elt → Elt → Elt
-(x ∨ y) .elt = 𝐂 (x .elt H.∨ y .elt)
-(x ∨ y) .closed = C.closed _
-
-∨-isSupremum : Supremum _≤_ _∨_
-∨-isSupremum x y .proj₁ .*≤* = H.trans (H.x≤x∨y _ _) (C.inflate _)
-∨-isSupremum x y .proj₂ .proj₁ .*≤* = H.trans (H.y≤x∨y _ _) (C.inflate _)
-∨-isSupremum x y .proj₂ .proj₂ z x≤z y≤z .*≤* =
-  H.trans (C.mono (H.∨-least (x≤z .*≤*) (y≤z .*≤*))) (z .closed)
-
-⊥ : Elt
-⊥ .elt = 𝐂 H.⊥
-⊥ .closed = C.closed _
-
-⊥-minimum : Minimum _≤_ ⊥
-⊥-minimum x .*≤* = H.trans (C.mono (H.minimum _)) (x .closed)
-
-isLattice : IsLattice _≈_ _≤_ _∨_ _∧_
-isLattice .IsLattice.isPartialOrder = ≤-isPartialOrder
-isLattice .IsLattice.supremum = ∨-isSupremum
-isLattice .IsLattice.infimum = ∧-isInfimum
-
-isBoundedLattice : IsBoundedLattice _≈_ _≤_ _∨_ _∧_ ⊤ ⊥
-isBoundedLattice .IsBoundedLattice.isLattice = isLattice
-isBoundedLattice .IsBoundedLattice.maximum = ⊤-maximum
-isBoundedLattice .IsBoundedLattice.minimum = ⊥-minimum
+open BoundedLattice H.isBoundedLattice
+  using (isLattice; isBoundedLattice)
+  renaming (_⊔_ to _∨_; _⊓_ to _∧_; ⟙ to ⊤; 𝟘 to ⊥)
+  public
 
 ------------------------------------------------------------------------------
 -- Residual
