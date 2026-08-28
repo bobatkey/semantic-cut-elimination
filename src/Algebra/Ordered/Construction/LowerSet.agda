@@ -10,7 +10,7 @@ open import Data.Empty as Empty using ()
 open import Data.Product using (_×_; _,_; proj₁; proj₂; <_,_>; -,_; ∃-syntax; Σ-syntax; swap)
 open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
 open import Data.Unit as Unit using ()
-open import Relation.Binary using (Poset; Reflexive; Transitive; IsPartialOrder; IsPreorder; Monotonic₁; Monotonic₂; Minimum)
+open import Relation.Binary using (Poset; Reflexive; Transitive; IsPartialOrder; IsPreorder; Monotonic₁; Monotonic₂; Minimum; Maximum)
 open import Relation.Binary.Construct.Core.Symmetric as SymCore using (SymCore)
 open import Relation.Binary.Lattice
 open import Relation.Binary.PropositionalEquality as PropEq using (_≡_)
@@ -176,10 +176,13 @@ open import Relation.Binary.Lattice.Properties.MeetSemilattice ∧-meetSemilatti
 ⊤ .ICarrier x = Lift (c ⊔ ℓ₂) Unit.⊤
 ⊤ .≤-closed x Fx = Fx
 
+⊤-maximum : Maximum _≤_ ⊤
+⊤-maximum F .*≤* _ = lift Unit.tt
+
 ∧-⊤-isBoundedMeetSemilattice : IsBoundedMeetSemilattice _≈_ _≤_ _∧_ ⊤
 ∧-⊤-isBoundedMeetSemilattice = record
   { isMeetSemilattice = ∧-isMeetSemilattice
-  ; maximum           = λ F → mk-≤ (λ Fx → lift Unit.tt)
+  ; maximum           = ⊤-maximum
   }
 
 ∧-⊤-boundedMeetSemilattice : BoundedMeetSemilattice _ _ _
@@ -243,6 +246,16 @@ y≤x∨y .*≤* = inj₂
   ; minimum = ⊥-minimum
   }
 
+isLattice : IsLattice _≈_ _≤_ _∨_ _∧_
+isLattice .IsLattice.isPartialOrder = ≤-isPartialOrder
+isLattice .IsLattice.supremum = ∨-supremum
+isLattice .IsLattice.infimum = ∧-infimum
+
+isBoundedLattice : IsBoundedLattice _≈_ _≤_ _∨_ _∧_ ⊤ ⊥
+isBoundedLattice .IsBoundedLattice.isLattice = isLattice
+isBoundedLattice .IsBoundedLattice.maximum = ⊤-maximum
+isBoundedLattice .IsBoundedLattice.minimum = ⊥-minimum
+
 ------------------------------------------------------------------------------
 -- Construct a residuated pomonoid for presheaves
 
@@ -272,6 +285,17 @@ _⇒_ : LowerSet → LowerSet → LowerSet
   { isCommutativePomonoid = ∧-⊤-isCommutativePomonoid
   ; residuated            = comm∧residual⇒residuated ≤-isPreorder ∧-comm ⇒-residualʳ
   }
+
+⇒-exponential : Exponential _≤_ _∧_ _⇒_
+⇒-exponential w x y .proj₁ = ⇒-residualˡ-to
+⇒-exponential w x y .proj₂ = ⇒-residualˡ-from
+
+isHeytingAlgebra : IsHeytingAlgebra _≈_ _≤_ _∨_ _∧_ _⇒_ ⊤ ⊥
+isHeytingAlgebra .IsHeytingAlgebra.isBoundedLattice = isBoundedLattice
+isHeytingAlgebra .IsHeytingAlgebra.exponential = ⇒-exponential
+
+heytingAlgebra : HeytingAlgebra (suc c ⊔ suc ℓ₂) (c ⊔ ℓ₂) (c ⊔ ℓ₂)
+heytingAlgebra = record { isHeytingAlgebra = isHeytingAlgebra }
 
 ------------------------------------------------------------------------------
 -- Lift functors to presheaves

@@ -2,7 +2,7 @@
 
 open import Level using (_⊔_; suc)
 open import Data.Product using (_,_; Σ-syntax; _×_; proj₁; proj₂)
-open import Algebra.Ordered using (IsPomonoid)
+open import Algebra.Ordered using (IsPomonoid; IsClosureOp; IsStrongClosureOp)
 open import Relation.Binary using (Poset)
 
 module Algebra.Ordered.Construction.Covered
@@ -18,7 +18,7 @@ module Algebra.Ordered.Construction.Covered
   (S : poset .Poset.Carrier → Set (c ⊔ ℓ₂))
   (S-≤ : ∀ {x y} → poset .Poset._≤_ x y → S y → S x)
   (P : ∀ x → S x → poset .Poset.Carrier → Set (c ⊔ ℓ₂))
-  (P-≤ : ∀ {x y z c} (x≤y : poset .Poset._≤_ x y) → P x (S-≤ x≤y c) z → P y c z)
+  (P-≤ : ∀ {x y z} c (x≤y : poset .Poset._≤_ x y) → P x (S-≤ x≤y c) z → P y c z)
   where
 
 -- Example:
@@ -45,7 +45,7 @@ data Complete (F : LowerSet) : Carrier → Set (c ⊔ ℓ₂) where
 
 Complete-≤-closed : ∀ {F x y} → x ≤ᶜ y → Complete F y → Complete F x
 Complete-≤-closed {F} x≤y (leaf y∈F) = leaf (F .≤-closed x≤y y∈F)
-Complete-≤-closed {F} x≤y (split c χ) = split (S-≤ x≤y c) λ z p → χ z (P-≤ x≤y p)
+Complete-≤-closed {F} x≤y (split c χ) = split (S-≤ x≤y c) λ z p → χ z (P-≤ c x≤y p)
 
 𝐂 : LowerSet → LowerSet
 𝐂 F .ICarrier = Complete F
@@ -68,16 +68,28 @@ Complete-join (split s χ) = split s λ y p → Complete-join (χ y p)
 𝐂-join : ∀ {F} → 𝐂 (𝐂 F) ≤ 𝐂 F
 𝐂-join .*≤* = Complete-join
 
+𝐂-isClosureOp : IsClosureOp _≈_ _≤_ 𝐂
+𝐂-isClosureOp .IsClosureOp.mono = 𝐂-mono
+𝐂-isClosureOp .IsClosureOp.inflate _ = 𝐂-unit
+𝐂-isClosureOp .IsClosureOp.closed x = 𝐂-join
+
 ------------------------------------------------------------------------------
 
 -- If P x s y → y ≤ x, then we have strength wrt to ∧. And the converse?
 --
 -- This means that the 's : S x' are actually covers.
-module StrongProduct (is-cover : ∀ {x s y} → P x s y → y ≤ᶜ x) where
+module StrongProduct (is-cover : ∀ {x y} c → P x c y → y ≤ᶜ x) where
 
-  ∧-strength : ∀ {F G x} → F .ICarrier x → Complete G x → Complete (F ∧ G) x
-  ∧-strength x∈F (leaf x∈G)      = leaf (x∈F , x∈G)
-  ∧-strength {F} x∈F (split c χ) = split c λ y p → ∧-strength (F .≤-closed (is-cover p) x∈F) (χ y p)
+  ∧-strength-lemma : ∀ {F G x} → F .ICarrier x → Complete G x → Complete (F ∧ G) x
+  ∧-strength-lemma x∈F (leaf x∈G)      = leaf (x∈F , x∈G)
+  ∧-strength-lemma {F} x∈F (split c χ) = split c λ y p → ∧-strength-lemma (F .≤-closed (is-cover c p) x∈F) (χ y p)
+
+  ∧-strength : ∀ {F G} → F ∧ 𝐂 G ≤ 𝐂 (F ∧ G)
+  ∧-strength .*≤* {x} (x∈F , x∈𝐂G) = ∧-strength-lemma x∈F x∈𝐂G
+
+  𝐂-isStrongClosureOp : IsStrongClosureOp _≈_ _≤_ 𝐂 _∧_
+  𝐂-isStrongClosureOp .IsStrongClosureOp.isClosureOp = 𝐂-isClosureOp
+  𝐂-isStrongClosureOp .IsStrongClosureOp.strength = ∧-strength
 
 module StrongDay
     {_∙ᶜ_} {εᶜ} (isPomonoid : IsPomonoid _≈ᶜ_ _≤ᶜ_ _∙ᶜ_ εᶜ)

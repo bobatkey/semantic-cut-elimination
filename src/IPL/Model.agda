@@ -6,6 +6,7 @@ open import Level using (suc; _⊔_)
 open import Relation.Binary using (Rel)
 open import Relation.Binary.Lattice using (IsHeytingAlgebra)
 
+-- FIXME: this is misnamed; should be 'Model' or 'IPLModel'
 record HeytingAlgebra c ℓ₁ ℓ₂ : Set (a ⊔ suc (c ⊔ ℓ₁ ⊔ ℓ₂)) where
   field
     Carrier : Set c

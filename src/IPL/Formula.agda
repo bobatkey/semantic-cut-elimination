@@ -9,3 +9,5 @@ data formula : Set a where
   _`∨_  : formula → formula → formula
   `⊤    : formula
   `⊥    : formula
+
+infixr 30 _`⇒_
