@@ -19,6 +19,11 @@ module Algebra.Ordered.Construction.Covered
   (S-≤ : ∀ {x y} → poset .Poset._≤_ x y → S y → S x)
   (P : ∀ x → S x → poset .Poset.Carrier → Set (c ⊔ ℓ₂))
   (P-≤ : ∀ {x y z} c (x≤y : poset .Poset._≤_ x y) → P x (S-≤ x≤y c) z → P y c z)
+
+  -- S is a presheaf on 'poset'
+  -- P is a presheaf on ∫S ? the category of elements of S? no?
+  --   P is a functor ∫S → PSh(|C|)
+  -- why discrete?
   where
 
 -- Example:

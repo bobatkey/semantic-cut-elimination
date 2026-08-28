@@ -250,6 +250,9 @@ module BoundedLattice
   ⟙-maximum : Maximum _≤_ ⟙
   ⟙-maximum x .*≤* = PBL.maximum _
 
+  η-⊤ : ⟙ ≤ η ⊤
+  η-⊤ .*≤* = C.inflate _
+
   𝟘 : Elt
   𝟘 .elt = 𝐂 ⊥
   𝟘 .closed = C.closed _

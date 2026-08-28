@@ -28,10 +28,10 @@ record ModalHeytingAlgebra c ℓ₁ ℓ₂ : Set (a ⊔ suc (c ⊔ ℓ₁ ⊔ �
     □       : Carrier → Carrier
     □-mono  : ∀ {x y} → x ≤ y → □ x ≤ □ y
     □-⊤     : ⊤ ≤ □ ⊤
-    □-∧     : ∀ {x y} → (□ x ∧ □ y) ≤ □ (x ∧ y)
+    □-∧     : ∀ x y → (□ x ∧ □ y) ≤ □ (x ∧ y)
 
     ◇       : Carrier → Carrier
     ◇-mono  : ∀ {x y} → x ≤ y → ◇ x ≤ ◇ y
-    K-◇     : ∀ {x y} → (□ x ∧ ◇ y) ≤ ◇ (x ∧ y)
+    K-◇     : ∀ x y → (□ x ∧ ◇ y) ≤ ◇ (x ∧ y)
 
     atom    : Atom → Carrier

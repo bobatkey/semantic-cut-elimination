@@ -73,8 +73,10 @@ mutual
   Proof⟦ trueI ⟧ = ℳ.maximum _
   Proof⟦ falseE π ⟧ = ℳ.trans Proof⟦ π ⟧ (ℳ.minimum _)
   Proof⟦ mono π₁ π₂ ⟧ = ℳ.trans Proof□⟦ π₁ ⟧ (ℳ.□-mono Proof⟦ π₂ ⟧)
-  Proof⟦ mono-◇ π₁ π₂ π₃ ⟧ = ℳ.trans (ℳ.∧-greatest Proof□⟦ π₁ ⟧ Proof⟦ π₂ ⟧) (ℳ.trans ℳ.K-◇ (ℳ.◇-mono Proof⟦ π₃ ⟧))
+  Proof⟦ mono-◇ π₁ π₂ π₃ ⟧ =
+    ℳ.trans (ℳ.∧-greatest Proof□⟦ π₁ ⟧ Proof⟦ π₂ ⟧)
+    (ℳ.trans (ℳ.K-◇ _ _) (ℳ.◇-mono Proof⟦ π₃ ⟧))
 
   Proof□⟦_⟧ : ∀ {Γ Δ} → Γ ⊢□* Δ → Ctxt⟦ Γ ⟧ ℳ.≤ ℳ.□ Ctxt⟦ Δ ⟧
   Proof□⟦ nil ⟧ = ℳ.trans (ℳ.maximum _) ℳ.□-⊤
-  Proof□⟦ π ∷ δ ⟧ = ℳ.trans (ℳ.∧-greatest Proof□⟦ δ ⟧ Proof⟦ π ⟧) ℳ.□-∧
+  Proof□⟦ δ -, π ⟧ = ℳ.trans (ℳ.∧-greatest Proof□⟦ δ ⟧ Proof⟦ π ⟧) (ℳ.□-∧ _ _)

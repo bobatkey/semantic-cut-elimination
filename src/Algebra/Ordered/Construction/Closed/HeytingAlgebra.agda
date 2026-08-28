@@ -27,9 +27,25 @@ open _≤_
 open _≈_
 
 open BoundedLattice H.isBoundedLattice
-  using (isLattice; isBoundedLattice)
+  using (isLattice; isBoundedLattice; η-⊤)
   renaming (_⊔_ to _∨_; _⊓_ to _∧_; ⟙ to ⊤; 𝟘 to ⊥)
   public
+
+η-∧ : ∀ {X Y} → η X ∧ η Y ≤ η (X H.∧ Y)
+η-∧ {X} {Y} .*≤* = begin
+    𝐂 X H.∧ 𝐂 Y
+  ≤⟨ C.strength ⟩
+    𝐂 (𝐂 X H.∧ Y)
+  ≤⟨ C.mono (H.∧-greatest (H.x∧y≤y _ _) (H.x∧y≤x _ _)) ⟩
+    𝐂 (Y H.∧ 𝐂 X)
+  ≤⟨ C.mono C.strength ⟩
+    𝐂 (𝐂 (Y H.∧ X))
+  ≤⟨ C.mono (C.mono (H.∧-greatest (H.x∧y≤y _ _) (H.x∧y≤x _ _))) ⟩
+    𝐂 (𝐂 (X H.∧ Y))
+  ≤⟨ C.closed _ ⟩
+    𝐂 (X H.∧ Y)
+  ∎
+  where open PosetReasoning H.poset
 
 ------------------------------------------------------------------------------
 -- Residual

@@ -8,13 +8,16 @@ data context : Set a where
   ε    : context
   _-,_ : context → formula → context
 
-infixl 25 _-,_
+infixl 10 _-,_
+infix 5 _∈_ _⊢_ _⊢□*_
+
+_++_ : context → context → context
+Δ₁ ++ ε         = Δ₁
+Δ₁ ++ (Δ₂ -, ϕ) = (Δ₁ ++ Δ₂) -, ϕ
 
 data _∈_ : formula → context → Set a where
   here : ∀ {Γ ϕ}   →         ϕ ∈ Γ -, ϕ
   next : ∀ {Γ ϕ ψ} → ϕ ∈ Γ → ϕ ∈ Γ -, ψ
-
-infixr 10 _∷_
 
 mutual
   data _⊢_ : context → formula → Set a where
@@ -38,12 +41,39 @@ mutual
     mono   : ∀ {Γ Δ χ} → Γ ⊢□* Δ → Δ ⊢ χ → Γ ⊢ `□ χ
     mono-◇ : ∀ {Γ Δ ϕ χ} → Γ ⊢□* Δ → Γ ⊢ `◇ ϕ → Δ -, ϕ ⊢ χ → Γ ⊢ `◇ χ
 
+-- Probably:
+--  - □ X Γ = exists Δ, Γ ⊢□* Δ and X Δ
+--  - which is a functor, and is monoidal (supports K)
+--  - ⋄ X Γ = exists Δ, ϕ. Γ ⊢□* Δ and Γ ⊢ `⋄ ϕ and X (Δ -, ϕ)
+--
+-- For a monad:
+--    ◯ F = μ X. λ Γ → F Γ ⊎ (Σ[ ϕ ] (Γ ⊢ ◯ ϕ ∧ X (Γ -, ϕ)))
+--
+-- i.e. generated from the topology with   Σ[ ϕ ] Γ ⊢ ◯ ϕ.
+
+-- orE-◇ : Γ ⊢ `◇ (ϕ `∨ ψ) → Γ -, `◇ ϕ ⊢ χ → Γ -, `◇ ψ ⊢ χ → Γ ⊢ χ
+-- falseE-◇ : Γ ⊢ `◇ `⊥ → Γ ⊢ χ
+
+-- add these to the cover.
+
   data _⊢□*_ : context → context → Set a where
     nil : ∀ {Γ} → Γ ⊢□* ε
-    _∷_ : ∀ {Γ Δ ϕ} → Γ ⊢ `□ ϕ → Γ ⊢□* Δ → Γ ⊢□* Δ -, ϕ
+    _-,_ : ∀ {Γ Δ ϕ} → Γ ⊢□* Δ → Γ ⊢ `□ ϕ → Γ ⊢□* Δ -, ϕ
+
+_++*_ : ∀ {Γ Δ₁ Δ₂} → Γ ⊢□* Δ₁ → Γ ⊢□* Δ₂ → Γ ⊢□* (Δ₁ ++ Δ₂)
+Ms ++* nil = Ms
+Ms ++* (Ns -, N) = (Ms ++* Ns) -, N
 
 Ren : context → context → Set a
 Ren Γ Δ = ∀ {ϕ} → ϕ ∈ Δ → ϕ ∈ Γ
+
+Ren-proj₁ : ∀ {Δ₁ Δ₂} → Ren (Δ₁ ++ Δ₂) Δ₁
+Ren-proj₁ {Δ₁} {ε}       x = x
+Ren-proj₁ {Δ₁} {Δ₂ -, ϕ} x = next (Ren-proj₁ x)
+
+Ren-proj₂ : ∀ {Δ₁ Δ₂} → Ren (Δ₁ ++ Δ₂) Δ₂
+Ren-proj₂ here = here
+Ren-proj₂ (next x) = next (Ren-proj₂ x)
 
 Ren-wk : ∀ {Γ Δ ϕ} → Ren Γ Δ → Ren (Γ -, ϕ) (Δ -, ϕ)
 Ren-wk ρ here     = here
@@ -68,7 +98,7 @@ mutual
 
   rename* : ∀ {Γ Δ Ξ} → Ren Γ Δ → Δ ⊢□* Ξ → Γ ⊢□* Ξ
   rename* ρ nil = nil
-  rename* ρ (π ∷ σ) = (rename ρ π) ∷ (rename* ρ σ)
+  rename* ρ (σ -, π) = (rename* ρ σ) -, (rename ρ π)
 
 weaken : ∀ {Γ ϕ χ} → Γ ⊢ χ → Γ -, ϕ ⊢ χ
 weaken = rename next
@@ -98,7 +128,7 @@ mutual
 
   subst* : ∀ {Γ Δ Ξ} → Sub Γ Δ → Δ ⊢□* Ξ → Γ ⊢□* Ξ
   subst* σ nil = nil
-  subst* σ (π ∷ δ) = (subst σ π) ∷ (subst* σ δ)
+  subst* σ (δ -, π) = (subst* σ δ) -, (subst σ π)
 
 context→formula : context → formula
 context→formula ε        = `⊤
