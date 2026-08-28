@@ -6,9 +6,8 @@ open import Data.Product using (_×_; proj₁; proj₂; _,_; swap)
 open import MIPL.Formula Atom
 open import MIPL.NaturalDeduction Atom
 open import MIPL.Frame Atom using (Frame)
-open import Relation.Binary.Construct.Core.Symmetric
-open import Relation.Binary.Lattice
-open import Relation.Binary.Structures
+open import Relation.Binary.Construct.Core.Symmetric using (SymCore)
+open import Relation.Binary using (IsEquivalence; IsPartialOrder; IsPreorder)
 
 _≤_ : formula → formula → Set a
 ϕ ≤ ψ = ε -, ϕ ⊢ ψ
