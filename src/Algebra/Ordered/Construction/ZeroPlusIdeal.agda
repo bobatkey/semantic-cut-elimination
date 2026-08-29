@@ -424,8 +424,8 @@ module Modality
     ◯-monoidal-unit : ⊤ ≤ ◯ ⊤
     ◯-monoidal-unit = ≤-trans counit⁻¹ (α-mono (L.≤-trans U-⊤ (L.≤-trans MM.Ff-monoidal-unit (M.Ff-mono U-⊤⁻¹))))
 
-    ◯-monoidal : (◯ I ∧ ◯ J) ≤ ◯ (I ∧ J)
-    ◯-monoidal {I}{J} = begin
+    ◯-monoidal : ∀ I J → (◯ I ∧ ◯ J) ≤ ◯ (I ∧ J)
+    ◯-monoidal I J = begin
         ◯ I ∧ ◯ J
       ≡⟨⟩
         α (M.Ff (U I)) ∧ α (M.Ff (U J))

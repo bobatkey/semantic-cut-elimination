@@ -93,7 +93,7 @@ module _ where
     reify `⊥ Γ (node π₁ π₂ π) =
       orE π (rename (Ren-wk next) (reify `⊥ _ π₁))
             (rename (Ren-wk next) (reify `⊥ _ π₂))
-    reify (`□ ϕ) Γ (leaf (ψ , Γ≤□ψ , ψ∈⟦ϕ⟧)) = mono (Γ≤□ψ ∷ nil) (reify _ _ ψ∈⟦ϕ⟧)
+    reify (`□ ϕ) Γ (leaf (ψ , Γ≤□ψ , ψ∈⟦ϕ⟧)) = mono (nil -, Γ≤□ψ) (reify _ _ ψ∈⟦ϕ⟧)
     reify (`□ ϕ) Γ (bot π) = falseE π
     reify (`□ ϕ) Γ (node π₁ π₂ π) =
       orE π (rename (Ren-wk next) (reify _ _ π₁))

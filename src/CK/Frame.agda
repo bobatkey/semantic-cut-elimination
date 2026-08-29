@@ -88,8 +88,8 @@ module _ {c} {ℓ₁} {ℓ₂} (F : Frame c ℓ₁ ℓ₂) where
   open Modality F.◇ F.◇-mono
     renaming (◯ to ◇; ◯-mono to ◇-mono)
 
-  K-◇ : ∀ {I J} → (□ I ∧ ◇ J) ≤ ◇ (I ∧ J)
-  K-◇ {I} {J} = begin
+  K-◇ : ∀ I J → (□ I ∧ ◇ J) ≤ ◇ (I ∧ J)
+  K-◇ I J = begin
       □ I ∧ ◇ J
     ≡⟨⟩
       α (L□.Ff (U I)) ∧ α (L◇.Ff (U J))
